@@ -11,6 +11,29 @@ const state = {
 const $ = (sel, el = document) => el.querySelector(sel);
 const app = $("#app");
 
+/* Logos de source : petit disque colore + glyphe SVG (ou monogramme en repli).
+   Cle = champ "source" (name dans sources.yaml). */
+const SOURCE_META = {
+  "arxiv-ai": { color: "#B31B1B", svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3l7.5 9L4 21h2.6l6.2-7.4L19 21h1.5l-8.3-9.9L19.6 3H17l-5.1 6.1L7 3H4z"/></svg>` },
+  "hf-daily-papers": { color: "#FFB000", svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9" fill="none"/><circle cx="9" cy="10" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="0.6" fill="currentColor" stroke="none"/><path d="M8.5 14.5c1 1.4 2.2 2 3.5 2s2.5-.6 3.5-2"/></svg>` },
+  "openai-blog": { color: "#0FA47F", mono: "OA" },
+  "anthropic-blog": { color: "#D97757", mono: "A" },
+  "mistral-blog": { color: "#FF7000", mono: "M" },
+  "deepmind-blog": { color: "#4285F4", mono: "DM" },
+  "meta-ai-blog": { color: "#0668E1", mono: "M" },
+  "google-research": { color: "#4285F4", mono: "G" },
+  "hackernews-ai": { color: "#FF6600", svg: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 13.6L6.5 4h2.8l2.9 5.4L15 4h2.7l-5.4 9.6V20h-2.3v-6.4z"/></svg>` },
+  "github-trending-ai": { color: "#24292F", svg: `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>` },
+};
+
+function sourceChip(item) {
+  const meta = SOURCE_META[item.source] || { color: "#8B5CF6", mono: (item.source_label || "?")[0].toUpperCase() };
+  const inner = meta.svg
+    ? `<span class="source-logo" style="background:${meta.color}">${meta.svg}</span>`
+    : `<span class="source-logo mono" style="background:${meta.color}">${esc(meta.mono)}</span>`;
+  return `<span class="source-chip">${inner}${esc(item.source_label)}</span>`;
+}
+
 const TAG_LABELS = {
   optimisation: "Optimisation", llm: "LLM", agents: "Agents", rag: "RAG",
   architecture: "Architecture", interpretabilite: "Interprétabilité",
@@ -60,13 +83,13 @@ function scoreClass(rel) {
 }
 
 function cardHTML(item, { showDeep = true } = {}) {
-  const tags = (item.tags || []).map(t => `<span class="badge tag">${esc(TAG_LABELS[t] || t)}</span>`).join("");
+  const tags = (item.tags || []).map(t => `<span class="badge">${esc(TAG_LABELS[t] || t)}</span>`).join("");
   const deep = showDeep && item.deep_analysis
     ? `<button class="deep-btn" data-deep="${esc(item.id)}">Analyse détaillée</button>` : "";
   return `
   <article class="card" data-id="${esc(item.id)}">
     <div class="card-meta">
-      <span class="badge source">${esc(item.source_label)}</span>
+      ${sourceChip(item)}
       ${tags}
       <span class="score-pill ${scoreClass(item.relevance)}" title="Pertinence"><span class="dot"></span>${esc(item.relevance)}/10</span>
     </div>
@@ -161,7 +184,7 @@ function openDeep(item) {
     ["Résultats", a.resultats], ["Limites", a.limites],
   ];
   $("#modal-content").innerHTML = `
-    <div class="card-meta"><span class="badge source">${esc(item.source_label)}</span><span class="badge deep">Analyse Mistral</span></div>
+    <div class="card-meta">${sourceChip(item)}<span class="badge deep">Analyse Mistral</span></div>
     <h2 id="modal-title">${esc(item.title)}</h2>
     ${sections.map(([t, txt]) => txt ? `<div class="analysis-section"><h4>${t}</h4><p>${esc(txt)}</p></div>` : "").join("")}
     ${a.verdict ? `<div class="verdict">${esc(a.verdict)}</div>` : ""}
