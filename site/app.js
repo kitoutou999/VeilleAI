@@ -5,6 +5,7 @@ const state = {
   day: null,        // donnees du jour affiche
   view: "digest",
   filter: "tous",
+  theme: null,
   cache: new Map(), // date -> day data
 };
 
@@ -139,18 +140,23 @@ function renderThemes() {
   for (const it of state.day.items)
     for (const t of it.tags || []) (counts[t] ??= []).push(it);
   const sorted = Object.entries(counts).sort((a, b) => b[1].length - a[1].length);
-  const max = sorted.length ? sorted[0][1].length : 1;
+  if (!sorted.length) {
+    app.innerHTML = `<div class="state-msg">Rien à afficher.</div>`;
+    return;
+  }
+  if (!counts[state.theme]) state.theme = sorted[0][0];
+  const items = counts[state.theme] || [];
   app.innerHTML = `
     <h2 class="section-title">Par thème</h2>
-    ${sorted.map(([tag, items]) => `
-      <div class="theme-group">
-        <div class="theme-bar">
-          <h3>${esc(TAG_LABELS[tag] || tag)}</h3>
-          <div class="bar"><span style="width:${(items.length / max) * 100}%"></span></div>
-          <span class="n">${items.length}</span>
-        </div>
-        ${items.slice(0, 4).map(it => cardHTML(it, { showDeep: false })).join("")}
-      </div>`).join("") || `<div class="state-msg">Rien à afficher.</div>`}
+    <div class="theme-grid">
+      ${sorted.map(([tag, list]) => `
+        <button class="theme-btn ${tag === state.theme ? "active" : ""}" data-theme-tag="${esc(tag)}">
+          <span class="t-name">${esc(TAG_LABELS[tag] || tag)}</span>
+          <span class="t-count">${list.length}</span>
+        </button>`).join("")}
+    </div>
+    <h3 class="theme-current">${esc(TAG_LABELS[state.theme] || state.theme)} <span class="count">${items.length} item${items.length > 1 ? "s" : ""}</span></h3>
+    ${items.map(it => cardHTML(it)).join("")}
   `;
 }
 
@@ -253,6 +259,12 @@ function initEvents() {
     }
     const chip = e.target.closest("[data-filter]");
     if (chip) { state.filter = chip.dataset.filter; render(); return; }
+    const themeBtn = e.target.closest("[data-theme-tag]");
+    if (themeBtn) {
+      state.theme = themeBtn.dataset.themeTag;
+      renderThemes();
+      return;
+    }
     const hist = e.target.closest("[data-date]");
     if (hist) goToDate(hist.dataset.date);
   });
