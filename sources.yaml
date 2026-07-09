@@ -1,0 +1,104 @@
+# Sources de veille IA
+# Ajouter une source = ajouter un bloc ici. Types disponibles :
+#   arxiv           : categories (liste), max_results
+#   hf_papers       : Hugging Face Daily Papers (aucun parametre)
+#   rss             : url du flux RSS/Atom
+#   hackernews      : queries (liste de mots-cles Algolia), min_points
+#   github_trending : topics (liste de topics GitHub), min_stars, days_back
+#
+# Champs communs :
+#   name      : identifiant unique
+#   label     : nom affiche sur le site
+#   weight    : bonus de credibilite 0-2 (2 = gros labo / source tres fiable)
+#   enabled   : true/false
+
+sources:
+  - name: arxiv-ai
+    label: arXiv
+    type: arxiv
+    categories: [cs.AI, cs.LG, cs.CL]
+    max_results: 60
+    weight: 1
+    enabled: true
+
+  - name: hf-daily-papers
+    label: HF Daily Papers
+    type: hf_papers
+    weight: 2
+    enabled: true
+
+  - name: openai-blog
+    label: OpenAI
+    type: rss
+    url: https://openai.com/news/rss.xml
+    weight: 2
+    enabled: true
+
+  # Anthropic ne publie pas de flux RSS public: couvert via HN et HF Papers
+  - name: anthropic-blog
+    label: Anthropic
+    type: rss
+    url: https://www.anthropic.com/rss.xml
+    weight: 2
+    enabled: false
+
+  - name: mistral-blog
+    label: Mistral AI
+    type: rss
+    url: https://mistral.ai/rss.xml
+    weight: 2
+    enabled: true
+
+  - name: deepmind-blog
+    label: DeepMind
+    type: rss
+    url: https://deepmind.google/blog/rss.xml
+    weight: 2
+    enabled: true
+
+  # Meta AI ne publie pas de flux RSS public: couvert via HN et HF Papers
+  - name: meta-ai-blog
+    label: Meta AI
+    type: rss
+    url: https://ai.meta.com/blog/rss/
+    weight: 2
+    enabled: false
+
+  - name: google-research
+    label: Google Research
+    type: rss
+    url: https://research.google/blog/rss/
+    weight: 2
+    enabled: true
+
+  - name: hackernews-ai
+    label: Hacker News
+    type: hackernews
+    queries: [AI, LLM, GPT, transformer, quantization, "open source model"]
+    min_points: 80
+    weight: 1
+    enabled: true
+
+  - name: github-trending-ai
+    label: GitHub
+    type: github_trending
+    topics: [llm, machine-learning, ai-agents]
+    min_stars: 100
+    days_back: 30
+    weight: 1
+    enabled: true
+
+# Centres d'interet utilises pour le scoring de pertinence par Mistral
+interests:
+  - Optimisation et efficience des modeles (quantization, distillation, pruning, inference speedup, fine-tuning efficace)
+  - LLM et agents (nouveaux modeles, architectures, tool use, RAG, multi-agents)
+  - Recherche fondamentale (theorie, nouvelles architectures, interpretabilite, scaling laws)
+  - Ecosysteme IA au sens large (vision, audio, robotique, produits majeurs, regulation)
+
+# Reglages du pipeline
+settings:
+  min_relevance: 5        # score minimum /10 pour garder un item
+  max_items_per_day: 30   # nombre max d'items publies par jour
+  deep_analysis_count: 4  # nombre de tops items analyses en profondeur
+  scoring_model: mistral-small-latest
+  writing_model: mistral-large-latest
