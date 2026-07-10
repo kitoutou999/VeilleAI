@@ -1,0 +1,744 @@
+{
+ "date": "2026-07-10",
+ "digest": {
+  "headline": "Les architectures d'attention linéaire et les benchmarks unifiés pour agents proactifs redéfinissent les standards en IA et robotique",
+  "overview": "Ce 10 juillet 2026 marque une avancée significative dans l'optimisation des modèles de langage et l'évaluation des systèmes autonomes. Les travaux sur l'attention linéaire et les benchmarks multi-dimensionnels pour agents et robotique dominent la veille, tandis que les optimisations matérielles et les méthodes de quantification révèlent des limites critiques dans les approches actuelles.",
+  "highlights": [
+   {
+    "title": "Attention linéaire : compromis et performances",
+    "text": "Le papier sur les architectures d'attention linéaire (DeltaNet, Kimi Delta Attention) propose une analyse systématique de leurs compromis (expressivité, mémoire, débit) par rapport à l'attention softmax. Kimi Delta Attention se distingue par ses pertes de validation optimales sur des modèles de 350M à 3B paramètres, tandis que les variantes Gated DeltaNet améliorent le throughput d'entraînement. Ces résultats sont cruciaux pour le déploiement de LLM à grande échelle, où l'équilibre entre performance et efficacité reste un défi majeur."
+   },
+   {
+    "title": "Benchmarks unifiés pour agents et robotique",
+    "text": "Deux benchmarks majeurs émergent : UniClawBench pour les agents proactifs (400 tâches réelles, 5 capacités clés) et RoboDojo pour la manipulation robotique (60 tâches, simulation et réel). Ces outils standardisés permettent une évaluation granulaire et reproductible, essentielle pour comparer les politiques généralistes et les architectures multi-modales. Leur adoption accélérera le développement de systèmes autonomes robustes, notamment dans des environnements dynamiques."
+   },
+   {
+    "title": "Optimisation et quantification : limites et solutions",
+    "text": "Les travaux sur la quantification (Aria, *The Illusion of Equivalency*) révèlent que les métriques classiques (perplexité, précision) masquent des divergences comportementales critiques à faible bit-width. Aria démontre une génération audio sémantique efficace en 8-bit sans perte de qualité, tandis que *DominoTree* et *Jet-Long* optimisent le décodage spéculatif et l'extension de contexte. Ces avancées sont vitales pour le déploiement sur edge devices et l'inférence à faible latence."
+   },
+   {
+    "title": "Mémoire et raisonnement causal pour agents",
+    "text": "LaMem-VLA et *Remember When It Matters* introduisent des mécanismes de mémoire latente et proactive pour les agents à long horizon, améliorant les performances de 6 à 8 points. Parallèlement, CausalDS évalue le raisonnement causal dans les workflows analytiques, combinant modèles structurels et tâches réalistes. Ces approches adressent le *behavioral state decay* et la cohérence temporelle, défis clés pour les systèmes autonomes complexes."
+   },
+   {
+    "title": "LLM-as-judge : biais et fiabilité",
+    "text": "Les études sur les évaluateurs LLM (*Do You Need a Frontier Model as a Citation Verifier?*, *When the Judge Changes*) montrent que les scores varient selon le modèle utilisé et que les biais (position, verbosité) persistent même avec des juges plus puissants. Ces résultats soulignent la nécessité de protocoles d'audit transparents et de métriques complémentaires pour une évaluation robuste des systèmes de recherche et d'attribution."
+   }
+  ],
+  "trend": "Les avancées techniques se concentrent sur l'optimisation des architectures (attention linéaire, quantification) et l'évaluation systématique des agents et robots via des benchmarks unifiés. La tendance révèle un besoin croissant de solutions adaptatives, capables de concilier performance, efficacité et robustesse dans des environnements réels et multi-tâches."
+ },
+ "items": [
+  {
+   "id": "4d50be4a8536f73a",
+   "title": "Linear Attention Architectures: Mechanisms, Trade-offs, and Cross-Layer Routing",
+   "url": "https://huggingface.co/papers/2607.07953",
+   "summary": "Self-attention lets each token retrieve information from the full context, but its quadratic cost in sequence length limits training and inference at long context. This paper presents a comparative study of softmax attention and four recent recurrent linear-attention architectures: DeltaNet, Gated DeltaNet, Kimi Delta Attention, and Gated DeltaNet-2. We express these mechanisms in a common recurrent-memory notation, making explicit how they differ in expressivity, memory decay, erase and write control, training throughput, and implementation complexity. Our experiments center on 350M-parameter models trained for 15B tokens, and include optimizer and learning-rate comparisons, hybrid-versus-pure stack comparisons, sequence-length runtime measurements, larger DeltaNet runs at 1.3B and 3B parameters, and a small set of downstream evaluations. The reported speed results measure training throughput and iteration time; we do not provide an empirical inference-speed benchmark. Within the reported 350M-parameter, 15B-token sweep, Kimi Delta Attention with Muon reaches the lowest final validation loss, a pure Gated DeltaNet stack trained with AdamW has the highest normalized training throughput, hybrid stacks generally improve loss at a throughput cost, and Muon consistently lowers final validation loss relative to AdamW in the matched architecture settings we evaluate. We introduce and evaluate lightweight cross-layer routing mechanisms for DeltaNet-style memories. The most natural DeltaNet-inspired formulation, forwarding a lower layer's delta-rule write error into the next layer's value target, does not improve over matched baselines. Routing into the aligned hidden stream and forwarding the write value instead yields a modest improvement in the matched runs we report: Cross-Layer Value Routing (CLVR) lowers final validation loss for both DeltaNet and Gated DeltaNet.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.07953"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "llm"
+   ],
+   "tldr": "Ce papier propose une analyse comparative des architectures d'attention linéaire (DeltaNet, Gated DeltaNet, Kimi Delta Attention) vs softmax attention, en explicitant leurs compromis (expressivité, mémoire, complexité) via une notation récurrente commune. Les résultats sur modèles 350M à 3B paramètres montrent que Kimi Delta Attention atteint les meilleures pertes de validation, tandis que les variantes Gated DeltaNet optimisent le throughput d'entraînement.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le mécanisme d'auto-attention (self-attention) dans les modèles de langage comme les transformers permet à chaque token d'accéder à l'intégralité du contexte, mais son coût quadratique en fonction de la longueur de la séquence limite son utilisation pour des contextes longs, tant en entraînement qu'en inférence. Ce papier cherche à comparer des architectures alternatives d'attention linéaire récurrente pour contourner cette limitation tout en conservant une expressivité comparable.",
+    "methode": "Les auteurs analysent quatre architectures récentes d'attention linéaire récurrente (DeltaNet, Gated DeltaNet, Kimi Delta Attention, et Gated DeltaNet-2) en les reformulant dans une notation commune basée sur la mémoire récurrente. Cette approche permet de mettre en évidence leurs différences en termes d'expressivité, de décroissance mémoire, de contrôle d'effacement et d'écriture, de débit d'entraînement, et de complexité d'implémentation. Les expériences portent sur des modèles de 350 millions de paramètres entraînés sur 15 milliards de tokens, avec des comparaisons d'optimiseurs (AdamW vs Muon), de configurations hybrides ou pures, et des mesures de temps d'exécution en fonction de la longueur des séquences. Une innovation introduite est l'évaluation de mécanismes de routage inter-couches légers pour les mémoires de type DeltaNet, notamment le *Cross-Layer Value Routing* (CLVR).",
+    "resultats": "Dans les expériences menées avec des modèles de 350M de paramètres, *Kimi Delta Attention* combiné à l'optimiseur Muon obtient la plus faible perte de validation finale. Un empilement pur de *Gated DeltaNet* entraîné avec AdamW offre le débit d'entraînement normalisé le plus élevé. Les architectures hybrides améliorent généralement la perte de validation, mais au prix d'une réduction du débit. Muon réduit systématiquement la perte de validation par rapport à AdamW pour les architectures comparables. Le routage inter-couches CLVR apporte une amélioration modeste mais significative sur la perte de validation pour DeltaNet et Gated DeltaNet. Des tests supplémentaires avec des modèles de 1,3 et 3 milliards de paramètres confirment la scalabilité de DeltaNet.",
+    "limites": "Le papier ne fournit pas de benchmark empirique sur la vitesse d'inférence, se concentrant uniquement sur le débit d'entraînement et le temps d'itération. Les évaluations en aval (*downstream tasks*) sont limitées, ce qui laisse des questions sur la généralisation des performances. Les mécanismes de routage inter-couches, bien que prometteurs, n'apportent qu'une amélioration modeste et nécessitent des validations supplémentaires. Enfin, l'absence de comparaison avec d'autres méthodes d'attention linéaire (comme les *state space models* ou les *retention networks*) limite la portée des conclusions.",
+    "verdict": "Ce travail mérite une attention particulière pour son analyse systématique des architectures d'attention linéaire récurrente et son exploration des mécanismes de routage inter-couches, offrant des pistes concrètes pour optimiser les modèles à long contexte, bien que des validations supplémentaires soient nécessaires pour en confirmer l'impact pratique."
+   }
+  },
+  {
+   "id": "acc95c7e822f96fc",
+   "title": "RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies",
+   "url": "https://huggingface.co/papers/2607.04434",
+   "summary": "Generalist robot manipulation policies have advanced rapidly, yet existing benchmarks remain limited in systematically evaluating their capabilities. Many rely on simple, short-horizon, or skill-narrow tasks with limited capability coverage, and are often conducted only in simulation or only in the real world. Simulation enables scalable feedback but misses physical deployment challenges, while real-world evaluation is costly, time-consuming, and difficult to reproduce. We introduce RoboDojo, a unified sim-and-real benchmark for comprehensive evaluation of generalist robot manipulation policies. RoboDojo includes 42 simulation tasks and 18 real-world tasks covering diverse and complementary manipulation capabilities. The simulation benchmark evaluates five dimensions: generalization, memory, precision, long-horizon execution, and open-vocabulary instruction following, while the real-world benchmark exposes policies to challenging physical-world deployment conditions. RoboDojo supports scalable evaluation through heterogeneous parallel simulation in Isaac Sim and provides RoboDojo-RealEval, a reproducible real-world evaluation system with remote cloud access, standardized hardware, scene reset, evaluation protocol, and deployment interface. Together with XPolicyLab, policies can be integrated once and evaluated across simulation and real-world settings with minimal adaptation. We integrate 30 policies into XPolicyLab and evaluate them on RoboDojo, establishing a public leaderboard and systematic analysis of current policy performance. The website is available at http://robodojo-benchmark.com/.",
+   "published": "2026-07-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.04434"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "Nouveau benchmark unifié (simulation + réel) pour évaluer les politiques de manipulation robotique généralistes sur 60 tâches couvrant 5 dimensions clés, incluant l'instruction ouverte et les défis de déploiement physique.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le domaine des politiques de manipulation robotique généraliste manque de benchmarks systématiques pour évaluer leurs capacités de manière exhaustive. Les benchmarks existants se limitent souvent à des tâches simples, de courte durée ou trop spécialisées, et sont rarement conçus pour une évaluation conjointe en simulation et en conditions réelles, ce qui entrave une analyse rigoureuse des performances et de la robustesse des modèles.",
+    "methode": {
+     "approche_generale": "RoboDojo propose un benchmark unifié combinant simulation et évaluation réelle pour couvrir un large spectre de capacités de manipulation robotique. Il inclut 42 tâches en simulation et 18 en conditions réelles, conçues pour évaluer cinq dimensions clés : généralisation, mémoire, précision, exécution longue durée et suivi d'instructions en vocabulaire ouvert.",
+     "details_techniques": {
+      "simulation": "Le benchmark utilise Isaac Sim pour une évaluation parallèle et scalable, permettant de tester les politiques dans des environnements virtuels hétérogènes et contrôlés.",
+      "realite": "RoboDojo-RealEval offre un système reproductible d'évaluation en conditions réelles, accessible via le cloud, avec un matériel standardisé, des protocoles de réinitialisation de scène, et une interface de déploiement unifiée pour minimiser les adaptations nécessaires.",
+      "integration": "XPolicyLab permet d'intégrer une politique une seule fois et de l'évaluer à la fois en simulation et en conditions réelles, facilitant ainsi les comparaisons et réduisant les coûts de développement."
+     }
+    },
+    "resultats": "Le benchmark a permis d'intégrer et d'évaluer 30 politiques différentes, établissant un classement public (leaderboard) et une analyse systématique des performances actuelles. Les résultats mettent en lumière les forces et faiblesses des modèles testés sur les cinq dimensions évaluées, bien que les chiffres précis (scores, métriques quantitatives) ne soient pas détaillés dans le contenu disponible.",
+    "limites": {
+     "couverture": "Bien que RoboDojo couvre un large éventail de tâches, certaines capacités avancées ou niches (comme la manipulation d'objets déformables ou en environnements dynamiques extrêmes) pourraient ne pas être représentées.",
+     "biais_simulation": "L'écart entre simulation et réalité (sim-to-real gap) reste un défi non résolu, et les performances en simulation ne garantissent pas une efficacité équivalente en conditions réelles.",
+     "accessibilite": "L'accès à RoboDojo-RealEval via le cloud pourrait limiter la reproductibilité pour les équipes sans ressources suffisantes pour utiliser cette infrastructure."
+    },
+    "verdict": "RoboDojo représente une avancée significative pour standardiser l'évaluation des politiques de manipulation robotique généraliste, mais son adoption dépendra de sa capacité à convaincre la communauté de son exhaustivité et de sa pertinence face aux défis réels."
+   }
+  },
+  {
+   "id": "fc562818522bae0d",
+   "title": "Dual Latent Memory in Vision-Language-Action Models for Robotic Manipulation",
+   "url": "https://huggingface.co/papers/2607.07608",
+   "summary": "Mainstream Vision-Language-Action (VLA) models predict actions primarily from the current observation under a Markovian assumption, thus struggling with long-horizon, temporally dependent tasks. Existing memory-augmented VLAs either expand the observation window or retrieve history from the memory bank as auxiliary policy-side context. However, they leave memory outside the native latent embedding space of VLA reasoning, preventing historical experience from being fluidly interleaved with multimodal reasoning and action formation. To this end, we introduce LaMem-VLA, a latent-memory-native framework that reconstructs historical experience into latent memory tokens and directly interweaves them with VLA reasoning. At its core, LaMem-VLA introduces four coordinated components: (i) a curator that organizes historical experience into two complementary short-term and long-term memory vaults; (ii) a seeker that queries both vaults using the multimodal cognition to retrieve context-relevant evidence; (iii) a condenser that reconstructs the retrieved evidence into compact short-term and long-term latent memory tokens; and (iv) a weaver that injects these memory tokens with the current observation and instruction into one continuous embedding sequence. By representing, retrieving, and consuming historical experience entirely in the same continuous latent space, LaMem-VLA enables memory to directly participate in VLA reasoning and guide action generation under a bounded context. Extensive experiments on SimplerEnv and LIBERO demonstrate the superiority of our LaMem-VLA.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 48,
+    "arxiv_id": "2607.07608"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Proposition d'un cadre latent-native (LaMem-VLA) pour intégrer la mémoire historique directement dans l'espace latent des modèles Vision-Language-Action, améliorant les tâches robotiques à long horizon via une mémoire structurée (court/long terme) et une récupération contextuelle.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles Vision-Language-Action (VLA) actuels, basés sur une hypothèse markovienne, prédisent les actions robotiques principalement à partir de l'observation immédiate. Cela limite leur capacité à gérer des tâches complexes nécessitant une dépendance temporelle longue, où le contexte historique est crucial pour une manipulation robotique efficace.",
+    "methode": "LaMem-VLA propose une architecture intégrant la mémoire directement dans l'espace latent du modèle VLA, évitant ainsi une séparation artificielle entre raisonnement multimodal et mémoire. Quatre composants clés sont introduits : (i) un *curateur* qui organise l'expérience historique en deux types de mémoire (court et long terme), (ii) un *seeker* qui interroge ces mémoires en utilisant la cognition multimodale pour extraire des informations pertinentes, (iii) un *condenseur* qui transforme ces informations en tokens latents compacts, et (iv) un *weaver* qui fusionne ces tokens avec l'observation et l'instruction courantes dans une séquence d'embeddings continue. Cette approche permet une interaction fluide entre mémoire et raisonnement dans un espace latent unifié.",
+    "resultats": "Les expériences menées sur les benchmarks SimplerEnv et LIBERO démontrent la supériorité de LaMem-VLA par rapport aux approches existantes. Les résultats montrent une amélioration significative pour les tâches nécessitant une dépendance temporelle longue, bien que les chiffres précis (ex. : gains en précision ou en efficacité) ne soient pas détaillés dans le résumé disponible.",
+    "limites": "Le résumé ne précise pas les coûts computationnels liés à l'intégration de la mémoire latente, ni les défis potentiels liés à la scalabilité pour des environnements très dynamiques. De plus, la robustesse face à des données historiques bruitées ou incomplètes n'est pas abordée, ce qui pourrait limiter l'applicabilité en conditions réelles.",
+    "verdict": "Ce travail mérite une attention particulière pour son innovation architecturale intégrant mémoire et raisonnement dans un espace latent unifié, mais son impact réel dépendra de validations plus poussées sur des scénarios variés et des analyses de coûts."
+   }
+  },
+  {
+   "id": "185f61b3778cd0b7",
+   "title": "A Quantized Native Runtime for On-Device Semantic Audio Generation",
+   "url": "https://huggingface.co/papers/2607.08526",
+   "summary": "Semantic audio applications increasingly require controllable generation on commodity and embedded hardware rather than through framework-heavy datacenter stacks. We present aria, a dependency-free native runtime that runs the complete text-to-music pipeline of Stable Audio~3 (SA3) on ordinary GPUs, CPU-only machines, and a Raspberry~Pi~5, with no Python or deep-learning framework underneath. Our main contribution is a study of quantization: running the model at lower numerical precision to fit tight memory budgets, saving memory in place rather than adding to it. Because the runtime owns every internal tensor, it also exposes activation steering, a low-cost way to steer what the model generates. We judge the quality cost with three independent measures of the output (prompt adherence, overall audio quality, taste preservation), each compared against the ordinary variation between random seeds. Eight-bit precision shows no measurable quality loss on any measure while sharply cutting memory, and it is the fastest mode on the GPU; four-bit adds a small, bounded cost but shrinks the footprint enough to run the 1.2-billion-parameter model on an 8\\,GB Pi. Against the official implementation, aria matches or exceeds generation speed and starts about seven times faster. A case study of the steering interface generates music carrying taste associations (sonic seasoning), with genuine but bounded control for a subset of attributes. These results make a compact, quantized runtime with built-in control a practical basis for on-device semantic audio in Internet-of-Sounds settings. The aria runtime is released at https://github.com/matteospanio/aria.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.08526"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "audio"
+   ],
+   "tldr": "Aria est un runtime natif sans dépendances pour générer de l'audio sémantique (Stable Audio 3) en 8-bit ou 4-bit sur GPU, CPU ou Raspberry Pi 5, avec une perte de qualité mesurable nulle en 8-bit et une réduction drastique de la mémoire. Il inclut aussi un mécanisme de steering d'activation pour contrôler la génération.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les applications d'audio sémantique (comme la génération de musique à partir de texte) nécessitent généralement des infrastructures lourdes en datacenters, dépendantes de frameworks complexes et de matériel haut de gamme. Cela limite leur déploiement sur des appareils grand public, embarqués ou à ressources contraintes, comme les smartphones ou les Raspberry Pi, où l'efficacité et la légèreté sont cruciales.",
+    "methode": {
+     "approche_generale": "Les auteurs proposent *aria*, un runtime natif et autonome, sans dépendances externes (comme Python ou des frameworks de deep learning), capable d'exécuter l'intégralité du pipeline *text-to-music* de *Stable Audio 3* (SA3) sur des GPU standards, des machines CPU-only, ou même un Raspberry Pi 5.",
+     "quantification": "La contribution principale réside dans une étude approfondie de la *quantification* (réduction de la précision numérique des poids et activations du modèle) pour optimiser l'empreinte mémoire *sans ajouter de surcoût*. Le runtime gère directement tous les tenseurs internes, ce qui permet d'exposer une fonctionnalité de *steering* des activations (contrôle fin de la génération) à faible coût.",
+     "precision_numerique": "Deux niveaux de quantification sont évalués : 8 bits (INT8) et 4 bits (INT4). La quantification est appliquée de manière à minimiser la perte de qualité tout en réduisant drastiquement la consommation mémoire, permettant par exemple d'exécuter un modèle de 1,2 milliard de paramètres sur un Raspberry Pi 5 avec seulement 8 Go de RAM.",
+     "optimisations_performances": "Le runtime est optimisé pour démarrer rapidement (7 fois plus vite que l'implémentation officielle) et pour maximiser la vitesse de génération, y compris en exploitant les accélérations matérielles des GPU grand public."
+    },
+    "resultats": {
+     "qualite": "Trois métriques indépendantes (adhérence au prompt, qualité audio globale, préservation du *taste* ou style musical) sont utilisées pour évaluer l'impact de la quantification. À 8 bits, aucune perte de qualité mesurable n'est observée, tandis qu'à 4 bits, une dégradation mineure et bornée est constatée, acceptable pour des cas d'usage embarqués.",
+     "performances": "La quantification 8 bits est non seulement la plus rapide sur GPU, mais elle réduit aussi significativement l'empreinte mémoire. Le runtime *aria* surpasse ou égale la vitesse de génération de l'implémentation officielle de SA3, tout en offrant un démarrage quasi-instantané.",
+     "cas_pratique": "Un cas d'étude démontre l'efficacité du *steering* des activations pour générer de la musique avec des associations de *taste* spécifiques (comme le *sonic seasoning*), offrant un contrôle réel mais limité à certains attributs."
+    },
+    "limites": {
+     "generalisation": "Les résultats se limitent au modèle *Stable Audio 3* et à son pipeline spécifique. L'efficacité de la quantification et du *steering* pourrait varier pour d'autres architectures ou tâches audio.",
+     "steering": "Le contrôle via *activation steering* est décrit comme *borné* et efficace uniquement pour un sous-ensemble d'attributs, ce qui suggère des limites dans la granularité ou la flexibilité du contrôle créatif.",
+     "evaluation": "Les métriques de qualité (comme la préservation du *taste*) reposent sur des évaluations subjectives ou des benchmarks internes, dont la robustesse ou la reproductibilité ne sont pas détaillées."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche pragmatique de la quantification et du déploiement léger, offrant une solution concrète pour l'audio sémantique sur appareil, bien que son applicabilité à d'autres modèles ou contextes reste à explorer."
+   }
+  },
+  {
+   "id": "46f281d234d3606e",
+   "title": "UniClawBench: A Universal Benchmark for Proactive Agents on Real-World Tasks",
+   "url": "https://huggingface.co/papers/2607.08768",
+   "summary": "The rapid development of large language models and multimodal large language models has accelerated the emergence of proactive agents capable of operating everyday tools and assisting users in real-world environments. However, existing benchmarks struggle to evaluate such agents effectively, as they often rely on sandboxed environments and single-turn evaluation paradigms. Moreover, their scenario-based task taxonomies mix multiple model capabilities within the same task category, making it difficult to identify the root causes of agent failures. To address these limitations, we introduce UniClawBench, the first capability-driven benchmark designed to evaluate proactive agents in dynamic, real-world settings. UniClawBench is built around five foundational model capabilities: Skill Usage, Exploration, Long-Context Reasoning, Multimodal Understanding, and Cross-Platform Coordination. Based on these capabilities, we design 400 bilingual real-world tasks. Unlike previous benchmarks that rely on static, pre-recorded answers, our benchmark evaluates agents in live Docker containers using fine-grained, step-by-step completion checkpoints. Furthermore, we design a closed-loop evaluation strategy comprising an executor agent, a hidden supervisor agent, and a user agent to simulate realistic multi-turn human feedback without leaking grading criteria. To disentangle base model capabilities from framework-level design choices, we evaluate state-of-the-art models under multiple agent frameworks. Through comprehensive comparisons across both models and frameworks, we show how base model capabilities and agent framework designs jointly shape performance in real-world environments. To facilitate future research, we make our benchmark and code publicly available at https://github.com/HKU-MMLab/UniClawBench.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2607.08768"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "UniClawBench est un benchmark capability-driven pour évaluer les agents proactifs sur 400 tâches réelles en temps réel, structuré autour de 5 capacités fondamentales (usage d'outils, exploration, raisonnement long-contexte, etc.). Il utilise des conteneurs Docker live avec des checkpoints fins pour une évaluation granulaire et fermée.",
+   "score": 8.8
+  },
+  {
+   "id": "9560f822aebaefa0",
+   "title": "CausalDS: Benchmarking Causal Reasoning in Data-Science Agents",
+   "url": "https://huggingface.co/papers/2607.08093",
+   "summary": "Large language models (LLMs) increasingly act as integrated data-science agents, combining abstract reasoning with advanced tool use. Yet the relevant benchmark landscape largely divides into symbolic causal reasoning benchmarks without realistic data analysis or data analysis benchmarks without a principled causal data-generating structure. Furthermore, existing causal evaluation datasets are often restricted to curated examples from existing sources, with diversity coming from limited templatized variations rather than from systematic generation of novel synthetic causal structures. We introduce CausalDS, a benchmark for evaluating causal reasoning in agentic data-science workflows. Each benchmark instance is a scene consisting of a sampled structural causal model (SCM) with generated observational data and an accompanying synthetic natural-language story grounded in a realistic domain. We optionally ground the composition of the benchmark components in empirical distributions obtained from real-world datasets, thus retaining empirical structure while reducing the \"causal parrot\" risk through completely synthetic generation. From each scene, we then derive tasks spanning all three of Pearl's rungs, with typical data-science prediction tasks appearing as Rung 1. Most tasks include a data science coding component, where the model typically needs to use several tools to arrive at the final answer due to the frequent presence of imperfect observations, which are generated by an observation model. Additionally, recognizing when a question admits no warranted answer and abstaining is treated as a first-class scored outcome. The benchmark thus jointly evaluates symbolic causal reasoning, data science, uncertainty quantification, abstention, and tool use/coding.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2607.08093"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "CausalDS propose un benchmark pour évaluer le raisonnement causal dans des agents de data science, combinant des modèles causaux structurels (SCM) synthétiques avec des tâches réalistes et des histoires en langage naturel. Pertinent pour l'évaluation des agents LLM en workflows analytiques complexes.",
+   "score": 8.8
+  },
+  {
+   "id": "6ca9d67ac25b7b02",
+   "title": "Jet-Long: Efficient Long-Context Extension with Dynamic Bifocal RoPE",
+   "url": "https://huggingface.co/papers/2607.07740",
+   "summary": "Modern LLMs are increasingly deployed in long-context applications such as retrieval-augmented generation, repository-level coding, and agentic workflows whose accumulated reasoning and tool traces routinely push the input an order of magnitude past the pretraining window, making zero-shot context extension the dominant deployment path for open-weight checkpoints. Most existing zero-shot methods fix a single rescaling factor up front, so an aggressive factor sacrifices short-context fidelity while a conservative one breaks down at long contexts. We propose Jet-Long, a tuning-free zero-shot method that pairs a local RoPE-faithful window with a long-range window whose rescaling factor adapts dynamically to the current sequence length, recovering the base model exactly at short inputs while extrapolating cleanly at long ones. An inclusion-exclusion attention merge and an on-the-fly RoPE correction rotation make the bifocal construction essentially free at inference; fused into a single CuTe kernel, long-context prefill reaches up to 1.39times FA2 throughput on H100 (approaching the Hopper-only FA4), and single-batch generation incurs le 4% overhead at every length. On Qwen3-1.7B/4B/8B up to 128K context, Jet-Long leads RULER by +4.79/+2.18/+2.03~pp over the strongest baseline at 1.7B/4B/8B, achieves the best overall accuracy on HELMET-RAG (a benchmark identified by HELMET as the most efficient predictor of downstream long-context performance) and attains the lowest PG-19 perplexity. Jet-Long also generalizes to hybrid attention architectures such as Jet-Nemotron for further long-context improvement without retraining, and remains hyperparameter-resilient for ease of deployment.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.07740"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Jet-Long étend dynamiquement le contexte des LLM via une approche bifocale (RoPE local + fenêtre longue adaptative) sans fine-tuning, améliorant le débit d'inférence (jusqu'à 1.39x) et réduisant les coûts de calcul pour les longs contextes. Solution clé pour le déploiement de modèles open-weight.",
+   "score": 8.8
+  },
+  {
+   "id": "ea53690f31723af6",
+   "title": "RoboTALES: Learning Reasoning-Guided Robot Policies via Task-Aligned Simulated Futures",
+   "url": "https://huggingface.co/papers/2607.06018",
+   "summary": "Pretrained video generative models are promising backbones for visuomotor control, but their imagined futures often drift from task intent and are not reliably action-conditional. As a result, these models can be difficult to use for planning or policy extraction. To address these limitations, we propose RoboTALES, a single-stage framework that learns task-aligned simulated futures and uses them to train robot policies. Our approach introduces two key innovations: (1) a hierarchical LLM-based planner that breaks complex tasks into a sequence of subgoals to guide the model's imagination; and (2) a VLM-based critic that evaluates these ``imagined'' futures and uses reward-based feedback to keep the model's internal representations focused on the goal. By anchoring the video generator in abstract reasoning, we produce temporally consistent rollouts and more coherent actions. We evaluate RoboTALES on diverse manipulation tasks from RoboCasa and LIBERO10, and show that our method consistently outperforms existing methods, especially in long-horizon tasks. Our code and models are publicly available at https://github.com/hananshafi/RoboTALES.",
+   "published": "2026-07-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.06018"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "RoboTALES combine un planificateur LLM hiérarchique et un critique VLM pour guider l'imagination de futures simulées alignées sur des tâches robotiques, améliorant la cohérence temporelle et les performances en manipulation longue durée par rapport aux méthodes existantes.",
+   "score": 8.8
+  },
+  {
+   "id": "d9b4025f7aa6d3b0",
+   "title": "OmniTacTune: Policy-Agnostic Real-World RL for Tactile Residual Adaptation of Visual Policies",
+   "url": "https://huggingface.co/papers/2607.03723",
+   "summary": "Visual policies learned from human videos, teleoperation, and robot demonstrations offer scalable motion priors, but often fail in contact-rich manipulation, where success significantly depends on local force and contact geometry. Tactile sensing provides these complementary signals, yet tactile data remain costly to collect and hard to generalize across sensors, robots, and tasks. We introduce OmniTacTune, a policy-agnostic real-world RL pipeline that adapts tactile feedback to pretrained visual policies through residual correction. OmniTacTune uses a two-stage design: it first bootstraps tactile-aware learning from autonomous base-policy rollouts, then learns a lightweight tactile residual policy through online interaction. Extensive experiments show that OmniTacTune generalizes across diverse contact-rich tasks, visual base policies, and tactile representations. Across four real-world contact-rich tasks, it improves visual base policies from 5-40% success to 85-100% within 40-80 minutes, demonstrating an efficient path for adapting tactile feedback to scalable visual robot policies. Project page: https://colinyu1.github.io/omnitactune-site/",
+   "published": "2026-07-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.03723"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "outils"
+   ],
+   "tldr": "OmniTacTune adapte des politiques robotiques visuelles pré-entraînées avec un RL résiduel tactile en temps réel, améliorant significativement les performances (85-100% de succès) sur des tâches de manipulation riches en contacts en moins d'une heure.",
+   "score": 8.8
+  },
+  {
+   "id": "cdff93894abeae52",
+   "title": "Do You Need a Frontier Model as a Citation Verifier? Benchmarking Rubric LLMs for Deep-Research Source Attribution",
+   "url": "https://arxiv.org/abs/2607.08700v1",
+   "summary": "Reinforcement learning increasingly relies on an LLM judge to score each rubric criterion, and that judge acts as the reward model during training. Before such a signal can be trusted, we need to know how capable the judge must be and how biased it is. We study this calibration question for citation quality in deep-research systems, where a search-grounded LLM must support each claim it writes with a cited source. Citation quality is a structured rubric task in which each attribution-citation pair is judged along two dimensions that require an LLM, source relevance and factual support. On an adversarial long-form benchmark, we score 8 off-the-shelf LLM judges from 3 model families against gold labels over 1,248 rubric decisions, all of which were human-reviewed and 378 of which were hard cases adjudicated from judge disagreements. Cheaper judges remain competitive across both dimensions, with GPT-5-mini attaining the strongest source-relevance pass-class F1 at 0.908 ($κ$=0.636), while on factual support the judges are statistically indistinguishable (overlapping confidence intervals), so no single model dominates. At comparable F1, the judges still differ substantially in pass-rate drift, false positive rate, and false negative rate. Scalar F1 obscures this directional bias, yet it is exactly what a downstream reinforcement learning loop would reinforce. Calibrating the judge is therefore a prerequisite for using citation rubrics as reward signals, and our results show that this calibration does not require the most expensive available model.",
+   "published": "2026-07-09T17:01:40+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ethan Leung, Elias Lumer, Corey Feld, Austin Huber, Vamse Kumar Subbiah, Kevin Paul"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Évaluation de la capacité et du biais des LLM comme juges pour l'attribution de citations dans des systèmes de recherche approfondie, révélant qu'un modèle économique (GPT-5-mini) atteint des performances compétitives avec une F1 de 0.908 sur la pertinence des sources, mais sans dominance claire sur le support factuel.",
+   "score": 8.6
+  },
+  {
+   "id": "76afe5fbf07ec339",
+   "title": "AgentLens: Production-Assessed Trajectory Reviews for Coding Agent Evaluation",
+   "url": "https://huggingface.co/papers/2607.06624",
+   "summary": "We present AgentLens, a production-assessed benchmark for interactive code agents. Most code-agent benchmarks reduce a run to a single bit -- did the task pass? -- but the people who actually use these agents experience the entire trajectory: how the agent follows instructions, uses its tools, verifies its own work, recovers from mistakes, and talks to them along the way. AgentLens evaluates that whole trajectory. It pairs formal verification, where an objective check exists, with LLM-written trajectory reviews and side-by-side comparisons, so that each run yields a readable explanation of why the score is what it is. This makes AgentLens useful for more than ranking models: we use it to diagnose model behavior, compare successive versions of our own agent, and catch product regressions in a nightly evaluation pipeline. We release the benchmark as open source at https://github.com/agent-lens/agent-lens-bench.",
+   "published": "2026-07-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.06624"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "AgentLens évalue les trajectoires complètes d'agents de code (pas seulement la réussite finale) via des revues formelles et LLM, offrant un diagnostic détaillé pour le développement et la régression de produits, avec une release open source.",
+   "score": 8.5
+  },
+  {
+   "id": "06a3358d54809db6",
+   "title": "UniClawBench: A Universal Benchmark for Proactive Agents on Real-World Tasks",
+   "url": "https://arxiv.org/abs/2607.08768v1",
+   "summary": "The rapid development of large language models and multimodal large language models has accelerated the emergence of proactive agents capable of operating everyday tools and assisting users in real-world environments. However, existing benchmarks struggle to evaluate such agents effectively, as they often rely on sandboxed environments and single-turn evaluation paradigms. Moreover, their scenario-based task taxonomies mix multiple model capabilities within the same task category, making it difficult to identify the root causes of agent failures. To address these limitations, we introduce UniClawBench, the first capability-driven benchmark designed to evaluate proactive agents in dynamic, real-world settings. UniClawBench is built around five foundational model capabilities: Skill Usage, Exploration, Long-Context Reasoning, Multimodal Understanding, and Cross-Platform Coordination. Based on these capabilities, we design 400 bilingual real-world tasks. Unlike previous benchmarks that rely on static, pre-recorded answers, our benchmark evaluates agents in live Docker containers using fine-grained, step-by-step completion checkpoints. Furthermore, we design a closed-loop evaluation strategy comprising an executor agent, a hidden supervisor agent, and a user agent to simulate realistic multi-turn human feedback without leaking grading criteria. To disentangle base model capabilities from framework-level design choices, we evaluate state-of-the-art models under multiple agent frameworks. Through comprehensive comparisons across both models and frameworks, we show how base model capabilities and agent framework designs jointly shape performance in real-world environments. To facilitate future research, we make our benchmark and code publicly available at https://github.com/HKU-MMLab/UniClawBench.",
+   "published": "2026-07-09T17:59:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhekai Chen, Chengqi Duan, Kaiyue Sun, Bohao Li, Yuqing Wang, Manyuan Zhang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "UniClawBench propose un benchmark innovant pour évaluer les agents proactifs (LLM/Multimodal) sur des tâches réelles en temps réel, en se concentrant sur 5 capacités clés (usage d'outils, exploration, raisonnement long-contexte, compréhension multimodale, coordination multi-plateformes) et en utilisant des conteneurs Docker pour une évaluation fine et dynamique.",
+   "score": 8.3
+  },
+  {
+   "id": "9d052e5ca8a372e4",
+   "title": "The Illusion of Equivalency: Statistical Characterization of Quantization Effects in LLMs",
+   "url": "https://arxiv.org/abs/2607.08734v1",
+   "summary": "Post-training quantization is widely used to deploy large language models in resource-constrained settings, yet its evaluation relies almost exclusively on accuracy and perplexity. We show that these metrics fail to capture behavioral changes induced by quantization. We introduce correctness agreement, a decision-level metric that measures overlap in correct predictions between a base model and its quantized variants, independent of absolute accuracy. Across multiple models and quantization schemes from 8-bit to 2-bit, we find that behavioral divergence emerges under moderate quantization even when task performance appears preserved. To explain this effect, we analyze quantization as a structural operator on attention weights and quantify layer-wise distortions using statistical and distributional measures. Our results reveal non-linear breakpoints at low bit-widths and show that query and key projections are consistently more sensitive than value and output projections. These findings expose an illusion of equivalence between base and quantized models and motivate behavioral evaluation beyond conventional performance metrics.",
+   "published": "2026-07-09T17:35:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Baha Rababah, Cuneyt Gurcan Akcora, Carson K. Leung"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Démontre que les métriques classiques (perplexité, précision) masquent des divergences comportementales majeures lors de la quantification des LLM. Introduit la *correctness agreement* pour évaluer ces effets, révélant des points de rupture non-linéaires à faible bit-width. Critique essentielle pour l'optimisation post-entraînement.",
+   "score": 8.3
+  },
+  {
+   "id": "0245a2cd4d154899",
+   "title": "Remember When It Matters: Proactive Memory Agent for Long-Horizon Agents",
+   "url": "https://arxiv.org/abs/2607.08716v1",
+   "summary": "In long-horizon tasks, decision-relevant state is often scattered across an expanding trajectory, while the action agent must surface it and act. As trajectories grow, task requirements, environment facts, prior attempts, diagnoses, and open subgoals can be buried in the context window or pushed beyond it, failing to influence decisions when needed. We call this failure mode \"behavioral state decay\". We study memory as an active intervention mechanism rather than passive retrieval. A separate memory agent runs alongside an unmodified action agent, updating a structured memory bank from the recent trajectory and deciding whether to inject a memory-grounded reminder or remain silent. The module is plug-and-play with frontier action agents and existing agent harnesses. Across Terminal-Bench 2.0 and $τ^2$-Bench, it improves pass@1 for both weaker and stronger action agents, with gains of +8.3 pp on Terminal-Bench and +6.8 pp on $τ^2$-Bench. Ablations show that selective intervention outperforms passive bank exposure, always-on injection, advisor-only guidance, and general retrieval. As an early step toward open-weight memory policies, we train Qwen3.5-27B on SETA using SFT and GRPO, improving validation reward and achieving partial transfer to Terminal-Bench.",
+   "published": "2026-07-09T17:26:28+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yifan Wu, Lizhu Zhang, Yuhang Zhou, Mingyi Wang, Bo Peng, Serena Li"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Présente un *memory agent* proactif pour lutter contre la *behavioral state decay* dans les agents à long horizon, améliorant les performances de +6.8 à +8.3 pp sur des benchmarks. Approche plug-and-play pour les systèmes multi-agents.",
+   "score": 8.3
+  },
+  {
+   "id": "172c2aee85568caf",
+   "title": "A Practical Investigation of Training-free Relaxed Speculative Decoding",
+   "url": "https://arxiv.org/abs/2607.08690v1",
+   "summary": "Speculative decoding accelerates sampling from an autoregressive LLM by using a faster auxiliary model to draft tokens which are then verified in parallel by the LLM. Standard speculative decoding is lossless: its rejection and resampling steps exactly preserve the LLM's sampling distribution. Recent work argues that relaxing this strict guarantee can yield further speed-ups, controlled capability-speed trade-offs, or even capability gains. We practically investigate training-free relaxed speculative decoding techniques, unify existing approaches within a shared framework, benchmark them on contemporary settings, and distil takeaways and empirical findings for practitioners. Important takeaways include: relaxation can require considerable capability evaluation unlike lossless speculative decoding, and many relaxed approaches rely on a drafter that is a good language model, making them unsuited for lightweight dedicated multi-token-prediction drafters.",
+   "published": "2026-07-09T16:50:41+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Guoxuan Xia, Luka Ribar, Paul Balanca"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Analyse pratique du *relaxed speculative decoding* (décodage spéculatif relâché) sans entraînement, unifiant les approches existantes et montrant que la relaxation nécessite une évaluation de capacité significative, limitant son applicabilité avec des drafters légers.",
+   "score": 8.3
+  },
+  {
+   "id": "ce8fdbfde4c93860",
+   "title": "WebSwarm: Recursive Multi-Agent Orchestration for Deep-and-Wide Web Search",
+   "url": "https://arxiv.org/abs/2607.08662v1",
+   "summary": "Large language model (LLM)-based web search agents are transforming information seeking from simple factoid question answering into complex, deep-and-wide search and research-oriented tasks. A single ReAct-style agent is constrained by one long trajectory and limited context, making it difficult to handle depth and coverage simultaneously. Existing multi-agent systems improve search coverage through parallel execution and aggregation, but still exhibit clear limitations in recursive depth, collaboration adaptability, and evidence-grounded expansion. We propose WebSwarm, a progressive recursive delegation framework that jointly constructs task decomposition, recursive expansion, and agent collaboration during inference. WebSwarm dynamically instantiates agentic search nodes, each coupling a local objective with a search mode that specifies how the node should organize search and collaboration. Each node can either solve its objective itself or further delegate child nodes; after solving, it returns evidence and results upward, enabling parent nodes to further expand, revise, or aggregate the search process. To guide this process, WebSwarm first probes how task-relevant information is organized on the web to ground subsequent node expansion, and reuses process-level experience across homogeneous sibling nodes. Experiments on BrowseComp-Plus, WideSearch, DeepWideSearch, and GISA show that WebSwarm consistently outperforms single-agent and multi-agent baselines on deep, wide, and interleaved deep-and-wide tasks. Further analyses of ablation, task difficulty, web tool efficiency, and model generalization explain WebSwarm's effectiveness and provide insights for multi-agent search systems.",
+   "published": "2026-07-09T16:28:49+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xiaoshuai Song, Liancheng Zhang, Kangzhi Zhao, Yutao Zhu, Zhongyuan Wang, Guanting Dong"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "rag"
+   ],
+   "tldr": "Présentation de *WebSwarm*, un cadre multi-agents récursif pour des recherches web complexes, combinant décomposition de tâches, expansion itérative et collaboration dynamique pour améliorer la profondeur et la couverture des résultats.",
+   "score": 8.3
+  },
+  {
+   "id": "9f9b8f17cff3e791",
+   "title": "UltraX: Refining Pre-Training Data at Scale with Adaptive Programmatic Editing",
+   "url": "https://arxiv.org/abs/2607.08646v1",
+   "summary": "As available training data approaches its physical limit, gains from Scaling Laws have begun to diminish. Consequently, improving Large Language Models (LLMs) now depends less on data expansion and more on higher-quality data utilization. However, in the context of large-scale corpora, existing refinement methodologies face significant limitations in quality, efficiency, and reliability: Rule-based approaches are constrained by fixed heuristics and struggle with instance-level variations; LLM-based approaches improve quality but fail to meet the efficiency and reliability requirements of large-scale data processing. To address these challenges, we propose UltraX, a function-calling refinement framework for large-scale pre-training data that completes the editing function space by introducing insertion in addition to deletion and modification, enabling fine-grained instance-level editing. Specifically, UltraX builds a reliable program-supervision generation pipeline. In this pipeline, dataset-adaptive prompt optimization first guides an expert LLM to produce high-quality end-to-end refined texts, and Line Alignment Mapping and Dynamic Context Replacement then convert original-refined text pairs into structured program supervision. Meanwhile, UltraX improves supervision quality and stabilizes the training distribution with low-confidence example filtering and ratio-controlled sampling by operation combination. During inference and execution, it normalizes and validates model outputs through sliding-window prediction, global operation aggregation, and systematic post-processing, improving the stability and reliability of large-scale execution. Experiments show that UltraX achieves the highest average performance across all corpora and also matches or surpasses baselines with fewer training tokens, demonstrating stronger data efficiency and refinement reliability.",
+   "published": "2026-07-09T16:18:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xinlong Zhao, Dongsheng Liu, Hengyu Zhao, Zixuan Fu, Zheng Wang, Jie Cai"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "UltraX propose un cadre de raffinement de données de pré-entraînement à grande échelle basé sur des éditions programmatiques adaptatives (insertion, modification, suppression), combinant optimisation dynamique des prompts et alignement de lignes pour améliorer la qualité des données sans sacrifier l'efficacité, répondant au déclin des gains des lois de scaling.",
+   "score": 8.3
+  },
+  {
+   "id": "a5a05727c0dc9bad",
+   "title": "DominoTree: Conditional Tree-Structured Drafting with Domino for Speculative Decoding",
+   "url": "https://arxiv.org/abs/2607.08642v1",
+   "summary": "Speculative decoding accelerates LLM inference by drafting several tokens and verifying them in parallel. Block-diffusion drafters such as DFlash produce a draft block in one pass but model only per-position marginals; best-first tree methods such as DDTree expand candidate trees from those marginals. The released Domino drafter adds a GRU-based causal correction that makes each draft token's distribution path-dependent, a structure DDTree's factorized formulation cannot represent. We introduce DominoTree, a training-free best-first draft tree scored by Domino's conditional, non-factorized correction along each root-to-node path, made practical by restricting the per-node correction to a candidate top-M. On Qwen3-4B across eight benchmarks, DominoTree reaches up to 6.6x speedup over autoregressive decoding and the highest mean accept length of any evaluated method, up to 10.7 tokens per round, at every temperature we test. DominoTree constructs its tree with a GPU-native, CUDA-graph builder that is bit-identical to a reference Python implementation, so acceptance is unchanged, while keeping per-round tree construction cheap. With this builder as default, DominoTree wins throughput over the released Domino decoder at every temperature, 9-10% overall on Qwen3-4B and up to +22% on Alpaca, and over DDTree/CaDDTree at every temperature we test. On Qwen3- 8B, DominoTree keeps the highest accepted length at every temperature and adds a decisive throughput win at T=0, +24% over DDTree; at higher temperature that edge over DDTree/CaDDTree narrows to a tie and a small loss, while its Overall aggregate wins over DFlash and Domino persist.",
+   "published": "2026-07-09T16:16:35+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Saw S. Lin, Jyh-Shing Roger Jang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "DominoTree améliore le décodage spéculatif en construisant des arbres de draft conditionnels basés sur Domino, atteignant jusqu'à 6.6x de vitesse d'inférence et une longueur moyenne d'acceptation de 10.7 tokens par itération, avec une implémentation GPU optimisée.",
+   "score": 8.3
+  },
+  {
+   "id": "930b48a9e5dc4fe8",
+   "title": "SMetric: Rethink LLM Scheduling for Serving Agents with Balanced Session-centric Scheduling",
+   "url": "https://arxiv.org/abs/2607.08565v1",
+   "summary": "LLM scheduling is critical to serving, yet it remains unclear how well existing designs fit agentic serving--with LLM requests issued by agents instead of humans. This shifts the workload in two ways: (1) agents act only on complete responses, making the cluster's tokens per second (TPS) the primary goal and relaxing--not eliminating--per-token latency requirements; and (2) requests share much of their KV\\$-reuse exceeds 80% of request tokens in a production trace from BAILIAN, versus 54-62% in chat. This paper first contributes a systematic study of request scheduling for agents on two real-world traces. We find that to increase KV\\$ reuse, existing schedulers overly prioritize routing requests to instances caching their KV\\$, overloading a few while leaving the rest idle, capping TPS. We thus present two key insights: (1) load balance need not sacrifice all KV\\$ reuse, thanks to the global-tier KV\\$ store and (2) by utilizing the workload's intra-session locality, balancing a small fraction of requests--the first request in each agent session--suffices to balance the cluster without sacrificing most KV\\$ reuse on local instances. SMETRIC realizes these insights with balanced session-centric scheduling: it routes each session's first request purely for load balance and its follow-up requests in a cache-aware manner, preserving load balance and local reuse while keeping demand on the global tier low. Using the session turn information as the scheduling metric is deliberate: it is derived efficiently and accurately from the user inputs alone, so the scheduler stays clean and stateless. SMETRIC improves cluster TPS by 10-16% under prefill-decode colocation with a global store and prefill TPS by 2-34% under disaggregation over state-of-the-art schedulers, also with a better per-token latency.",
+   "published": "2026-07-09T14:55:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiahao Wang, Kaizhan Lin, Kaixi Zhang, Jinbo Han, Xingda Wei, Sijie Shen"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Nouveau scheduler (SMetric) optimisé pour le déploiement d'agents LLM, exploitant la réutilisation des KV caches et l'équilibrage des sessions pour maximiser le débit (TPS) sans sacrifier l'efficacité. Critique pour l'optimisation des infrastructures LLM en production.",
+   "score": 8.3
+  },
+  {
+   "id": "7912390b48d43693",
+   "title": "When the Judge Changes, So Does the Measurement: Auditing LLM-as-Judge Reliability",
+   "url": "https://arxiv.org/abs/2607.08535v1",
+   "summary": "An LLM-as-judge score can move even when the candidate responses stay fixed, simply because the evaluator has changed. We treat this evaluator-replacement ambiguity as a measurement-validity problem. Across four judgment datasets, we compare two upgrade paths available in practice: scaling Qwen3 dense judges from 1.7B to 32B parameters and moving across MiniMax M2-M2.7 released APIs. The main pattern is that judge upgrades are not interchangeable: only Qwen3 1.7B to 4B gives a robust adjacent gain, while MiniMax adjacent releases do not. Stronger judges reduce but do not remove position and verbosity bias. Repeated-sample juries add little when errors are correlated. Structured debate can move decisions substantially, but without parser and fallback logs those shifts cannot be attributed to deliberation. We argue that LLM-as-judge reports should include dataset slices, bias probes, error-dependence estimates, and protocol audit trails.",
+   "published": "2026-07-09T14:31:05+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zongyou Yang, Yinghan Hou, Xiaokun Yang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étude sur la fiabilité des évaluateurs LLM (LLM-as-judge) montrant que les scores varient selon le modèle utilisé (ex: Qwen3 1.7B vs 32B) et que les biais (position, verbosité) persistent même avec des juges plus puissants, soulignant l'importance de rapports transparents incluant des métriques de biais et des protocoles d'audit.",
+   "score": 8.3
+  },
+  {
+   "id": "624f70a2b013bbad",
+   "title": "Cross-seed explainability using Procrustes-conditioned Joint End-to-end Top-K Sparse Autoencoders",
+   "url": "https://arxiv.org/abs/2607.08499v1",
+   "summary": "We present a Procrustes-conditioned Joint End-to-end Top-K Sparse Autoencoder (SAE) for extracting cross-seed universal features from independently trained BERT models. Cross-seed feature universality is a fundamental challenge in mechanistic interpretability: because dictionary learning is non-convex, independently trained networks learn misaligned feature spaces, so apparently identical features may differ by random initialization. We address this by computing an orthogonal Procrustes rotation between seeds' activation spaces before joint SAE training, combining Top-K sparsity, end-to-end downstream optimization, and an auxiliary dead-feature revival loss based on previous SAE literature. Evaluating on five independent seed pairs (ten BERT models) across three benchmark datasets (SST-2, Stanford Politeness, TweetEval Emotion), our full pipeline produces more universal features (Pearson r $\\geq$ 0.70 across seeds) than post-hoc alignment baselines on all three datasets. A minimal qualitative analysis confirms that high-universality features encode interpretable sociolinguistic patterns.",
+   "published": "2026-07-09T13:59:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Bendegúz Váradi, Zoltán Kmetty"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Méthode Procrustes-conditionnée pour entraîner des autoencodeurs parcimonieux (SAE) *cross-seed* sur BERT, alignant les espaces de features entre modèles indépendants via une rotation orthogonale, améliorant l'universalité des features (Pearson r ≥ 0.70) et leur interprétabilité sociolinguistique.",
+   "score": 8.3
+  },
+  {
+   "id": "b71f19bcf78d61e4",
+   "title": "CineMobile: On-Device Image-to-Video Diffusion for Cinematic Camera Motion Generation",
+   "url": "https://huggingface.co/papers/2607.03803",
+   "summary": "The growing demand for image-to-video creation on mobile devices has increasingly focused on cinematic motion effects like bullet time, dolly zoom, slow motion, etc. While Diffusion Transformers (DiTs) exhibit strong performance in video generation, their large parameter sizes and multi-step iterative denoising processes lead to substantial computational overhead, making efficient generation on mobile devices challenging. We propose CineMobile to bridge the gap. In particular, CineMobile adopts a three-fold optimization strategy: (1) leveraging a distillation-guided pruning approach to derive a compact yet efficient model that retains the essential video generation capabilities required for cinematic effects; (2) optimizing the compressed model into a 4-step generator via a combination of diffusion distillation and reinforcement learning; (3) employing a hybrid post-training quantization strategy to compress the model footprint to under 1 GB. Experimental results show that compared to the teacher model with the Wan 2.1 architecture, CineMobile achieves a 40x speedup in generation while maintaining comparable visual quality. Specifically, CineMobile generates 49-frame 480p videos with a per-step denoising latency of 0.6s on an NVIDIA H200 GPU and 20s on the MediaTek Dimensity 8400 Ultimate 5G platform, with a peak memory usage of 1.8 GB, demonstrating its practical applicability for mobile-based image-to-video creation.",
+   "published": "2026-07-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.03803"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "CineMobile optimise un modèle de diffusion image-à-vidéo pour mobile via pruning guidé par distillation, distillation de diffusion + RL (4 étapes), et quantification hybride (1GB). Il atteint un speedup de 40x vs le modèle enseignant (Wan 2.1) tout en conservant une qualité visuelle comparable pour des vidéos 480p de 49 frames.",
+   "score": 8.2
+  },
+  {
+   "id": "be07d1742b6eef41",
+   "title": "Single-Rollout Asynchronous Optimization for Agentic Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2607.07508",
+   "summary": "Reinforcement learning (RL) is becoming increasingly important for post-training large language models (LLMs). Previous RL pipelines for LLMs were mostly synchronous and batch-interleaved, which is inefficient for long-horizon agentic tasks. Recently, asynchronous RL has emerged as a more efficient alternative by updating the model as rollouts arrive. However, existing asynchronous RL systems often emphasize throughput, while leaving training stability and task effectiveness largely underexplored. For example, a key challenge is that group-wise sampling in the widely-used GRPO framework does not naturally fit asynchronous agentic training. In this paper, we present Single-rollout Asynchronous Optimization (SAO) to address the stability and off-policy challenges in asynchronous RL. To reduce off-policy effects and improve generalization, we replace group-wise sampling with single-rollout sampling, that is, using one rollout per prompt. We further improve this single-rollout strategy with practical value-model training designs. To improve optimization stability, we introduce a strict double-side token-level clipping strategy. SAO is able to train stably for one thousand steps and consistently outperform GRPO and its variants on agentic coding and reasoning benchmarks, such as SWE-Bench Verified, BeyondAIME, and IMOAnswerBench. We also demonstrate that single-rollout RL is particularly effective in a simulated online learning setting, where the model must adapt to changing evolving environments. To this end, SAO is successfully deployed in the agentic RL pipeline for training the open GLM-5.2 model (750B-A40B).",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2607.07508"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "SAO (Single-Rollout Asynchronous Optimization) améliore la stabilité et l'efficacité des RL asynchrones pour les agents LLM en remplaçant l'échantillonnage groupé par des rollouts uniques et en introduisant un clipping token-level strict, permettant 1000 étapes d'entraînement stables.",
+   "score": 8.2
+  },
+  {
+   "id": "f629919c6e873476",
+   "title": "Automating the Design of Embodied Agent Architectures",
+   "url": "https://huggingface.co/papers/2606.30111",
+   "summary": "Embodied agents are typically built as hand-designed compositions of perception, memory, planning, and action modules. This modularity exposes a large architectural design space, but current systems still rely on researcher intuition to choose where information is stored, how observations are processed, and how model calls are connected. Agent Architecture Search (AAS) automates such design for text-domain agents, but has not been systematically evaluated on perceptual embodied agents through simulator rollouts. We study this transfer. We introduce AgentCanvas, a typed-graph runtime that hosts embodied executors as editable node-and-wire programs with simulator-aware execution and episode-level logs, and KDLoop, a coding-agent search procedure that cycles through proposal, critique, experiment, and distillation, with triggered reflection after stalls. We evaluate three AAS variants across four embodied executors spanning vision-language navigation, embodied question answering, and language-conditioned manipulation. The resulting 3x4 matrix shows that architecture-level search can produce deployable and directional success-rate gains on embodied tasks, while one apparent high-scoring candidate is rejected as leak-bearing. At the same time, the experiments expose constraints that are muted in text-domain AAS: optimization signals can be masked by rollout noise, search can become trapped in local edit basins, and episode-level credit assignment only partially emerges even when detailed logs are available. These results characterize both the promise and the current limits of automated architecture search for embodied agents.",
+   "published": "2026-07-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2606.30111"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "AgentCanvas et KDLoop automatisent la conception d'architectures d'agents incarnés via une recherche itérative (proposition/critique/expérience/distillation), démontrant des gains de performance sur des tâches robotiques variées (navigation, QA, manipulation).",
+   "score": 8.2
+  },
+  {
+   "id": "e8b72e0625efabb2",
+   "title": "Scaling Mixture-of-Experts Video Pretraining for Embodied Intelligence",
+   "url": "https://huggingface.co/papers/2607.07675",
+   "summary": "Despite the recent promise in robot control, video generative models suffer from a domain mismatch due to their primary focus on content creation. For example, their design inherently prioritizes visual fidelity and creativity over computational efficiency and physical realism. In this work, we present LingBot-Video, a DiT-based video pretraining paradigm specifically tailored for embodied intelligence. From the architecture perspective, we adopt the Mixture-of-Experts (MoE), instead of dense, framework to achieve a better trade-off between modeling capacity and inference efficiency, and manage to scale it up from scratch. From the data perspective, we construct a data profiling engine that augments standard internet videos with extensive robot-oriented footage, encompassing manipulation, navigation, and egocentric perspectives, to equip the base model with an intrinsic understanding of actions and world dynamics. From the training perspective, we develop a multi-dimensional reward system to enforce the alignment regarding physical rationality and task completion, going beyond standard criteria such as aesthetics, prompt-following, and motion consistency. Comprehensive evaluations validate its performance and efficiency as a video foundation model. We contribute LingBot-Video as the inaugural large-scale, open-source MoE video foundation model to the community, in a pioneering effort to bridge digital creativity and physical actuation.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 40,
+    "arxiv_id": "2607.07675"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "Modèle vidéo génératif (LingBot-Video) basé sur MoE et entraîné spécifiquement pour l'intelligence incarnée, combinant des données robotiques et un système de récompenses multi-dimensionnel pour améliorer la cohérence physique et l'efficacité d'inférence.",
+   "score": 8.2
+  },
+  {
+   "id": "6bd0da6b7f46b75d",
+   "title": "Cross-Space Distillation: Teaching One-Step Students with Modern Diffusion Teachers",
+   "url": "https://huggingface.co/papers/2606.32020",
+   "summary": "Modern one-step diffusion models achieve impressive quality through distribution-based timestep distillation. Yet, they rely on a critical assumption: Teacher and Student must inhabit the same latent space. This Shared-Space constraint prevents knowledge transfer from modern high-capacity Teachers (e.g., SD 3.5 and Flux) into compact, deployment-friendly Students such as SD 1.5, whose latent resolution and VAE parameterization differ from the Teacher. We formalize this overlooked regime as Cross-Space Distillation, where Teacher and Student differ in both latent resolution and VAE space. To enable distillation under this mismatch, we introduce the Bridge, a lightweight latent interface that maps Student latents into the Teacher space without modifying the Student backbone. Bridge combines a frozen Student VAE decoder as a spatial prior with a compact learnable projector, and is trained with latent reconstruction and attention fidelity objectives for stable Teacher-space alignment. Across diverse modern Teachers, Bridge enables substantial gains for compact one-step Students; for example, it improves SD 1.5 from 5.4 to 9.4 HPSv3 while preserving one-step inference, low latency, and broad ecosystem compatibility. These results show that heterogeneous large Teachers can be distilled into efficient, deployable backbones through a lightweight latent-space interface.",
+   "published": "2026-06-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2606.32020"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "Méthode de distillation (Cross-Space Distillation) pour transférer les connaissances de modèles diffusion modernes (SD 3.5, Flux) vers des étudiants compacts (SD 1.5) malgré des espaces latents incompatibles, améliorant la qualité tout en conservant l'inférence en une étape.",
+   "score": 8.2
+  },
+  {
+   "id": "2c650dc340b0f56d",
+   "title": "omnigent-ai/omnigent",
+   "url": "https://github.com/omnigent-ai/omnigent",
+   "summary": "Omnigent is an open-source AI agent framework and meta-harness: orchestrate Claude Code, Codex, Cursor, Pi, and custom agents — swap harnesses without rewriting, enforce policies and sandboxing, and collaborate in real time from any device.",
+   "published": "2026-06-11T12:18:13Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 6951,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Framework open-source pour orchestrer et orchestrer des agents IA (Claude Code, Codex, etc.) avec sandboxing, politiques et collaboration en temps réel. Idéal pour prototyper des systèmes multi-agents.",
+   "score": 8.0
+  },
+  {
+   "id": "018f030d887310e5",
+   "title": "benchflow-ai/awesome-evals",
+   "url": "https://github.com/benchflow-ai/awesome-evals",
+   "summary": "A curated, non-BS library of the best resources for building and evaluating AI agents — papers, blogs, talks, tools, benchmarks. Maintained by BenchFlow.",
+   "published": "2026-06-24T08:10:33Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 701,
+    "language": null
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Ressources curatées (papers, outils, benchmarks) pour évaluer et construire des agents IA, sans contenu marketing. Très pertinent pour la veille sur les agents, avec une approche rigoureuse et communautaire.",
+   "score": 8.0
+  },
+  {
+   "id": "66e943fbde5f465e",
+   "title": "eli-labz/Cognitive-Core-Skills",
+   "url": "https://github.com/eli-labz/Cognitive-Core-Skills",
+   "summary": "A universal, industry-neutral taxonomy of cognitive core skills (perception, memory, reasoning, planning, action, verification, learning, governance) for LLMs, SLMs, AI agents, and world models — with schemas, 159 skill cards, benchmarks, and CI.",
+   "published": "2026-07-05T21:25:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 273,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Taxonomie universelle des compétences cognitives fondamentales pour LLM, agents et modèles du monde, incluant benchmarks et schémas, utile pour structurer la recherche en IA.",
+   "score": 8.0
+  },
+  {
+   "id": "795f27f2e26fbb28",
+   "title": "Forsy-AI/agent-apprenticeship",
+   "url": "https://github.com/Forsy-AI/agent-apprenticeship",
+   "summary": "The living ecosystem where AI agents complete tasks through workflow loops, improve through iterative execution, are evaluated by mentor agents or humans in the loop, and turn completed work into reusable work experience and data to improve future agents.",
+   "published": "2026-06-19T16:19:37Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1311,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Écosystème open-source pour l'apprentissage et l'amélioration itérative d'agents IA via mentorat humain ou automatique, avec une approche concrète mais encore expérimentale.",
+   "score": 8.0
+  }
+ ]
+}
