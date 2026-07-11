@@ -1,0 +1,725 @@
+{
+ "date": "2026-07-11",
+ "digest": {
+  "headline": "Les agents à long horizon gagnent en robustesse grâce à une mémoire proactive intégrée aux LLM",
+  "overview": "La veille du 11 juillet 2026 met en lumière des avancées majeures dans l'optimisation des architectures d'agents et des modèles multimodaux, avec une attention particulière portée sur la gestion de la mémoire, l'efficacité computationnelle et l'interprétabilité. Les travaux couvrent des défis techniques allant de la robotique à l'imagerie médicale, en passant par des benchmarks critiques pour évaluer la robustesse des modèles.",
+  "highlights": [
+   {
+    "title": "Mémoire proactive pour agents LLM",
+    "text": "Le papier *Remember When It Matters* introduit un *memory agent* plug-and-play qui injecte des rappels ciblés dans les trajectoires des agents LLM pour contrer la décroissance des performances en tâches à long horizon. L'approche améliore les résultats de +8.3 pp sur Terminal-Bench, démontrant l'efficacité des interventions sélectives. Cette solution répond à un problème clé des architectures actuelles : la perte de cohérence dans les interactions prolongées."
+   },
+   {
+    "title": "Intégration tactile et multimodalité optimisée",
+    "text": "Splash propose une méthode de fine-tuning ciblé pour ajouter la modalité tactile aux MLLMs sans sacrifier les performances visuelles, via l'isolation des paramètres critiques. Parallèlement, *WildCity* offre un benchmark urbain à grande échelle pour évaluer la reconstruction 3D et la simulation closed-loop, avec des défis réalistes comme la dynamique environnementale. Ces travaux illustrent l'évolution vers des modèles plus robustes et adaptés aux contextes réels."
+   },
+   {
+    "title": "Efficacité et scalabilité des architectures linéaires",
+    "text": "*Sparse Delta Memory* (SDM) améliore les RNN linéaires en scalant leur état caché via une mémoire sparse, boostant les performances en long contexte sous contrainte FLOP constante. Cette avancée est cruciale pour les applications nécessitant une gestion efficace des ressources, comme les systèmes embarqués ou les agents interactifs. Le papier *Video-Oasis* révèle quant à lui des lacunes majeures dans les benchmarks vidéo, où 55% des échantillons sont solubles sans données visuelles."
+   },
+   {
+    "title": "Outils et frameworks pour agents IA",
+    "text": "Plusieurs projets open-source émergent pour orchestrer des agents IA : *agent-sphere* (plateforme d'orchestration avec moteur LLM et outils intégrés), *Agent-Loop-Skills* (bibliothèque de boucles agentiques avec vérification), et *skillspec* (framework Rust pour standardiser les compétences des agents). Ces outils répondent à un besoin croissant de modularité et de fiabilité dans les architectures multi-agents, bien que certains restent en phase de maturation."
+   },
+   {
+    "title": "Optimisation et interprétabilité en RL et diffusion",
+    "text": "*UP* propose une méthode d'optimisation asymétrique pour résoudre le dilemme exploration-stabilité en RL, tandis que *Flash-BoN* simplifie l'optimisation en temps d'inférence pour les modèles de diffusion. En parallèle, *Imagined Rollouts* diagnostique les échecs des world-models en rollouts longs, montrant que les simulations sont kinématiques plutôt que dynamiques. Ces travaux soulignent l'importance de l'efficacité computationnelle et de la physique simulée pour les applications robotiques."
+   }
+  ],
+  "trend": "Les architectures d'agents et les modèles multimodaux évoluent vers une meilleure gestion de la mémoire, une efficacité computationnelle accrue et une intégration plus fine des modalités sensorielles, tout en mettant l'accent sur des benchmarks plus robustes et des outils open-source pour standardiser les développements."
+ },
+ "items": [
+  {
+   "id": "bbd927e06fa0fd55",
+   "title": "Remember When It Matters: Proactive Memory Agent for Long-Horizon Agents",
+   "url": "https://huggingface.co/papers/2607.08716",
+   "summary": "In long-horizon tasks, decision-relevant state is often scattered across an expanding trajectory, while the action agent must surface it and act. As trajectories grow, task requirements, environment facts, prior attempts, diagnoses, and open subgoals can be buried in the context window or pushed beyond it, failing to influence decisions when needed. We call this failure mode \"behavioral state decay\". We study memory as an active intervention mechanism rather than passive retrieval. A separate memory agent runs alongside an unmodified action agent, updating a structured memory bank from the recent trajectory and deciding whether to inject a memory-grounded reminder or remain silent. The module is plug-and-play with frontier action agents and existing agent harnesses. Across Terminal-Bench 2.0 and τ^2-Bench, it improves pass@1 for both weaker and stronger action agents, with gains of +8.3 pp on Terminal-Bench and +6.8 pp on τ^2-Bench. Ablations show that selective intervention outperforms passive bank exposure, always-on injection, advisor-only guidance, and general retrieval. As an early step toward open-weight memory policies, we train Qwen3.5-27B on SETA using SFT and GRPO, improving validation reward and achieving partial transfer to Terminal-Bench.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.08716"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Propose un agent mémoire proactif ('memory agent') qui injecte des rappels ciblés dans la trajectoire d'un agent LLM pour contrer la 'décroissance de l'état comportemental' dans les tâches à long horizon. Améliore significativement les performances (+8.3 pp sur Terminal-Bench) avec une approche plug-and-play et des ablations démontrant l'efficacité des interventions sélectives.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne la dégradation des performances des agents autonomes dans des tâches à long horizon (long-horizon tasks), où les informations critiques pour la prise de décision (états pertinents, sous-objectifs, diagnostics passés, etc.) se dispersent ou disparaissent du contexte accessible. Cela entraîne une perte d'influence de ces informations sur les décisions, un phénomène qualifié de 'behavioral state decay'.",
+    "methode": "Les auteurs proposent une approche proactive où un *memory agent* distinct opère en parallèle d'un *action agent* non modifié. Ce memory agent maintient une banque de mémoire structurée, mise à jour dynamiquement à partir de la trajectoire récente. Il décide activement d'injecter des rappels basés sur la mémoire dans le contexte de l'action agent ou de rester silencieux, selon une politique d'intervention sélective. Le module est conçu pour être plug-and-play avec des agents existants (comme ceux basés sur des modèles frontaliers). Pour entraîner ce memory agent, les auteurs utilisent Qwen3.5-27B avec un fine-tuning supervisé (SFT) et l'algorithme GRPO sur le jeu de données SETA, visant à optimiser une politique de mémoire ouverte (open-weight).",
+    "resultats": "Les résultats montrent des améliorations significatives sur deux benchmarks : Terminal-Bench 2.0 (+8,3 points de pourcentage en pass@1) et τ²-Bench (+6,8 points de pourcentage). Ces gains sont observés aussi bien pour des agents d'action faibles que performants. Les ablations révèlent que l'intervention sélective surpasse les approches passives (comme l'exposition systématique de la banque de mémoire) ou toujours actives (injection constante). Un transfert partiel des performances est également constaté sur Terminal-Bench après entraînement sur SETA.",
+    "limites": "Le contenu disponible ne permet pas d'évaluer en profondeur la robustesse de la méthode face à des environnements très dynamiques ou bruités. De plus, la généralisation des résultats à d'autres benchmarks ou tâches réelles reste à démontrer. Enfin, l'entraînement du memory agent repose sur des données synthétiques (SETA), ce qui pourrait limiter son applicabilité hors de ce cadre.",
+    "verdict": "Cette publication mérite l'attention pour son approche innovante et modulaire de la mémoire proactive, avec des résultats prometteurs sur des benchmarks exigeants, bien que des validations supplémentaires soient nécessaires pour en confirmer la portée."
+   }
+  },
+  {
+   "id": "de2761a01af4fc8c",
+   "title": "Wake up for Touch! Mask-isolated Tactile Alignment Learning in MLLMs",
+   "url": "https://huggingface.co/papers/2607.00302",
+   "summary": "Touch supplies the physical grounding needed to perceive intrinsic material properties, such as friction and compliance, that vision alone often cannot resolve. Recent efforts for equipping multimodal LLMs with this tactile sense, however, expose a zero-sum trade-off: the limited parameter budget of compact models forces a choice between acquiring the new sensory modality and preserving the established vision-language reasoning. We present Splash, a mask-isolated tactile alignment learning framework for MLLMs. Splash quantifies the significance of each pretrained parameter, and partitions the parameter space into a dormant and critical subspace. While the frozen critical subspace acts as a stable anchor to safeguard general visual knowledge, Splash updates the isolated dormant subspace to internalize tactile alignment towards LLMs. This selective, non-destructive expansion effectively prevents catastrophic forgetting and ensures non-destructive modality expansion. Extensive experiments show that Splash effectively achieves tactile reasoning without additional inference overhead in the LLM part, demonstrating state-of-the-art performance on visuo-tactile benchmarks, including SSVTP, TVL, and TacQuad, while preserving its original general-purpose capabilities.",
+   "published": "2026-06-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.00302"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Splash propose une méthode de fine-tuning ciblé pour intégrer la modalité tactile dans les MLLMs sans sacrifier les performances visuelles, en isolant les paramètres critiques et dormants pour éviter l'oubli catastrophique. Pertinent pour l'optimisation de modèles multimodaux et l'extension de capacités.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'intégration de la modalité tactile dans les modèles multimodaux de langage (MLLMs) sans compromettre leurs capacités existantes en vision et langage. Les modèles compacts actuels, limités par leur budget de paramètres, doivent souvent sacrifier une partie de leur performance visuo-linguistique pour incorporer de nouvelles données sensorielles comme le toucher, ce qui entraîne un compromis sous-optimal.",
+    "methode": "Splash propose un cadre d'apprentissage d'alignement tactile isolé par masquage (*mask-isolated tactile alignment learning*). La méthode évalue d'abord l'importance de chaque paramètre pré-entraîné et partitionne l'espace des paramètres en deux sous-espaces : un sous-espace *dormant* (peu critique) et un sous-espace *critique* (gelé pour préserver les connaissances visuelles). Seul le sous-espace dormant est mis à jour pour intégrer l'alignement tactile, évitant ainsi l'oubli catastrophique. Cette approche permet une expansion modale non destructive, sans surcoût d'inférence pour la partie LLM.",
+    "resultats": "Les expériences montrent que Splash atteint des performances de pointe sur des benchmarks visuo-tactiles comme SSVTP, TVL et TacQuad, tout en conservant les capacités générales du modèle. Aucune dégradation des performances visuo-linguistiques n'est observée, et l'ajout de la modalité tactile n'introduit pas de latence supplémentaire lors de l'inférence.",
+    "limites": "Le contenu disponible ne précise pas les critères exacts de partitionnement des paramètres (comment est mesurée leur 'significance'). De plus, l'efficacité de la méthode dépend probablement de la qualité des données tactiles utilisées, un aspect peu détaillé. Enfin, l'absence de comparaison avec des architectures alternatives (comme l'ajout de couches dédiées) limite l'évaluation de sa généralisabilité.",
+    "verdict": "Cette approche mérite une attention particulière pour son innovation dans l'intégration modale non destructive, mais son adoption dépendra de validations supplémentaires sur des jeux de données et des architectures variés."
+   }
+  },
+  {
+   "id": "db20c63529238862",
+   "title": "WildCity: A Real-World City-Scale Testbed for Rendering, Simulation, and Spatial Intelligence",
+   "url": "https://huggingface.co/papers/2607.06838",
+   "summary": "Humans can navigate an unfamiliar city and gradually form a coherent spatial mental map spanning tens of square kilometers. Can AI build spatial representations at a comparable scale? Although recent foundation models have advanced scene reconstruction and embodied intelligence, scaling to entire cities remains an open challenge, primarily due to the lack of city-scale data. To bridge the gap, we introduce WildCity, a real-world multimodal dataset collected by autonomous fleets traversing complex urban environments. Our dataset includes 18 trajectories, each averaging 83.7 kilometers in length, and preserves the core challenges of in-the-wild perception, e.g., dynamic objects, lighting variations, and imperfect camera poses. We further establish an urban-tailored reconstruction baseline and convert the reconstructed environments into a closed-loop simulator. Beyond the dataset and baseline, we systematically analyze the key challenges on the path to simulation-ready urban digital twins: scalability, extrapolation, and uncertainty. Ultimately, WildCity aims to catalyze progress not only in city-scale rendering, but more broadly in the pursuit of AI that can perceive, remember, and reason across space at a scale comparable to human cognition. Project page: https://han-xiangyu.github.io/Wild-City/",
+   "published": "2026-07-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.06838"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "WildCity fournit un jeu de données urbain à grande échelle (18 trajectoires, 83.7 km) pour évaluer la reconstruction 3D et la simulation closed-loop, avec des défis réels (dynamique, éclairage). Catalyseur pour l'IA spatiale à l'échelle urbaine.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème principal abordé par WildCity est l'incapacité actuelle des modèles d'IA à construire des représentations spatiales cohérentes à l'échelle d'une ville entière, comparable à la cognition humaine. Les défis incluent le manque de données urbaines à grande échelle et la complexité de la perception en conditions réelles (objets dynamiques, variations d'éclairage, poses de caméras imparfaites).",
+    "methode": "WildCity propose un jeu de données multimodal collecté via des flottes autonomes parcourant des environnements urbains complexes. Le dataset comprend 18 trajectoires, chacune mesurant en moyenne 83,7 km, capturant des défis réels comme les objets dynamiques et les variations d'éclairage. Les auteurs établissent également une baseline de reconstruction adaptée aux milieux urbains et convertissent les environnements reconstruits en un simulateur en boucle fermée. L'approche inclut une analyse systématique des défis clés pour créer des jumeaux numériques urbains prêts pour la simulation : scalabilité, extrapolation et gestion de l'incertitude.",
+    "resultats": "Les résultats concrets et chiffres clés ne sont pas détaillés dans le contenu disponible. Cependant, le projet vise à fournir une base pour améliorer la reconstruction, la simulation et l'intelligence spatiale à l'échelle urbaine. La conversion des environnements reconstruits en simulateur suggère une avancée vers des applications pratiques en robotique et en planification urbaine.",
+    "limites": "Les limites mentionnées incluent les défis de scalabilité, d'extrapolation et de gestion de l'incertitude, qui restent des obstacles majeurs pour des jumeaux numériques urbains fiables. Le contenu ne précise pas comment ces défis sont quantitativement adressés, laissant des zones d'ombre sur la robustesse des solutions proposées. De plus, la qualité des reconstructions en conditions réelles très variables pourrait être sujette à caution.",
+    "verdict": "WildCity mérite une attention particulière pour son ambition de combler un vide critique dans les données et les méthodes pour l'IA à l'échelle urbaine, bien que ses résultats concrets restent à valider."
+   }
+  },
+  {
+   "id": "8247445a820bf007",
+   "title": "Sparse Delta Memory: Scaling the State of Linear RNNs through Sparsity",
+   "url": "https://huggingface.co/papers/2607.07386",
+   "summary": "Linear attention models allow a fixed state size and a fixed amount of compute per token. However, due to their limited state size, linear attention models fall behind in long-context recall compared to softmax-attention-based transformer architectures. Increasing the state size of linear attention improves recall performance but at the cost of higher FLOPs. In this work, we introduce Sparse Delta Memory (SDM), an architecture that scales the hidden state of gated linear RNNs to orders of magnitude higher capacity using a sparse addressing scheme. SDM extends the Gated DeltaNet architecture by replacing the dense key-value outer product with sparse reads and writes to a large explicit memory. We show that, under an isoFLOP constraint and with an identical number of parameters, a higher state memory capacity significantly improves performance on in-context learning and long-context retrieval tasks. Moreover, by learning the initial state of the SDM memory and therefore using it as a parametric memory, we show that the model further improves on a wide range of common-knowledge and reasoning tasks.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2607.07386"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "SDM améliore les RNN linéaires en scalant leur état caché via une mémoire explicite sparse, boostant les performances en long contexte et apprentissage in-context sous contrainte FLOP constante. Avancée majeure pour l'efficacité des architectures linéaires.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Les modèles d'attention linéaire (comme les RNN linéaires) permettent un calcul par token à coût fixe et une taille d'état constante, mais leur capacité de rappel en contexte long est limitée par cette taille d'état réduite. Augmenter cette taille améliore les performances, mais au prix d'une augmentation des FLOPs, ce qui réduit leur avantage computationnel face aux transformers classiques.",
+    "methode": "Les auteurs proposent *Sparse Delta Memory* (SDM), une architecture qui étend les RNN linéaires à portes (comme Gated DeltaNet) en remplaçant le produit extérieur dense clé-valeur par un mécanisme de lectures et écritures *sparse* dans une mémoire explicite de grande capacité. Cette mémoire utilise un schéma d'adressage épars pour stocker et récupérer des informations sans exploser le coût computationnel. De plus, en initialisant l'état de la mémoire de manière paramétrique (apprise), le modèle peut l'exploiter comme une mémoire à long terme, améliorant ainsi sa capacité à traiter des tâches de raisonnement et de connaissances générales.",
+    "resultats": "Sous une contrainte *isoFLOP* (même nombre d'opérations flottantes) et avec un nombre de paramètres identique, SDM montre des gains significatifs en apprentissage en contexte et en récupération de longues séquences par rapport aux architectures linéaires classiques. Les performances sur des tâches de raisonnement et de connaissances communes sont également améliorées grâce à l'utilisation de la mémoire paramétrique. Les chiffres précis (ex. : scores sur des benchmarks) ne sont pas détaillés dans le résumé disponible.",
+    "limites": "Le résumé ne précise pas les détails du mécanisme d'adressage épars (ex. : comment la sparsité est-elle gérée ou apprise ?). De plus, l'impact de la mémoire paramétrique sur la généralisation ou la robustesse du modèle n'est pas discuté. Enfin, l'efficacité réelle en pratique (latence, consommation mémoire) reste à évaluer, surtout pour des états très grands.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à combiner l'efficacité des RNN linéaires avec une capacité de rappel accrue, mais son adoption dépendra de validations expérimentales plus poussées et de comparaisons directes avec les transformers optimisés."
+   }
+  },
+  {
+   "id": "542e3f40c21ca829",
+   "title": "Video-Oasis: Rethinking Evaluation of Video Understanding",
+   "url": "https://huggingface.co/papers/2603.29616",
+   "summary": "The inherent complexity of video understanding makes it difficult to determine whether Video-LLM benchmark performance stems from visual perception, linguistic reasoning, or knowledge priors. While many benchmarks have emerged to assess high-level reasoning, shared criteria for evaluating video understanding remain largely overlooked. Instead of introducing yet another benchmark, we take a step back to re-examine the criteria for evaluating video understanding. In this work, we introduce Video-Oasis, a sustainable diagnostic suite for systematically auditing existing video understanding benchmarks. This audit reveals that 55\\% of existing benchmark samples are solvable without visual input or temporal context. After filtering these shortcuts, the remaining video-native challenges expose a substantial capability gap: state-of-the-art models perform only marginally above random guessing. Building on these findings, we use the distilled challenges as a testbed to investigate which algorithmic design choices contribute to robust video understanding. We hope our work provides a practical foundation for constructing rigorous video benchmarks and evaluating future Video-LLMs. Code is available at https://github.com/sejong-rcv/Video-Oasis.",
+   "published": "2026-07-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 45,
+    "arxiv_id": "2603.29616"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "benchmark",
+    "vision"
+   ],
+   "tldr": "Audit de benchmarks vidéo (Video-Oasis) révélant que 55% des échantillons sont solubles sans entrée visuelle/temporelle. Montre un écart majeur entre SOTA et performances robustes, proposant des critères de diagnostic pour évaluer les Video-LLMs.",
+   "score": 7.9
+  },
+  {
+   "id": "cba6167a90e358f9",
+   "title": "UP: Unbounded Positive Asymmetric Optimization for Breaking the Exploration-Stability Dilemma",
+   "url": "https://huggingface.co/papers/2607.06987",
+   "summary": "Reinforcement learning (RL) has become the standard paradigm for enhancing the complex reasoning capabilities of large language models (LLMs). To achieve sample efficiency, modern RL frameworks rely on importance sampling (IS). However, these algorithms suffer from an exploration-stability dilemma. Pure IS often leads to catastrophic training instability, while standard clipping mechanisms used to mitigate this instability strictly constrain the policy update budget. By formalizing the concept of Probability Capacity (Cap), we reveal that conservative clipping structurally stifles exploration by prematurely truncating the update budget for correct but low-confidence reasoning paths. To break free from these constraints, we propose Unbounded Positive Asymmetric Optimization (UP), a universal and plug-and-play objective. UP theoretically restructures the optimization process by anchoring the policy to its current state via the stop-gradient operator. This asymmetric design unleashes unclipped, stable gradients for positive advantages to maximize exploration, while maintaining standard clipping safeguards for negative advantages to prevent training instability. Furthermore, our formulation readily extends across different optimization granularities, including token-level (GRPO, DAPO) and sequence-level (GSPO) frameworks. Extensive experiments demonstrate that UP enhances exploration capacity and achieves superior reasoning accuracy across diverse RL algorithms (DAPO, GSPO, and GRPO), model architectures (Dense, MoE, and vision-language), and training modalities (language and multimodal), validating UP as a truly universal plug-and-play enhancement for RL-based training.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.06987"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "UP propose une méthode d'optimisation asymétrique pour résoudre le dilemme exploration-stabilité en RL, en utilisant un gradient non clippé pour les avantages positifs et un clipping conservateur pour les négatifs. Pertinent pour le fine-tuning efficace des LLM et l'optimisation des politiques en RL.",
+   "score": 7.9
+  },
+  {
+   "id": "47cff53bc99f27ad",
+   "title": "Flash-BoN: Instant Drafts for Inference-Time Scaling in Diffusion Models",
+   "url": "https://huggingface.co/papers/2607.04461",
+   "summary": "Inference-time scaling for text-to-image generation has progressed from simple Best-of-N (BoN) sampling to guided search methods that verify and steer candidate trajectories at intermediate denoising steps. These approaches focus on when and how often to verify during denoising but largely treat the cost of generation itself as fixed. Moreover, the standard practice of comparing methods by number of function evaluations (NFEs) counts only denoising forward passes and ignores verifier overhead, which can distort efficiency rankings. We show that under wall-clock evaluation, simple BoN already matches or outperforms several guided search techniques, suggesting that compute is better spent on broader exploration than on repeated intermediate verification. This motivates Flash-BoN, which generates a large pool of inexpensive draft candidates by combining three complementary acceleration knobs: timestep truncation, layer skipping, and activation proxies into a single configuration optimized once per model. An efficient multi-stage verification procedure then identifies the most promising draft, which is refined at full quality. Across three benchmarks and three model scales, Flash-BoN consistently outperforms all baselines under fixed wall-clock budgets, with gains that grow at larger model scales (+8% AUC). We further show that our strategy combines well and improves existing orthogonal techniques such as reflection-based prompt optimization (+16% AUC). The gains correlate with increased candidate diversity, which also enables draft-guided selection to accelerate RL post-training convergence.",
+   "published": "2026-07-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.04461"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Flash-BoN simplifie l'optimisation en temps d'inférence pour les modèles de diffusion en combinant des techniques d'accélération (troncature de timesteps, saut de couches) et une vérification multi-étapes. Intéressant pour l'efficacité computationnelle des LLM et modèles de diffusion.",
+   "score": 7.6
+  },
+  {
+   "id": "cb715b1c16b8c689",
+   "title": "Imagined Rollouts are Kinematic, Not Dynamic: A Diagnosis of Long-Horizon World-Model Failure",
+   "url": "https://huggingface.co/papers/2607.05966",
+   "summary": "Long-horizon failure in world models is conventionally attributed to compounding error, a generic framing that does not distinguish what kind of error compounds. We propose a kinematic-vs-dynamic reframing: world models tend to imagine kinematically rather than dynamically. We operationalize this as the imagined Kinematic-Consistency Error, a per-step diagnostic that measures how far a rollout departs from a closed-form kinematic null, paired with a perturbation protocol that tests whether iKCE responds when physical conditions cross a regime boundary. We instantiate the diagnostic on a released DreamerV3 checkpoint trained on DMC walker-walk, where imagined iKCE runs roughly two orders of magnitude above that of matched real-physics rollouts. Across a friction sweep that crosses the gait-collapse boundary, the model's iKCE stays statistically flat even as the trained policy's reward collapses through the same range, providing the kinematic-not-dynamic signature. The diagnostic distinguishes kinematic from dynamic imagination at horizons longer than the embodiment's gait period.",
+   "published": "2026-07-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.05966"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "interpretabilite"
+   ],
+   "tldr": "Diagnostic montrant que les modèles de world-modeling échouent à simuler dynamiquement (vs kinématiquement), avec une métrique iKCE révélant des erreurs critiques dans les rollouts longs. Ouvre des pistes pour améliorer la physique simulée.",
+   "score": 7.6
+  },
+  {
+   "id": "4d9b31d6ca59818c",
+   "title": "nullpointexception-i/agent-sphere",
+   "url": "https://github.com/nullpointexception-i/agent-sphere",
+   "summary": "This project is an AI Agent orchestration platform. It uses an LLM-driven decision engine, combined with capabilities (built-in tools, MCP protocol, CLI execution, browser operations, etc.), to achieve a basic closed loop from perception → planning → execution → feedback.本项目是一个面向 AI Agent 编排平台。它通过 LLM 驱动的决策引擎，结合能力（内置工具、MCP 协议、CLI 执行、浏览器操作等）",
+   "published": "2026-06-19T11:53:36Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 348,
+    "language": "Java"
+   },
+   "relevance": 9,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Agent-sphere est une plateforme open-source d'orchestration d'agents IA avec un moteur de décision LLM, des outils intégrés (MCP, CLI, navigateur) et un cycle fermé perception-planification-exécution-feedback. Pertinent pour les architectures multi-agents et les tool-use.",
+   "score": 7.4
+  },
+  {
+   "id": "07546b3dc0024181",
+   "title": "gaasher/Agent-Loop-Skills",
+   "url": "https://github.com/gaasher/Agent-Loop-Skills",
+   "summary": "Loop until it's better — drop-in agentic loops (autoresearch, scientific writing, data analysis, code/SQL/prompt optimization, red-teaming) as open-standard Agent Skills. Verification-gated; native on Claude Code, portable across Codex, Cursor & other Skills hosts.",
+   "published": "2026-06-15T02:01:33Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 126,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Bibliothèque open-source de boucles agentiques (autorecherche, écriture scientifique, analyse de données) avec vérification intégrée, compatible avec plusieurs environnements (Claude Code, Codex, Cursor). Solution technique solide pour l'automatisation agentique.",
+   "score": 7.4
+  },
+  {
+   "id": "09c1f3fc77d009fa",
+   "title": "Why Can't I Open My Drawer? Mitigating Object-Driven Shortcuts in Zero-Shot Compositional Action Recognition",
+   "url": "https://huggingface.co/papers/2601.16211",
+   "summary": "Zero-Shot Compositional Action Recognition (ZS-CAR) requires recognizing novel verb-object combinations composed of previously observed primitives. In this work, we tackle a key failure mode: models predict verbs via object-driven shortcuts (i.e., relying on the labeled object class) rather than temporal evidence. We argue that sparse compositional supervision and verb-object learning asymmetry can promote object-driven shortcut learning. Our analysis with proposed diagnostic metrics shows that existing methods overfit to training co-occurrence patterns and underuse temporal verb cues, resulting in weak generalization to unseen compositions. To address object-driven shortcuts, we propose Robust COmpositional REpresentations (RCORE) with two components. Co-occurrence Prior Regularization (CPR) adds explicit supervision for unseen compositions and regularizes the model against frequent co-occurrence priors by treating them as hard negatives. Temporal Order Regularization for Composition (TORC) enforces temporal-order sensitivity to learn temporally grounded verb representations. Across Sth-com and EK100-com, RCORE reduces shortcut diagnostics and consequently improves compositional generalization.",
+   "published": "2026-07-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 42,
+    "arxiv_id": "2601.16211"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "vision"
+   ],
+   "tldr": "Analyse des biais de raccourcis ('object-driven shortcuts') en reconnaissance d'actions composables zero-shot. Propose RCORE (Co-occurrence Prior Regularization + Temporal Order Regularization) pour améliorer la généralisation. Travail solide en interpretabilité appliquée à la vision.",
+   "score": 7.3
+  },
+  {
+   "id": "930bc9f0184ed40a",
+   "title": "PhyMRI-SR: Toward Physics-Aware MRI Image Super-Resolution",
+   "url": "https://huggingface.co/papers/2607.06238",
+   "summary": "Magnetic resonance imaging (MRI) super-resolution is vital for improving diagnostic accessibility, yet most methods treat it as a deterministic mapping from a fixed low-resolution input to a high-resolution target. This overlooks a key property of MRI acquisition physics: spatial resolution and signal-to-noise ratio (SNR) are inherently coupled, making any given low-resolution scan merely one of many possible realizations under varying acquisition trade-offs. We rethink MRI super-resolution as a physics-aware reconstruction problem, in which the goal is to identify the optimal resolution-SNR configuration and then super-resolve it to obtain high-quality MRI results. A key implication of this formulation is that MRI resolution becomes dynamic rather than fixed. To handle such resolution-heterogeneous inputs, we adapt 2D Gaussian Splatting (2D GS) to MRI by formulating reconstruction as a coordinate-based, resolution-agnostic rendering problem. To further enhance fidelity, we introduce three innovations: (1) a prior-aware Gaussian representation that combines an Anatomical Structure Prior for tissue-specific kernel initialization with an Imaging System Prior that captures hardware characteristics via a covariance dictionary; (2) a physics-constrained signal modeling scheme that predicts intrinsic tissue parameters (proton density rho and effective relaxation rate R2) and synthesizes intensities through governing physical equations, ensuring biophysically plausible contrast; and (3) a meta-learning framework that alleviates paired-data scarcity by pretraining on simulated data and adapting to real-world conditions. Extensive experiments on dynamic-resolution datasets and standard benchmarks demonstrate that our method achieves state-of-the-art performance, highlighting its strong potential for clinical deployment.",
+   "published": "2026-07-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.06238"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "PhyMRI-SR reformule la super-résolution en IRM comme un problème de reconstruction physique, intégrant les contraintes d'acquisition (résolution/SNR) via une représentation adaptée de Gaussian Splatting 2D. Intéressant pour l'optimisation des pipelines d'imagerie médicale et l'interprétabilité des modèles en vision.",
+   "score": 7.3
+  },
+  {
+   "id": "bb6c34a9bf77e17f",
+   "title": "Teaching LLMs a Low-Resource Language: Enhancing Code Completion in Pharo",
+   "url": "https://huggingface.co/papers/2607.04939",
+   "summary": "Large Language Models (LLMs) unlocked new possibilities in automated code writing, becoming the backbone of most code completion tools. While LLMs excel in mainstream languages, they often lack support for the so-called low-resource languages where training data is scarce. As a result, these languages lag behind in the quality of code completion tooling available to their communities. A concrete example is Pharo, a Smalltalk-inspired language whose IDE currently offers only single-token completion. In this work, we report on our experience bringing LLM-based code completion to Pharo. First, we describe an end-to-end pipeline that combines Pharo-specific data curation, continued pre-training and fine-tuning of open code LLMs. Second, we introduce a set of Pharo code completion benchmarks designed to evaluate whether models (i) learn Pharo's syntax and (ii) accurately complete masked Pharo code from real-world GitHub repositories. Third, we show empirically that Pharo-specialized models substantially outperform their original base checkpoints and also exceed the accuracy of substantially larger code LLMs on Pharo completion. Overall, our case study demonstrates the feasibility of bringing strong LLM-based code completion to low-resource programming languages, with models small enough to provide ``real-time'' in-IDE support.",
+   "published": "2026-07-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.04939"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "outils",
+    "autre"
+   ],
+   "tldr": "Pipeline de spécialisation d'un LLM pour un langage à faible ressource (Pharo), combinant pré-entraînement ciblé et benchmarks dédiés. Démontre la faisabilité de l'adaptation fine pour des niches linguistiques.",
+   "score": 7.3
+  },
+  {
+   "id": "d48acb661d282fce",
+   "title": "modiqo/skillspec",
+   "url": "https://github.com/modiqo/skillspec",
+   "summary": "SkillSpec makes agent skills followable, testable, and provable with Doctor risk reports, guided imports, structured contracts, and alignment proof.",
+   "published": "2026-06-19T23:42:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 932,
+    "language": "Rust"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Framework Rust pour standardiser et valider les compétences des agents IA via des contrats structurés, des rapports de risque et des preuves d'alignement. Pertinent pour la fiabilité et la testabilité des agents, mais nécessite une adoption plus large pour confirmer sa robustesse.",
+   "score": 7.1
+  },
+  {
+   "id": "9612f9786da9e1ce",
+   "title": "Can Dialects Be Steered Like Languages? Sparse Neurons and Distributed Directions in Arabic LLMs",
+   "url": "https://huggingface.co/papers/2607.03936",
+   "summary": "A key challenge in Arabic NLP is the scarcity of dialectal data relative to Modern Standard Arabic (MSA), causing LLMs to overproduce MSA and struggle with dialectally accurate generation. From an interpretability perspective, this raises a fundamental question: where and how are dialectal features encoded within model internals, and can these representations be leveraged to improve dialect generation without fine-tuning? This study investigates two complementary inference-time approaches that serve simultaneously as interpretability probes and control mechanisms. First, we conduct a neuron-level analysis, identifying sparse neuron populations that encode dialect-specific features and showing that amplifying or suppressing these neurons can steer model outputs toward target dialects. Second, motivated by the entanglement of dialectal features at the single-neuron level, we apply a vector-steering approach that extracts dialect-specific activation directions and injects them during inference. Together, these methods illuminate the geometry of dialectal knowledge in Arabic LLMs and offer a principled, interpretability-grounded framework for dialect control without requiring dialect-specific fine-tuning.",
+   "published": "2026-07-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2607.03936"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "llm"
+   ],
+   "tldr": "Étude de l'encodage des dialectes arabes dans les LLM via analyse de neurones sparses et directions d'activation. Propose des méthodes d'inference-time pour contrôler les dialectes sans fine-tuning, combinant interpretabilité et contrôle génératif.",
+   "score": 7.0
+  },
+  {
+   "id": "be88b65e0bfb635e",
+   "title": "SmileLikeYe/agent-chief",
+   "url": "https://github.com/SmileLikeYe/agent-chief",
+   "summary": "Attention is your scarcest resource. Chief is the local-first layer that guards it — turning every agent, alert, and feed into one honest call: interrupt, or not.",
+   "published": "2026-07-04T15:28:56Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 453,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Agent-chief propose un framework local-first pour l'orchestration d'agents IA, optimisant la gestion des ressources (interruptions, priorisation) via une approche minimaliste. Intéressant pour les architectures multi-agents et la gestion efficace des appels LLM.",
+   "score": 6.8
+  },
+  {
+   "id": "40902c01df8632b2",
+   "title": "dongshuyan/compass-skills",
+   "url": "https://github.com/dongshuyan/compass-skills",
+   "summary": "司南：个性化 AI 任务总控 Skills 系统 /COMPASS: Personal Alignment Skills OS for AI Agents",
+   "published": "2026-06-15T06:28:04Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 603,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Système open-source en Python pour orchestrer des compétences personnalisées d'agents IA avec un focus sur l'alignement et la personnalisation. Approche prometteuse mais encore en phase de maturation, avec un manque de validation extensive.",
+   "score": 6.8
+  },
+  {
+   "id": "e7bb4694ee02e797",
+   "title": "SAM-MT: Real-Time Interactive Multi-Target Video Segmentation",
+   "url": "https://huggingface.co/papers/2607.08688",
+   "summary": "Modern Video Object Segmentation (VOS) involves tracking and segmenting user-specified targets. While recent approaches have achieved remarkable performance in single-target scenarios, extending them to multi-target settings typically involves replicating the single-target processing for each individual object, resulting in reduced frame rates (FPS) with unbounded latency as target count increases. Built upon Segment Anything 2 (SAM2), we propose SAM-MT, which addresses this by transforming the model into an interactive framework for real-time Multi-Target video segmentation. SAM-MT uses explicit queries to represent different individual targets, in parallel with a shared representation for global context. It employs decoupled masked attention to keep individual identities distinct from cross-target interference, and sparse memory for stable temporal evolution, along with specialized strategies for occlusion handling and overlap prevention. SAM-MT successfully decouples latency from the number of targets, achieving real-time speed on par with single-target baselines (>36 FPS for 10 targets) while maintaining SAM2's robust video segmentation performance.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.08688"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision"
+   ],
+   "tldr": "Extension de SAM2 pour la segmentation vidéo multi-cibles en temps réel (>36 FPS pour 10 cibles) via requêtes explicites, attention masquée découplée et mémoire sparse. Solution technique solide mais niche pour la vision par ordinateur.",
+   "score": 6.7
+  },
+  {
+   "id": "20711a2b808f5789",
+   "title": "ARDY: Autoregressive Diffusion with Hybrid Representation for Interactive Human Motion Generation",
+   "url": "https://huggingface.co/papers/2607.08741",
+   "summary": "Generating realistic 3D human motions in real-time within interactive applications is key for animation, simulation, and humanoid robotics. While recent offline motion generation approaches offer precise control via text and kinematic constraints, they lack the inference speed required for interactive settings. Conversely, existing online methods enable real-time synthesis but often sacrifice controllability or struggle with complex text semantics and long-horizon goals due to limited context windows. In this work, we introduce ARDY, a streaming generation framework that bridges this gap by enabling high-fidelity motion generation controllable via online text prompts and flexible kinematic constraints. ARDY employs a hybrid representation that combines explicit root features with a latent body embedding, balancing precise trajectory control with efficient generative learning. We propose a two-stage autoregressive transformer denoiser that features variable history context and supports conditioning on flexible, long-horizon kinematic constraints. By training on a large-scale motion capture dataset and being directly conditioned on text labels and kinematic constraints sampled from ground truth poses, ARDY natively learns controllable generation that supports online prompting and flexible long-horizon goals. Extensive evaluations on the HumanML3D benchmark and the large-scale, high-fidelity Bones Rigplay dataset demonstrate ARDY's high motion quality and constraint adherence, validating the efficacy of our key architectural decisions. Finally, we demonstrate the method's practical versatility through an interactive demo featuring dynamic text control, diverse keyframe pose constraints, path following, and interactive locomotion control via mouse and keyboard. Supplementary video results, code, and model releases can be found at https://research.nvidia.com/labs/sil/projects/ardy/.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.08741"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "ARDY combine une représentation hybride (features explicites + embedding latent) et un transformateur autorégressif à deux étages pour générer des mouvements humains 3D interactifs et contrôlables en temps réel. Pertinent pour la robotique et les systèmes multi-agents.",
+   "score": 6.7
+  },
+  {
+   "id": "414bbfbe6d6b5092",
+   "title": "OpenCoF: Learning to Reason Through Video Generation",
+   "url": "https://huggingface.co/papers/2607.08763",
+   "summary": "Reasoning has become a core capability for large models, especially when reliable decisions require understanding logical consequences. Recent video generation models offer a reasoning path distinct from previous Chain-of-Thought (CoT): reasoning can unfold through temporally connected frames, known as Chain-of-Frame (CoF) reasoning. However, existing video generators are primarily trained on general video corpora, still lacking diverse supervision and dedicated designs for CoF reasoning. To address this gap, we introduce OpenCoF, a framework comprising the OpenCoF-17K dataset, a reasoning video dataset spanning 11 task families, and Wan-CoF, a fine-tuned video model for studying whether diverse temporal supervision improves CoF behavior. Across four video reasoning benchmarks, Wan-CoF achieves considerable gains over the Wan2.2-I2V-A14B baseline. Building on this, we empirically explore more advanced designs for CoF capabilities, i.e., equipping the model with visual and textual reasoning tokens. This mechanism respectively captures low-level visual cues and high-level semantic priors for spatial and temporal reasoning. Through performance comparisons and attention analysis, we examine how these tokens contribute across model depth, denoising steps, space, and time. Our results suggest that stronger video reasoning requires both broad temporal supervision and explicit mechanisms for organizing intermediate reasoning state. We open-source the dataset, model, and code to facilitate future research on reasoning-oriented video generation.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.08763"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "vision"
+   ],
+   "tldr": "OpenCoF explore le raisonnement via des chaînes de frames (CoF) en générant des vidéos supervisées pour des tâches logiques, avec un modèle Wan-CoF améliorant les benchmarks existants. Intéressant pour les agents multimodaux et l'interaction homme-machine.",
+   "score": 6.7
+  },
+  {
+   "id": "d917fef5cc2b6aa1",
+   "title": "OPSD-V: On-Policy Self-Distillation for Post-Training Few-Step Autoregressive Video Generators",
+   "url": "https://huggingface.co/papers/2607.08766",
+   "summary": "We propose OPSD-V, an on-policy self-distillation paradigm for post-training few-step autoregressive (AR) video diffusion models. Existing few-step AR video generators can produce long videos with low latency, but still suffer from error accumulation and weakened motion dynamics during long autoregressive rollout. OPSD-V reduces long-horizon degradation while preserving the original few-step inference path. The key idea is to introduce real long-video data as temporal context during training and use it to provide dense trajectory-level supervision. Specifically, the student follows the exact inference-time rollout, generating each chunk conditioned on its own previously generated KV cache. In parallel, the teacher is evaluated at the same student-visited denoising states, but uses a cleaner AR-consistent temporal cache in which older history can be replaced by real-video context. This provides dense denoising-level corrective targets under on-policy AR cache dynamics, without changing the sampler, number of denoising steps, or inference-time cache mechanism. We apply OPSD-V to representative few-step AR video models, including Self-Forcing and LongLive. Experiments show consistent improvements in visual quality, motion dynamics, and VBenchLong scores. A user study with 10 participants comparing 20 video pairs shows that OPSD-V is preferred over the base models in 66.0% of overall-preference judgments (82.5% excluding ties).",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.08766"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "agents"
+   ],
+   "tldr": "OPSD-V utilise une distillation auto-supervisée en politique pour réduire les erreurs d'accumulation dans les générateurs vidéo autorégressifs, en intégrant des données réelles comme contexte temporel. Pertinent pour l'optimisation des pipelines de génération vidéo.",
+   "score": 6.7
+  },
+  {
+   "id": "177cacdfca58e039",
+   "title": "TESSERA v2: Scaling Pixel-wise Earth Foundation Models",
+   "url": "https://huggingface.co/papers/2607.03949",
+   "summary": "Pixel-wise Earth-observation (EO) foundation models are now achieving state-of-the-art performance via generated spatial embeddings. However, how these models scale and how best to spend a pretraining budget remain poorly understood. We present the largest controlled scaling study for EO to date: 395 training runs on 1,024 GH200 superchips within a fixed pixel-wise Barlow Twins family, each evaluated on 15 downstream tasks. We find that pretraining loss barely predicts downstream performance (|Pearson r| < 0.2), so selecting models by loss wastes a large share of the compute. We also find that, as the training budget grows, the encoder and the data should grow together while the projector stays fixed, which gives a simple rule for allocating compute. Using this rule, we train a family of pixel-wise models (0.5B and 1B, with a 2B model in training) and distill them into compact students for embeddings-as-data deployment. The 21-million-parameter distilled TESSERA v2-1B-M in aggregate outperforms all open and proprietary models tested, some of which are orders of magnitude larger. These students produce Matryoshka representations that are inexpensive to serve: a 16-dimensional prefix keeps 92% of the full 128-dimensional performance at 1/8 of the storage. Upon completion of training we plan to release v2 global embeddings covering 2017-2025. Together, these results give a concrete, empirically grounded recipe for scaling pixel-wise EO foundation models: train large encoders, select by downstream performance, and distil into flexible student models. All code will be released at https://github.com/ucam-eo/tessera.",
+   "published": "2026-07-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.03949"
+   },
+   "relevance": 5,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "TESSERA v2 propose une étude de scaling pour les modèles de fondation Earth observation, avec des règles pour allouer le budget de prétraining et des distillations compactes performantes. Intéressant pour l'optimisation des modèles de vision et l'efficacité computationnelle.",
+   "score": 6.7
+  },
+  {
+   "id": "21f325fc8b4b92a8",
+   "title": "Forward-Future/loopy",
+   "url": "https://github.com/Forward-Future/loopy",
+   "summary": "A library of practical AI-agent loops and an installable skill for finding, adapting, and designing repeatable agent workflows.",
+   "published": "2026-06-12T14:44:22Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2640,
+    "language": "JavaScript"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Bibliothèque JavaScript proposant des boucles agentiques pratiques et des workflows réutilisables pour concevoir des systèmes multi-agents. Approche pragmatique avec une adoption communautaire notable (2640 étoiles).",
+   "score": 6.5
+  },
+  {
+   "id": "dc0801106b8c74ee",
+   "title": "modiqo/cliare",
+   "url": "https://github.com/modiqo/cliare",
+   "summary": "CLI agent-readiness measurement, command-shape inference, and CI scorecards",
+   "published": "2026-06-13T00:38:35Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 712,
+    "language": "Rust"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Outil Rust pour évaluer la préparation des agents CLI via l'inférence de leur structure de commandes et des rapports CI. Intéressant pour l'optimisation des interfaces en ligne de commande, mais nécessite des benchmarks plus complets.",
+   "score": 6.5
+  },
+  {
+   "id": "40b4a13aa069e194",
+   "title": "DrugGen 2: A disease-aware language model for enhancing drug discovery",
+   "url": "https://huggingface.co/papers/2607.08404",
+   "summary": "Current computational approaches for drug design typically focus on generating molecules conditioned on specific targets or general molecular properties, often neglecting the influence of disease context on target behavior and therapeutic outcomes. To address this gap, we introduce DrugGen-2, a novel generative model that designs small molecules conditioned on both disease ontology and target protein sequences. DrugGen-2 was developed by fine-tuning a pre-trained GPT-2 model on a curated dataset of approved drugs linked to their diseases and targets, using a two-step strategy of supervised fine-tuning followed by reinforcement learning via group relative policy optimization (GRPO). This process was guided by reward functions optimizing for chemical validity, novelty, diversity, and high predicted binding affinity. When evaluated on five protein targets relevant to diabetic nephropathy, DrugGen-2 significantly outperformed baseline models (DrugGPT and DrugGen). It demonstrated a superior capacity to generate unique molecules, exhibited greater structural similarity to approved drugs, and achieved improved predicted binding affinities across all targets. Molecular docking analyses further supported these findings, identifying candidate ligands with strong binding potential, including compounds with predicted affinities (-9.917, -9.485, and -9.367) exceeding those of reference drugs such as enalapril for angiotensin-converting enzyme (-8.283). By integrating disease-specific context into molecular generation, DrugGen-2 advances AI-assisted drug discovery, offering a powerful tool for de novo design and drug repurposing that accounts for the complex interplay between diseases and molecular targets.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2607.08404"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Modèle génératif (DrugGen-2) conditionné sur la maladie et les protéines pour la découverte de médicaments, combinant fine-tuning et RL (GRPO). Surpasse les baselines sur des cibles protéiques spécifiques mais reste spécialisé en drug discovery.",
+   "score": 6.4
+  },
+  {
+   "id": "75d3de948c63752c",
+   "title": "LongE2V: Long-Horizon Event-based Video Reconstruction, Prediction, and Frame Interpolation with Video Diffusion Models",
+   "url": "https://huggingface.co/papers/2607.08770",
+   "summary": "Recovering high-quality video from sparse event streams is a challenging task. Regression methods often blur textures, while existing generative models struggle with long-term stability. We propose LongE2V, a novel approach that leverages pre-trained video diffusion priors to jointly handle event-based video reconstruction, prediction, and frame interpolation. By fine-tuning a foundational video model, our approach achieves high data efficiency and superior perceptual quality. We introduce Autoregressive Unrolling and Adaptive Context Switching to mitigate temporal drift in extremely long sequences. We also propose Reencoding Alignment with Cross Residual Correction to ensure precise bidirectional consistency during frame interpolation. Furthermore, Event Voxel Density Augmentation ensures robustness across varying sensor resolutions. Extensive experiments on real-world benchmarks demonstrate that LongE2V outperforms state-of-the-art methods across all three tasks, exhibiting exceptional temporal coherence and zero-shot generalization. Project page: https://cdfan0627.github.io/LongE2V-page/",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2607.08770"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Modèle de diffusion vidéo (LongE2V) pour reconstruction, prédiction et interpolation à partir de flux d'événements, avec mécanismes de cohérence temporelle (Autoregressive Unrolling, Adaptive Context Switching). Résultats SOTA mais niche en vision événementielle.",
+   "score": 6.4
+  },
+  {
+   "id": "13b2ad9c3d4891d8",
+   "title": "Ideas Have Genomes: Benchmarking Scientific Lineage Reasoning and Lineage-Grounded Idea Generation",
+   "url": "https://huggingface.co/papers/2607.08758",
+   "summary": "Scientific ideas rarely start from a blank page. They inherit mechanisms, repair known limitations, and recombine pieces of earlier work, much like biological genomes. Current benchmarks still say little about whether AI systems can follow this inheritance structure. We present IdeaGene-Bench (IG-Bench), a benchmark for scientific lineage reasoning and lineage-grounded idea generation. IG-Bench is organized around the IdeaGene framework: each paper or proposal is represented as a set of minimal, typed, evidence-grounded Idea Genome objects, and a GenomeDiff aligns these objects to record inheritance, mutation, loss, external import, and novel insertion under six operational evolutionary dynamics. The benchmark contains 1,961 golden lineage traces, 1,085 curated Idea Genome objects, and 920 pairwise GenomeDiff records across 10 scientific domains. It supports two evaluations. IG-Exam (42 task types, 1,029 instances) tests closed-form lineage reasoning across Idea Genome abstraction, inheritance tracing, evolutionary reasoning, and lineage verification. IG-Arena evaluates generation with a lineage-conditioned Population-Evolution Score(PES), asking whether a proposal can be inserted as a coherent descendant of a given lineage population: it should inherit the right Idea Genome objects, vary meaningfully from nearby work, and offer selection value for future research. Experiments on 14 LLM-based scientists expose a compositional bottleneck. The strongest system reaches only 27.3% exact accuracy on lineage reasoning, and structured lineage context reshuffles system rankings rather than helping every participant uniformly.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2607.08758"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "autre"
+   ],
+   "tldr": "IdeaGene-Bench introduit un cadre pour évaluer le raisonnement scientifique via des génomes d'idées et des traces d'héritage, avec un benchmark de 1 961 traces. Original mais niche, utile pour l'interprétabilité des processus créatifs en IA.",
+   "score": 6.4
+  },
+  {
+   "id": "2ceaab3c072109b4",
+   "title": "Infinite Worlds with Versatile Interactions",
+   "url": "https://huggingface.co/papers/2607.07534",
+   "summary": "We present LingBot-World 2.0 (also known as LingBot-World-Infinity), an advanced iteration of LingBot-World featuring four distinct upgrades. (1) Our model achieves an unbounded interaction horizon while maintaining consistent output quality, benefiting from a carefully crafted causal pretraining paradigm. (2) Through distilling a real-time variant from the base model, our system guarantees rapid response time, sufficient to drive 720p video streams at 60 fps. (3) Compared to the previous version, this update introduces highly diverse interactive elements, comprising a broader spectrum of actions (e.g., attacking, archery, spell-casting, and shooting) alongside a richer variety of text-driven events. (4) We pioneer the integration of an agentic harness within the domain of world modeling, wherein a pilot agent is tasked with planning and executing character behaviors, while a director agent is responsible for synthesizing novel environmental elements as the scene progresses. Additionally, to facilitate a shared experience, we develop an interface that permits multiple players to simultaneously immerse themselves in this vivid world simulator. We pair our primary 14B model with a lightweight 1.3B counterpart, which supports effortless deployment on a single GPU.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2607.07534"
+   },
+   "relevance": 6,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "architecture",
+    "autre"
+   ],
+   "tldr": "LingBot-World 2.0 introduit un simulateur d'environnement interactif illimité avec agents planificateurs (pilote/directeur) et actions variées, optimisé pour 720p/60fps. Plus démonstration technique qu'avancée scientifique.",
+   "score": 6.4
+  },
+  {
+   "id": "5577162f1755b34e",
+   "title": "NotASithLord/peerd",
+   "url": "https://github.com/NotASithLord/peerd",
+   "summary": "The first AI agent harness native to the browser. A browser extension that runs a full agent loop where you already work: it drives your tabs, spins up sandboxed compute (JS notebooks, WASM Linux VMs, client-side apps), and shares what it builds peer-to-peer. BYOK, no backend, no telemetry.",
+   "published": "2026-06-22T05:55:13Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 342,
+    "language": "JavaScript"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Peerd est une extension navigateur exécutant un agent IA natif côté client, avec sandboxing (JS, WASM, VMs) et partage pair-à-pair, sans backend ni télémétrie. Intéressant pour l'exécution locale d'agents et la confidentialité.",
+   "score": 6.2
+  },
+  {
+   "id": "d5206de301dda43b",
+   "title": "ksimback/looper",
+   "url": "https://github.com/ksimback/looper",
+   "summary": "Design visual, review-gated agent loops for Claude Code before you run them.",
+   "published": "2026-06-18T19:44:20Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 660,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Interface visuelle Python pour concevoir et valider des boucles d'agents avant exécution, avec revue par les pairs intégrée. Facilite l'itération sur des workflows complexes, mais dépend fortement de l'écosystème Claude Code.",
+   "score": 6.2
+  }
+ ]
+}
