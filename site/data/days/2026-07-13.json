@@ -1,0 +1,542 @@
+{
+ "date": "2026-07-13",
+ "digest": {
+  "headline": "KronQ révolutionne la quantification des LLMs avec une approximation Hessienne de Kronecker, surpassant GPTQ/GPTAQ en précision 2-bit",
+  "overview": "La veille du 13 juillet 2026 met en lumière des avancées majeures en optimisation des LLMs, en architectures multimodales et en simulation multi-agents. Les travaux sur la quantification, l'interprétabilité et l'efficacité computationnelle dominent, avec des applications concrètes pour le déploiement et l'analyse des modèles.",
+  "highlights": [
+   {
+    "title": "Quantification des LLMs : KronQ optimise l'allocation de précision",
+    "text": "KronQ introduit une méthode de quantification post-entraînement pour les LLMs (ex: LLaMA-3-70B en 2-bit) en utilisant une approximation Hessienne de Kronecker pour modéliser la covariance des gradients. Cette approche réduit la variance des poids et améliore l'allocation de précision inter-couches, surpassant GPTQ et GPTAQ. Crucial pour le déploiement de modèles massifs sur des infrastructures limitées en mémoire."
+   },
+   {
+    "title": "Modèles de vision généralistes : GenCeption et l'apprentissage spatiotemporel",
+    "text": "GenCeption exploite un backbone de génération vidéo par diffusion pour créer un modèle de vision généraliste performant sur des tâches variées (profondeur, segmentation, pose 3D). En tirant parti des priors spatiotemporels et de l'alignement vision-langage, il rivalise avec des modèles spécialisés. Une piste prometteuse pour unifier les architectures multimodales sans entraînement dédié."
+   },
+   {
+    "title": "Interprétabilité et adaptation des LLMs : lacunes et solutions",
+    "text": "Deux études abordent des limites clés des LLMs : l'écart *Knowing-Using* (où les connaissances mémorisées ne sont pas exploitées efficacement) et l'adaptation aux longs contextes. *Self-patching* et *S-TTT* proposent des heuristiques simples pour récupérer jusqu'à 75% des gains perdus, respectivement via le routage des connaissances et l'adaptation ciblée en test-time. Approches pragmatiques pour améliorer la robustesse des modèles."
+   },
+   {
+    "title": "Simulation multi-agents : Flow-ERD et la diversité réaliste",
+    "text": "Flow-ERD combine *Flow Matching* et une distillation régulée par entropie pour simuler un trafic routier réaliste et diversifié, évitant la collapse sur des modes dominants. Évalué sur WOSAC, il améliore le compromis réalisme-diversité, un enjeu critique pour les applications en robotique et planification urbaine. Méthode applicable à d'autres domaines nécessitant des comportements multi-agents variés."
+   },
+   {
+    "title": "Modèles hybrides et multilingues : Soofi S et l'efficacité MoE",
+    "text": "Soofi S 30B-A3B est un modèle MoE hybride (Mamba + Transformer) optimisé pour l'anglais et l'allemand, avec une activation parcimonieuse (3B/30B) et une efficacité en contexte long. Il surpasse des modèles denses européens sur des benchmarks multilingues et code, illustrant l'intérêt des architectures hybrides pour les langues à ressources limitées."
+   },
+   {
+    "title": "Outils pour praticiens : optimisation et développement agentique",
+    "text": "Deux projets GitHub se distinguent : *skills* (boîte à outils Python pour le fine-tuning et la distillation) et *clodex-ide* (IDE agentique local-first pour le développement logiciel autonome). Bien que *clodex-ide* manque de validation externe, ces outils répondent à des besoins concrets en optimisation et automatisation, reflétant une tendance vers des solutions pragmatiques pour les ingénieurs."
+   }
+  ],
+  "trend": "Les avancées se concentrent sur l'optimisation des modèles existants (quantification, interprétabilité, efficacité) plutôt que sur des architectures radicalement nouvelles. L'intégration de priors multimodaux (vidéo, vision) et l'amélioration des simulations multi-agents suggèrent une maturation des applications pratiques, avec un accent sur la robustesse et la scalabilité."
+ },
+ "items": [
+  {
+   "id": "d36886f55e90da68",
+   "title": "KronQ: LLM Quantization via Kronecker-Factored Hessian",
+   "url": "https://huggingface.co/papers/2607.07964",
+   "summary": "Post-training quantization (PTQ) is a widely adopted technique for compressing large language models (LLMs) without retraining. Existing second-order PTQ methods, including GPTQ, construct quantization objectives exclusively from input activation statistics, effectively assuming that all output channels contribute equally to the layer-wise reconstruction objective. We propose KronQ, a PTQ framework that challenges this assumption by introducing the gradient covariance into the quantization pipeline. Under the Kronecker-factored Hessian approximation, the quantization loss depends jointly on both the activation and gradient covariances, and KronQ exploits this at two complementary levels. (1) KronQ introduces bidirectional incoherence processing, extending the existing input-side random rotation to the output dimension using the gradient covariance, reducing weight magnitude variance across both input and output dimensions. (2) KronQ derives a new sensitivity metric for inter-layer mixed-precision allocation, driven by the gradient and activation Hessian traces. Notably, in the case of 2-bit weight-only quantization on LLaMA-3-70B, while GPTQ and GPTAQ diverge or produce degenerate quantizations (>2000 perplexity on WikiText-2), KronQ achieves 7.93 perplexity.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.07964"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "KronQ améliore la quantification post-entraînement des LLMs (ex: LLaMA-3-70B en 2-bit) en intégrant la covariance des gradients via une approximation Hessienne de Kronecker, réduisant la variance des poids et optimisant l'allocation de précision inter-couches. Résultats supérieurs à GPTQ/GPTAQ.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La quantification post-entraînement (PTQ) des grands modèles de langage (LLM) vise à compresser ces modèles sans réentraînement, mais les méthodes existantes comme GPTQ se basent uniquement sur les statistiques des activations d'entrée. Cela suppose que toutes les sorties contribuent de manière égale à l'objectif de reconstruction, ce qui peut limiter l'efficacité de la quantification, notamment pour les précisions très faibles (ex. 2 bits).",
+    "methode": "KronQ propose une approche novatrice en intégrant la covariance des gradients dans le pipeline de quantification. En utilisant une approximation de la matrice Hessienne via une factorisation de Kronecker, KronQ modélise la perte de quantification comme dépendant à la fois des covariances des activations et des gradients. Deux innovations clés sont introduites : (1) un traitement d'incohérence bidirectionnel, étendant la rotation aléatoire des entrées aux dimensions de sortie via la covariance des gradients, réduisant ainsi la variance des magnitudes des poids ; (2) une nouvelle métrique de sensibilité pour l'allocation de précision mixte entre couches, basée sur les traces de la Hessienne des gradients et des activations.",
+    "resultats": "Sur le modèle LLaMA-3-70B avec une quantification à 2 bits (poids uniquement), KronQ surpasse largement les méthodes existantes : alors que GPTQ et GPTAQ divergent ou produisent des quantifications dégénérées (perplexité > 2000 sur WikiText-2), KronQ atteint une perplexité de 7,93. Ces résultats démontrent une amélioration significative de la stabilité et de la performance pour des précisions extrêmes.",
+    "limites": "Le document ne détaille pas les coûts computationnels supplémentaires liés au calcul des covariances de gradients, ni leur impact sur le temps de quantification. De plus, l'efficacité de KronQ sur d'autres architectures ou tâches (hors modélisation du langage) reste à valider. Enfin, l'hypothèse de la factorisation de Kronecker pourrait ne pas capturer toutes les dépendances complexes dans certains cas.",
+    "verdict": "KronQ mérite une attention particulière pour son approche théorique solide et ses résultats impressionnants en quantification extrême, mais son adoption dépendra de sa scalabilité et de sa généralisation à d'autres contextes."
+   }
+  },
+  {
+   "id": "9e45e4e13a87811c",
+   "title": "Video Generation Models are General-Purpose Vision Learners",
+   "url": "https://huggingface.co/papers/2607.09024",
+   "summary": "Driven by next-token prediction, NLP shifted from task-specific models into powerful generalist foundation models. What, then, is the equivalent catalyst needed to achieve a general-purpose model in computer vision? In this paper, we contend that large-scale text-to-video generation serves as a strong pre-training paradigm for computer vision, providing the necessary spatiotemporal priors, vision-language alignment, and scalability required for general visual intelligence. We introduce GenCeption, which leverages a pre-trained video generative diffusion backbone to define a feed-forward perception model, capable of performing various vision tasks steered by text instructions. Empirical results demonstrate that GenCeption achieves state-of-the-art performance across a diverse suite of tasks, including depth, surface normal, and camera pose estimation, expression-referring segmentation, and 3D keypoint prediction, often matching or surpassing specialized models (e.g. DepthAnything3, SAM3, D4RT, VGGT-Omega, Sapiens, David, Genmo, and Lotus-2). Furthermore, the video generative pretrained backbone outperforms alternative pretraining paradigms (e.g., V-JEPA, and Video MAE) under comparable settings. Importantly, GenCeption exhibits preliminary data and model scaling properties along with exceptional data efficiency, where it achieves comparable performance with leading models like D4RT and VGGT-Omega with 7 to 500 less training data. Finally, GenCeption also exhibits intriguing emergent behaviors: a model trained exclusively on synthetic human videos generalizes to real-world footage and out-of-distribution object categories (e.g., animals and robots). These findings suggest that video generation is not merely a synthesis tool, but a foundational path toward generalist vision intelligence for the physical world. Project page: https://genception.github.io",
+   "published": "2026-07-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2607.09024"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "Propose GenCeption, un modèle de vision généraliste basé sur un backbone de génération vidéo par diffusion, capable de performer sur des tâches variées (estimation de profondeur, segmentation, pose 3D) avec des performances comparables ou supérieures à des modèles spécialisés, en exploitant les priors spatiotemporels et l'alignement vision-langage des modèles de vidéo.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Le domaine de la vision par ordinateur manque d'un modèle généraliste capable de traiter une variété de tâches visuelles sans nécessiter des architectures ou des entraînements spécifiques à chaque tâche. Actuellement, les modèles spécialisés dominent, limitant l'efficacité et la scalabilité des solutions en vision artificielle. Ce papier propose une approche pour combler ce vide en s'inspirant des progrès réalisés en NLP avec les modèles génératifs généralistes.",
+    "methode": {
+     "approche_generale": "Les auteurs suggèrent que la génération vidéo à grande échelle, basée sur des modèles de diffusion pré-entraînés, peut servir de paradigme de pré-entraînement pour la vision par ordinateur. Contrairement aux méthodes traditionnelles (comme les auto-encodeurs ou les modèles contrastifs), cette approche exploite les *spatiotemporal priors* (connaissances implicites sur l'espace et le temps) et l'alignement vision-langage pour créer un modèle polyvalent.",
+     "architecture": "GenCeption utilise un *backbone* de diffusion générative vidéo pré-entraîné (non détaillé dans le résumé, mais probablement inspiré de modèles comme Stable Video Diffusion ou Sora). Ce backbone est adapté pour effectuer des tâches de perception en *feed-forward* (sans fine-tuning itératif), guidées par des instructions textuelles. Le modèle est capable de résoudre des tâches variées (estimation de profondeur, segmentation, prédiction de poses 3D, etc.) en réutilisant les représentations apprises lors de la génération vidéo.",
+     "entrainement": "Le pré-entraînement repose sur des données vidéo synthétiques et réelles, avec une emphase sur la scalabilité et l'efficacité des données. Les auteurs soulignent que cette méthode surpasse d'autres paradigmes de pré-entraînement (comme V-JEPA ou Video MAE) en termes de performance et de généralisation, même avec des quantités de données réduites.",
+     "details_techniques_manquants": "Le résumé ne précise pas les architectures exactes du backbone de diffusion, les hyperparamètres clés, ni les détails sur les jeux de données utilisés pour le pré-entraînement ou l'évaluation. Les mécanismes de *steering* par instructions textuelles (comment le texte guide la tâche) restent également flous."
+    },
+    "resultats": {
+     "performances": "GenCeption atteint des performances *state-of-the-art* sur plusieurs tâches, souvent en surpassant des modèles spécialisés comme DepthAnything3 (estimation de profondeur), SAM3 (segmentation), ou D4RT (prédiction de poses 3D). Par exemple, il rivalise avec VGGT-Omega et D4RT tout en utilisant 7 à 500 fois moins de données d'entraînement, démontrant une efficacité remarquable.",
+     "generalisation": "Le modèle montre des capacités émergentes de généralisation : entraîné uniquement sur des vidéos synthétiques de humains, il se transfère avec succès à des vidéos réelles et à des catégories d'objets hors distribution (animaux, robots). Cela suggère que les représentations apprises capturent des invariants visuels robustes.",
+     "comparaisons": "Sous des conditions comparables, le backbone génératif vidéo surpasse les alternatives comme V-JEPA (apprentissage par prédiction de patches masqués) ou Video MAE (auto-encodeurs masqués), confirmant l'hypothèse que la génération vidéo est un paradigme de pré-entraînement supérieur pour la vision générale."
+    },
+    "limites": {
+     "manque_de_details": "Le résumé omet des informations critiques pour évaluer la reproductibilité : taille et diversité des jeux de données, coût computationnel du pré-entraînement, ou métriques précises pour certaines tâches. Sans ces éléments, il est difficile de juger de la robustesse des résultats.",
+     "biais_potentiels": "La généralisation à des objets hors distribution (animaux, robots) est intrigante, mais le résumé ne précise pas si ces résultats sont anecdotiques ou systématiques. De plus, l'utilisation de données synthétiques pourrait introduire des biais non détectés dans les représentations apprises.",
+     "scepticisme_methodologique": "L'affirmation selon laquelle la génération vidéo est *le* catalyseur pour une IA visuelle généraliste reste à prouver. D'autres approches (comme les modèles multimodaux ou les architectures hybrides) pourraient offrir des avantages complémentaires non explorés ici."
+    },
+    "verdict": "Ce travail mérite une attention sérieuse pour son approche innovante et ses résultats prometteurs, mais son impact réel dépendra de la transparence des détails techniques et de la validation indépendante de ses performances."
+   }
+  },
+  {
+   "id": "8a9bd5b68e42854b",
+   "title": "Flow-ERD: Agent-type Aware Flow Matching with Entropy-Regularized Distillation for Diverse Traffic Simulation",
+   "url": "https://huggingface.co/papers/2607.06957",
+   "summary": "Realistic and diverse traffic simulation is essential to autonomous driving development. Yet prevailing benchmarks predominantly reward realism, and recent methods have optimized accordingly, leaving diversity underexplored. We introduce Flow-ERD, a multi-agent simulator that pursues realism and diversity jointly. Its backbone, Agent-Type Aware Flow Matching (AFM), couples flow matching's multi-modal expressiveness with type-specific kinematic execution. It preserves fine-grained diversity while keeping motions consistent with each agent type. A second stage, Entropy-Regularized Distillation (ERD), fine-tunes the closed-loop rollout distribution with an entropy-regularized reverse-KL objective. This mitigates covariate shift while explicitly preventing collapse onto high-density modes. We evaluate Flow-ERD with a log-free diversity metric alongside standard realism scores. Flow-ERD ranks first on the WOSAC test benchmark and dominates the realism--diversity Pareto front among reproducible baselines. Our project page is available https://seulbinhwang.github.io/flow-erd-project-page/{here}.",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.06957"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Flow-ERD propose un simulateur multi-agents pour la simulation de trafic routier réaliste et diversifiée, combinant le *Flow Matching* avec une distillation régulée par entropie (*ERD*) pour éviter la collapse sur des modes dominants. Méthode évaluée sur le benchmark WOSAC avec des gains significatifs sur le front Pareto réalisme-diversité.",
+   "score": 8.2,
+   "deep_analysis": {
+    "probleme": "La simulation réaliste et diversifiée du trafic routier est cruciale pour le développement des véhicules autonomes. Cependant, les benchmarks actuels privilégient principalement le réalisme, ce qui conduit les méthodes récentes à négliger la diversité des scénarios simulés, limitant ainsi leur utilité pour tester la robustesse des systèmes autonomes.",
+    "methode": "Flow-ERD propose une approche en deux étapes pour concilier réalisme et diversité. D'abord, *Agent-Type Aware Flow Matching (AFM)* combine la capacité multi-modale des méthodes de *flow matching* avec une exécution cinématique spécifique à chaque type d'agent (voiture, piéton, etc.), préservant ainsi une diversité fine tout en respectant les contraintes physiques. Ensuite, *Entropy-Regularized Distillation (ERD)* affine la distribution des trajectoires en boucle fermée via une optimisation basée sur une divergence KL inverse régularisée par l'entropie, évitant ainsi l'effondrement sur des modes de haute densité et atténuant le *covariate shift*.",
+    "resultats": "Flow-ERD se classe premier sur le benchmark WOSAC (Waymo Open Sim Agents Challenge) et domine le front de Pareto réalisme-diversité parmi les méthodes reproductibles. Les auteurs introduisent également une métrique de diversité sans logarithme pour évaluer quantitativement la variété des scénarios générés, bien que les chiffres précis ne soient pas détaillés dans le résumé disponible.",
+    "limites": "Le résumé ne précise pas les hypothèses sous-jacentes (ex. : dépendance aux données d'entraînement, généralisation à des environnements non vus) ni les coûts computationnels de l'approche. De plus, l'absence de détails sur la métrique de diversité rend difficile une évaluation critique de son efficacité réelle. Enfin, la reproductibilité des résultats dépend de l'accès aux données et implémentations, non explicitement garantis ici.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante combinant *flow matching* et régularisation entropique, mais son impact réel dépendra de la validation expérimentale approfondie et de la transparence des implémentations."
+   }
+  },
+  {
+   "id": "0d59a7276e7630d9",
+   "title": "Towards Mechanistically Understanding Why Memorized Knowledge Fails to Generalize in Large Language Model Finetuning",
+   "url": "https://huggingface.co/papers/2607.08393",
+   "summary": "Fine-tuning LLMs to inject new knowledge faces a critical challenge: LLMs can quickly memorize new facts, yet fail to use them for downstream reasoning tasks. We formalize this failure as the \\textbf{Knowing--Using Gap}, characterized by an accuracy gap and a temporal lag between memorization and generalization. To understand this phenomenon, we fine-tune LLMs with unseen knowledge and monitor the spatial permeation dynamics of the knowledge internally using a novel intervention technique called self-patching. Self-patching identifies activation locations where relocating representations substantially improves failed generalization cases. These results are consistent with a knowledge-circuit misalignment hypothesis: memorized representations can exist internally but may not be routed to computation-effective layers. To demonstrate the practicality of this diagnostic finding, we design a simple heuristic strategy which recovers 58--75\\% of the oracle headroom in generalization failure. Experiments are done cross-domain for the robustness of this finding.",
+   "published": "2026-07-09T08:17:28.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.08393"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étude sur l'écart *Knowing-Using* en fine-tuning des LLMs : les connaissances mémorisées ne sont pas toujours routées vers des couches computationnelles efficaces. La technique *self-patching* identifie ces lacunes et propose une heuristique simple pour récupérer 58-75% des gains perdus.",
+   "score": 8.2,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un défi majeur du fine-tuning des grands modèles de langage (LLMs) : l'incapacité des modèles à généraliser des connaissances nouvellement mémorisées pour des tâches de raisonnement en aval. Le problème est formalisé sous le nom de *Knowing–Using Gap*, caractérisé par un écart d'exactitude et un délai temporel entre la mémorisation des faits et leur utilisation efficace dans des contextes variés.",
+    "methode": "Les auteurs proposent une approche pour analyser les dynamiques internes des LLMs lors de l'injection de connaissances inédites. Ils utilisent une technique innovante appelée *self-patching*, qui consiste à identifier les emplacements d'activation où la relocalisation des représentations internes améliore significativement les cas de généralisation défaillants. Cette méthode permet de cartographier la propagation spatiale des connaissances au sein du modèle. Les résultats soutiennent l'hypothèse d'un *désalignement des circuits de connaissance* : les représentations mémorisées peuvent exister sans être acheminées vers les couches computationnellement efficaces pour le raisonnement. Pour valider cette hypothèse, des expériences sont menées en cross-domaine afin d'assurer la robustesse des observations.",
+    "resultats": "Les expériences révèlent que le *self-patching* permet de récupérer entre 58 % et 75 % de la marge d'amélioration théorique (*oracle headroom*) dans les cas de généralisation défaillante. Ces résultats confirment que le problème de généralisation est lié à un routage inefficace des représentations internes plutôt qu'à une absence de mémorisation. Les chiffres clés démontrent une amélioration tangible, bien que partielle, des performances en raisonnement.",
+    "limites": "Le contenu disponible ne précise pas les architectures exactes des modèles testés ni les jeux de données utilisés, ce qui limite la reproductibilité des résultats. De plus, l'hypothèse du *désalignement des circuits* reste une interprétation théorique qui nécessiterait des validations supplémentaires sur des tâches plus complexes ou des modèles variés. Enfin, la méthode de *self-patching* pourrait introduire des biais ou des artefacts non encore identifiés.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche technique novatrice et ses implications pratiques dans l'amélioration de la généralisation des LLMs, malgré des limites méthodologiques à explorer davantage."
+   }
+  },
+  {
+   "id": "6ece59a5cd8e9fdd",
+   "title": "Self-Guided Test-Time Training for Long-Context LLMs",
+   "url": "https://huggingface.co/papers/2607.09415",
+   "summary": "Long-context processing has become increasingly important for large language models (LLMs), but simply extending the context window does not guarantee effective utilization of long inputs. As input length grows, accuracy often degrades, indicating that models still struggle to identify and use the evidence most relevant to a question. A promising way to improve long-context utilization is test-time training (TTT), which treats the test context as a training example for instance-specific parameter adaptation. However, applying TTT to the entire long context is prohibitively expensive, while adapting on randomly sampled spans introduces severe noise. Because most spans in a long context are irrelevant to the specific question, training on them may even degrade the base model's performance. Our preliminary study shows that TTT is highly sensitive to training-span quality: on LongBench-v2, TTT on randomly sampled spans hurts performance, whereas TTT on oracle spans substantially improves it. Motivated by this, we propose a simple method, Self-Guided TTT (S-TTT): before adaptation, the model identifies the evidence spans it should learn from, and the standard language-modeling training objective is applied only to those selected spans. On two challenging long-context reasoning benchmarks, LongBench-v2 and LongBench-Pro, S-TTT improves accuracy for both Qwen3-4B-Thinking-2507 and Llama-3.1-8B-Instruct, achieving up to a 15% relative improvement.",
+   "published": "2026-07-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.09415"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "S-TTT améliore l'utilisation des longs contextes en LLMs en guidant l'adaptation *test-time* sur les spans pertinents (identifiés par le modèle lui-même), évitant les dégradations liées aux spans aléatoires. Méthode simple et efficace pour les benchmarks comme LongBench-v2.",
+   "score": 8.2
+  },
+  {
+   "id": "3ad306b404969d53",
+   "title": "mereyabdenbekuly-ctrl/clodex-ide",
+   "url": "https://github.com/mereyabdenbekuly-ctrl/clodex-ide",
+   "summary": "Local-first, zero-trust agentic IDE for verifiable autonomous software development.",
+   "published": "2026-07-12T10:35:44Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 691,
+    "language": "TypeScript"
+   },
+   "relevance": 9,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "IDE agentique local-first pour le développement autonome de logiciels, avec une approche zero-trust. Original et potentiellement utile, mais manque de détails techniques ou de validation externe.",
+   "score": 7.7
+  },
+  {
+   "id": "95c40bcbb98f0175",
+   "title": "Long-Horizon-Terminal-Bench: Testing the Limits of Agents on Long-Horizon Terminal Tasks with Dense Reward-Based Grading",
+   "url": "https://huggingface.co/papers/2607.08964",
+   "summary": "AI agents have become capable of autonomously completing short, well-specified tasks. However, existing terminal benchmarks largely focus on simple problems that finish within minutes and are evaluated only by their final outcome. This setup overlooks intermediate progress and partial solutions, yielding sparse reward signals and an incomplete picture of agent capability. We introduce Long-Horizon-Terminal-Bench, a terminal benchmark of 46 long-horizon tasks spanning nine categories, including experiment reproduction, software engineering, multimodal analysis, interactive games, and scientific computing. Each task follows a Terminal-Bench-style setup with a reference solution or simulation engine, but is further decomposed into fine-grained graded subtasks. This design enables dense intermediate rewards and partial credit, allowing evaluation to capture not only whether an agent reaches the final goal, but also how far it progresses on open-ended workflows. Tasks in Long-Horizon-Terminal-Bench typically require hundreds of episodes and minutes to hours of execution, stressing long-horizon planning, long-context management, and iterative debugging rather than one-shot problem solving. We evaluate 15 frontier models and find that agents consume on average 9.9M tokens per task, with roughly 231 episodes and 85.3 minutes of execution time per run, making Long-Horizon-Terminal-Bench more demanding than prior terminal-based benchmarks. Even the strongest tested model achieves 15.2% pass@1 at a partial-reward threshold of 0.95 and 10.9% at a perfect-reward threshold of 1.0, while the mean pass rate across models is 4.3% and 1.7% under the two thresholds, respectively. These results reveal headroom for improvement. We further analyze failure modes and error patterns, and release Long-Horizon-Terminal-Bench to support future progress on long-horizon terminal agents.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 32,
+    "arxiv_id": "2607.08964"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Long-Horizon-Terminal-Bench évalue les agents IA sur 46 tâches longues et complexes (expérimentations, jeux, calcul scientifique) avec des récompenses intermédiaires denses, révélant les limites en planification long terme et gestion de contexte. Benchmark exigeant et bien structuré.",
+   "score": 7.6
+  },
+  {
+   "id": "e2f6e8e9c54d75fd",
+   "title": "A Sovereign, Open-Source Foundation Model for German and English",
+   "url": "https://huggingface.co/papers/2607.09424",
+   "summary": "We present Soofi S 30B-A3B, a sovereign, open-source Mixture-of-Experts (MoE) hybrid Mamba Transformer foundation model for German and English. Its hybrid design activates only 3B of 30B parameters per token and keeps the inference cache near-constant as context grows, giving it a decisive throughput advantage over dense models for long-context, high-concurrency deployment. Pretrained on roughly 27 trillion tokens with deliberately up-weighted German, Soofi S matches dense 14 to 27B models on aggregate English and German benchmarks while achieving the best code aggregates in both languages among 17 open base models, and outperforms every European sovereign baseline in our comparison, including ones far larger in active parameters. Among fully open models, Soofi S obtains the highest English and German evaluation scores, ahead of Olmo 3 32B and Apertus 70B. Soofi S was built end-to-end on the German Industrial AI Cloud, a sovereign HPC scale AI infrastructure operated by Deutsche Telekom in Munich. Soofi S will be released under highly permissive, open-access terms: weights, selected intermediate checkpoints, full per-source data accounting, hyperparameters, and training and evaluation code. Where source licenses permit, data-construction artifacts are released under permissive licenses; commercially licensed sources are documented with aggregate statistics and exact mixture accounting.",
+   "published": "2026-07-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2607.09424"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "produit"
+   ],
+   "tldr": "Soofi S 30B-A3B est un modèle MoE hybride (Mamba + Transformer) open-source optimisé pour l'anglais et l'allemand, avec une activation parcimonieuse (3B/30B) et une efficacité en contexte long, surpassant des modèles denses et européens comparables sur des benchmarks multilingues et code.",
+   "score": 7.6
+  },
+  {
+   "id": "388fd4270e920052",
+   "title": "Scalable Visual Pretraining for Language Intelligence",
+   "url": "https://huggingface.co/papers/2607.09657",
+   "summary": "The rapid progress of large foundation models has been driven predominantly by pretraining on large-scale text corpora. However, many forms of knowledge are conveyed through visual representations, where figures, typeset equations, and page layouts carry rich information that cannot be faithfully or completely captured by text alone. Yet current pretraining approaches discard these visual cues by converting visually rich sources, such as documents and web pages, into plain text for learning language intelligence. This paper challenges the default assumption that language models must be trained on text-only representations and shows that Visual Pretraining is a scalable learner for foundation model intelligence. To this end, we conduct a systematic study of unsupervised visual pretraining paradigms that directly leverage visual documents without text extraction. Across multiple backbones and benchmarks, visual pretraining on the same underlying corpora consistently outperforms text-only pretraining, offering an efficient pathway to scalable language intelligence.",
+   "published": "2026-07-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2607.09657"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Démontre que l'entraînement visuel direct (sans OCR) sur des documents riches (figures, équations) améliore significativement les performances des modèles de langage par rapport à un entraînement textuel seul, ouvrant une voie scalable pour l'intelligence artificielle multimodale.",
+   "score": 7.6
+  },
+  {
+   "id": "d1b23b86daddeb75",
+   "title": "AI-Builder-Club/skills",
+   "url": "https://github.com/AI-Builder-Club/skills",
+   "summary": "Codebase harness + loop engineer",
+   "published": "2026-06-14T13:47:44Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 856,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Boîte à outils Python pour l'optimisation de modèles (fine-tuning, distillation, etc.) avec une approche pragmatique. Contenu technique solide et utilité concrète pour les praticiens.",
+   "score": 7.4
+  },
+  {
+   "id": "0e8fc20e47dd35f0",
+   "title": "From RGB Generation to Dense Field Readout: Pixel-Space Dense Prediction with Text-to-Image Models",
+   "url": "https://huggingface.co/papers/2607.06553",
+   "summary": "Large-scale text-to-image models are attractive backbones for dense prediction because RGB generation pretraining learns rich semantic, structural, and geometric priors. Existing generative and editing approaches reuse these priors by casting dense prediction as target generation: annotations such as depth, normals, alpha mattes, masks, and heatmaps are encoded into an RGB-trained VAE latent space and decoded back as image-like targets. We argue this inherits more of the generative output interface than dense prediction requires: unlike RGB synthesis, dense prediction asks for pixel-correct, task-native fields on the same image plane, not new RGB content to be rendered. Our key observation is that a pretrained DiT already organizes RGB inputs through a patch-to-token-to-patch lattice on the image plane, so each token indexes a fixed output patch whose channels can carry task-native quantities instead of RGB appearance. We instantiate this as ReChannel: we keep the VAE encoder for the DiT's input distribution but drop the target-side decoder, adapt the frozen DiT with task LoRA, and map each token to its p x p x K_t pixel-space patch through a shared token-local linear head--about 33K parameters, no spatial mixing. Using FLUX-Klein, we evaluate on six dense prediction tasks and over a dozen benchmarks. This minimal interface sets new state-of-the-art on trimap-free matting, KITTI depth, and referring segmentation, and stays competitive on normals, saliency, and pose. In a matched 4B setting it is more accurate and 2.48x faster than an edit-plus-latent-decode counterpart--dense perception can benefit from generative pretraining without inheriting its output interface.",
+   "published": "2026-07-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.06553"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "ReChannel réutilise les modèles text-to-image (DiT) pour la prédiction dense en mappant les tokens à des patches pixel-space via des têtes linéaires locales, évitant la génération RGB superflue. Méthode efficace mais dépendante de l'architecture DiT.",
+   "score": 7.0
+  },
+  {
+   "id": "eac57b5852b1ac38",
+   "title": "Trust Region Policy Distillation",
+   "url": "https://huggingface.co/papers/2607.04751",
+   "summary": "Big goals are hard to achieve all at once; breaking them into small steps is wiser. We present Trust Region Policy Distillation (TOP-D), which transforms the notoriously unstable, high-variance On-Policy Distillation (OPD) into a stable training paradigm by dynamically constructing a proximal teacher. Theoretically, we establish a rigorous framework demonstrating that TOP-D inherently controls gradient variance. By providing a formal global convergence analysis alongside a monotonic improvement bound, we mathematically formalize the reliability and stability of the overall training dynamics. Empirically, TOP-D dramatically enhances training stability, sample efficiency, and final performance on mathematical reasoning tasks. More importantly, TOP-D introduces zero additional computational overhead, positioning itself as a promising alternative to the well-established OPD paradigm.",
+   "published": "2026-07-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2607.04751"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "TOP-D stabilise la distillation de politiques (*On-Policy Distillation*) via une région de confiance dynamique, réduisant la variance des gradients et améliorant l'efficacité d'échantillonnage sans surcoût computationnel. Résultats solides sur des tâches de raisonnement mathématique.",
+   "score": 7.0
+  },
+  {
+   "id": "6477691e297e8278",
+   "title": "VaseMuseum: Digital Intelligent Museum for Ancient Greek Pottery",
+   "url": "https://huggingface.co/papers/2607.06374",
+   "summary": "Vision-language models (VLMs) have made interactive digital museums increasingly feasible by connecting 3D digitization with natural-language artifact exploration. However, in cultural heritage domains such as ancient Greek pottery, reliable VLM assistance is limited by two challenges. First, open-ended interpretation requires grounding fine-grained 2D/3D visual evidence in specialized curatorial knowledge, yet the retrieval process may introduce weak sources and unverifiable references. Second, when the available evidence is incomplete, noisy, or ambiguous, VLMs often produce confident but unsupported answers instead of calibrated uncertainty. To address these challenges, we propose VaseMuseum, a lightweight and modular multimodal agent framework for intelligent digital museums of ancient Greek pottery. VaseMuseum combines an interactive virtual museum with VaseAgent, which supports both 2D images and 3D artifacts through multimodal perception, 3D-aware reasoning, external knowledge retrieval, and inference-time reliability control. Specifically, VaseAgent retrieves evidence from authoritative web and museum knowledge sources, and source-level control selects diverse and verifiable evidence before generation. Meanwhile, response-level control checks generated claims against the evidence pool and encourages neutral, evidence-bounded answers when support is insufficient or conflicting. Moreover, a training-free GRPO-style selection mechanism favors responses with valid references and calibrated confidence without updating the VLM backbone. Experiments in a realistic digital museum simulation show that VaseMuseum improves citation validity, reduces hallucinations on knowledge-intensive queries, and produces more neutral answers under ambiguity compared with search-enabled VLM baselines.",
+   "published": "2026-07-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2607.06374"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "agents"
+   ],
+   "tldr": "VaseMuseum introduit un agent multimodal pour les musées numériques interactifs, combinant perception 2D/3D, récupération de connaissances externes et contrôle de fiabilité pour répondre aux ambiguïtés des artefacts culturels. Solution légère et modulaire, mais dépendante de sources externes.",
+   "score": 6.7
+  },
+  {
+   "id": "e1625ecdf86812a3",
+   "title": "Phone Segmentation and Recognition through Phonological Activation Mapping",
+   "url": "https://huggingface.co/papers/2607.09020",
+   "summary": "Phone segmentation and recognition are inherently related tasks, yet modern approaches typically model them separately. We argue that phonetic structure is already latent in the representations of self-supervised speech models (S3Ms), and one only needs to steer them to solve both tasks. We leverage S3M-based Phonological Activation Mapping (SPAM), which maps each S3M representation frame to a vector of phonological feature activations, such as voicing and nasality. On top of SPAM, we introduce two simple but effective lightweight, gradient-descent-free prediction heads: a recognition head and a segmentation head. Our method requires less than a minute of phonetic transcriptions, and generalizes to unseen phones during training. Across a diverse range of datasets, our approach attains strong segmentation and recognition performance.",
+   "published": "2026-07-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.09020"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "interpretabilite"
+   ],
+   "tldr": "SPAM exploite les représentations des modèles auto-supervisés de parole (S3Ms) pour segmenter et reconnaître les phones via une cartographie phonologique, nécessitant moins d'une minute de transcriptions phonétiques. Approche légère mais limitée à des tâches spécifiques.",
+   "score": 6.1
+  },
+  {
+   "id": "5d7c29de2cc15a98",
+   "title": "PanoWorld: Real-World Panoramic Generation",
+   "url": "https://huggingface.co/papers/2607.09661",
+   "summary": "In this work, we aim to address the challenge of long-range memory in panoramic world models by exploiting the rotation-equivariant property of omnidirectional representations, where rotation can be treated as an implicit geometric transformation.Building on this insight, we propose PanoWorld, which simplifies camera trajectories into translations via fixed headings for both current-action modeling and long-range memory through Dense Panoramic Ray-Conditioning (DPRC) and Geometry-aware Memory Augmentation (GMA).Then, a three-stage training pipeline is introduced to progressively optimize each component. To better evaluate physical consistency under large-scale spatial variations and diverse illumination conditions, where existing datasets are relatively stable, we construct World360, a large-scale dataset consisting of both real-world video clips collected via panoramic unmanned aerial vehicles and high-quality simulated clips generated by AirSim360.Extensive experiments on World360 demonstrate the effectiveness of PanoWorld, outperforming alternative methods by a large margin.Our models, training code, and dataset will be publicly available. More information can be found on our project page: https://lihaoy-ux.github.io/panoworld-page/.",
+   "published": "2026-07-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.09661"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "PanoWorld génère des panoramas réalistes en exploitant la rotation-équivariance des représentations omnidirectionnelles, avec un pipeline en 3 étapes et un nouveau dataset World360. Approche innovante mais niche, avec des gains marginaux sur des datasets existants.",
+   "score": 6.1
+  },
+  {
+   "id": "a06dbfcb029ff971",
+   "title": "Tiny Emulators",
+   "url": "https://floooh.github.io/tiny8bit-preview/index.html",
+   "summary": "",
+   "published": "2026-07-12T20:23:05Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 253,
+    "comments": 22
+   },
+   "relevance": 7,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Tiny Emulators propose des modèles de langage ultra-compacts optimisés pour l'inférence efficace, probablement via des techniques comme la quantization ou le pruning. Intéressant pour les déploiements edge ou les applications nécessitant une faible latence, mais la source (HN) et l'absence de détails techniques limitent la crédibilité.",
+   "score": 5.9
+  },
+  {
+   "id": "5569daeaeeae12a0",
+   "title": "sparklabx/drawio-ai-kit",
+   "url": "https://github.com/sparklabx/drawio-ai-kit",
+   "summary": "Teach your AI to draw correct, beautiful draw.io diagrams — declarative layout engine, ground-truth stencils, structural validator, vision self-check. AWS · Azure · GCP · Databricks · BPMN. Zero dependencies.",
+   "published": "2026-06-17T16:51:20Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 438,
+    "language": "JavaScript"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "Kit pour générer des diagrammes draw.io corrects via IA, avec validation structurelle et intégration multi-cloud. Approche innovante mais dépendante de la qualité des stencils et de l'IA sous-jacente.",
+   "score": 5.6
+  },
+  {
+   "id": "7935b0065d57c9fb",
+   "title": "AIScientists-Dev/academic-humanizer",
+   "url": "https://github.com/AIScientists-Dev/academic-humanizer",
+   "summary": "Strip AI-writing tells from papers and grant proposals (NSF/NIH), while keeping scholarly voice and tying claims to evidence. A skill for Claude Code, Codex, and MorphMind.",
+   "published": "2026-06-20T13:23:52Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 419,
+    "language": null
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Academic-Humanizer est un outil pour déshumaniser les textes générés par IA (papers, proposals) tout en conservant un ton académique et en liant les claims aux preuves. Pertinent pour l'interprétabilité et la détection de biais, mais la crédibilité est moyenne (outil niche sans validation académique formelle).",
+   "score": 5.3
+  },
+  {
+   "id": "9a5a8b69256d373a",
+   "title": "reunios2024/cortex-sentinel-trading-nexus",
+   "url": "https://github.com/reunios2024/cortex-sentinel-trading-nexus",
+   "summary": "Self-Tuning Multi-Agent AI Trading System 2026: 8-Source Signal Fusion & Kronos Model",
+   "published": "2026-06-28T20:34:53Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 152,
+    "language": "HTML"
+   },
+   "relevance": 6,
+   "reliability": 2,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "Système de trading multi-agents auto-tuné avec fusion de 8 sources de signaux. Claims excessifs sans preuve de performance ou de robustesse. Approche marketing.",
+   "score": 4.7
+  },
+  {
+   "id": "76fa2431ded3a4b6",
+   "title": "jaimasih05-commits/swarm-foraging-qlearn",
+   "url": "https://github.com/jaimasih05-commits/swarm-foraging-qlearn",
+   "summary": "Q-Learning Swarm Foraging 2026: Multi-Agent RL in Dynamic Grid Environments",
+   "published": "2026-06-28T20:24:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 152,
+    "language": "HTML"
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "agents",
+    "autre"
+   ],
+   "tldr": "Implémentation basique d'un système multi-agents utilisant Q-learning pour la recherche de nourriture en grille dynamique. Peu original et sans impact sur la recherche en RL.",
+   "score": 4.4
+  },
+  {
+   "id": "3eba090cc963af6d",
+   "title": "simonlin1212/Vibe-Research",
+   "url": "https://github.com/simonlin1212/Vibe-Research",
+   "summary": "Vibe-Research: Your Personal Trading Research Agent · A股/美股/港股 的个人投研 Agent：每日复盘、资讯雷达、个股数据、板块中心、我的持仓、研究记录。Vibe-Research 把数据和功能配齐，由你自己的 AI 驱动投资研究。",
+   "published": "2026-07-05T06:30:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 774,
+    "language": "TypeScript"
+   },
+   "relevance": 5,
+   "reliability": 2,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Vibe-Research est un agent d'investissement personnel pour les marchés A-shares/US/HK, combinant RAG et LLM pour l'analyse boursière. Pertinent pour les applications LLM/agents, mais la crédibilité est très faible (projet open-source non vérifié, claims marketing sans preuve).",
+   "score": 4.1
+  }
+ ]
+}
