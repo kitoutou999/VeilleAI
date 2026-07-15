@@ -1,0 +1,734 @@
+{
+ "date": "2026-07-15",
+ "digest": {
+  "headline": "EgoSteer et Xiaomi-Robotics-U0 redéfinissent l'apprentissage embodied et la manipulation robotique à partir de données multimodales",
+  "overview": "La journée du 15 juillet 2026 marque des avancées significatives en robotique et en agents autonomes, avec des systèmes complets pour la manipulation dexterous et la génération embodied. Parallèlement, les travaux sur l'efficacité et la robustesse des LLM et agents continuent de progresser, notamment via des approches causales et des benchmarks spécialisés.",
+  "highlights": [
+   {
+    "title": "Systèmes robotiques full-stack pour la manipulation dexterous",
+    "text": "EgoSteer propose un pipeline complet (EgoSmith) et un modèle VLA pour apprendre des politiques de manipulation à partir de vidéos égocentriques, avec généralisation et récupération d'échecs. Xiaomi-Robotics-U0 unifie la génération embodied (images, vidéos, scènes multi-vues) via un modèle autoregressif de 38B paramètres, préservant la cohérence des modèles de fondation. Ces travaux sont pionniers pour l'intégration de données humaines et la cohérence multi-modale en robotique."
+   },
+   {
+    "title": "Optimisation et efficacité des agents LLM",
+    "text": "Le framework E3 estime la complexité des tâches avant exécution, réduisant les coûts de 85-92% tout en maintenant un taux de succès de 100% sur MSE-Bench. MemOps révèle des failles critiques dans la mémoire à long terme des LLM via des opérations structurées (remember, forget, update), essentielles pour les agents conversationnels. Ces benchmarks et méthodes formalisent des concepts comme le 'minimum-sufficient execution' et l'ACRR pour une exécution plus efficace."
+   },
+   {
+    "title": "Robustesse et interpretabilité des LLM",
+    "text": "Resist and Update introduit des médiateurs de rapports contrefactuels pour rendre les LLM 'incentive-compatibles', résistant aux biais externes tout en restant sensibles aux preuves. Knowledgeless LLMs (KLLMs) réduisent la mémorisation paramétrique via l'anonymisation des entités, améliorant la robustesse face à des preuves imparfaites. Ces approches causales et architecturales adressent des risques critiques comme les hallucinations et les instabilités contextuelles."
+   },
+   {
+    "title": "Agents autonomes pour des applications critiques",
+    "text": "Pythia, un système multi-agents pour l'extraction de symptômes cliniques, atteint des performances comparables à un lexique expert sans fine-tuning. PalmClaw propose un framework open-source pour exécuter des agents LLM natifs sur smartphones, améliorant les performances de 11.5%. Ces travaux démontrent le potentiel des agents autonomes pour des tâches médicales et mobiles, malgré des défis de validation et de généralisation."
+   },
+   {
+    "title": "Benchmarks et méthodes pour l'évaluation des LLM et agents",
+    "text": "FukuyamaBench évalue la capacité des LLM à raisonner mécanistiquement sur des réactions chimiques, avec Qwen3-30B-A3B surpassant des approches spécialisées. ThReadMed-QA teste la correction des idées reçues dans des dialogues médicaux multi-tours, révélant des lacunes persistantes. Ces benchmarks spécialisés sont cruciaux pour identifier des failles non détectées par les évaluations standard."
+   },
+   {
+    "title": "Accélération et analyse des modèles à diffusion masquée",
+    "text": "Un survey analyse les techniques d'accélération des LLM à diffusion masquée (dLLMs), proposant un cadre de décomposition de latence pour démêler les compromis algorithmiques, architecturaux et système. OAT attribue les échecs des agents LLM en modélisant les trajectoires réussies via des équations différentielles contrôlées en latent. Ces travaux fournissent des lignes directrices pour des déploiements pratiques et une meilleure interpretabilité."
+   }
+  ],
+  "trend": "Les avancées en robotique embodied et en agents autonomes convergent vers des systèmes full-stack intégrant données multimodales et généralisation, tandis que l'optimisation des LLM et agents se concentre sur l'efficacité, la robustesse et l'interpretabilité via des approches causales et des benchmarks spécialisés."
+ },
+ "items": [
+  {
+   "id": "4d425d248ea411fe",
+   "title": "EgoSteer: A Full-Stack System Towards Steerable Dexterous Manipulation from Egocentric Videos",
+   "url": "https://huggingface.co/papers/2607.09701",
+   "summary": "Steerability is a defining capability of generalist robot policies, yet remains largely absent in dexterous-hand systems for lack of large-scale, language-aligned, and action-accurate demonstration data. To address this bottleneck, we present a full-stack system that scales dexterous VLA pre-training from egocentric human videos and enables data-efficient real-robot post-training. It integrates EgoSmith, a data pipeline that curates in-the-wild egocentric videos into 9.6K hours of high-quality pre-training data with 9x higher throughput and better accuracy than prior SOTA; a unified robot stack for teleoperation and human-in-the-loop correction; and EgoSteer, a world-model-enhanced VLA trained on optimized infrastructure. Human-data pre-training equips EgoSteer with language-guided manipulation priors, which are grounded through robot post-training and improved by DAgger refinement. Empirically, EgoSteer robustly executes free-form instructions across 40+ diverse tasks, demonstrating failure recovery, dexterity, and generalization. The pre-trained model also few-shot adapts to complex long-horizon tasks, including box folding, on two embodiments with 75+% success. We open-source the system, data, and model at https://egosteer.github.io/.",
+   "published": "2026-06-21T12:16:02.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.09701"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "audio",
+    "outils"
+   ],
+   "tldr": "EgoSteer présente un système complet pour l'apprentissage de politiques VLA (Vision-Language-Action) à partir de vidéos égocentriques, avec un pipeline de données (EgoSmith) et un modèle (EgoSteer) capable de généralisation et de récupération d'échecs. Pionnier pour la robotique dexterous et l'apprentissage à partir de données humaines.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème central abordé par EgoSteer est l'absence de politiques robotiques généralistes capables de manipulation fine et *steerable* (pilotable via des instructions langagières) avec des mains robotisées dextres. Cela est principalement dû au manque de données massives, alignées avec le langage et précises en termes d'actions, nécessaires pour entraîner de tels systèmes. Les démonstrations existantes sont rares, coûteuses à produire et souvent limitées en diversité ou en qualité.",
+    "methode": "EgoSteer propose une approche *full-stack* combinant plusieurs innovations techniques : 1) **EgoSmith**, un pipeline de données qui extrait 9 600 heures de vidéos égocentriques (capturées en conditions réelles) pour créer un jeu de pré-entraînement de haute qualité, avec un débit 9 fois supérieur et une précision accrue par rapport aux méthodes antérieures. 2) Un *stack robotique unifié* permettant la téléopération et des corrections humaines en temps réel (*human-in-the-loop*). 3) **EgoSteer**, un modèle VLA (*Vision-Language-Action*) amélioré par un *world model* (modèle du monde), entraîné sur une infrastructure optimisée. Le pré-entraînement sur données humaines fournit des *priors* de manipulation guidés par le langage, ensuite ancrés dans le monde réel via un post-entraînement robotique et affinés par *DAgger* (une technique d'apprentissage par imitation interactive).",
+    "resultats": "Les résultats empiriques montrent qu'EgoSteer exécute de manière robuste plus de 40 tâches diverses à partir d'instructions libres, avec des capacités de récupération après échec, de dextérité et de généralisation. Le modèle pré-entraîné s'adapte également en *few-shot* à des tâches complexes et longues, comme le pliage de boîtes, sur deux plateformes robotiques différentes, avec un taux de succès supérieur à 75 %. Les auteurs soulignent une amélioration significative par rapport aux méthodes antérieures en termes d'efficacité et de généralisation.",
+    "limites": "Plusieurs zones d'ombre persistent : 1) La dépendance aux vidéos égocentriques humaines limite la diversité des scénarios (biais vers les tâches courantes ou domestiques). 2) L'évaluation se concentre sur des tâches relativement structurées, laissant incertaine la performance en environnements non contrôlés ou face à des instructions ambiguës. 3) Le coût computationnel et la complexité du *full-stack* pourraient freiner son adoption large, malgré l'open-source. Enfin, la robustesse à long terme (usure, variations environnementales) n'est pas abordée.",
+    "verdict": "EgoSteer mérite une attention particulière pour son approche systémique et ses résultats prometteurs en manipulation dextre pilotable par le langage, mais son déploiement réel nécessitera des validations supplémentaires sur des cas d'usage moins idéalisés."
+   }
+  },
+  {
+   "id": "ad6cf68ff7abff37",
+   "title": "Know Before Fix: QA-Driven Repository Knowledge Acquisition for Software Issue Resolution",
+   "url": "https://huggingface.co/papers/2607.11111",
+   "summary": "LLM-based coding agents have significantly advanced automated software issue resolution, yet they remain highly prone to factual errors caused by insufficient repository understanding. Recent methods attempt to mitigate this limitation through pre-repair repository exploration; however, their fix-driven strategies explore repositories without identifying the agent's knowledge gaps, often yielding imprecise context that fails to bridge the underlying understanding deficit. In this paper, we propose ACQUIRE, a QA-driven framework for software issue resolution. Mirroring how experienced developers first comprehend unfamiliar code before attempting a fix, ACQUIRE explicitly acquires repository knowledge prior to repair. The framework decouples knowledge acquisition from patch generation through two stages: in the first stage, a Questioner and an Answerer collaborate to acquire structured repository knowledge, where the Questioner poses targeted questions and the Answerer produces evidence-grounded answers through autonomous exploration; in the second stage, the Resolver leverages the resulting QA knowledge to generate informed patches. By transforming implicit knowledge gaps into explicit, factually reliable understanding, ACQUIRE accelerates knowledge-intensive repair stages and enables more accurate resolution. Experiments on SWE-bench Verified demonstrate that ACQUIRE consistently outperforms representative pre-repair methods, raising Pass@1 by up to 4.4 percentage points with modest additional cost and time.",
+   "published": "2026-07-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.11111"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "ACQUIRE introduit une approche QA-driven pour les agents de résolution de bugs logiciels, séparant l'acquisition de connaissances du dépôt de la génération de correctifs, réduisant ainsi les erreurs factuelles. Pertinent pour les agents autonomes et l'optimisation des workflows de développement.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents de codage basés sur les LLM (Large Language Models) améliorent l'automatisation de la résolution des problèmes logiciels, mais ils commettent fréquemment des erreurs factuelles en raison d'une compréhension insuffisante des dépôts de code. Les méthodes actuelles explorent les dépôts avant la réparation sans identifier précisément les lacunes de connaissance de l'agent, ce qui conduit à un contexte imprécis et inefficace pour combler ces déficits.",
+    "methode": "ACQUIRE est un framework en deux étapes qui sépare l'acquisition de connaissances de la génération de correctifs. Dans la première étape, un module *Questioner* pose des questions ciblées sur le dépôt, tandis qu'un module *Answerer* explore de manière autonome le code pour fournir des réponses fondées sur des preuves. Cette collaboration produit une base de connaissances structurée sous forme de questions-réponses. Dans la seconde étape, un module *Resolver* utilise cette base pour générer des correctifs informés et précis. L'approche s'inspire du processus humain où un développeur comprend d'abord le code avant de proposer une solution.",
+    "resultats": "Les expériences menées sur le benchmark SWE-bench Verified montrent qu'ACQUIRE surpasse les méthodes préexistantes de pré-réparation, avec une amélioration du taux de réussite *Pass@1* allant jusqu'à 4,4 points de pourcentage. Ces gains sont obtenus avec un coût et un temps supplémentaires modérés.",
+    "limites": "Le contenu disponible ne précise pas les types de dépôts ou de problèmes logiciels pour lesquels ACQUIRE est le plus efficace, ni les éventuelles limitations en termes de scalabilité ou de complexité des questions posées. De plus, la robustesse face à des dépôts mal documentés ou très volumineux n'est pas abordée.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante et ses résultats prometteurs, mais une évaluation plus large sur des cas d'usage variés serait nécessaire pour en confirmer la généralisabilité."
+   }
+  },
+  {
+   "id": "3b11aad2d5ad01ce",
+   "title": "Xiaomi-Robotics-U0: Unified Embodied Synthesis with World Foundation Model",
+   "url": "https://huggingface.co/papers/2607.11643",
+   "summary": "Recent foundation image and video generation models offer strong generalization and controllability, but their direct application to embodied scenarios is limited by requirements for multi-view consistency, geometric coherence, and robot embodiment constraints. Existing methods typically adapt foundation models with limited robot data, often sacrificing visual knowledge acquired during large-scale pre-training. We present Xiaomi-Robotics-U0, a 38-billion-parameter multimodal autoregressive model for unified embodied synthesis. It treats embodied generation as an extension of foundation image and video generation and jointly optimizes text-to-image generation, image editing, embodied scene generation, embodied transfer, and embodied video generation. This unified framework preserves the generalization of the pre-trained world foundation model while adapting it to embodied settings. Xiaomi-Robotics-U0 is the first model to support high-quality multi-view scene generation across multiple robot embodiments and to introduce structured, controllable embodied transfer for fine-grained editing while preserving multi-view consistency and interaction dynamics. It achieves state-of-the-art results on single-step and sequential generation tasks, outperforming GPT-Image-2.0 in human evaluations of embodied scene generation and transfer, ranking first on World Arena for embodied video generation, and improving the out-of-distribution success rate of pi_0.5 from 36.9% to 63.2% on challenging real-world manipulation tasks. These results show that foundation world models can serve both as embodied world models and scalable data engines for embodied intelligence. Code and checkpoints are available at https://robotics.xiaomi.com/xiaomi-robotics-u0.html.",
+   "published": "2026-07-13T10:57:58.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 28,
+    "arxiv_id": "2607.11643"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Xiaomi-Robotics-U0 unifie la génération embodied (images, vidéos, scènes multi-vues) via un modèle autoregressif de 38B de paramètres, préservant la généralisation des modèles de fondation tout en adaptant à la robotique. Innovant pour les systèmes autonomes et la cohérence multi-vues.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le modèle Xiaomi-Robotics-U0 vise à résoudre les limitations des modèles de génération d'images et de vidéos fondés sur l'IA lorsqu'ils sont appliqués à des scénarios robotiques (embodied AI). Ces scénarios exigent une cohérence multi-vues, une cohérence géométrique et le respect des contraintes physiques des robots, ce que les modèles existants ne parviennent pas à garantir sans sacrifier les connaissances visuelles acquises lors de leur pré-entraînement à grande échelle.",
+    "methode": "Xiaomi-Robotics-U0 est un modèle multimodal autoregressif de 38 milliards de paramètres qui unifie plusieurs tâches de génération pour les scénarios robotiques. Il étend les capacités des modèles de fondation en génération d'images et de vidéos pour inclure : la génération de scènes robotiques multi-vues, le transfert de comportements robotiques (embodied transfer), et la génération de vidéos robotiques. Le modèle est optimisé conjointement pour des tâches comme la génération texte-image, l'édition d'images, et la génération de scènes et vidéos dans des contextes robotiques. Cette approche préserve les connaissances générales du modèle de fondation tout en l'adaptant aux contraintes spécifiques des environnements robotiques. Le modèle introduit également un contrôle structuré pour l'édition fine tout en maintenant la cohérence multi-vues et les dynamiques d'interaction.",
+    "resultats": "Xiaomi-Robotics-U0 obtient des résultats à l'état de l'art sur des tâches de génération en une étape et séquentielles. Dans des évaluations humaines, il surpasse GPT-Image-2.0 pour la génération et le transfert de scènes robotiques. Il se classe premier sur la plateforme World Arena pour la génération de vidéos robotiques. Enfin, il améliore significativement le taux de succès en manipulation robotique hors distribution (out-of-distribution), le faisant passer de 36,9 % à 63,2 % sur des tâches réelles complexes.",
+    "limites": "Les détails techniques sur l'architecture exacte du modèle (ex. : mécanismes d'attention, stratégies de fine-tuning) et la composition du jeu de données d'entraînement restent flous. De plus, bien que les résultats soient impressionnants, l'évaluation repose en partie sur des métriques subjectives (évaluations humaines) et des benchmarks spécifiques, ce qui peut limiter la généralisation des performances. La robustesse face à des environnements réels très variés ou imprévus n'est pas entièrement démontrée.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche unifiée et ses performances prometteuses en génération robotique, mais une analyse critique des détails techniques et des données d'entraînement est nécessaire pour en évaluer pleinement la portée."
+   }
+  },
+  {
+   "id": "d8f00c1a507ae8a7",
+   "title": "Read It Back: Pretrained MLLMs Are Zero-Shot Reward Models for Text-to-Image Generation",
+   "url": "https://huggingface.co/papers/2607.11886",
+   "summary": "In this paper, we propose SpectraReward, a training-free reward function that turns pretrained MLLMs into off-the-shelf reward models for image-generation reinforcement learning. Instead of asking the MLLM to judge a generated image or answer decomposed verification questions, SpectraReward measures how well the original prompt can be recovered from the generated image through a single image-conditioned, teacher-forced forward pass. We use the average image-conditioned prompt log-likelihood as the reward, directly reusing the MLLM's pretrained image-text alignment ability without preference labels, reward-model fine-tuning. We further introduce Self-SpectraReward, a special case for unified multimodal models where the policy's own understanding branch serves as the reward model for its generation branch, forming a closed-loop self-improving framework without external reward models or external knowledge. Extensive experiments validate SpectraReward through a broad image-generation RL study covering two diffusion models, three RL algorithms, nine reward MLLM backbones from four MLLM families spanning 4B to 235B parameters, and five out-of-distribution text-to-image benchmarks. Results show that both SpectraReward and Self-SpectraReward significantly and consistently improve generation performance and outperform prior MLLM-derived reward training methods. Further analysis reveals that larger reward MLLMs are not always better, while Self-SpectraReward can match or surpass much larger external reward models, suggesting that reward-policy alignment is a key factor for effective image-generation RL. Project Page: https://huangrh99.github.io/SpectraReward/",
+   "published": "2026-07-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2607.11886"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "SpectraReward transforme les MLLMs (Multimodal LLMs) en modèles de récompense zero-shot pour l'optimisation par RL de la génération d'images, en mesurant la fidélité de la récupération du prompt original depuis l'image générée. Intéressant pour l'efficacité des agents multimodaux et l'optimisation sans fine-tuning supplémentaire.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Ce papier aborde le défi de l'évaluation automatique et de l'amélioration des modèles de génération d'images à partir de texte (text-to-image) sans recourir à des données d'entraînement supplémentaires ou à un fine-tuning coûteux. Il propose une solution pour transformer des modèles multimodaux pré-entraînés (MLLMs) en modèles de récompense (reward models) sans supervision explicite, afin d'optimiser les performances des générateurs d'images via l'apprentissage par renforcement (RL).",
+    "methode": {
+     "approche_generale": "Les auteurs introduisent *SpectraReward*, une fonction de récompense *training-free* qui exploite directement les capacités d'alignement image-texte des MLLMs pré-entraînés. Au lieu d'évaluer subjectivement une image générée ou de décomposer le prompt en questions de vérification, la méthode mesure la probabilité que le prompt original soit reconstruit à partir de l'image générée via un passage avant (*forward pass*) conditionné par l'image et *teacher-forced*.",
+     "details_techniques": {
+      "calcul_recompense": "La récompense est définie comme la log-vraisemblance moyenne du prompt conditionné par l'image, calculée en utilisant les poids pré-entraînés du MLLM sans ajustement supplémentaire. Cela évite la nécessité de labels de préférence ou de fine-tuning du modèle de récompense.",
+      "self_spectrareward": "Une variante, *Self-SpectraReward*, utilise le même modèle pour la génération et l'évaluation (branche de compréhension vs. branche de génération), créant une boucle fermée d'auto-amélioration sans dépendre de modèles externes ou de connaissances supplémentaires.",
+      "implementation": "L'étude couvre deux modèles de diffusion (Stable Diffusion 1.5 et SDXL), trois algorithmes de RL (DDPO, DPOK, ReFL), et neuf MLLMs de quatre familles (LLaVA, InstructBLIP, Qwen-VL, InternVL) avec des tailles variant de 4B à 235B paramètres. Les benchmarks incluent cinq jeux de données hors distribution (OOD) pour évaluer la généralisation."
+     }
+    },
+    "resultats": {
+     "ameliorations": "Les expériences montrent que *SpectraReward* et *Self-SpectraReward* améliorent significativement et systématiquement les performances de génération d'images, surpassant les méthodes antérieures basées sur des MLLMs pour la récompense. Par exemple, *Self-SpectraReward* atteint des résultats comparables ou supérieurs à des modèles de récompense externes bien plus grands (jusqu'à 235B paramètres).",
+     "observations_cles": {
+      "taille_modele": "Les résultats révèlent que des MLLMs plus grands ne garantissent pas de meilleures récompenses, suggérant que l'alignement entre la politique de génération et le modèle de récompense est un facteur critique.",
+      "generalisation": "Les méthodes proposées démontrent une robustesse sur des benchmarks OOD, validant leur capacité à généraliser au-delà des données d'entraînement."
+     }
+    },
+    "limites": {
+     "dependance_mlm": "La performance de *SpectraReward* repose entièrement sur la qualité de l'alignement image-texte des MLLMs pré-entraînés. Un biais ou une limitation inhérente à ces modèles (ex. : sensibilité aux artefacts visuels) pourrait se propager à la récompense.",
+     "evaluation_partielle": "Le papier ne détaille pas les métriques utilisées pour quantifier l'amélioration (ex. : FID, CLIP score), ni les protocoles exacts de comparaison avec les méthodes antérieures, ce qui limite la reproductibilité.",
+     "cadre_rl": "L'approche suppose un cadre d'apprentissage par renforcement, ce qui peut introduire des défis spécifiques (ex. : stabilité de l'entraînement, coût computationnel) non pleinement explorés ici."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son innovation dans l'utilisation *training-free* des MLLMs comme modèles de récompense, offrant une piste prometteuse pour l'amélioration auto-supervisée des générateurs d'images, bien que des validations supplémentaires sur des métriques standardisées et des scénarios variés soient nécessaires."
+   }
+  },
+  {
+   "id": "e48ef37c99836611",
+   "title": "Do AI Agents Know When a Task Is Simple? Toward Complexity-Aware Reasoning and Execution",
+   "url": "https://arxiv.org/abs/2607.13034v1",
+   "summary": "Large language model (LLM) agents increasingly automate multi-step engineering and informatics workflows, yet they rarely ask how much effort a task actually requires. They often follow a maximum-context-first strategy--re-reading files and dependencies they have already seen--turning a one-line edit into a small code-base audit. We argue the missing capability is task-aware execution-scope estimation: judging a task's difficulty, the information it truly needs, and the shortest reliable path before committing budget. We formalize minimum-sufficient execution and the Agent Cognitive Redundancy Ratio (ACRR), and propose E3 (Estimate, Execute, Expand): the agent estimates an initial operating point, executes a minimum viable path, and expands scope only when verification fails. On MSE-Bench--a deterministic benchmark of 121 edits in a capability-controlled simulator--E3 matches the strongest baseline's 100% success while cutting cost by 85%, tokens by 91%, and inspected files by 92%, and further beats a strong adaptive retrieval baseline by 16%; the gains survive held-out instruction wording and essentially every cost weighting. A companion real-model harness (LLM-Case) corroborates the effect on a live gpt-4o agent editing a real open-source library, with every candidate patch graded by actually running the project's real pytest suite against a measured oracle: the over-reading is milder but real, and E3 is the leanest and fastest policy at comparable task success--its one shortfall a provider rate-limit, not a wrong edit. We frame this as a controlled probe of execution redundancy, not a measurement of any deployed agent, and position task-aware execution as a step toward engineering-grounded AI (EGAI)--agents whose effort is anchored in the engineering reality of the task. We release the framework and benchmark.",
+   "published": "2026-07-14T17:59:31+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Junjie Yin, Xinyu Feng"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Propose E3, un framework pour agents LLM qui estime la complexité d'une tâche avant exécution, réduisant drastiquement les coûts (tokens, fichiers inspectés) de 85-92% tout en maintenant un taux de succès de 100% sur MSE-Bench. Formalise le concept de 'minimum-sufficient execution' et l'ACRR pour optimiser l'efficacité des agents.",
+   "score": 8.3
+  },
+  {
+   "id": "f37b5b0b7587d92a",
+   "title": "Resist and Update: Counterfactual Report Coordinates for Incentive-Compatible LLMs",
+   "url": "https://arxiv.org/abs/2607.12985v1",
+   "summary": "Aligned language models routinely misreport under non-evidential incentive pressure: they agree with a confident user or overstate certainty even when their internal belief is unchanged. We cast this as a failure of internal incentive-compatibility (IC) and present a method for learning and certifying counterfactual report mediators that hold a model's reports to a causal contract: invariant to forbidden influences (pressure, prestige, restyling) and responsive to licensed ones (genuine evidence). These two demands, resist and update, pull in opposite directions. We study them on a Bayesian-witness benchmark with known posteriors, in which the same user disagreement is licensed evidence or forbidden pressure purely by stated source reliability. We (i) causally identify, by interchange interventions rather than probe accuracy, low-rank report coordinates for answer, confidence, and caveat that are near-orthogonal and independently controllable, and (ii) introduce a training-free counterfactual report-coordinate (CRC) clamp that references the model's own report under a counterfactually incentive-neutralized context. On the witness benchmark the two-pass clamp attains resist and update of 1.00 jointly (Wilson 95% CI [0.99,1.00]), a causal certificate under a constructible reference, not a deployed solution. Global decoding and steering show a single-parameter tradeoff; output-level fine-tuning matches both objectives only when both are enumerated; resist-only training loses evidence-responsiveness. The deployable single-pass compilation is lossy (0.73/0.97). The mechanism and clamp reproduce across three model families and transfer to a natural sycophancy benchmark (SycophancyEval). Our contribution is the interface and certification method: activation-level counterfactual incentive-invariance as a structural primitive for internal IC.",
+   "published": "2026-07-14T17:28:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sen Yang, Yuen-Hei Yeung"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Propose une méthode pour rendre les LLM 'incentive-compatibles' en apprenant des médiateurs de rapports contrefactuels qui résistent aux influences externes (pression, prestige) tout en restant sensibles aux preuves légitimes. Démontre une approche causale pour identifier des coordonnées de rapports indépendantes (réponse, confiance, mise en garde) et introduit un clamp CRC d'entraînement libre pour neutraliser les biais contextuels.",
+   "score": 8.3
+  },
+  {
+   "id": "a07ef6f4e2bdd739",
+   "title": "MemOps: Benchmarking Lifecycle Memory Operations in Long-Horizon Conversations",
+   "url": "https://arxiv.org/abs/2607.12893v1",
+   "summary": "Long-term memory has become a foundational capability for LLM-based agents that accompany users across extended, multi-session interactions. Existing benchmarks, however, evaluate such memory almost exclusively through downstream question answering, scoring only the correctness of a final answer. This black-box formulation conflates the heterogeneous causes of memory failure, such as missing the introduction of a relevant fact, binding an operation to the wrong target, or relying on stale values after a correction. As a result, it can credit correct answers despite their reliance on inconsistent or unsafe memory states. In this paper, we argue that, in dynamic long-horizon interactions, memory is not a static collection of facts but a lifecycle of explicit operations, including remembering, forgetting, updating, reflecting, and their compositions. We introduce MemOps, a benchmark that reformulates conversational memory as a sequence of lifecycle operations and represents each memory event with a structured trace specifying its trigger, target, scope, state transition, and supporting evidence. A controllable generation pipeline embeds these operations into long, task-oriented conversations and produces gold operation traces together with six categories of operation-level probes, evaluated under both adjacent-evidence and long-context settings. Across long-context, retrieval-based, parametric and managed-memory systems, MemOps disentangles failure modes that final-answer accuracy alone conceals, revealing that current systems remain far from uniformly reliable. For instance, session-level retrieval outperforms turn-level retrieval, and long-context models remain notably weak at reconstructing ordered memory-state trajectories. These results move long-term memory evaluation from final-answer scoring toward interpretable, operation-level diagnosis.",
+   "published": "2026-07-14T15:33:44+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xixuan Hao, Zeyu Zhang, Zehao Lin, Yihang Sun, Ziliang Guo, Xichong Zhang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "Benchmark MemOps évalue la mémoire à long terme des LLM dans des conversations multi-sessions via des opérations structurées (remember, forget, update), révélant des failles critiques non détectées par les benchmarks classiques. Essentiel pour l'évaluation des agents conversationnels.",
+   "score": 8.3
+  },
+  {
+   "id": "52a63692cfdcc768",
+   "title": "Accelerating Masked Diffusion Large Language Models: A Survey of Efficient Inference Techniques",
+   "url": "https://arxiv.org/abs/2607.12829v1",
+   "summary": "Diffusion large language models (dLLMs) offer a theoretical advantage in parallel generation over standard autoregressive models. However, parallel generation alone does not guarantee practical speedups. Realizing this efficiency requires specialized inference mechanisms, such as diffusion-aware caching and reuse. Consequently, as inference efficiency becomes a prerequisite for practical deployment, recent research has actively explored acceleration techniques across algorithms, architectures, and systems. However, rigorous comparisons remain difficult, as end-to-end latency stems from intricate trade-offs between algorithmic, architectural, and system-level factors that are often conflated in existing benchmarks. In this survey, we introduce a unified latency decomposition framework for dLLMs to disentangle these factors and analyze their impact on inference speed in real deployments. Guided by this framework, we categorize acceleration techniques along three axes covering algorithmic innovations, architectural and system optimizations, and inference-time scaling. Finally, we provide guidelines for reproducible benchmarking and highlight open challenges for realizing the full potential of parallel generation.",
+   "published": "2026-07-14T14:48:06+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Daehoon Gwak, Minhyung Lee, Junwoo Park, Jaegul Choo"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Ce survey analyse les techniques d'accélération des LLM à diffusion masquée (dLLMs), proposant un cadre de décomposition de latence pour démêler les compromis algorithmiques, architecturaux et système. Il fournit des lignes directrices pour le benchmarking reproductible et identifie des défis ouverts pour des déploiements pratiques.",
+   "score": 8.3
+  },
+  {
+   "id": "51329a34ac3e4110",
+   "title": "Tracing Agentic Failure from the Flow of Success",
+   "url": "https://arxiv.org/abs/2607.12747v1",
+   "summary": "Failure attribution for LLM-based agentic systems, i.e., identifying which steps in a failure trajectory caused the task to fail, is critical for debugging and improving these systems. Existing approaches either rely on prompting-based pipelines, which are computationally expensive, or require post-training on failure trajectories with step-level error annotations, which are costly to collect and difficult to scale. We argue that a practical failure attribution model should be lightweight and trainable without step-level supervision on failure data. To this end, we address unsupervised failure attribution, i.e., training exclusively on successful trajectories and identifying error steps at inference time given a failure trajectory. We propose OAT, which casts this problem as one-class learning with neural controlled differential equations, modeling the dynamical pattern of successful trajectories in latent space. At inference time, each step in a failure trajectory is assigned an anomaly score based on its deviation from the dynamics learned on successful trajectories, which is then used to form a set of error steps. With training on only 100 successful trajectories, experiments show that OAT is 200--5000 $\\times$ faster than prompting-based baselines, and, at the same time, consistently outperforms them in both in-domain and out-of-distribution datasets with +20% and +7% F1 scores, respectively, demonstrating that OAT is a promising and efficient direction for diagnosing agentic system failures.",
+   "published": "2026-07-14T13:16:14+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Samuel Yeh, Yiwen Zhu, Shaleen Deep, Sharon Li"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Méthode OAT pour l'attribution non supervisée des échecs dans les systèmes agents basés sur LLMs, modélisant les trajectoires réussies via des équations différentielles contrôlées en latent et identifiant les étapes déviantes dans les échecs, avec entraînement sur des données uniquement réussies.",
+   "score": 8.3
+  },
+  {
+   "id": "add5453b2dd636c8",
+   "title": "Multi-Agent LLMs Fail to Explore Each Other",
+   "url": "https://huggingface.co/papers/2607.11250",
+   "summary": "Exploration is essential for reliable autonomy in multi-agent systems, yet it remains unclear whether large language model (LLM) agents can explore effectively when interacting with one another. We show that modern LLM agents fail to do so, often exhibiting myopic and polarized interaction patterns that lead to suboptimal coordination and increased regret. We formalize this challenge as the Multi-Agent Exploration problem, modeling it as a partially observable stochastic game (POSG) problem in which agents must probe peers to infer their capabilities and identify effective interaction strategies. To address this, we introduce Multi- Agent Contextual Exploration (MACE), a lightweight framework that explicitly promotes exploration through structured peer selection. Across both contextual and parametric diversity settings, MACE substantially improves exploration behavior and downstream task performance. We further show theoretically that the value of exploration increases with agent diversity. Overall, our results highlight a fundamental limitation of current LLM agents and underscore the importance of explicitly guided exploration for reliable multi-agent autonomy. Code will be released in https://github.com/deeplearning-wisc/mace",
+   "published": "2026-07-13T04:34:05.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.11250"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "MACE démontre que les agents LLM multi-agents échouent à explorer efficacement leurs pairs, proposant un cadre structuré pour améliorer la coordination et réduire les biais. Clé pour la fiabilité des systèmes multi-agents et l'optimisation des interactions.",
+   "score": 8.2
+  },
+  {
+   "id": "10459ecd1df96eff",
+   "title": "A Multi-Agent System for Autonomous, Fine-Tuning-Free Clinical Symptom Detection: Development and Validation Study",
+   "url": "https://arxiv.org/abs/2607.12886v1",
+   "summary": "Clinical notes contain many of the signs and symptoms that bring patients to care, yet this information rarely reaches structured fields. Existing extraction approaches either rely on context-insensitive rules that generate false positives or on supervised models that require substantial fine-tuning. We present Pythia, a multi-agent system that autonomously writes and optimizes extraction prompts for clinical concepts without manual prompt engineering or fine-tuning. Running on a locally hosted open-weights model, Pythia keeps clinical notes on local infrastructure and selects prompts using development-set sensitivity and specificity. We compared Pythia with a curated lexicon across 72 signs and symptoms from 400 clinical notes representing 387 patients. Development (n=300) and validation (n=100) sets were partitioned independently for each concept. Pythia achieved mean sensitivity of 0.76 and specificity of 0.95, compared with 0.82 and 0.76 for the lexicon, and matched or exceeded the lexicon on both metrics for 20 of 62 directly comparable concepts. For 14 concepts where the lexicon labeled every note positive, Pythia recovered mean specificity of 0.97 by requiring a present-tense, patient-attributed finding rather than any textual mention of a term. Specificity transferred from development to validation with minimal degradation across prevalences, whereas sensitivity transfer weakened below 5% prevalence, reaching a mean gap of 0.25 below 2% prevalence. A BERT classifier fine-tuned per concept on the same development set achieved mean sensitivity of 0.23 and collapsed to zero sensitivity for concepts below roughly 5% prevalence. These findings suggest that autonomous, fine-tuning-free prompt optimization can produce symptom extraction prompts that generalize effectively from development to validation while remaining deployable on local infrastructure.",
+   "published": "2026-07-14T15:32:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Cameron Cagan, Pedram Fard, Jiazi Tian, Jingya Cheng, Shawn N. Murphy, Hossein Estiri"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Système multi-agents (Pythia) pour l'extraction automatique de symptômes cliniques sans fine-tuning ni prompts manuels, atteignant des performances comparables à un lexique expert. Démontre l'efficacité des agents autonomes pour des tâches médicales critiques.",
+   "score": 8.0
+  },
+  {
+   "id": "93b8c55c8ed598e1",
+   "title": "modiqo/waggle",
+   "url": "https://github.com/modiqo/waggle",
+   "summary": "Attributed, resolvable artifact references for agent handoffs — a ~30-byte token instead of pasted context. MCP-native; the reference layer for the agent-harness world.",
+   "published": "2026-07-08T04:33:09Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 703,
+    "language": "Rust"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Proposition d'un système de références résolubles (~30 octets) pour le handoff d'agents, compatible MCP, visant à réduire la duplication de contexte. Intéressant pour l'efficacité des interactions multi-agents, mais nécessite une validation par des benchmarks.",
+   "score": 8.0
+  },
+  {
+   "id": "32f45a8b8f76e58d",
+   "title": "LightMem-Ego: Your AI Memory for Everyday Life",
+   "url": "https://huggingface.co/papers/2607.11487",
+   "summary": "Personal AI assistants on mobile and wearable devices continuously perceive users' daily lives through visual and audio streams. However, answering queries about past experiences requires lightweight multimodal memory that can continuously accumulate, organize, and retrieve long-term experiences, which remains challenging. To address this challenge, we present LightMem-Ego, a lightweight streaming multimodal memory system for everyday-life assistance. The system continuously captures egocentric visual and audio streams, aligns them on a shared timeline, and organizes them into a hierarchical memory consisting of current, short-term, and long-term memory. Given a user query, LightMem-Ego dynamically routes retrieval to the appropriate memory level and generates answers grounded in multimodal evidence. The demonstration can be deployed on smartphones and AI glasses, supporting object finding, conversation recall, life summarization, routine discovery, and personalized assistance. Code is available at https://github.com/zjunlp/LightMem-Ego.",
+   "published": "2026-07-13T08:40:17.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 36,
+    "arxiv_id": "2607.11487"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "LightMem-Ego présente un système léger de mémoire multimodale pour assistants IA mobiles, organisant des flux visuels/audio en mémoire hiérarchique pour des requêtes en temps réel (déploiement sur smartphones et lunettes IA).",
+   "score": 7.9
+  },
+  {
+   "id": "df8c3bcab736af1a",
+   "title": "The Illusion of Robustness: Aggregate Accuracy Hides Prediction Flips under Task-Irrelevant Context",
+   "url": "https://arxiv.org/abs/2607.12963v1",
+   "summary": "As large language models (LLMs) grow more capable, they are increasingly deployed in context-rich settings where task inputs are often accompanied by long, partially irrelevant context. In a controlled setting, we find that state-of-the-art models often appear robust to task-irrelevant context at the aggregate level: prepending it to benchmark questions causes little change in overall accuracy. This aggregate stability, however, masks significant per-example instability. Even semantically meaningless pseudo-words, formed by randomly combining characters, can markedly shift model predictions on a small fraction of examples, degrading performance on some while improving it on others. This two-sided effect holds consistently across a wide range of models and datasets, yet the affected examples are largely model-specific. We further show that this instability is modulated by context type, context length, test-time compute, and model development stage. Together, our findings reveal context-induced tail risks concealed by aggregate accuracy, motivating per-example reliability evaluation of language models.",
+   "published": "2026-07-14T17:01:12+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yanzhe Zhang, Sanmi Koyejo, Diyi Yang"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Démontre que l'agrégation de performance des LLM masque des instabilités contextuelles : des pseudo-mots aléatoires peuvent inverser des prédictions sur des exemples spécifiques, révélant des risques cachés dans les évaluations standard. Souligne l'importance des métriques par exemple pour évaluer la robustesse.",
+   "score": 7.7
+  },
+  {
+   "id": "39ab334934efeb22",
+   "title": "UR-VC: Unsupervised Robotic Value Correction for Time-Derived Progress Proxies",
+   "url": "https://arxiv.org/abs/2607.12892v1",
+   "summary": "Modern robot learning systems increasingly rely on dense progress or value signals to evaluate intermediate states, guide policy learning, and detect task completion, making the quality of these signals critical. Since such dense labels are rarely available at scale, normalized time within a demonstration is often used as a scalable substitute: later frames are treated as higher progress. However, this time-derived label is only a noisy proxy for physical task progress. In contact-rich manipulation, a robot may make progress and then lose it through slips, failed grasps, or partial undoing, while the time-derived label continues to increase monotonically. We introduce Unsupervised Robotic Value Correction (UR-VC), an offline, training-free method for correcting time-derived progress labels. UR-VC exploits a simple regularity in demonstration data: similar states often recur across different episodes, but at different timestamps. Instead of trusting the timestamp from a single trajectory, UR-VC retrieves similar states from other episodes and aggregates their time-derived labels to obtain a corrected progress estimate. UR-VC requires no manual progress labels, reward annotations, or additional value model. We evaluate UR-VC on real bimanual cloth flatten-and-fold data, a long-horizon deformable-object manipulation task with visible intermediate progress. The corrected labels capture local regressions and non-uniform progress that normalized time cannot represent, while preserving the overall task trend. We further use the corrected signal to construct advantage labels for VLA training, following recent advantage-conditioned policy learning. UR-VC shows a positive trend in real-robot task success under matched data, model, and training settings.",
+   "published": "2026-07-14T15:33:33+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Lirui Zhao, Modi Shi, Li Chen, Qi Liu, Ping Luo, Hongyang Li"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Méthode UR-VC corrige automatiquement les labels de progression basés sur le temps dans les démonstrations robotiques, en exploitant la récurrence des états similaires. Approche non supervisée et efficace pour l'apprentissage par démonstration en robotique.",
+   "score": 7.7
+  },
+  {
+   "id": "672351dc9a1a6648",
+   "title": "Knowledgeless Language Models: Suppressing Parametric Recall for Evidence-Grounded Language Modeling",
+   "url": "https://arxiv.org/abs/2607.12831v1",
+   "summary": "Language models encode substantial factual knowledge in their parameters, which can lead to unreliable behavior when this knowledge is outdated, incomplete, or misaligned with the provided context. In this work, we study whether modifying the pretraining signal can systematically shift models away from parametric recall and toward evidence-grounded reasoning. We introduce Knowledge--''Less'' Language Models (KLLMs), a fundamentally different epistemic training paradigm for LLMs, which are pretrained on corpora in which named entities are anonymized, thereby removing a primary channel for entity-linked factual supervision. This intervention substantially reduces closed-book factual recall, while often improving performance on tasks where relevant information is provided as context. Across multiple model scales, KLLMs consistently outperform matched baselines on contextual question answering, fact verification, and hallucination detection benchmarks. Crucially, in retrieval-grounded settings with imperfect evidence, KLLMs show improved robustness and achieve up to 20--25\\% relative gains over standard language models. They further exhibit better calibration, with improved ECE, Brier score, and AUROC, as well as more reliable abstention behavior. Our results demonstrate that suppressing entity-linked supervision during pretraining induces a shift in epistemic behavior: KLLMs rely less on parametric knowledge and more on external evidence, leading to improved reliability under realistic conditions. This suggests that pretraining-time control over knowledge acquisition can complement retrieval-augmented and tool-based systems by providing a more evidence-sensitive base model.",
+   "published": "2026-07-14T14:48:53+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Roi Cohen, Yvan Carré, Nick Lechtenbörger, Hendrik Droste, Lucas Kerschke, Russa Biswas"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Les KLLMs (Knowledgeless LLMs) sont entraînés sur des corpus où les entités nommées sont anonymisées pour réduire la mémorisation paramétrique et favoriser le raisonnement basé sur des preuves. Résultats : amélioration significative sur QA contextuel, vérification de faits et détection d'hallucinations, avec gains jusqu'à 25% en robustesse face à des preuves imparfaites.",
+   "score": 7.7
+  },
+  {
+   "id": "4aea25833385ae6d",
+   "title": "Learning Mechanistic Reasoning for Chemical Reactions with Large Language Models",
+   "url": "https://arxiv.org/abs/2607.12771v1",
+   "summary": "Reaction mechanisms consist of the step-by-step sequences of elementary reactions that explain chemical transformations. Learning the mechanism logic is therefore essential for enhancing the fundamental chemical intelligence of large language models (LLMs). The stepwise deduction of reaction mechanism aligns naturally with the reasoning paradigms of reasoning LLMs. However, current chemical LLMs primarily emphasize coarse-grained name reactions for product prediction and retrosynthesis, often leading to physical inconsistencies and hallucinations. In contrast, specialized small-scale generative models for mechanism inference typically suffer from restricted generalization capacity across diverse chemical spaces. To overcome these limitations, we built a novel, large-scale reasoning dataset of reaction mechanisms. Furthermore, we established the FukuyamaBench, a difficult benchmark derived from Fukuyama's Advanced Organic Reaction Mechanism book, to rigorously evaluate model performance on hierarchical mechanism reasoning. Our fine-tuned Qwen3-30B-A3B achieves 8.3% exact pathway match on FukuyamaBench Set~A, surpassing the specialized FlowER model (5.1%), demonstrating that mechanism-aware training substantially enhances chemical reasoning in language models.",
+   "published": "2026-07-14T13:44:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xingyu Dang, Haocheng Tang, Junmei Wang, Yanjun Li"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Proposition d'un benchmark (FukuyamaBench) et d'un dataset de mécanismes réactionnels chimiques pour évaluer la capacité des LLMs à raisonner de manière mécanistique, avec un modèle Qwen3-30B-A3B surpassant des approches spécialisées sur des tâches de déduction hiérarchique.",
+   "score": 7.7
+  },
+  {
+   "id": "0f00e678420bdf43",
+   "title": "TerraZero: Procedural Driving Simulation for Zero-Demonstration Self-Play at Scale",
+   "url": "https://arxiv.org/abs/2607.13028v1",
+   "summary": "Training robust autonomous driving agents requires a simulator that is fast enough for reinforcement learning at scale, realistic enough to ground behavior in real-world map structure, and diverse enough to cover the safety-critical long tail that logged data rarely contains. We present TerraZero, a procedural driving simulator and self-play training stack. A configurable C engine runs simulation on the CPU and policy inference on the GPU over a zero-copy path, sustaining 1.3M agent-steps per second on a single server-grade GPU, far faster than existing object-level simulators, while keeping fidelity lighter single-agent systems omit: heterogeneous agents, multiple dynamics models, and full traffic-rule enforcement. TerraZero treats logged data only as a source of real-world map geometry, populating each map with randomized rule-based road users and signal controllers and randomizing agent dynamics, rewards, and sizes per episode, so a map yields an unbounded set of scenarios. Every reported policy trains from scratch by reinforcement learning alone on a compute-efficient self-play recipe across GPUs, with zero human demonstrations and no fallback planner at inference. Policies generalize zero-shot across cities and datasets, including emergent left-hand-traffic driving without explicit supervision. As an ego policy, TerraZero is the first fully learned policy to top the InterPlan long-tail benchmark, ahead of larger learned planners; on routine-driving val14 it ranks among the best approaches and is the safest, posting the best collision and time-to-collision scores. On Waymo Open Sim Agents realism the same recipe outperforms other demonstration-free methods and is competitive with the strongest reference-anchored self-play method. One stack serves both roles: driving policies across dynamics for cars and trucks, and sim agents that jointly control vehicles, pedestrians, and cyclists.",
+   "published": "2026-07-14T17:59:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhouchonghao Wu, Akshay Rangesh, Weixin Li, Wei-Jer Chang, Zachary Lee, Tim Wang"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "produit"
+   ],
+   "tldr": "TerraZero, un simulateur de conduite procédural pour l'entraînement d'agents autonomes par auto-jeu à grande échelle (1.3M étapes/secondes), sans démonstrations humaines ni planificateur de secours. Génère des scénarios infinis via randomisation de la dynamique, des règles de circulation et des récompenses, avec une fidélité supérieure aux simulateurs existants.",
+   "score": 7.4
+  },
+  {
+   "id": "5f0f3e0a23451b87",
+   "title": "PalmClaw: A Native On-Device Agent Framework for Mobile Phones",
+   "url": "https://arxiv.org/abs/2607.13027v1",
+   "summary": "Large Language Model (LLM) agents have moved beyond generating responses to executing multi-step tasks by calling tools, observing the results, and iteratively deciding the next action. Most agent systems run on desktops or servers, which support tool use and task automation. Mobile devices are also important agent environments because they are widely accessible and contain users' data, sensors, and daily-use applications. Existing mobile agents mainly operate smartphones through graphical user interface (GUI) actions such as tapping, swiping, and typing, which often form long, interface-dependent sequences, cannot directly access device capabilities, and make execution boundaries difficult to define. We present \\textbf{PalmClaw}, an open-source agent framework that runs natively on mobile phones and manages the sessions, memory, skills, tools, and agent loop directly on the device. PalmClaw exposes device capabilities as device tools with explicit arguments, structured results, and clearly defined execution boundaries. This design enables agents to use mobile capabilities directly while keeping each action explicit and controlled. Experiments show an 11.5\\% relative improvement in task success and a 94.9\\% reduction in completion time over the strongest baseline, with lower setup burden and traces illustrating how execution boundaries are applied. Code is available at https://github.com/ModalityDance/PalmClaw.",
+   "published": "2026-07-14T17:58:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hongru Cai, Yongqi Li, Ran Wei, Wenjie Li"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "produit"
+   ],
+   "tldr": "PalmClaw, un framework open-source d'agents LLM natifs pour smartphones, exécutant outils et boucles d'agents directement sur l'appareil. Améliore de 11.5% les performances en réduisant les séquences d'actions GUI dépendantes et en exposant les capacités natives du mobile de manière structurée.",
+   "score": 7.4
+  },
+  {
+   "id": "f482d065febba9f9",
+   "title": "Evaluating Large Language Models on Misconceptions in Multi-Turn Medical Conversations",
+   "url": "https://arxiv.org/abs/2607.12884v1",
+   "summary": "Patients seeking medical information often ask questions that embed incorrect assumptions or misconceptions. In such cases, safe medical communication requires not only answering the question, but identifying and correcting the underlying false belief. These interactions naturally unfold over multiple turns, a pattern now mirrored in interactions with LLMs. Yet current evaluation frameworks do not capture model behavior in these settings, where misconceptions can emerge, persist, or evolve over the course of a conversation. Whether LLMs can reliably correct such misconceptions over time remains largely unexamined. To study this, we introduce ThReadMed-QA, a multi-turn medical dialogue dataset of 2,437 patient-physician conversation threads comprising 8,204 question-answer pairs, derived from real patient interactions on AskDocs. This dataset enables systematic evaluation of whether models can detect and correct misconceptions under a multi-turn context. We evaluate five LLMs using a rubric-based LLM-as-a-Judge framework that scores responses based on their ability to identify and correct misconceptions. Our experiments reveal a consistent pattern: even frontier models that can address misconceptions in a single interaction degrade substantially over subsequent turns. GPT-5 and Claude-Haiku correct these false presuppositions around 85% on initial questions but drop to roughly 50% within two follow-ups. An oracle analysis replacing prior model outputs with physician responses shows that much of the degradation is driven by error propagation, while performance remains imperfect even under correct context. Even when models tend to correct misconceptions initially, their performance degrades substantially over later turns, leading to inconsistent and potentially unsafe guidance in patient-facing settings and highlighting the need for evaluation frameworks that capture multi-turn behavior.",
+   "published": "2026-07-14T15:30:37+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Monica Munnangi, Saiph Savage"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Dataset ThReadMed-QA évalue la capacité des LLM à corriger les idées reçues dans des dialogues médicaux multi-tours, révélant des lacunes même pour les modèles de pointe. Critique pour la sécurité des assistants médicaux.",
+   "score": 7.4
+  },
+  {
+   "id": "71fcb0f4efec03d7",
+   "title": "Toward Localizing and Repairing Bias in Transformer Attention Heads",
+   "url": "https://arxiv.org/abs/2607.12863v1",
+   "summary": "Transformer language models are increasingly used as software components, yet biased outputs remain difficult to localize and repair inside the model. Existing fairness testing and repair methods largely operate at the input-output or retraining level, while recent work suggests that bias-related behavior can concentrate in a small set of attention heads. This paper studies whether attention heads can be localized and repaired through a targeted inference-time intervention. We introduce ROBIN, a white-box head-level fairness debugging method that ranks attention heads using sensitivity to fairness probes and removes a small bias subspace from selected head outputs. In a four-model pilot study, ROBIN reduces the measured WinoBias gap across all models while preserving language-modeling quality better than whole-head zeroing. These preliminary results suggest that head-level bias repair should consider not only which heads are selected, but also how selected heads are modified.",
+   "published": "2026-07-14T15:15:16+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sigma Jahan"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude propose ROBIN, une méthode de débogage de biais en temps d'inférence ciblant les têtes d'attention des transformers. Elle démontre une réduction du biais mesuré (WinoBias) sans altérer significativement la qualité du modèle, suggérant que des interventions localisées sur les têtes d'attention peuvent être plus efficaces que des approches globales comme le zeroing.",
+   "score": 7.4
+  },
+  {
+   "id": "cddb629e29e2c1c2",
+   "title": "Evidence-Backed Video Question Answering",
+   "url": "https://huggingface.co/papers/2607.11862",
+   "summary": "Current Video Large Language Models (Video LLMs) excel in question answering (QA) but largely operate as black boxes, providing textual answers without verifiable visual grounding. Existing explainability efforts rely on textual rationales or sparse bounding boxes, which struggle to capture complex video dynamics such as occlusions and non-rigid deformations. We propose Evidence-Backed Video Question Answering (E-VQA), a novel task requiring models to jointly output a semantic answer and precise spatio-temporal evidence: temporal segments and dense, tracked object segmentation masklets. To support this, we introduce ST-Evidence, the first human-verified benchmark for both discriminative and generative pixel-level grounding. Evaluations of state-of-the-art models reveal a critical decoupling between QA accuracy and true visual perception that scaling alone fails to bridge. To address this, we develop scalable, automated generation pipelines to create ST-Evidence-Instruct, a 160k-scale dataset bridging high-level reasoning with fine-grained grounding. Fine-tuning grounded Video LLMs on this data yields substantial gains over the corresponding size-matched UniPixel baselines (e.g., +27.2 t-mean and +13.8 J&F on a 7B model), establishing a robust baseline for explainable, evidence-backed video understanding. Code and data are available at https://github.com/SalesforceAIResearch/EVQA.",
+   "published": "2026-07-13T13:49:10.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.11862"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "E-VQA introduit une tâche et un benchmark (ST-Evidence) exigeant des modèles vidéo-LLM de fournir des preuves spatio-temporelles denses pour les réponses, révélant un écart entre précision QA et perception visuelle. Important pour l'interprétabilité et la robustesse des modèles multimodaux.",
+   "score": 7.3
+  },
+  {
+   "id": "ee9ec6d311ba3736",
+   "title": "CtrlVTON: Controllable Virtual Try-On via Visual-Instance-Prompt Segmentation",
+   "url": "https://huggingface.co/papers/2607.09362",
+   "summary": "Virtual try-on (VTO) has made significant progress in realistically transferring garments onto a target person. Yet most systems give the user little control over how a garment should be worn -- its size (loose or fitted), style (e.g., tucked in or untucked, open or closed), and spatial placement on the body. We address this gap with two complementary contributions. First, we define and solve Visual-Instance-Prompt Segmentation via VIP-SAM: given a flatlay image of a garment, segment that specific instance in a photograph of a person wearing it. This is an instance-level task, distinct from the typically studied category-level segmentation. Second, we introduce CtrlVTON, a controllable VTO framework that recasts try-on as an image editing problem and adds segmentation masks as pixel-level control over garment layout, including style, size, and spatial placement on the body. VIP-SAM and CtrlVTON each achieve state-of-the-art results on their respective tasks. In particular, CtrlVTON generates images that follow user-provided layouts far more faithfully than the strongest proprietary editing systems while matching them on garment fidelity.",
+   "published": "2026-07-10T08:40:06.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.09362"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "outils",
+    "produit"
+   ],
+   "tldr": "CtrlVTON introduit un cadre de virtual try-on contrôlable via segmentation visuelle-instance, permettant un contrôle fin de la taille, style et placement des vêtements. Innovant pour les applications e-commerce et la personnalisation d'images réalistes.",
+   "score": 7.3
+  },
+  {
+   "id": "d5ddb07fced6250c",
+   "title": "LLM Judges Can Be Too Generous When There Is No Reference Answer",
+   "url": "https://arxiv.org/abs/2607.12885v1",
+   "summary": "LLM judges are increasingly being used to evaluate open-ended model responses, often in no-reference settings where a ground-truth answer is unavailable. However, can they reliably assess in such evaluation setups? We explore this question in this paper through a two stage pipeline with a) calibration experiments that assess the judge model's knowledge of the task it is evaluating, and b) sensitivity experiments that assess how the judge model's performance is impacted by the presence and positioning of the reference answer in the prompt. Across experiments covering three languages, we show that the judge models we evaluated tend to over-credit incorrect answers in the absence of a reference answer, and adding reference answer information to the prompt flips the judge model's correct/incorrect decisions by as much as 85% in some experimental settings. Comparison with a subset of human annotations shows that these reference-driven changes generally align with human judgments. Our results emphasize the need for calibrating the LLM judges with a sample with reference-aware evaluation before using them in reference-free setups reliably, and our methodology provides a blueprint for researchers and practitioners in doing such calibration of LLM judges for other tasks.",
+   "published": "2026-07-14T15:31:33+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chalamalasetti Kranti, Sowmya Vajjala"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Étude montrant que les LLM juges surévaluent les réponses incorrectes en l'absence de référence, avec des biais significatifs liés à la présence de la référence dans le prompt. Souligne l'importance de la calibration des LLM juges pour des évaluations fiables.",
+   "score": 7.1
+  },
+  {
+   "id": "d1928f5874bb6328",
+   "title": "Sahir619/fable-method",
+   "url": "https://github.com/Sahir619/fable-method",
+   "summary": "The Fable Workflow: how Claude Fable 5 worked, distilled into skills any model can run, with the eval that keeps it honest. Think / act / prove.",
+   "published": "2026-07-06T22:35:18Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 814,
+    "language": "JavaScript"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Méthodologie Fable (Claude Fable 5) distillée en compétences exécutables par tout modèle, avec évaluations intégrées. Intéressant pour la distillation de modèles, l'interprétabilité des agents et les architectures multi-agents.",
+   "score": 7.1
+  },
+  {
+   "id": "33535c86ce49075a",
+   "title": "MET: Theory-Grounded and Culture-Aware Multilingual Moral Reasoning",
+   "url": "https://huggingface.co/papers/2607.11736",
+   "summary": "Language models are increasingly used for moral decision-making across diverse linguistic and cultural contexts, yet existing work overlooks multilinguality on three aspects: 1) multilingual evaluation benchmarks use direct translation, failing to adapt culture-specific items; 2) inference-time methods for moral reasoning rely on static, English-centric scaffolds and lack grounding in moral theory; 3) training methods for moral decision-making typically require expensive supervision from stronger models or human annotators. We address these gaps with three contributions. First, we introduce MCLASH, a multilingual moral decision-making benchmark to capture culturally situated moral intuitions and social norms across languages. Second, we propose MET (Multilingual Ethics with Theory-grounded reasoning), a two-step prompting method built on expert-curated, theory-based grounds drawn from psychology and philosophy: the model first selects situation- and culture-specific grounds, then reasons over them in the native language of the user. Third, we introduce MET-D (MET-Distillation), which enhances the second step through a self-distillation training stage that requires no external supervision. MET-D improves macro-F1 over the base model on all three models of different sizes and families (Qwen3-4B, Qwen3-8B, Gemma3-4B), by an average of 3.71 points on MCLASH and 4.23 on MMoralExceptQA, with a peak MCLASH gain of 12.94 points for Malay on Qwen3-8B. We further reveal that MET-D increases native-language reasoning by 62.13 points on average, and that beneficial grounds differ systematically across cultures. Together, these contributions open the path for culture-aligned, theory-grounded multilingual moral reasoning.",
+   "published": "2026-07-13T11:59:25.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.11736"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "regulation"
+   ],
+   "tldr": "MET propose un cadre théorique et multiculturel pour le raisonnement moral des LLM, combinant MCLASH (benchmark) et MET-D (distillation auto-supervisée), abordant les biais culturels et théoriques. Pertinent pour l'éthique et la généralisation des modèles.",
+   "score": 7.0
+  },
+  {
+   "id": "bd9f6baf9f4a6a1c",
+   "title": "Motion4Motion: Motion Transfer Across Subjects at Inference",
+   "url": "https://huggingface.co/papers/2607.11644",
+   "summary": "This work explores the motion transfer from one video to another, which is crucial in animation for diverse characters. Previously, video motion transfer has been largely explored between human and human-like characters, enabling a lot of applications in digital creation. However, these approaches encounter a main limitation. Specifically, related technical pipelines heavily rely on a predefined human skeleton structure and accordingly require skeleton-conditional model training. On the one hand, these methods are difficult to generalize to diverse characters, such as animals from different species, while preserving their unique motion styles. On the other hand, labeled data in diverse skeletons is limited, which additionally restricts the large-scale training for the task. In this paper, we jump out of the skeleton-based motion transfer framework and propose a training-free motion transfer framework, named Motion4Motion. Motion4Motionmodels the motion flow of the character in a video instead of skeletons, which makes motion transfer across species easier. Extensive experimental results and novel applications show our methods outperform baselines impressively. Project page is available at https://lhchen.top/Motion4Motion.",
+   "published": "2026-07-13T10:58:57.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.11644"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "Motion4Motion propose un cadre d'apprentissage sans squelette pour le transfert de mouvement entre vidéos, permettant une généralisation à des personnages non humains (animaux) sans données labellisées, avec des résultats expérimentaux supérieurs aux méthodes existantes.",
+   "score": 7.0
+  },
+  {
+   "id": "25aaab559992eaa0",
+   "title": "Audio-Native Speech Recognition with a Frozen Discrete-Diffusion Language Model",
+   "url": "https://arxiv.org/abs/2607.13013v1",
+   "summary": "Automatic speech recognition is dominated by autoregressive decoders that emit one token at a time. We ask whether a discrete diffusion language model can transcribe speech instead, refining a whole transcript in parallel over a small number of denoising steps. We train an audio-native interface for DiffusionGemma, a 26B mixture-of-experts model that generates text by uniform, random-token discrete diffusion rather than the absorbing-mask scheme common to recent diffusion language models. A frozen Whisper encoder supplies acoustic features, a lightweight projector maps them into the model embedding space, and low-rank adapters let the frozen backbone attend to the new modality. About 42M parameters are trained, which is 0.16 percent of the backbone. We find that the natural training objectives fail to ground the audio because their gradient reaches the projector only through attention that has already dismissed it. A connectionist temporal classification loss applied through the frozen output head breaks this deadlock. The resulting model reaches 6.6 percent word error rate on LibriSpeech test-clean, transcribes in roughly eight parallel steps regardless of utterance length, and uses a single adapter trained on six languages, which we evaluate here on English, Hindi, and Mandarin.",
+   "published": "2026-07-14T17:53:22+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Harsha Vardhan Khurdula, Abhinav Kumar Singh, Yoeven D Khemlani, Vineet Agarwal"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "architecture"
+   ],
+   "tldr": "Audio-Native Speech Recognition avec DiffusionGemma (26B MoE) : un modèle de diffusion discret gelé pour la reconnaissance vocale, transcrivant en 8 étapes parallèles via un encodeur Whisper gelé et des adapteurs LoRA. Atteint 6.6% d'erreur de mots sur LibriSpeech test-clean avec seulement 42M paramètres entraînés.",
+   "score": 6.8
+  },
+  {
+   "id": "f1b769b75e05d4ba",
+   "title": "Form, Not Content? A Preregistered, Placebo-Controlled Evaluation of Learned Error-Conditioned Self-Repair Through Prompts and Weights in Frozen Small Code Models",
+   "url": "https://arxiv.org/abs/2607.12962v1",
+   "summary": "Frozen small code LLMs are deployed locally, yet the information guiding a retry after a failed attempt is still measured without placebo controls in the self-repair literature. We treat a failed program as a conjecture and an execution counterexample as an oracle-relative refutation, and introduce PoPE (Popperian Placebo-controlled Evaluation): a methodology for measuring whether evidence that falsifies LLM-generated code can be used operationally by that same model. In PoPE, error content is paired with channel-specific placebos that keep the predeclared scaffold while ablating task-relevant content or deranging the task-error assignment. Frozen small code models (0.5-1.5B) are evaluated under preregistered rules through a prompt channel and a weight channel (small-data adapter training), with four generations per arm-unit pair. In the prompt channel, public-tier screening unlocked 12 units under the content-ablated form placebo versus 10 under the live error-pattern arm on a 40-unit resistant band; the result was recorded as mechanism-null. In the weight channel, an 8-8 tie was observed between the error-content adapter and the intervention-free baseline (p=1.0), while the SHA-deranged placebo adapter stayed ahead with 10 unlocks; content-attributable superiority was not confirmed. These results do not constitute evidence of equivalence or non-inferiority. Equivalence was not tested separately. Findings are restricted to the public-tier screening endpoint; hidden-tier confirmation was deferred by design. We read this not as compiled criticism disappearing as information, but as the loss of its external role in testing a new conjecture: when a representation learned from the oracle is written back into the generation state, testing is replaced by conditioning. No working JEPA-RL controller is claimed. PoPE is presented as a placebo-controlled, retestable measurement standard.",
+   "published": "2026-07-14T16:59:42+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mehmet Iscan"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Propose une méthodologie placebo (PoPE) pour évaluer objectivement l'auto-réparation des petits modèles de code gelés via des prompts ou des poids, en distinguant l'effet des erreurs réelles des artefacts de forme. Résultats mitigés mais cadre rigoureux pour les évaluations de self-repair.",
+   "score": 6.8
+  },
+  {
+   "id": "9f5e5de2449e3e15",
+   "title": "Verifier-Based Reinforcement Fine-Tuning of Reasoning Models for Thermal Energy Storage Control",
+   "url": "https://arxiv.org/abs/2607.12856v1",
+   "summary": "Buildings are expected to shift cooling loads in response to grid conditions. Thermal energy storage (TES) enables this shift, but scheduling it well requires planning hours ahead under storage constraints. Model predictive control (MPC) and reinforcement learning are difficult to scale across buildings. This study instead adapts an open-weight reasoning model through reinforcement learning with verifiable rewards (RLVR). We convert exact offline dynamic-programming (DP) action values into dense rewards for every candidate action. Using only 30 training prompts, reinforcement fine-tuning (RFT) trains the model as an upper-level scheduler that outputs hourly heat-pump setpoints from text-based states and forecasts. Evaluation uses a deliberately simple office-building TES benchmark where exact DP is tractable and the optimum is known. RFT reduces the open-weight model's emissions from 70.5 to 61.2 kg-CO2, close to the DP optimum of 60.8 kg-CO2. GPT-5 nearly matches DP and MPC without task-specific training, while GPT-4o, a non-reasoning LLM, produces higher emissions than the no-storage baseline, so inference-time reasoning appears important. Trace analysis shows that RFT mainly stabilizes observable planning patterns (candidate comparison, look-ahead, and feasibility checking) rather than creating a new strategy. Robustness and generalization tests clarify what transfers: the reinforced planning patterns persist under forecast errors and an unseen TES condition and carry over to a battery task, but its different structure limits the gains. DP-based verifiable rewards offer a practical way to adapt open-weight reasoning models to building storage scheduling. These results motivate higher-fidelity tests of whole-building control and scalable verifiers for city-scale energy management.",
+   "published": "2026-07-14T15:08:39+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Takumi Shioda, Kohei Terashima, Tatsuo Nagai"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Cette étude applique un modèle de raisonnement (RLVR) fine-tuné par RL avec récompenses vérifiables pour optimiser le contrôle de stockage thermique dans les bâtiments. Résultat : réduction des émissions de CO₂ de 70,5 à 61,2 kg, proche de l'optimum théorique, démontrant l'efficacité de l'approche pour des tâches de planification sous contraintes.",
+   "score": 6.8
+  }
+ ]
+}
