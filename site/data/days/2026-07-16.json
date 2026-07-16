@@ -1,0 +1,692 @@
+{
+ "date": "2026-07-16",
+ "digest": {
+  "headline": "Les architectures profondes et l'optimisation des agents dominent la recherche en IA, avec des avancées théoriques et pratiques pour la robustesse et l'efficacité",
+  "overview": "Ce 16 juillet 2026, les publications mettent en lumière des travaux fondamentaux sur les limites des architectures profondes et les défis de l'optimisation des agents, tout en proposant des solutions concrètes pour l'interprétabilité, la sécurité et l'adaptation en faible ressource. Les approches co-design algorithme-matériel et les frameworks agentiques auto-évolutifs illustrent une tendance vers des systèmes plus autonomes et intégrés.",
+  "highlights": [
+   {
+    "title": "Préservation du rang des gradients en profondeur",
+    "text": "Une étude théorique unifie les travaux sur le *rank collapse* et les différences entre *Post-Norm* et *Pre-Norm*, démontrant comment les connexions résiduelles et la normalisation influencent la préservation du rang des gradients dans les architectures profondes. Ces résultats offrent un cadre pour concevoir des modèles plus stables et interprétables, essentiel pour repousser les limites des réseaux neuronaux."
+   },
+   {
+    "title": "Optimisation et robustesse des agents : gains non composés et attribution de récompenses",
+    "text": "Deux travaux complémentaires révèlent des limites dans l'optimisation des agents : d'une part, les gains des méthodes comme GEPA ou Meta Harness ne se composent pas nécessairement lors d'optimisations successives ; d'autre part, TRACE améliore l'attribution de récompenses *turn-level* pour les agents multi-tours, sans nécessiter d'entraînement supplémentaire. Ces résultats soulignent la complexité du *credit assignment* et la nécessité de méthodes plus robustes pour l'entraînement itératif."
+   },
+   {
+    "title": "Cascades de vérification et sécurité des LLM",
+    "text": "Une analyse mathématique des cascades de vérification pour LLM introduit des concepts comme les *blind-spot ceilings* et la croissance des log-odds en fonction de la corrélation entre vérificateurs. Parallèlement, GPT-Red d'OpenAI propose un système de red teaming automatisé pour améliorer la robustesse des modèles. Ces travaux sont cruciaux pour évaluer et renforcer la fiabilité des systèmes multi-agents et des pipelines de vérification."
+   },
+   {
+    "title": "Co-design algorithme-matériel et optimisation des modèles multimodaux",
+    "text": "Kaleido exploite les corrélations spatiotemporelles dans l'espace latent des transformers de diffusion vidéo pour accélérer l'inférence (jusqu'à 5,9x) tout en maintenant une qualité élevée. Ce type de co-design illustre une approche systémique pour optimiser les modèles multimodaux, combinant innovations algorithmiques et matérielles pour des gains concrets en efficacité."
+   },
+   {
+    "title": "Agents auto-évolutifs et correction d'erreurs",
+    "text": "HealthClaw et *Experience Memory Graph* (EMG) proposent des architectures pour des agents persistants et auto-correctifs. HealthClaw sépare mémoire privée et règles médicales pour une gestion longitudinale de la santé, tandis qu'EMG utilise une approche graphique pour corriger les erreurs des agents via le matching de trajectoires. Ces frameworks ouvrent la voie à des agents plus autonomes et adaptatifs."
+   },
+   {
+    "title": "Benchmarking rigoureux et adaptation en faible ressource",
+    "text": "Hindcast évalue les capacités prédictives des LLM en bloquant les fuites de données via des snapshots historiques, tandis que DeltaMerge-LowRes décompose l'adaptation multilingue et multi-tâches en deltas séparés pour des gains significatifs en faible ressource. Ces méthodes offrent des outils reproductibles pour évaluer et optimiser les modèles dans des contextes réalistes."
+   }
+  ],
+  "trend": "Les recherches actuelles convergent vers une intégration plus poussée entre théorie et pratique, avec un accent sur la robustesse des architectures profondes, l'autonomie des agents et l'optimisation systémique des modèles. La sécurité, l'interprétabilité et l'efficacité en faible ressource émergent comme des axes prioritaires pour les systèmes IA de nouvelle génération."
+ },
+ "items": [
+  {
+   "id": "09b131028c4dc099",
+   "title": "Transforming Rank: How Architecture Navigates the Spectral Pathologies of Depth",
+   "url": "https://arxiv.org/abs/2607.14018v1",
+   "summary": "We investigate how each component of the Transformer feedforward block architecture design determines how much rank survives across depth at initialization. We reinterpret skip connections and normalization, long understood as controlling magnitude, as mechanisms for preserving gradient rank across depth, since the very matrix multiplications and nonlinear activations that make the network expressive also reduce the rank. We show that skip connections trade off rank collapse against ensemble-like behavior, controlled by the relative scales of the branch and the skip: skip connections route the gradient around the residual branch, where rank is lost, rather than along the long gradient paths that encourage the layers to compose. The placement of the normalization layer controls this same tradeoff by setting the branch-to-skip ratio across depth, unifying much of the normalization placement and depth scaling literature, in particular why rank collapses for Post-Norm but plateaus for Pre-Norm. Other aspects of the architecture, like the two-matrix structure that expands and contracts the width, use additional parameters to preserve the representation or branch Jacobian rank. The second matrix decorrelates a coherent mean spike that would grow across blocks with a single matrix and uncentered activation, preventing the residual representation from collapsing. The width expansion between the two matrices keeps the branch Jacobian full rank: applying the rank-reducing activation in this expanded space leaves enough directions to span the original, at a width that follows a Marchenko--Pastur law. The initialization rank of the input--output Jacobian predicts which networks train on CIFAR-10. Taken together, we recast architecture design for deep networks as navigating an intrinsic tradeoff among rank collapse, ensemble-like behavior, and parameter count.",
+   "published": "2026-07-15T16:50:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Katie Everett"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Étude théorique sur le rôle des connexions résiduelles et de la normalisation dans la préservation du rang des gradients en profondeur, unifiant des travaux existants sur le *rank collapse* et le *Post-Norm* vs *Pre-Norm*. Fondamental pour comprendre les limites des architectures profondes et proposer des améliorations.",
+   "score": 8.3,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le problème de la dégradation du rang des représentations dans les réseaux de neurones profonds, en particulier les Transformers. Elle cherche à expliquer pourquoi certaines architectures perdent leur capacité à capturer des informations riches (perte de rang) au fil des couches, ce qui limite leur expressivité et leur performance, notamment à l'initialisation.",
+    "methode": "Les auteurs réinterprètent les composants classiques des blocs feedforward des Transformers (connexions résiduelles, normalisation, structure à deux matrices) comme des mécanismes de préservation du rang. Ils analysent comment les connexions résiduelles équilibrent la perte de rang et un comportement de type 'ensemble', en fonction des échelles relatives entre la branche résiduelle et le skip. La position de la couche de normalisation (Pre-Norm vs Post-Norm) est étudiée pour son impact sur ce compromis. La structure à deux matrices (expansion puis contraction de la largeur) est décrite comme un moyen de préserver le rang du Jacobien de la branche, en utilisant un espace élargi pour appliquer l'activation non linéaire (réductrice de rang) tout en maintenant suffisamment de directions pour couvrir l'espace d'origine. Les auteurs s'appuient sur des lois théoriques comme celle de Marchenko-Pastur pour quantifier ces effets.",
+    "resultats": "Les résultats montrent que le rang initial du Jacobien entrée-sortie prédit quels réseaux peuvent s'entraîner sur CIFAR-10. Les architectures Pre-Norm évitent l'effondrement du rang (plateau) contrairement aux Post-Norm, où le rang s'effondre. La largeur d'expansion entre les deux matrices suit une loi de Marchenko-Pastur pour maintenir le rang du Jacobien. Les connexions résiduelles, en fonction de leur échelle, permettent de naviguer entre une perte de rang et un comportement de type 'ensemble' des couches.",
+    "limites": "L'étude se concentre principalement sur le comportement à l'initialisation, sans explorer pleinement l'impact de l'entraînement ou des données réelles sur la dynamique du rang. Les mécanismes proposés reposent sur des hypothèses théoriques (comme la loi de Marchenko-Pastur) qui peuvent ne pas capturer toutes les complexités des architectures modernes. Enfin, la généralisation à d'autres types de réseaux (CNN, RNN) ou à des tâches plus complexes n'est pas abordée.",
+    "verdict": "Cette publication mérite une attention particulière pour son éclairage théorique novateur sur les compromis architecturaux des Transformers, bien que ses implications pratiques restent à valider empiriquement sur des cas concrets."
+   }
+  },
+  {
+   "id": "7fb45560e7cac385",
+   "title": "Do Agent Optimizers Compound? A Continual-Learning Evaluation on Terminal-Bench 2.0",
+   "url": "https://arxiv.org/abs/2607.14004v1",
+   "summary": "Most reported gains from agent-optimization methods are one-shot: an agent is optimized against a fixed benchmark and the resulting improvement is reported as if it were a stable property of the method. This does not test the setting that matters for deployed agents, where optimization is applied recursively as new failures and new tasks appear over time. The central question this raises is whether optimizer-driven gains compound: after an agent has been optimized once, can it be optimized again on newly arrived tasks without eroding the gains the first round produced? We study this question with a two-phase continual-learning evaluation built from hard tasks in Terminal-Bench 2.0, comparing three approaches to agent-harness optimization (GEPA, Meta Harness, and RELAI's Verifiable Continual Learning, RELAI-VCL) under identical optimization budgets. All three methods improve over the baseline agent in the conventional, static, single-phase setting. However, once new tasks are introduced, the methods diverge sharply: GEPA's optimized agent transfers below the unoptimized baseline, Meta Harness transfers well but fails to improve further once given a second optimization budget, and RELAI-VCL is the only method that both transfers positively to unseen tasks and continues improving after those tasks are folded into the optimization objective, reaching the highest pass rate at every evaluated stage and the highest lifelong average pass rate overall (76.4% vs. 66.0% for GEPA, 64.6% for Meta Harness, and 58.7% for the baseline). Our key observation was that optimization gains compounded only when regression control was built into the optimization loop, providing an inductive bias against shortcut solutions that fail to generalize.",
+   "published": "2026-07-15T16:36:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wenxiao Wang, Priyatham Kattakinda, Soheil Feizi"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Évaluation en *continual learning* de trois méthodes d'optimisation d'agents (GEPA, Meta Harness, RELAI-VCL), montrant que leurs gains ne se composent pas nécessairement et que certaines dégradent les performances après optimisation successive. Important pour le *fine-tuning* et l'entraînement itératif d'agents.",
+   "score": 8.3,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un enjeu critique pour les systèmes d'agents autonomes déployés dans des environnements dynamiques : la capacité des méthodes d'optimisation d'agents à produire des améliorations *cumulatives* plutôt que ponctuelles. Traditionnellement, les gains rapportés proviennent d'évaluations statiques (une seule phase d'optimisation sur un benchmark fixe), ce qui ne reflète pas les scénarios réels où les agents doivent s'adapter en continu à de nouvelles tâches ou échecs sans perdre les acquis précédents. Le problème central est donc de déterminer si les optimisations successives *composent* leurs effets ou, au contraire, s'annulent mutuellement par régression sur les performances antérieures.",
+    "methode": "Les auteurs proposent une évaluation en *deux phases* de type *continual learning* sur le benchmark *Terminal-Bench 2.0*, conçu pour des tâches complexes et réalistes. Trois approches d'optimisation d'agents sont comparées sous un budget d'optimisation identique : (1) *GEPA* (méthode basée sur des gradients pour ajuster les *harness* d'agents), (2) *Meta Harness* (optimisation méta-apprentissage des paramètres du *harness*), et (3) *RELAI-VCL* (*Verifiable Continual Learning*), une méthode intégrant un contrôle explicite des régressions via des contraintes de généralisation. L'évaluation mesure d'abord les performances après une première optimisation (phase statique), puis après l'introduction de nouvelles tâches et une seconde optimisation (phase dynamique). Les auteurs analysent notamment la capacité des méthodes à éviter les *shortcut solutions* (solutions superficielles non généralisables) grâce à des biais inductifs comme le *regression control*.",
+    "resultats": "Dans la phase statique, les trois méthodes surpassent l'agent de référence, validant leur efficacité initiale. Cependant, en phase dynamique, leurs comportements divergent radicalement : *GEPA* régresse en dessous du niveau de l'agent non optimisé sur les nouvelles tâches, *Meta Harness* transfère bien mais stagne lors de la seconde optimisation, tandis que *RELAI-VCL* est la seule à cumuler les gains (transfert positif + amélioration continue). Les chiffres clés montrent un avantage net pour *RELAI-VCL* : taux de réussite moyen sur l'ensemble des phases de 76,4 % (contre 66,0 % pour *GEPA*, 64,6 % pour *Meta Harness*, et 58,7 % pour la baseline). Les auteurs attribuent ce succès à l'intégration du *regression control* dans la boucle d'optimisation, limitant les solutions non robustes.",
+    "limites": "Le benchmark *Terminal-Bench 2.0* est spécifique aux tâches terminales (interactions avec des interfaces en ligne de commande), ce qui peut limiter la généralisabilité des résultats à d'autres domaines (ex : robotique, traitement du langage). De plus, l'étude ne compare que trois méthodes, sans explorer d'autres approches de *continual learning* (ex : replay de données, architectures modulaires). Enfin, le mécanisme exact du *regression control* dans *RELAI-VCL* n'est pas détaillé techniquement, laissant des zones d'ombre sur sa robustesse face à des tâches plus complexes ou des distributions de données très différentes.",
+    "verdict": "Cette publication mérite une attention particulière pour son cadre d'évaluation réaliste et sa démonstration claire que les gains d'optimisation ne se cumulent pas spontanément, mais elle gagnerait à être complétée par des tests sur des benchmarks plus variés et une analyse approfondie des mécanismes anti-régression."
+   }
+  },
+  {
+   "id": "b6369462d5f9d19b",
+   "title": "TRACE: Turn-level Reward Assignment via Credit Estimation for Long-Horizon Agents",
+   "url": "https://arxiv.org/abs/2607.13988v1",
+   "summary": "Multi-turn agents solve complex tasks through extended sequences of tool interactions before producing a final answer, making credit assignment a fundamental challenge during post-training. Outcome rewards provide reliable supervision for short-horizon reasoning, but become sparse and high-variance as trajectories grow to tens or hundreds of tool calls. They can also be misleading: a failed rollout may contain many useful actions that move the agent closer to the goal, yet outcome-only training assigns them the same negative advantage as the eventual mistake. We propose TRACE (Turn-level Reward Assignment via Credit Estimation), a dense credit-assignment method for agentic reinforcement learning. TRACE represents rollouts as state transitions at tool-call boundaries, obtains gold-answer log-probabilities from a frozen reference model, transforms them into log-ratio state values, and derives per-action rewards as Temporal-Difference changes in those values. This requires no additional critic or process-label training, and its one-step log-ratio TD component telescopes across redundant tool calls. On long-horizon complex search, TRACE substantially improves base-model tool-use ability using pure RL, without a cold-start supervised fine-tuning stage, an agentic mid-training stage, or training on live-web data. On the closed-web BrowseComp-Plus benchmark, it raises Qwen3-4B from $7.2$ to $35.6$ and Qwen3-30B-A3B from $8.4$ to $42.6$. The learned search behavior also transfers to open-web benchmarks, and the learning curves show earlier improvement and faster convergence during RL training.",
+   "published": "2026-07-15T16:16:42+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Leitian Tao, Baolin Peng, Wenlin Yao, Tao Ge, Hao Cheng, Mike Hang Wang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Méthode TRACE pour l'attribution de récompenses *turn-level* dans les agents multi-tours, améliorant significativement l'utilisation d'outils en RL long-horizon sans entraînement supplémentaire de critique. Pertinent pour l'optimisation d'agents et le *credit assignment*.",
+   "score": 8.3,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de l'attribution de crédit (credit assignment) dans les agents multi-tours, qui résolvent des tâches complexes via des séquences étendues d'interactions avec des outils. Les récompenses basées sur le résultat final deviennent inefficaces pour des trajectoires longues (dizaines ou centaines d'appels d'outils), car elles sont trop éparses et bruitées, et peuvent pénaliser à tort des actions intermédiaires utiles.",
+    "methode": "TRACE (Turn-level Reward Assignment via Credit Estimation) est une méthode d'attribution de crédit dense pour l'apprentissage par renforcement (RL) agentique. Elle modélise les déroulements (rollouts) comme des transitions d'état aux frontières des appels d'outils, utilise les log-probabilités d'une réponse de référence (modèle gelé) pour calculer des valeurs d'état basées sur des ratios de log-probabilités, puis dérive des récompenses par action via des différences temporelles (TD) de ces valeurs. Cette approche évite l'entraînement supplémentaire d'un critique ou de labels de processus, et son composant TD à un pas se simplifie sur des appels d'outils redondants.",
+    "resultats": "TRACE améliore significativement les capacités d'utilisation d'outils des modèles de base en utilisant uniquement du RL, sans phase préalable de fine-tuning supervisé, ni entraînement intermédiaire agentique, ni données web en direct. Sur le benchmark fermé BrowseComp-Plus, il fait passer Qwen3-4B de 7,2 à 35,6 et Qwen3-30B-A3B de 8,4 à 42,6. Les comportements de recherche appris se transfèrent aussi aux benchmarks web ouverts, avec des courbes d'apprentissage montrant une amélioration plus précoce et une convergence plus rapide.",
+    "limites": "Le document ne détaille pas les hypothèses sous-jacentes à la généralisation des récompenses dérivées des log-ratios, ni les éventuels biais introduits par le modèle de référence gelé. De plus, l'absence de comparaison avec des méthodes alternatives d'attribution de crédit (comme les critiques hiérarchiques) limite l'évaluation de sa robustesse. La dépendance à des benchmarks fermés pourrait aussi masquer des limitations en conditions réelles.",
+    "verdict": "TRACE mérite une attention particulière pour son approche innovante et ses résultats impressionnants en RL pur, mais nécessite des validations supplémentaires pour confirmer sa généralisabilité et son efficacité face à des méthodes concurrentes."
+   }
+  },
+  {
+   "id": "348522f351ec4006",
+   "title": "Partially Correlated Verifier Cascades in LLM Harnesses: Concave Log-Odds, Polynomial Reliability, and Blind-Spot Ceilings",
+   "url": "https://arxiv.org/abs/2607.13918v1",
+   "summary": "Serial verification gates are a core reliability primitive in LLM harnesses: a candidate answer is returned only if $k$ verifier calls all accept it. Under conditionally independent gates, the recent Odds Law (arXiv:2606.15712) shows that posterior log-odds grow linearly in $k$, so failure decays exponentially, and states that \"a tight theory of partially correlated verifier cascades remains open.\" This note gives a minimal such theory. Modeling the per-instance false-accept rate on the generator's own errors as a latent variable $α\\sim G$ (de Finetti), the exact cascade posterior is $\\ell_k = \\ell_0 - \\ln m_k$, with $m_k$ the $k$-th moment of $G$. Then: (i) $\\ell_k$ is concave in $k$ for every non-degenerate $G$ -- the Odds Law is its tangent at the first gate and an upper bound; (ii) for Beta$(a,b)$ latents, failure decays polynomially, $1-r_k \\asymp k^{-b}$, with correlation parameter $ρ_v = 1/(a+b+1)$; (iii) a blind-spot atom of mass $1-π$ at $α=1$ caps the evidence extractable from any number of gates at $-\\ln(1-π)$ nats, so reliability saturates below 1; (iv) letting the true-accept rate also vary ($β\\sim H$) yields a trichotomy -- gates eventually always help, plateau, or actively harm -- decided by the upper-tail exponents of $G$ and $H$, with closed-form crossover $k^\\dagger$. The mechanism is survivorship: errors surviving gates are the high-$α$ ones. The theory is measurable: $R$ repeated verdicts per instance identify the first $R$ moments of $G$, so two verdicts identify $ρ_v$; beta-binomial likelihood and NPMLE recover the reliability curve and the ill-posed ceiling. In synthetic tests, independence-based extrapolation underestimates failure by 20x at $k=5$ and ~3000x at $k=10$; the correlated fit at $R=8$ tracks held-out depths. The practical lever is decorrelation -- changing model family, modality, or evidence source -- not adding gates.",
+   "published": "2026-07-15T14:58:37+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiangang Han"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Développe une théorie mathématique des cascades de vérification pour LLM, analysant la croissance des log-odds en fonction de la corrélation entre vérificateurs et introduisant des limites de fiabilité (blind-spot ceilings). Fondamental pour évaluer la robustesse des systèmes multi-agents et des pipelines de vérification.",
+   "score": 8.3,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un défi central dans les systèmes de vérification des grands modèles de langage (LLM) : améliorer la fiabilité des cascades de vérificateurs partiellement corrélés. Le problème principal est que les modèles actuels, basés sur l'hypothèse d'indépendance conditionnelle des vérificateurs (comme la *Odds Law*), sous-estiment les taux d'échec réels, car ils ne prennent pas en compte les corrélations entre les erreurs des vérificateurs, ce qui limite la précision des prédictions de fiabilité.",
+    "methode": "Les auteurs proposent une théorie minimale pour modéliser les cascades de vérificateurs partiellement corrélés en utilisant une approche bayésienne non paramétrique. Ils modélisent le taux de fausses acceptations par instance comme une variable latente α suivant une distribution G (de Finetti). La log-vraisemblance postérieure exacte après k vérifications est donnée par ℓ_k = ℓ_0 - ln(m_k), où m_k est le k-ième moment de G. Ils analysent ensuite : (1) la concavité de ℓ_k en fonction de k pour toute distribution G non dégénérée, (2) le cas spécifique où G suit une loi Beta(a,b), conduisant à une décroissance polynomiale des échecs, (3) l'impact d'un *blind-spot* (atome de masse 1-π à α=1) limitant la fiabilité maximale, et (4) une trichotomie des comportements asymptotiques lorsque le taux de vraies acceptations varie aussi (β ~ H). La méthode inclut aussi une approche mesurable : en répétant R verdicts par instance, on peut identifier les R premiers moments de G, et utiliser des techniques comme la vraisemblance beta-binomiale ou le NPMLE pour reconstruire la courbe de fiabilité et estimer le plafond de fiabilité.",
+    "resultats": "Les résultats montrent que l'hypothèse d'indépendance sous-estime gravement les taux d'échec : jusqu'à 20 fois pour k=5 et ~3000 fois pour k=10. En ajustant le modèle corrélé avec R=8 verdicts répétés, les prédictions correspondent bien aux données de test pour des profondeurs de cascade non observées. Le paramètre de corrélation ρ_v = 1/(a+b+1) pour une distribution Beta permet de quantifier la dépendance entre vérificateurs. Enfin, la présence d'un *blind-spot* impose une limite théorique à la fiabilité, même avec un nombre infini de vérificateurs.",
+    "limites": "La théorie repose sur des hypothèses fortes, comme la modélisation des taux d'erreur par des variables latentes suivant des distributions spécifiques (Beta, par exemple), ce qui peut ne pas capturer toute la complexité des corrélations réelles. De plus, l'identifiabilité des moments de G nécessite un nombre suffisant de répétitions (R), ce qui peut être coûteux en pratique. Enfin, l'impact des *blind-spots* et la trichotomie des comportements asymptotiques méritent une validation empirique plus large pour confirmer leur généralité.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche rigoureuse et ses implications pratiques dans la conception de systèmes de vérification plus fiables pour les LLM, surtout si l'on cherche à dépasser les limites des modèles d'indépendance."
+   }
+  },
+  {
+   "id": "961e5157bf2ea985",
+   "title": "Kaleido: Algorithm-Hardware Co-Design for Video Diffusion Transformers by Exploiting Latent Space Correlations",
+   "url": "https://arxiv.org/abs/2607.13770v1",
+   "summary": "Video diffusion transformers (vDiTs) generate high quality video but introduce extremely high compute cost due to the long diffusion timesteps and self attention computation. As diffusion timesteps are reduced, the computation cost of self attention becomes the dominant bottleneck. Existing acceleration approaches largely inherit sparse attention techniques from large language models, which fail to consider the unique spatiotemporal correlation of video data. This paper presents Kaleido, an algorithm hardware codesign that accelerates all operations in vDiTs by exploiting channel-wise spatiotemporal correlations in latent space. Based on this insight, we propose a lightweight channelwise reuse algorithm that skips redundant computations by reusing partial results while preserving higher generative quality than prior methods (>17 dB). To efficiently support this algorithm, we design a systolic array like accelerator with reconfigurable processing elements and a lightweight data dispatcher to mitigate irregular sparsity and data access patterns introduced by our reuse algorithm. Evaluations across three mainstream vDiT models show that Kaleido achieves up to 5.9x speedup and 16.0x energy savings over state of the art accelerators.",
+   "published": "2026-07-15T12:31:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wenxuan Miao, Haosong Liu, Weiming Hu, Zihan Liu, Aiyue Chen, Jianlin Yu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "Codesign algorithme-matériel (Kaleido) exploitant les corrélations spatiotemporelles dans l'espace latent des transformers de diffusion vidéo pour accélérer l'inférence (jusqu'à 5.9x) tout en préservant la qualité (>17 dB). Solution concrète pour l'optimisation des modèles multimodaux.",
+   "score": 8.3
+  },
+  {
+   "id": "ee230258f27f8a0d",
+   "title": "GPT-Red: Unlocking Self-Improvement for Robustness",
+   "url": "https://openai.com/index/unlocking-self-improvement-gpt-red",
+   "summary": "Explore GPT-Red, OpenAI’s automated red teaming system that uses self-play to improve AI safety, alignment, and prompt injection robustness.",
+   "published": "2026-07-15T10:00:00+00:00",
+   "source": "openai-blog",
+   "source_label": "OpenAI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "GPT-Red est un système automatisé de red teaming développé par OpenAI, utilisant l'auto-apprentissage pour améliorer la robustesse des LLM face aux attaques par injection de prompts et aux biais de sécurité.",
+   "score": 8.2
+  },
+  {
+   "id": "503637995a4eaef4",
+   "title": "A Self-Evolving Agent for Longitudinal Personal Health Management",
+   "url": "https://arxiv.org/abs/2607.13940v1",
+   "summary": "Personal health management unfolds over repeated encounters, yet most health AI systems treat each request in isolation. We developed HealthClaw, an open-source agent architecture that updates support as a person's routines, preferences, measurements and risks change. It separates shared safety rules and medical knowledge from private longitudinal memory containing profile facts, reusable procedures and episodic traces. After each episode, induction determines what should update the profile, revise a procedure, remain episodic or be excluded. We evaluated HealthClaw with a synthetic year-long benchmark and nine 200-case biomedical tasks. Across 900 longitudinal support probes, answer accuracy increased from 0.2% with current-query prompting to 45.7% with HealthClaw, while prompt-side context exposure was 71.7% lower than with full-history prompting. In 100 privacy probes, HealthClaw produced higher privacy-aware answer quality and fewer unsafe disclosures than both baselines. Across the biomedical tasks, the mean absolute gain in the task-specific primary metric was 27.0 percentage points, and seven gains remained significant after false-discovery-rate correction. These offline benchmarks support governed, self-evolving memory for longitudinal personal health agents, although clinical effectiveness requires prospective evaluation. HealthClaw is publicly available at https://github.com/HC-Guo/HealthClaw.",
+   "published": "2026-07-15T15:22:11+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Haoran Li, Jiebi Deng, Tong Jin, Jinghong Han, Yuxin Wang, Zexin Wang"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "HealthClaw, un agent auto-évolutif pour la gestion longitudinale de la santé, séparant mémoire privée et règles médicales. Gains majeurs en précision (45.7% vs 0.2%) et en efficacité contextuelle (71.7% de réduction). Architecture prometteuse pour les agents persistants.",
+   "score": 8.0
+  },
+  {
+   "id": "0100e25b36521c06",
+   "title": "Experience Memory Graph: One-Shot Error Correction for Agents",
+   "url": "https://arxiv.org/abs/2607.13884v1",
+   "summary": "Large Language Model (LLM) agents have shown remarkable capabilities in autonomous decision-making by generating sequential trajectories of states, actions, and observations. However, in complex, long-horizon tasks, these agents frequently suffer from compounding errors and struggle to recover from failures. Existing self-correction mechanisms rely on prompt-based reflection, which is inherently brittle, incurs heavy time and API costs due to iterative trial-and-error loops, and produces task-specific memory that may be hard to generalize to new scenarios. To address this, we propose Experience Memory Graph (EMG), a framework that reformulates agent failure recovery as a graph matching problem. At training time, we convert both failed exploration trajectories and successful expert trajectories into directed action decision graphs. By matching these graphs, we extract common subgraphs (successful workflows) and graph edit paths that explicitly indicate how to correct failures (e.g., which actions to add, delete, or relabel under a given observation), and store them in a memory graph with intra-task nodes and cross-task edges. At test time, EMG retrieves relevant insights and guides the agent in a single, loop-free execution. Experiments on ALFWorld and ScienceWorld show that EMG consistently outperforms state-of-the-art reflection baselines in success rate and average reward, while requiring no test-time trial-and-error.",
+   "published": "2026-07-15T14:33:15+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wenjun Wang, Yuchen Fang, Fengrui Liu, Zibo Liang, Kai Zheng"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Présente *Experience Memory Graph* (EMG), un framework pour corriger les erreurs des agents LLM via une approche graphique (matching de trajectoires et extraction de sous-graphes). Innovant pour l'auto-correction des agents et la généralisation des apprentissages.",
+   "score": 8.0
+  },
+  {
+   "id": "633f453fe2c164d0",
+   "title": "Towards demystifying the creativity of diffusion models",
+   "url": "https://research.google/blog/towards-demystifying-the-creativity-of-diffusion-models/",
+   "summary": "Algorithms & Theory",
+   "published": "2026-07-15T18:06:27+00:00",
+   "source": "google-research",
+   "source_label": "Google Research",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Étude de Google Research visant à démystifier la créativité des modèles de diffusion en analysant leurs mécanismes internes, avec des implications pour l'interprétabilité et l'optimisation des architectures génératives.",
+   "score": 7.9
+  },
+  {
+   "id": "ac1c3092126470dd",
+   "title": "Hindcast: Replaying Prediction Markets to Evaluate LLM Forecasters",
+   "url": "https://arxiv.org/abs/2607.14051v1",
+   "summary": "Forecasters are evaluated by backtesting, which replays resolved questions and grades the probability the system would have assigned before the outcome was known. For LLMs, two channels leak the answer into this test. A model that retrieves can surface reports written after the event, turning forecasting into a lookup, and each new model is trained on data closer to the event, so a question that lay in the future for last year's models sits inside this year's training data. Either way, the test grades recall while claiming to grade foresight. We introduce Hindcast, which closes both leaks by grading a model as if it stood at a chosen past date $t_0$, before the outcome existed in either channel. Hindcast replays resolved Polymarket prediction markets against a frozen snapshot of public Reddit, lets the model read only posts written before $t_0$, and scores each forecast against both what happened and the market's own price at $t_0$, itself a human forecast made from the same past information. Because the cutoff is set per market and the snapshot never changes, the evaluation re-runs on new markets as models improve, without going stale. Once the leak is closed, retrieval still helps most models, but only where Reddit discussed the event beforehand. Where the archive carried only speculation, retrieval hurts.",
+   "published": "2026-07-15T17:21:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xiao Ye, Jacob Dineen, Evan Zhu, Shijie Lu, Kevin Song, Ben Zhou"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Hindcast évalue les LLM en forecasting en bloquant les fuites de données (réponses futures) via des snapshots historiques de Reddit, offrant une évaluation plus rigoureuse des capacités prédictives. Méthode reproductible et scalable.",
+   "score": 7.7
+  },
+  {
+   "id": "960fa450a96feb34",
+   "title": "Rethinking Penetration Testing for AI-Enabled Systems: From Resource Compromise to Behavioral Objective Violation",
+   "url": "https://arxiv.org/abs/2607.14006v1",
+   "summary": "Penetration testing traditionally evaluates whether adversaries can exploit weaknesses in software, infrastructure, configurations, or operational controls to achieve security-relevant compromise. This paradigm remains necessary for AI-enabled systems, but it is no longer sufficient. In such systems, adversaries may influence prompts, retrieved content, sensor inputs, training data, memory, tools, or human-AI interaction loops to alter system behavior without directly compromising the underlying infrastructure. This paper reframes penetration testing for AI-enabled systems as objective-driven behavioral evaluation. We define an AI-enabled system as one in which learned models materially influence behavior affecting operational outcomes, and we define AI-enabled penetration as the feasible induction of AI-governed behavior that violates one or more operational objectives under an explicit threat model. This definition preserves conventional penetration testing while extending it to adversarial pathways such as prompt injection, indirect prompt injection, data poisoning, sensor manipulation, retrieval poisoning, tool misuse, and agentic misalignment. We further propose a testing workflow that identifies operational objectives, maps AI-governed behavior, analyzes adversarial influence surfaces, defines behavioral failure criteria, executes scenario-based tests, and reports evidence linking adversarial action to objective violation. A running example involving an AI-enabled security operations center assistant illustrates how penetration may occur through behavioral influence rather than infrastructure compromise. Together, the definitions, workflow, and example provide a technical framework for evaluating adversarial success in deployed AI-enabled systems.",
+   "published": "2026-07-15T16:36:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mohammad Allahbakhsh, Mohammad Hassan Bahari, Moslem Attar-Raouf"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "regulation",
+    "agents"
+   ],
+   "tldr": "Refonte du *penetration testing* pour les systèmes IA, étendant les attaques aux comportements induits par des modèles (injection de prompts, empoisonnement de données, etc.) plutôt qu'aux seules vulnérabilités infrastructurelles. Crucial pour la sécurité des systèmes agentiques.",
+   "score": 7.7
+  },
+  {
+   "id": "9bd4251f467f9dab",
+   "title": "Generative Compilation: On-the-Fly Compiler Feedback as AI Generates Code",
+   "url": "https://arxiv.org/abs/2607.13921v1",
+   "summary": "Languages with rich static semantics, such as Rust, provide stronger guarantees for AI-generated code, but their strictness makes generation more difficult. Off-the-shelf compilers can provide useful feedback post-generation, but does not guide intermediate generation steps, such as those during autoregressive LLM decoding. Constrained decoding intervenes earlier by rejecting invalid tokens during sampling, but requires white-box model access and costly reimplementation for semantic constraints.We introduce generative compilation, the first approach to obtaining compiler feedback on partial programs during generation. The core technical device is a sealor: a lightweight, mostly syntax-guided transformation that converts partial programs into complete ones that standard compilers can diagnose. It is designed such that possible-to-complete partial programs are never rejected, while preserving enough code context to catch genuine dead ends early. We construct such a sealor on a core Rust-like calculus and prove that it satisfies these properties, all mechanized in Lean. We extend it to the first partial-program checker for real Rust. We evaluate our method on challenging repository-level Rust coding tasks, across both frontier black-box and open-weight models. We show that generative compilation reduces non-compiling outputs and improves functional correctness, relative to standard post-generation feedback. It does so by detecting a broad range of errors close to their source and early during generation, thereby reducing errors cascades and enabling focused diagnostics. More broadly, generative compilation is a step toward making compilers a first-class citizen of AI-assisted programming active during generation, rather than a separate post-generation check.",
+   "published": "2026-07-15T15:00:22+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Niels Mündler-Sasahara, Hristo Venev, Dawn Song, Martin Vechev, Jingxuan He"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "Generative Compilation intègre un retour du compilateur en temps réel pendant la génération de code (ex: Rust), via un 'sealor' pour transformer les programmes partiels. Solution technique innovante pour améliorer la robustesse des LLM en génération de code.",
+   "score": 7.7
+  },
+  {
+   "id": "d1aeee3129b9241e",
+   "title": "AIMO Interpretability Challenge",
+   "url": "https://arxiv.org/abs/2607.13899v1",
+   "summary": "We propose the AIMO Interpretability Challenge, a competition on distinguishing robust from spurious reasoning in frontier mathematical language models based on the models' internal mechanisms. The challenge is motivated by a central limitation of standard reasoning benchmarks: strong final-answer accuracy does not reveal whether a model relies on stable reasoning mechanisms or exploits brittle reasoning shortcuts. Building on AI Mathematical Olympiad (AIMO) problems and submissions, together with resources from the Fields Model Initiative, the competition will provide (1) newly-published olympiad-level math reasoning problems and their symbolic representations, allowing generation of novel functional variants, (2) access to frontier reasoning models, and (3) assessments of models' adversarial robustness on these problems. Participants will use these resources, along with our computing infrastructure support, to develop methods for identifying which models solve problems robustly. Our competition will also create a new, open robustness benchmark and baseline systems, aiming to provide a lasting foundation for standard benchmarking in mathematical reasoning and interpretability. Scientifically, the competition connects interpretability and generalization research around a central question in AI research: can we determine if, and to what extent, the decision-making of frontier AI models is generalizable and thus, reliable?",
+   "published": "2026-07-15T14:41:28+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Michal Štefánik, Philipp Mondorf, Andreas Waldis, Qianying Liu, Chuan Yang, Michal Spiegel"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "llm"
+   ],
+   "tldr": "Lance un challenge d'interprétabilité sur des modèles mathématiques (AIMO) pour distinguer les raisonnements robustes des raccourcis fragiles, avec un benchmark ouvert et des variantes adversariales. Crucial pour l'interprétabilité des LLM et la robustesse des systèmes de raisonnement.",
+   "score": 7.7
+  },
+  {
+   "id": "7d6fdbf80bb3d86f",
+   "title": "SPyCE: Skill-Policy Co-evolution for Multimodal Agents",
+   "url": "https://arxiv.org/abs/2607.13854v1",
+   "summary": "Multimodal agents that think with images iteratively manipulate visual evidence and invoke tools across many steps. Existing reinforcement learning methods reduce trajectories to scalar rewards, forcing the policy to discover reusable tool-use patterns from scratch on every new task; memory-based alternatives retain past experience, yet they rely on test-time retrieval, without updating the policy to absorb reusable patterns from that experience. Our key insight is that multimodal reasoning trajectories should be distilled into reusable skills that co-evolve with the policy during training, rather than being consumed as rewards or retrieved from a static store. To this end, we propose SPyCE (Skill-Policy Co-evolution), a framework that distills trajectories into a hierarchical skill library and updates it throughout reinforcement learning. Execution skills capture local visual operations, while workflow skills encode high-level priors that orchestrate tool use. During training, the policy model conditions on retrieved skills to guide its rollouts, while the skill library evolves using valuable rollouts generated by the policy. This creates a closed loop in which improved policies yield better skills, and the evolving skill library, in turn, provides stronger priors for policy rollouts. Experiments across eight benchmarks demonstrate that SPyCE consistently outperforms both RL-based and memory-based baselines. Further analysis reveals that both the hierarchical skill design and the co-evolution mechanism are critical to our design. These results suggest joint skill-policy optimization as a promising paradigm for building capable multimodal agents.",
+   "published": "2026-07-15T14:01:48+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ru Zhang, Weijie Qiu"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Framework SPyCE pour distiller des trajectoires multimodales en compétences réutilisables (skills) co-évoluant avec la politique d'agents, optimisant l'apprentissage par renforcement pour des tâches complexes.",
+   "score": 7.7
+  },
+  {
+   "id": "b3ff122d067e6b55",
+   "title": "Traffic-Aware Randomized Smoothing for LLM-Based Network Intrusion Detection",
+   "url": "https://arxiv.org/abs/2607.13801v1",
+   "summary": "Large language model (LLM)-based intrusion detection systems (IDS) are increasingly studied for security monitoring, yet their robustness against feasible traffic manipulation remains largely empirical. We present Traffic-Aware Randomized Smoothing (TA-RS), a classifier-agnostic certified defense that injects Gaussian noise exclusively into the directly controllable (DC) subspace -- features a remote attacker can modify -- during both fine-tuning and certification, aligning the smoothing distribution with the attacker-controllable subspace. We identify a critical prerequisite: applying standard randomized smoothing to clean-trained LLM-IDS yields weak certified accuracy in three of four (model, dataset) pairs tested (14-33%, at or below random) and only 57% in the fourth (43 pp below the noise-augmented result); noise-augmented fine-tuning recovers to 68-100% on two of three benchmark datasets (at sigma=0.25). At the L_inf-equivalent threshold R_inf = epsilon*sqrt(|DC|) (epsilon=0.05), TA-RS achieves 55-100% certified accuracy on CIC-IDS-2018 and HIKARI-2021, with median certified radii (R approx 0.45-0.96) exceeding R_inf by 1.8-5x (across sigma=0.25-1.00). Against a fairly trained iso-trained RS baseline the residual advantage is dataset-dependent (4-19 pp on CIC-IDS-2018). The larger gap -- up to 72 pp against an isotropic RS baseline that shares the DC-noise-augmented training recipe -- primarily reflects the training-certification mismatch rather than DC alignment alone: isotropic test-time noise perturbs uncontrollable features the attacker cannot exploit, triggering abstention rates up to 68%. RT-IoT2022 probes the limits of the method: it fails under the default fine-tuning recipe but recovers to 76%/69% certified accuracy (LLaMA3-8B/Qwen3-8B) when noise augmentation is increased.",
+   "published": "2026-07-15T13:08:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhenpeng Li"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm"
+   ],
+   "tldr": "TA-RS introduit un lissage aléatoire adapté au trafic pour renforcer la robustesse des systèmes de détection d'intrusions basés sur LLM, avec des garanties certifiées contre les attaques manipulatives.",
+   "score": 7.7
+  },
+  {
+   "id": "f5ed92a9d00fc75b",
+   "title": "Post-Training Shifts Confidence: A Three-Stage Analysis of How SFT, RL, and OPD Shape Pre-, Intra-, and Post-CoT Calibration",
+   "url": "https://arxiv.org/abs/2607.13753v1",
+   "summary": "Large language models have made strong reasoning gains through supervised fine-tuning, reinforcement learning, and on-policy distillation, yet these post-training methods are usually evaluated only by final-answer accuracy. We study how they reshape confidence during reasoning. We introduce a three-stage calibration framework that evaluates confidence before, during, and after chain-of-thought generation, corresponding to difficulty estimation, early termination, and answer aggregation. Through a controlled comparison on mathematical reasoning benchmarks, we find that OPD provides the most useful pre-reasoning confidence, SFT gives the strongest online signal for early stopping, and RL produces the most reliable trace-level signal for aggregation. We further show that confidence reliability is position-dependent: RL confidence becomes informative after a path-commitment phase, while OPD confidence is useful early but can become inversely calibrated later. Based on this observation, we propose PosConf, a position-aware confidence strategy that uses confidence only from reliable relative-position intervals. PosConf improves RL answer aggregation by 6.1 points over majority voting and consistently improves OPD early stopping under tight token budgets, with gains up to 4.3 points by avoiding its later inverse-calibration region, showing that \\emph{confidence in reasoning models should be used both stage-wise and position-awarely}. Our code is available at https://github.com/EIT-NLP/Post-Training-Calibration.",
+   "published": "2026-07-15T12:12:37+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shuhao Li, Guodong Du, Anhao Zhao, Wanyu Lin, Tianyu Yuan, Xiaoyu Shen"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Analyse en trois phases (pré-, intra-, post-CoT) de l'impact des méthodes de post-entraînement (SFT, RL, OPD) sur la calibration de la confiance des LLM. Propose PosConf pour améliorer l'agrégation des réponses RL (+6.1 points vs vote majoritaire).",
+   "score": 7.7
+  },
+  {
+   "id": "6f1d5d518883fe77",
+   "title": "Constraint-Driven Model Optimization: An Industry Framework for Selecting Compression and Acceleration Techniques in Modern Machine Learning Systems",
+   "url": "https://arxiv.org/abs/2607.13735v1",
+   "summary": "The rapid deployment of machine learning systems across cloud, edge, and enterprise environments has brought model optimization to the forefront of systems-engineering. Despite a rich literature spanning quantization, pruning, knowledge distillation, parameter-efficient fine-tuning (PEFT), and inference-time optimization, practitioners are often left navigating these techniques through heuristics rather than principled methodology. We argue that optimization should be formulated as a constraint-driven, multi-objective engineering decision and introduce a unified framework that characterizes any production deployment along five interacting constraint dimensions: data availability, latency budget, memory budget, accuracy tolerance, and retraining budget. Building on this taxonomy, we synthesize empirical gains reported across the research literature and map them to operational constraints rather than algorithmic categories. To ensure practical relevance, we selected these techniques by reviewing recent literature for methods that report measurable improvements against critical deployment bottlenecks. We propose a prescriptive decision framework and provide optimization pipelines for four representative industrial scenarios to illustrate it in practice. To the best of our knowledge, this work provides one of the first structured attempts to formalize model optimization as a constraint-aware, multi-objective engineering process, synthesizing quantitative evidence from the research literature.",
+   "published": "2026-07-15T11:47:24+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Dhruv Shivkant, Saket Mohanty, Utkarsh Wadhwa"
+   },
+   "relevance": 9,
+   "reliability": 6,
+   "tags": [
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Cadre industriel pour la sélection systématique de techniques d'optimisation (quantization, pruning, distillation, etc.) basé sur des contraintes opérationnelles (latence, mémoire, précision). Outil pratique pour les ingénieurs, mais manque de détails techniques profonds.",
+   "score": 7.7
+  },
+  {
+   "id": "3a4f519410433e60",
+   "title": "Early Adoption of Agentic Coding Tools by GitHub Projects",
+   "url": "https://arxiv.org/abs/2607.14037v1",
+   "summary": "Agentic coding tools are increasingly capable of generating and submitting pull requests (PRs) to software projects, introducing new forms of human-agent collaboration in software development. While prior studies have examined PR-level outcomes of agent-generated contributions, less is known about how agentic coding tools are adopted and managed at the project level. In this paper, we analyze 25,264 agentic PRs from 2,361 popular GitHub repositories to investigate (1) the adoption of agentic coding tools, (2) project-level agentic PR productivity, and (3) human-agent collaboration patterns. Our results show that the median repository generates only one to two agentic PRs during a three-month period, indicating that intensive adoption remains concentrated in a small subset of projects. At the same time, small projects (1-5 contributors) exhibit higher participation ratios and average levels of agentic PR activity than medium-sized and large projects. We also observe substantial variation in project-level agentic PR productivity. While a small number of projects exceed an industry-reported estimate of 36 PRs per participant during the three-month observation period, most projects remain below this threshold. Finally, human-agent collaboration is dominated by a single-human oversight model, in which one developer reviews and/or modifies the agent's contributions, while multi-human collaboration patterns remain uncommon. These findings provide early empirical evidence on how open-source projects organize human oversight around agentic coding tools and suggest that successful integration of agent-generated contributions depends not only on advances in agent capabilities but also on the human and organizational processes that govern their use. Because this study captures an early snapshot of agent adoption, future work should continue to track how adoption patterns evolve over time.",
+   "published": "2026-07-15T17:05:06+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Maliha Noushin Raida, Daqing Hou"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Analyse de 25 264 PRs générées par des outils agentiques sur GitHub, révélant une adoption limitée (médiane de 1-2 PRs par dépôt sur 3 mois) mais des patterns de collaboration humain-agent variables selon la taille des projets. Intéressant pour comprendre l'intégration des agents dans les workflows de développement logiciel.",
+   "score": 7.4
+  },
+  {
+   "id": "a1dd5750eddfbe3e",
+   "title": "DeltaMerge-LowRes: Composing Language and Task Deltas for Low-Resource Adaptation",
+   "url": "https://arxiv.org/abs/2607.13967v1",
+   "summary": "Adapting a multilingual encoder to a new language \\emph{and} a new task with only a few hundred gold examples is a common low-resource NLP setting, yet the two axes are usually fused via an expensive language--task fine-tuning run. We ask whether they can instead be trained separately and recombined in weight space. \\DeltaMergeLowRes{} learns a language delta $Δ_L$ from unlabeled monolingual text and a task delta $Δ_T$ from labeled English data, then composes them at inference under one of four rules: additive, activation-guided, sparsity-aware, and a novel \\emph{cross-axis TIES}. The new rule adapts the TIES-Merging steps of trimming, sign election, and merging to the language and task axes rather than to two task axes. Holding $(Δ_L,Δ_T)$ fixed across rules on four task families and four African languages ($158$ evaluated cells, $10{,}000$-sample paired bootstrap per cell), we find: (i) cross-axis TIES wins summarisation on $3/4$ languages by $+4$ to $+7$ chrF (chrF $18.59$ vs.\\ $13.80$ task-only); (ii) it improves QA F1 by $+2.32$ and EM by $+2.91$; and (iii) sparsity-aware merging cuts classification ECE by $36\\%$ at parity macro-F1. The composition rule materially changes what the merged model preserves, suppresses, and calibrates. We release all JSON traces and a claim ledger.",
+   "published": "2026-07-15T15:53:40+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Son Ha Xuan, Xuan-Bach Le, Phat T. Tran-Truong"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "DeltaMerge-LowRes décompose l'adaptation multilingue et multi-tâches en deltas séparés (langue et tâche) combinés via des règles de fusion innovantes (ex: TIES cross-axis). Résultats significatifs en faible ressource avec gains mesurables sur plusieurs langues et tâches.",
+   "score": 7.4
+  },
+  {
+   "id": "f4107ef1fa24cba6",
+   "title": "Unleashing Multimodal Large Language Models for Training-free HOI Detection in the Wild",
+   "url": "https://arxiv.org/abs/2607.13881v1",
+   "summary": "Human-object interaction detection (HOID) has traditionally been formulated as a supervised detection problem over predefined interaction categories. While such paradigms achieve strong performance on closed-set benchmarks, they fundamentally entangle interaction understanding with dataset-specific supervision, limiting their ability to generalize to open-world and compositional scenarios. Recent HOI detectors attempt to leverage MLLMs through prompting strategies to transfer interaction-specific knowledge. However, such prompt-based approaches primarily focus on extracting discriminative representations from pretrained models, while underexploring their inherent multimodal reasoning capabilities. As a result, they struggle to provide informative contextual reasoning for ambiguous and open-world interaction scenarios. In this work, we present AgentHOI, a training-free, agentic framework that transfers the generalist multimodal reasoning capabilities of foundation models to HOI detection in the wild. Instead of learning interaction classifiers, AgentHOI modularly orchestrates complementary vision foundation modules to perform open-ended semantic reasoning and spatial grounding in a coordinated manner. To address the challenges of incomplete interaction discovery and ambiguous localization in complex scenes, we introduce two key mechanisms: (1) Context-aware Multi-round Reasoning, which progressively refines interaction hypotheses to ensure exhaustive and compositional HOI discovery, and (2) Multifaceted Interaction Localization, which enhances grounding precision by generating instance-specific descriptions that integrate semantic, spatial, and appearance cues. Extensive experiments demonstrate that AgentHOI achieves superior performance over state-of-the-art supervised and weakly supervised methods in real-world settings, despite requiring no HOID data for training.",
+   "published": "2026-07-15T14:30:20+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ting Lei, Jialin Liu, Zhu Xu, Yuxin Peng, Yang Liu"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "llm"
+   ],
+   "tldr": "Propose *AgentHOI*, un framework agentique sans entraînement pour la détection d'interactions humain-objet (HOI) dans des scénarios ouverts, exploitant les capacités de raisonnement multimodal des MLLM. Innovant pour la vision et les agents, avec une approche training-free.",
+   "score": 7.4
+  },
+  {
+   "id": "f056ec3d57ab1bde",
+   "title": "Optim-Agent/optim-agent",
+   "url": "https://github.com/Optim-Agent/optim-agent",
+   "summary": "LLM agents as your hyperparameter optimizer.",
+   "published": "2026-07-07T17:05:54Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 114,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Framework utilisant des agents LLM pour optimiser des hyperparamètres, combinant efficacité des modèles et automatisation, avec une implémentation Python open-source.",
+   "score": 7.4
+  },
+  {
+   "id": "2dfe9717c68498a7",
+   "title": "Relevance-Aware Rule: Structural Deletion of Irrelevant Conditions in Decision Trees",
+   "url": "https://arxiv.org/abs/2607.13874v1",
+   "summary": "Decision trees generate interpretable if--then rules, yet they contain irrelevant conditions (IRCs). These IRCs arise from the structural mechanism of tree splitting and persist even in modern optimal sparse tree induction algorithms. Existing IRC deletion methods overlook this structural mechanism; therefore, they either preserve the original tree too loosely to remain reliable, or too strictly to achieve meaningful simplification. This study provides theoretical foundations for reliable IRC deletion by establishing theorems and propositions related to the underlying IRC mechanism. The key finding is that a binary split shifts class proportions in opposite directions relative to the parent. Specifically, an increase in the class-1 proportion along one branch necessitates an increase in the class-0 proportion along its sibling, thereby generating a C1-link and a C0-link. Based on this structural fact, we propose a structural IRC deletion framework. Relative to each leaf, links that increase the leaf-class proportion are matched, whereas links that increase the proportion of the opposite leaf-class are mismatched. These mismatched links are flagged as structurally suspicious IRC candidates. Rather than deleting them outright, the framework rigorously diagnoses their relevance by assessing prediction reliability. It selectively deletes conditions that are structurally and empirically irrelevant, while strictly protecting those whose deletion would reduce the rule's reliability. Experimental results confirm that the proposed framework achieves substantial rule simplification without sacrificing the reliability of the original tree.",
+   "published": "2026-07-15T14:24:17+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jung-Sik Hong, Jeongeon Lee, Min Kyu Sim, Sangheum Hwang"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "autre"
+   ],
+   "tldr": "HTFM propose une approche de *flow matching* adaptée aux données à queues lourdes via des horloges aléatoires, améliorant la couverture des modes et la qualité des échantillons pour des distributions comme les mélanges α-stables ou de Student.",
+   "score": 7.1
+  },
+  {
+   "id": "7dc674611e6d434e",
+   "title": "Lighthouse RL: Sample-Efficient Circuit Optimization via Strategic Reset Points",
+   "url": "https://arxiv.org/abs/2607.14008v1",
+   "summary": "In this paper, we introduce Lighthouse RL, a sample-efficient reinforcement learning (RL) approach for analog circuit sizing. Traditional methods lack generalization across different performance targets, while standard RL approaches waste resources exploring unpromising regions. Our method addresses these inefficiencies through a strategic reset strategy that initializes episodes from high-performing configurations discovered during training, called \"lighthouses\". These states, which are closer to the target objectives, guide exploration toward promising regions. When compared to RL and Bayesian optimization methods from the literature, we demonstrate the effectiveness of our approach on a 2D benchmark problem and on two analog circuits, showing significant improvements in sample efficiency (up to 1.72x faster), optimization performance (100% vs. 0-87% success rate), generalization (75% vs. 0-50% extrapolation success), and objective maximization. This efficiency is particularly valuable for computationally expensive black-box optimization problems, and our reset strategy can be used as a plug-and-play enhancement for any RL-based optimization approach.",
+   "published": "2026-07-15T16:37:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mustafa Emre Gürsoy, Stefan Uhlich, Ryoga Matsuo, Yağız Gençer, Arun Venkitaraman, Chia-Yu Hsieh"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Méthode RL (Lighthouse RL) pour l'optimisation de circuits analogiques, utilisant des 'phares' (états performants) pour guider l'exploration et améliorer l'efficacité échantillonnale (jusqu'à 1.72x plus rapide). Pertinent pour l'optimisation de modèles ou systèmes complexes.",
+   "score": 6.8
+  },
+  {
+   "id": "5c1ec248ce55f0a7",
+   "title": "DeepStress: Stress-Testing Deep Search Agents",
+   "url": "https://arxiv.org/abs/2607.13920v1",
+   "summary": "While search agents demonstrate impressive capabilities in multi-step question answering, their robustness to poor-quality evidence remains under-explored. This phenomenon occurs rarely in realistic benchmarks but can lead to dramatic failure in real life applications. Therefore in this study we propose DeepStress, a stress testing framework that controls the frequency of challenging evidence by replacing the retrieval module of search agents with a controlled synthetic environment. We use this framework to control three dimensions that can affect document reliability: trustworthiness, relevance, and factuality. Testing several search agents on HotpotQA and BrowseCompPlus, we demonstrate that agents exhibit substantial differences in their ability to handle unreliable information and propose new metrics that better document systems outcomes as well as the interactions between conflicting parametric and retrieved knowledge.",
+   "published": "2026-07-15T14:59:29+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ismael Rousseau, Geraldine Damnati, Frederic Bechet"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "DeepStress évalue la robustesse des agents de recherche face à des preuves de mauvaise qualité (fiabilité, pertinence, factualité). Cadre de stress-testing avec métriques innovantes, révélant des faiblesses critiques des agents existants.",
+   "score": 6.8
+  },
+  {
+   "id": "1e97faa490facd0c",
+   "title": "The US is advancing AI safety through state and federal action",
+   "url": "https://openai.com/index/advancing-ai-safety-through-state-and-federal-action",
+   "summary": "OpenAI outlines a “reverse federalism” approach to AI governance, where state laws help build a national framework for safe, democratic AI.",
+   "published": "2026-07-15T12:00:00+00:00",
+   "source": "openai-blog",
+   "source_label": "OpenAI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "regulation"
+   ],
+   "tldr": "OpenAI propose une approche de gouvernance IA par 'reverse federalism', où les lois étatiques contribuent à un cadre national pour une IA sûre et démocratique, avec un focus sur la sécurité et la régulation.",
+   "score": 6.7
+  },
+  {
+   "id": "d4d6982a4bb84bd1",
+   "title": "Deep Interaction: An Efficient Human-AI Interaction Method for Large Reasoning Models",
+   "url": "https://arxiv.org/abs/2607.14049v1",
+   "summary": "The emergence of Chain-of-Thought (CoT) reasoning has significantly enhanced the ability of large language models (LLMs) to tackle complex, multi-step tasks. However, when errors occur, current interaction approaches typically involve re-generating another response that may make mistakes again, or users laboriously flag the faulty step in follow-up turns that may get responses followed by similar errors recurring. To address this issue, we propose an efficient human intervention mechanism for precisely correcting reasoning errors in LLMs, termed Deep Interaction. Our approach enables direct editing of the original response, allowing erroneous parts to be corrected while preserving accurate reasoning steps. We refine the edited CoT into a distilled prompt, which then steers the LLM along the corrected reasoning path. Experimental results show that our method achieves over a 25% improvement in correction success rate and reduces token usage by approximately 40% on STEM tasks reasoning compared to baseline approaches.",
+   "published": "2026-07-15T17:16:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hefeng Zhou, Jinxuan Zhang, Jiong Lou, Yuxin Liu, Chaochao Lu, Jingjing Qu"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Deep Interaction permet une correction interactive précise des erreurs de raisonnement dans les LLM via édition directe des réponses, améliorant le taux de succès de correction (+25%) et réduisant les tokens utilisés (-40%). Approche pragmatique pour les tâches STEM.",
+   "score": 6.5
+  },
+  {
+   "id": "3341990852a73a80",
+   "title": "Verifying formulas for interventional distributions",
+   "url": "https://arxiv.org/abs/2607.13883v1",
+   "summary": "We formalize verification in causal graphical models: deciding whether a given observational formula identifies a target interventional distribution. This opens a problem complementary to identification, asking not whether any identifying formula exists, but whether the given formula is identifying. We show that even sound and complete solutions to identification do not solve verification. We propose a falsifier as a first practical route forward, prove that it induces an almost-surely correct verifier for regular exponential-family models, and use the resulting verifier to develop the gateway test, which finds all sets admissible for use in a front-door formula.",
+   "published": "2026-07-15T14:33:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Francesco Freni, Leonard Henckel, Sebastian Weichwald"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite"
+   ],
+   "tldr": "Formalise la vérification de formules d'interventions causales dans les modèles graphiques, proposant un *falsifier* pour tester l'identifiabilité des distributions interventives. Fondamental pour l'interprétabilité causale, mais technique et peu appliqué aux LLM.",
+   "score": 6.5
+  },
+  {
+   "id": "f566f84395ade48b",
+   "title": "Task-Oriented Sensing and Covert Transmissions for Collaborative Multi-AUV Systems",
+   "url": "https://arxiv.org/abs/2607.13880v1",
+   "summary": "In underwater covert cooperative missions, autonomous underwater vehicles (AUVs) often cannot rely on active sonar to continuously obtain complete information, since active sensing and frequent communications increase the risk of exposure. As a result, AUVs primarily rely on passive observation, an approach that yields incomplete local perception and limited task efficiency. Although underwater acoustic communications can mitigate this limitation through information sharing, they are simultaneously constrained by long delays, severe interference, low reliability, and the risk of covert exposure. Existing communications-oriented multi-agent reinforcement learning (MARL) studies often model communication as an ideal information flow, whereas traditional communication optimization primarily focuses on link-level performance. However, both are insufficient to characterize the actual contribution of perceptual information to cooperative tasks under realistic conditions of covert physical communications. This paper proposes a Sensed Information Value Realization Multi-Agent Reinforcement Learning (SVR-MARL) framework that leverages practical information to characterize the utility of information for cooperative tasks and learns distributed cooperative policies under realistic communication and covert constraints. Through a case study of covert multi-AUV cooperative localization and tracking, the potential of the proposed framework to improve collaborative task efficiency while reducing unnecessary communication and exposure risks is demonstrated.",
+   "published": "2026-07-15T14:29:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xueyao Zhang, Chenyang Yan, Bo Yang, Xuelin Cao, Zhiwen Yu, Bin Guo"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "autre"
+   ],
+   "tldr": "Proposition d'un cadre SVR-MARL pour optimiser la coopération d'AUVs en missions sous-marines couvertes, en intégrant des contraintes de communication acoustique réalistes et des mécanismes d'apprentissage par renforcement multi-agents.",
+   "score": 6.5
+  },
+  {
+   "id": "eaef28e1554a873c",
+   "title": "clawkwork/clawk",
+   "url": "https://github.com/clawkwork/clawk",
+   "summary": "Give coding agents a disposable Linux VM, not your laptop",
+   "published": "2026-07-06T21:30:38Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 570,
+    "language": "Go"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils",
+    "autre"
+   ],
+   "tldr": "Outil Go permettant de fournir aux agents de codage des environnements Linux éphémères sécurisés, réduisant les risques liés à l'exécution de code non fiable.",
+   "score": 6.5
+  },
+  {
+   "id": "cfc87b4f7206fef6",
+   "title": "Leveraging unlabelled data for generalizable neural population decoding",
+   "url": "https://arxiv.org/abs/2607.14086v1",
+   "summary": "Robust and accurate neural decoders are integral to neurotechnologies such as brain-computer interfaces and closed-loop experiments. Recent work has shown that tokenizing neural data at the spike level facilitates multi-session pretraining and delivers state-of-the-art decoding performance. However, current spike-based models are restricted to supervised learning (SL), limiting training to datasets with paired behavioural labels. To address this limitation, we introduce MOJO (Masked autOencoder-based JOint training), a training framework for spike-tokenizing models that jointly leverages self-supervised learning (SSL) via masked autoencoding and SL objectives. We evaluate MOJO on three spiking datasets spanning monkey motor cortex during reaching tasks and multi-regional mouse recordings during vision and decision making tasks, demonstrating superior performance over purely SL-trained models. This improvement is especially pronounced when training with limited labelled data, particularly in few-shot finetuning, where only a small amount of labelled data from a new session is available. Incorporating SSL also yields more interpretable neuronal representations, improving performance on brain region classification and spike-statistics prediction without explicit optimization for these tasks. We further show that MOJO generalizes beyond spiking data to human electrocorticography during speech, where it continues to outperform purely SL-trained models and achieves performance comparable to neuro-foundation models (NFMs) designed specifically for continuous signals. Overall, augmenting spike-tokenizing models with SSL improves performance in label-impoverished settings and enables the use of unlabelled data across various tasks and species, while generalizing to other neural modalities. These results suggest a path towards more flexible and scalable data usage when training NFMs.",
+   "published": "2026-07-15T17:58:00+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ximeng Mao, Nanda H. Krishna, Avery Hee-Woon Ryoo, Matthew G. Perich, Guillaume Lajoie"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "MOJO combine l'apprentissage auto-supervisé (masqué) et supervisé pour décoder des données neuronales (spikes) avec une meilleure généralisation, surtout en few-shot finetuning, et des représentations plus interprétables. Pertinent pour les interfaces cerveau-machine et l'analyse multi-session.",
+   "score": 6.2
+  }
+ ]
+}
