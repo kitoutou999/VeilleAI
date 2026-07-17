@@ -1,0 +1,743 @@
+{
+ "date": "2026-07-17",
+ "digest": {
+  "headline": "Les méthodes de post-entraînement et d'optimisation des LLM et agents dominent la recherche, avec des avancées majeures en efficacité et robustesse",
+  "overview": "Ce 17 juillet 2026, la veille met en lumière des travaux centrés sur l'amélioration des architectures de modèles et d'agents, ainsi que sur des protocoles d'évaluation plus rigoureux. Les approches d'optimisation post-entraînement, comme la distillation on-policy ou le rewiring spectral, gagnent en maturité, tandis que les systèmes multi-agents et les benchmarks spécialisés se structurent pour répondre aux limites des évaluations statiques.",
+  "highlights": [
+   {
+    "title": "Optimisation post-entraînement : distillation et rewiring",
+    "text": "Deux papiers marquants abordent l'optimisation des LLM après entraînement. *SAR* (Subspace-Aligned Rewiring) extrait des sous-espaces de raisonnement efficaces (0,58 % des paramètres) tout en filtrant les composantes nuisibles, préservant 99 % des gains. *ShortOPD* améliore la distillation on-policy pour les modèles prunés en ciblant les préfixes non répétitifs, réduisant le gaspillage computationnel. Ces méthodes répondent au besoin croissant d'efficacité sans sacrifier les performances."
+   },
+   {
+    "title": "Évaluation et robustesse des agents : vers des benchmarks dynamiques",
+    "text": "Plusieurs travaux proposent des cadres pour évaluer les agents en conditions réelles. *SearchOS* externalise l'état de la recherche via un graphe d'évidence pour éviter les boucles répétitives, tandis que *AgentCompass* standardise les évaluations avec une infrastructure modulaire. *STRACE* optimise les agents en analysant causalement leurs trajectoires pour identifier les causes racines d'échecs. Ces approches comblent les lacunes des métriques statiques, cruciales pour les systèmes déployés."
+   },
+   {
+    "title": "RAG et agents : au-delà de l'utilité statique des documents",
+    "text": "*GRASP* introduit une politique de recherche adaptative pour les systèmes RAG agentiques, optimisant la granularité du contexte via RL. *Bridge Evidence* révèle que l'utilité statique des documents (SRU) ne prédit pas leur impact causal dans les recherches multi-étapes, où un tiers des documents lus sont des 'bridge documents' invisibles aux évaluations classiques. Ces travaux remettent en question les méthodes d'évaluation traditionnelles des systèmes RAG."
+   },
+   {
+    "title": "Efficacité mémoire et longue-contexture",
+    "text": "La méthode *HGA* permet de fine-tuner des LLM longue-contexture (16K tokens) sur des GPU 16GB en combinant attention hiérarchique et stockage tiersé des KV, sans perte de performance. Parallèlement, *Tokenizer Expansion* étend le vocabulaire des LLM pré-entraînés sans réentraînement complet, réduisant les coûts d'adaptation. Ces solutions adressent des contraintes pratiques majeures pour le déploiement de modèles."
+   },
+   {
+    "title": "Sécurité et vulnérabilités des modèles",
+    "text": "*BadWAM* expose des vulnérabilités critiques dans les modèles World-Action (WAM) en robotique, où des perturbations visuelles dissocient prédictions et actions. *HalfLife* quantifie les risques d'empoisonnement des données de pré-entraînement via des interfaces publiques, soulignant les limites des pipelines de curation ouverts. Ces travaux mettent en garde contre les failles de sécurité dans les systèmes déployés."
+   },
+   {
+    "title": "Interprétabilité et cohérence des LLM",
+    "text": "*Partition, Prompt, Aggregate* révèle des violations systématiques du principe de probabilité totale dans les prédictions des LLM, notamment avec les prompts persona, remettant en cause l'interprétation de l'*in-context learning* comme inférence conditionnelle. Ces résultats appellent à repenser les fondements théoriques des modèles génératifs."
+   }
+  ],
+  "trend": "La recherche se concentre sur des optimisations ciblées (post-entraînement, mémoire, vocabulaire) et des évaluations dynamiques pour les agents, tout en identifiant des risques systémiques (sécurité, empoisonnement, interprétabilité). Les solutions pratiques pour le déploiement et la robustesse deviennent prioritaires face à la complexité croissante des systèmes."
+ },
+ "items": [
+  {
+   "id": "e3eb9cae967497f3",
+   "title": "Spectral Rewiring for Exploration, Purification, and Model Merging",
+   "url": "https://huggingface.co/papers/2607.03065",
+   "summary": "Reinforcement learning has become a standard post-training recipe for large language models, but dense full-parameter updates create two deployment-relevant bottlenecks: suppressed reasoning performance, often reflected by premature saturation of test-time scaling, and interference when consolidating multiple capabilities through multi-domain training or model merging. We show that the reasoning-effective component of these updates is largely concentrated in the base model's spectral space, motivating Subspace-Aligned Rewiring (SAR), a post-hoc editing method that retains this spectral core while removing orthogonal components. SAR therefore preserves reasoning gains and filters residual update directions that suppress performance or amplify cross-domain interference. Across several model families and scales, SAR extracts compact reasoning cores using as little as approximately 0.58% of total parameters: it preserves over 99% of post-training performance and improves high-k exploration in mathematical reasoning, and generalizes to agentic coding by improving six of seven open benchmarks on an in-house model. SAR also purifies mixed-domain training updates by releasing suppressed coding capability while maintaining math reasoning and instruction following. It further enables model merging across experts, yielding cross-domain generalization that surpasses previous merging baselines and even the best single-domain experts. Overall, SAR shows that extracting reasoning-effective updates from parameter geometry can serve as a training-free mechanism to improve reasoning and multi-domain performance.",
+   "published": "2026-07-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2607.03065"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "SAR (Subspace-Aligned Rewiring) propose une méthode de post-entraînement pour extraire des sous-espaces de raisonnement efficaces (0.58% des paramètres) tout en filtrant les composantes nuisibles à la performance ou à l'interférence entre domaines. Préserve 99% des gains post-entraînement et améliore l'exploration en raisonnement mathématique et le codage agentique.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde deux limitations majeures des mises à jour denses en paramètres lors du post-entraînement des grands modèles de langage (LLM) par reinforcement learning : d'une part, la dégradation des performances de raisonnement, souvent visible par une saturation prématurée des courbes de scaling à l'inférence ; d'autre part, les interférences lors de la consolidation de multiples capacités (via un entraînement multi-domaines ou la fusion de modèles), qui nuisent à la généralisation et à l'efficacité des modèles déployés.",
+    "methode": "Les auteurs démontrent que les gains en raisonnement post-entraînement sont principalement concentrés dans l'espace spectral du modèle de base. Ils proposent *Subspace-Aligned Rewiring* (SAR), une méthode d'édition post-hoc qui extrait ce « noyau spectral » tout en éliminant les composantes orthogonales des mises à jour. SAR repose sur une décomposition spectrale des poids mis à jour (via SVD ou des techniques similaires) pour identifier et conserver les directions paramétriques critiques, tout en filtrant celles qui dégradent les performances ou amplifient les interférences inter-domaines. La méthode est *training-free* et ne nécessite qu'une fraction minimale des paramètres (jusqu'à 0,58 % du total). Elle est appliquée aussi bien pour purifier des mises à jour multi-domaines que pour fusionner des modèles experts sans perte de cohérence.",
+    "resultats": "SAR préserve plus de 99 % des performances post-entraînement tout en réduisant drastiquement la taille des mises à jour. Sur des tâches de raisonnement mathématique, la méthode améliore l'exploration *high-k* (meilleure diversité des solutions). Pour un modèle interne dédié au codage agentique, SAR améliore les scores sur six des sept benchmarks ouverts testés. En purification, elle restaure des capacités de codage précédemment supprimées par un entraînement multi-domaines, sans altérer le raisonnement mathématique ou le suivi d'instructions. Enfin, SAR permet des fusions de modèles experts surpassant les baselines existantes et même les meilleurs experts mono-domaine en généralisation croisée.",
+    "limites": "Les détails techniques sur la décomposition spectrale (ex. : choix des valeurs singulières retenues, traitement des couches non-linéaires) restent flous, ce qui limite la reproductibilité. L'hypothèse selon laquelle le « noyau spectral » capture l'essentiel du raisonnement n'est pas étayée par une analyse causale approfondie. Enfin, l'évaluation se concentre sur des tâches spécifiques (maths, codage), laissant ouverte la question de la généralisation à d'autres domaines comme le traitement du langage naturel ou la génération multimodale.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à optimiser les LLM post-entraînement sans coût computationnel supplémentaire, mais sa robustesse et son applicabilité universelle restent à valider par des études indépendantes et des benchmarks plus larges."
+   }
+  },
+  {
+   "id": "00914447132adb5d",
+   "title": "Demystifying On-Policy Distillation: Roles, Pathologies, and Regulations",
+   "url": "https://huggingface.co/papers/2607.13399",
+   "summary": "On-policy distillation (OPD) has become a key paradigm in LLM post-training, yet its training dynamics remain poorly understood. We present a systematic study examining the role, pathologies, and regulations of OPD. We first clarify the role of OPD as an exploration catalyst: it steers the student toward correct reasoning paths via dense token-level guidance, without expanding capability ceiling. We confirm this by showing that prompt diversity matters more than per-problem sampling numbers, and critically, that the effectiveness of OPD hinges entirely on the quality of its guiding signal. This dependency exposes two pathologies that derail exploration. The Student-Teacher Mismatch occurs when a large teacher-student distributional gap causes the guiding signal to misalign with task correctness, steering exploration in counterproductive directions. Length Exploitation arises when the aggregated token-level objective creates length-dependent shortcuts, allowing the student to game the reward landscape through response truncation or redundant padding, exploring degenerate length modes rather than reasoning strategies. To tame these pathologies, we investigate lightweight signal regulations: advantage clipping and log-scale compression, ensuring exploration is guided by faithful signals. Experiments across seven benchmarks demonstrate that these regulations alleviate length exploitation and enable effective distillation, stably surpassing OPD variants and RLVR baselines, thereby confirming that well-regulated signal quality, rather than mere teacher scale, governs successful exploration in OPD.",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2607.13399"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Analyse systématique de la distillation on-policy (OPD) pour les LLM : rôle comme catalyseur d'exploration via un guidage dense token-par-token, mise en évidence de deux pathologies (mismatch étudiant-enseignant et exploitation de longueur) et proposition de régulations légères pour les atténuer. Travail théorique et empirique solide sur un paradigme clé du post-entraînement des LLM.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "L'article aborde le manque de compréhension des dynamiques d'entraînement de la distillation *on-policy* (OPD) dans le post-entraînement des grands modèles de langage (LLM). Bien que l'OPD soit largement utilisée pour améliorer les performances des modèles étudiants, ses mécanismes sous-jacents, ses risques de dérive (*pathologies*) et les conditions de son efficacité restent flous, limitant son optimisation et son déploiement fiable.",
+    "methode": {
+     "role_de_l_OPD": "Les auteurs définissent l'OPD comme un *catalyseur d'exploration* plutôt qu'un moyen d'étendre les capacités maximales du modèle étudiant. Elle guide ce dernier vers des chemins de raisonnement corrects via un signal dense au niveau des tokens, sans nécessairement améliorer son plafond de performance intrinsèque.",
+     "pathologies_identifiees": [
+      {
+       "nom": "Student-Teacher Mismatch",
+       "description": "Un écart distributionnel important entre le modèle enseignant et l'étudiant provoque un désalignement du signal de guidage avec la correction réelle de la tâche, orientant l'exploration vers des directions contre-productives."
+      },
+      {
+       "nom": "Length Exploitation",
+       "description": "L'objectif agrégé au niveau des tokens crée des raccourcis dépendants de la longueur des réponses, permettant à l'étudiant de manipuler le paysage de récompense (ex. : troncature ou bourrage de réponses) au lieu d'explorer des stratégies de raisonnement valides."
+      }
+     ],
+     "regulations_proposees": "Pour atténuer ces pathologies, les auteurs testent deux régulations légères du signal : *l'écrêtage des avantages* (*advantage clipping*) et la *compression en échelle logarithmique*. Ces méthodes visent à garantir que l'exploration reste guidée par des signaux fidèles, sans introduire de biais artificiels.",
+     "experimentation": "Les expériences sont menées sur sept benchmarks variés, comparant les performances des modèles étudiants avec et sans régulations, ainsi qu'avec des variantes d'OPD et des baselines comme RLVR (*Reinforcement Learning from Verbal Rewards*)."
+    },
+    "resultats": "Les régulations proposées (écrêtage et compression logarithmique) réduisent significativement le phénomène de *Length Exploitation* et permettent une distillation efficace. Les modèles étudiants surpassent de manière stable les variantes d'OPD non régulées et les baselines RLVR, confirmant que la *qualité du signal de guidage* (plutôt que l'échelle du modèle enseignant) est le facteur déterminant pour une exploration réussie. Les chiffres précis (ex. : gains de performance) ne sont pas détaillés dans le résumé disponible.",
+    "limites": {
+     "generalisation": "Les résultats sont basés sur sept benchmarks, mais leur représentativité pour des tâches ou des domaines hors de ce cadre reste à valider. L'étude ne couvre pas les cas où le modèle enseignant est lui-même biaisé ou sous-optimal.",
+     "cout_computationnel": "Bien que les régulations soient qualifiées de *légères*, leur impact sur le coût computationnel de l'entraînement (ex. : temps de convergence) n'est pas quantifié.",
+     "qualite_du_signal": "La dépendance critique à la qualité du signal enseignant soulève des questions sur la robustesse de l'OPD dans des scénarios où ce signal est bruité ou partiellement erroné."
+    },
+    "verdict": "Cet article mérite une attention particulière pour son analyse rigoureuse des dynamiques de l'OPD et ses propositions concrètes pour en améliorer la fiabilité, bien que des validations supplémentaires sur des cas d'usage variés soient nécessaires."
+   }
+  },
+  {
+   "id": "388928c3cda1f203",
+   "title": "Self-Improvements in Modern Agentic Systems: A Survey",
+   "url": "https://huggingface.co/papers/2607.13104",
+   "summary": "Self-improving autonomous agents are moving from research prototypes to deployed systems. The primary goal is controllable evolution, or adaptation, from experience with minimal or even no human input. This survey frames modern self-improving agents as adaptive systems that convert experience into accumulated capability gains. We offer a system-level framework that represents a modern agent as a configuration coupling a foundation model with an operational scaffold of prompts, memory, tools, and control logic. Within this framework, self-improvement is formalized as a self-induced update operator that obtains and commits updates to model parameters or scaffold components. We organize prior work by update target and by the signals that drive change, then review applications and discuss evaluation, before closing with open problems and future directions. For convenience, we track technical updates on https://github.com/selfimproving-agent/awesome-Self-Improving-Agents.",
+   "published": "2026-07-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2607.13104"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Synthèse des systèmes agents auto-améliorants modernes, proposant un cadre systémique pour formaliser leur évolution via des opérateurs d'auto-mise à jour (paramètres du modèle ou scaffold), avec une taxonomie des signaux d'entraînement et des défis ouverts.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi de concevoir des systèmes d'agents autonomes capables de s'améliorer continuellement sans intervention humaine significative. L'objectif est de permettre une évolution contrôlée des agents, où ceux-ci transforment leurs expériences en gains de capacités durables, tout en minimisant la dépendance aux mises à jour manuelles ou aux corrections externes.",
+    "methode": "Les auteurs proposent un cadre systémique pour modéliser les agents autonomes modernes, combinant un modèle de fondation (comme un grand modèle de langage) avec une structure opérationnelle (scaffold) incluant des prompts, une mémoire, des outils et une logique de contrôle. L'auto-amélioration est formalisée comme un opérateur de mise à jour auto-induit, capable de modifier soit les paramètres du modèle, soit les composants du scaffold. Les travaux antérieurs sont classés selon deux axes : la cible des mises à jour (modèle ou scaffold) et les signaux déclencheurs (rétroaction, métriques de performance, etc.). Le cadre permet d'analyser comment les agents exploitent leurs expériences pour générer et appliquer des améliorations.",
+    "resultats": "Le contenu disponible ne fournit pas de résultats quantitatifs ou de chiffres clés spécifiques issus d'expérimentations. La publication se concentre plutôt sur une synthèse théorique et une taxonomie des approches existantes, ainsi que sur une revue des applications potentielles (par exemple, assistants virtuels, systèmes de recommandation). Les auteurs mentionnent également des pistes pour l'évaluation des agents auto-améliorants, bien que sans données empiriques détaillées.",
+    "limites": "Plusieurs zones d'ombre persistent, notamment la difficulté à garantir la stabilité et la sécurité des agents lors de leurs auto-améliorations, surtout lorsque les mises à jour concernent des composants critiques comme la logique de contrôle. Le manque de benchmarks standardisés pour évaluer ces systèmes limite également la comparabilité des approches. Enfin, la question de l'alignement des objectifs (comment s'assurer que les améliorations restent conformes aux intentions humaines) reste un défi majeur non résolu.",
+    "verdict": "Ce travail mérite une attention particulière pour son cadre systémique et sa tentative de formaliser un domaine en pleine expansion, bien que son utilité pratique dépendra des avancées futures en matière d'évaluation et de robustesse."
+   }
+  },
+  {
+   "id": "49d8cb278232e7cb",
+   "title": "SearchOS-V1: Towards Robust Open-Domain Information-Seeking Agent Collaboration",
+   "url": "https://huggingface.co/papers/2607.15257",
+   "summary": "Recent advances in Tool-Integrated Large Language Models have made web search a core capability of information-seeking agents. However, as interaction histories grow, agents increasingly struggle to track task progress. When search attempts fail to yield useful evidence, current single- and multi-agent systems can become trapped in repetitive loops, wasting search budgets and ultimately compromising the quality and completeness of the final output. We introduce SearchOS, a system-level multi-agent framework that turns fragile, implicit search progress into explicit, persistent, and shared state. First, we formulate open-domain information seeking as relational schema completion with grounded citations, where agents discover entities, populate attributes across linked tables, and anchor each value to source evidence. Then we design Search-Oriented Context Management (SOCM), which externalizes the evolving state into Frontier Task, an Evidence Graph, a Coverage Map, and Failure Memory. Built on SOCM, SearchOS applies a pipeline-parallel scheduling mechanism that overlaps the execution of sub-agents and continuously refills freed slots with tasks targeting unresolved coverage gaps to improve utilization and throughput. To schedule and control the execution of search agents, SearchOS introduces a Search Tool Middleware Harness that intercepts model and tool interactions to record grounded evidence and react to stalls or budget exhaustion, and provides a reusable hierarchical skill system comprising strategy and access skills to augment the agents' search process and avoid repeating failed search patterns across runs. On WideSearch and GISA, SearchOS leads all metrics among the evaluated single- and multi-agent baselines, paving the way toward robust information-seeking collaboration.",
+   "published": "2026-07-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 42,
+    "arxiv_id": "2607.15257"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Framework SearchOS pour des agents multi-agents robustes en recherche d'information ouverte, externalisant l'état de la recherche via un graphe d'évidence et une mémoire de couverture pour éviter les boucles répétitives. Approche systémique innovante avec des gains tangibles sur la complétude des réponses.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents de recherche d'informations basés sur des modèles de langage intégrant des outils (Tool-Integrated Large Language Models) rencontrent des difficultés croissantes à suivre l'avancement des tâches à mesure que l'historique des interactions s'allonge. Ces systèmes, qu'ils soient mono- ou multi-agents, peuvent tomber dans des boucles répétitives inefficaces lorsqu'ils échouent à obtenir des preuves utiles, gaspillant ainsi le budget de recherche et compromettant la qualité finale des résultats.",
+    "methode": "SearchOS propose un cadre multi-agents au niveau système qui transforme un état de progression de recherche fragile et implicite en un état explicite, persistant et partagé. L'approche modélise la recherche d'informations en domaine ouvert comme une complétion de schéma relationnel avec des citations ancrées, où les agents découvrent des entités, remplissent des attributs dans des tables liées et associent chaque valeur à des preuves sources. Search-Oriented Context Management (SOCM) externalise cet état évolutif en quatre composants : Frontier Task, Evidence Graph, Coverage Map et Failure Memory. SearchOS utilise un mécanisme de planification en pipeline parallèle pour superposer l'exécution des sous-agents et réaffecter dynamiquement les créneaux libérés à des tâches ciblant les lacunes de couverture non résolues. Un Search Tool Middleware Harness intercepte les interactions entre modèles et outils pour enregistrer les preuves ancrées et réagir aux blocages ou à l'épuisement du budget. Enfin, un système de compétences hiérarchiques réutilisables, composé de compétences stratégiques et d'accès, optimise le processus de recherche et évite la répétition de schémas d'échec.",
+    "resultats": "Sur les benchmarks WideSearch et GISA, SearchOS surpasse toutes les métriques des systèmes mono- et multi-agents évalués. Les détails quantitatifs précis (scores, temps d'exécution, etc.) ne sont pas fournis dans le contenu disponible, mais l'amélioration est présentée comme significative.",
+    "limites": "Le contenu ne précise pas les limites spécifiques de SearchOS, mais des zones d'ombre subsistent : la scalabilité du système avec des graphes de preuves très volumineux, la robustesse face à des requêtes ambiguës ou mal formulées, et la dépendance potentielle à la qualité des outils de recherche sous-jacents. L'absence de détails sur les coûts computationnels ou les besoins en ressources mérite également un scepticisme technique.",
+    "verdict": "SearchOS mérite une attention particulière pour son approche systémique et modulaire visant à résoudre des problèmes critiques de collaboration et de persistance d'état dans les agents de recherche d'informations, bien que des évaluations complémentaires soient nécessaires pour en valider la robustesse et l'efficacité en conditions réelles."
+   }
+  },
+  {
+   "id": "c1e4b47a1043ca81",
+   "title": "From Controlled to the Wild: Evaluation of Pentesting Agents for the Real-World",
+   "url": "https://huggingface.co/papers/2605.10834",
+   "summary": "AI pentesting agents are increasingly credible as offensive security systems, but current benchmarks still provide limited guidance on which will perform best in real-world targets. Existing evaluation protocols assess and optimize for predefined goals such as capture-the-flag, remote code execution, exploit reproduction, or trajectory similarity, in simplified or narrow settings. These tools are valuable for measuring bounded capabilities, yet they do not adequately capture the complexity, open-ended exploration, and strategic decision-making required in realistic pentesting. In this paper, we present a practical evaluation protocol that shifts assessment from task completion to validated vulnerability discovery, allowing evaluation in sufficiently complex targets spanning multiple attack surfaces and vulnerability classes. The protocol combines structured ground-truth with LLM-based semantic matching to identify vulnerabilities, bipartite resolution to score findings under realistic ambiguity, continuous ground-truth maintenance, repeated and cumulative evaluation of stochastic agents, efficiency metrics, and reduced-suite selection for sustainable experimentation. This protocol extends the state of the art by enabling a more realistic, operationally informative comparison of AI pentesting agents. To enable reproducibility, we also release expert-annotated ground truth and code for the proposed evaluation protocol: https://github.com/ethiack/ethibench.",
+   "published": "2026-07-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2605.10834"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "regulation",
+    "benchmark"
+   ],
+   "tldr": "Protocole d'évaluation pour les agents de pentesting en conditions réelles, remplaçant les métriques de complétion par la découverte validée de vulnérabilités, avec gestion de l'ambiguïté et évaluation cumulative pour des systèmes stochastiques.",
+   "score": 8.8
+  },
+  {
+   "id": "2bba264c5d12b9ca",
+   "title": "AgentCompass: A Unified Evaluation Infrastructure for Agent Capabilities",
+   "url": "https://huggingface.co/papers/2607.13705",
+   "summary": "As Large Language Models (LLMs) evolve into autonomous agents, the need for unified evaluation infrastructure becomes critical. However, current evaluation pipelines remain highly fragmented and tightly coupled, hindering reproducibility and causing redundant engineering. To address this, we introduce AgentCompass, an open-source, lightweight, and extensible infrastructure for evaluating LLM-based agents. AgentCompass organizes the evaluation process around three independent components, namely Benchmark, Harness, and Environment, thereby enabling flexible configurations without requiring the reimplementation of complex execution logic. Furthermore, it features a fault-tolerant asynchronous runtime and comprehensive trajectory analysis tools to transparently diagnose nuanced failure modes like reward-hacking. Natively supporting over 20 benchmarks across five capability dimensions, AgentCompass provides the community with a scalable and reproducible infrastructure for advancing agent research.",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2607.13705"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "AgentCompass propose une infrastructure open-source et modulaire pour évaluer les capacités des agents LLM, en séparant les composants Benchmark, Harness et Environment. Intéressant pour standardiser les évaluations dans un domaine fragmenté, avec support natif de 20+ benchmarks et outils d'analyse de trajectoires pour diagnostiquer les échecs.",
+   "score": 8.8
+  },
+  {
+   "id": "987cf8bcc06287f2",
+   "title": "From Noisy Traces to Root Causes: Structural Trajectory Analysis and Causal Extraction for Agent Optimization",
+   "url": "https://huggingface.co/papers/2607.07702",
+   "summary": "The optimization of long-horizon agents increasingly relies on reflection-based mechanisms, where a large language model (LLM) acts as an optimizer to diagnose agent failures and improve agent policies. However, real execution traces are difficult to use directly for optimization: large trace collections are often redundant and heterogeneous, making optimization inefficient and prone to overfitting to low-value failures; meanwhile, each individual trajectory also contains many irrelevant steps, while naive context reduction methods such as truncation or sliding windows can discard causally important evidence and produce misleading optimization signals. To resolve this dilemma, we introduce STRACE (Structural TRajectory Analysis and Causal Extraction), a framework that constructs high signal-noise optimization contexts for more precise and effective optimization. At the batch level, STRACE mines failure patterns to filter redundant traces and retain representative failures; within each selected trace, it performs causal localization over a textual dependency graph to remove non-causal steps and identify the true root-cause module for optimization. Empirical results demonstrate that STRACE significantly outperforms standard context-filtering baselines. Notably, on a challenging formal verification task (VeruSAGE-Bench), it successfully optimizes human-expert designed agents, delivering 1.4times success-rate improvement (42.5% to 58.5%). The code is available at https://github.com/moomight/STRACE .",
+   "published": "2026-07-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.07702"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "STRACE (Structural TRajectory Analysis and Causal Extraction) optimise les agents LLM en filtrant les traces redondantes et en identifiant les causes racines des échecs via une analyse causale sur graphe de dépendances textuelles. Méthode prometteuse pour améliorer l'efficacité des mécanismes de réflexion (reflection-based optimization).",
+   "score": 8.8
+  },
+  {
+   "id": "e2c1648990176225",
+   "title": "ShortOPD: Recovering Pruned LLMs with Short-to-Long On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2607.13124",
+   "summary": "Structured pruning is a hardware-friendly way to compress LLMs, but it is mostly validated on multiple-choice recognition tasks, while the same compressed checkpoints can collapse on the free-form generation that deployment actually requires. Two observations trace this gap. First, greedy pass@1 nearly vanishes after compression, yet pass@k recovers substantially under repeated sampling: useful generations are demoted, not erased. Second, the recoverable regime fails mainly through suffix repetition. Recovery should therefore train on the compressed model's own on-policy states with dense token-level supervision, which On-Policy Distillation (OPD) provides by reusing the pre-compression model as a frozen teacher. However, long on-policy rollouts spend early recovery budget on low-information repetitive suffixes, delaying loss descent. To mitigate this waste, we propose \\shortopd, a short-to-long OPD schedule that detects teacher-confirmed repetitive suffixes, treats the surviving prefix as each rollout's effective length, and allocates future rollout budgets to the effective lengths the policy can currently use. Across math, code, and open-ended generation, \\shortopd\\ raises the compressed model's score to about 9times its unrecovered value and 1.6--4.4times standard recovery recipes (SFT w/o KD, KD, and SeqKD), and it matches a fixed 8192-token rollout horizon within two points using a quarter of the training time (8.5 vs.\\ 35.9 hours) and 71% fewer rollout tokens. We hope this recipe helps move structured pruning beyond marginal gains on perplexity and multiple-choice benchmarks, a step closer to deployment-ready generation quality.",
+   "published": "2026-07-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2607.13124"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "ShortOPD améliore la distillation sur politique (OPD) pour récupérer les LLM prunés en se concentrant sur les préfixes non répétitifs, réduisant le gaspillage de calcul et accélérant la récupération des performances (pass@1, pass@k). Méthode efficace pour la compression et la récupération des modèles génératifs.",
+   "score": 8.8
+  },
+  {
+   "id": "d6b85acf631526cd",
+   "title": "Partition, Prompt, Aggregate: Statistical Self-Consistency in Language Models",
+   "url": "https://arxiv.org/abs/2607.15277v1",
+   "summary": "In-context learning is commonly interpreted as a form of conditional inference, in which the prompt specifies a context and the model's output is treated as an estimate of the corresponding conditional distribution. If this interpretation holds, then LLM estimates should satisfy basic probabilistic identities. In particular, the law of total probability asserts that prior-weighted conditional distributions aggregate into population-level marginals over any valid partition of the population. In this work, we investigate to what extent LLM estimates adhere to this self-consistency principle. We use binary trees as an evaluation scaffold to recursively partition a population into increasingly fine-grained subpopulations. We then prompt LLMs with verbalized subpopulation descriptions in context, aggregate the resulting estimates back into population-level estimates, and compare them across partitions of varying granularity. Applying this protocol across problem domains and state-of-the-art frontier models, we show widespread violations of basic consistency properties. An in-depth study of persona prompting reveals a pattern we call the macro fallacy: estimates reconstructed from more fine-grained subpopulation responses are often better aligned with human reference data than direct population-level estimates. This effect persists across variations in tree structure and estimation task, and can be partially recovered through implicit prompting. Together, these findings suggest that models possess relevant subpopulation knowledge but do not reliably propagate it into aggregate estimates. This gap establishes statistical self-consistency as an unsaturated, reference-free criterion for evaluating LLMs.",
+   "published": "2026-07-16T17:59:31+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Patrik Wolf, Thomas Kleine Buening, Andreas Krause, Celestine Mendler-Dünner"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude évalue la cohérence probabiliste des LLM en vérifiant si leurs prédictions respectent le principe de probabilité totale lors de partitions récursives de populations. Les résultats révèlent des violations systématiques, notamment le 'macro fallacy' avec les prompts persona, remettant en cause l'interprétation classique de l'*in-context learning* comme inférence conditionnelle.",
+   "score": 8.6
+  },
+  {
+   "id": "95c26dac0d092397",
+   "title": "GRASP: GRanularity-Aware Search Policy for Agentic RAG",
+   "url": "https://huggingface.co/papers/2607.10463",
+   "summary": "Agentic retrieval-augmented generation (RAG) extends static RAG by allowing language models to iteratively reason, generate search queries, retrieve evidence, and predict answers. However, it remains challenging for models to decide when to retrieve, whether to use lexical matching or semantic similarity, and how to control context granularity to prevent irrelevant tokens from interfering with agent reasoning. In this paper, we introduce GRASP, a reinforcement learning (RL) framework for training agents to adaptively coordinate complementary retrieval tools during multi-step reasoning. GRASP provides the agent with semantic search, keyword search, and paragraph-reading actions, enabling it to retrieve sentence-level evidence and expand further context only when needed. We train the policy with a reward that jointly accounts for answer accuracy, grounded reading, complementary search, and turn efficiency. Experiments on multi-hop reasoning benchmarks show that GRASP improves both retrieval recall and downstream question answering performance compared with single-step retrieval, prompting-based agentic RAG, and RL-based retrieval baselines. Qualitative and ablation analyses show that the learned policy develops interpretable skimming and scanning behavior: it uses semantic search for broad exploration, paragraph reading for local verification, and keyword search for entity-specific evidence. These results suggest that learning to coordinate retrieval signals and context granularity is critical for agent's correct reasoning.",
+   "published": "2026-07-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.10463"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "rag"
+   ],
+   "tldr": "GRASP introduit une politique de recherche adaptative pour les systèmes RAG agentiques, utilisant un cadre RL pour coordonner des outils de récupération (sémantique, lexical, paragraphe) et optimiser la granularité du contexte. Améliore significativement les performances en raisonnement multi-étapes et en QA par rapport aux approches statiques ou basées sur des prompts.",
+   "score": 8.5
+  },
+  {
+   "id": "2a55fedab82dc5bb",
+   "title": "BadWAM: When World-Action Models Dream Right but Act Wrong",
+   "url": "https://huggingface.co/papers/2607.15207",
+   "summary": "World-action models (WAMs) are emerging as a promising foundation for embodied control: rather than predicting actions alone, they learn representations that couple action generation with future world prediction. This coupling is often viewed as a source of robustness, interpretability, and safety, as a robot's action can in principle be checked against its imagined future. In this paper, we show that this assumption is fragile. We introduce BadWAM, a unified framework for modeling and evaluating World-Action Drift Attacks: a new class of WAM-specific adversarial attacks that use small visual perturbations to break the alignment between what a WAM imagines and what it executes. BadWAM characterizes this attack surface along two natural criteria: attack strength and stealthiness. When the adversary prioritizes disruption, BadWAM instantiates an action-only adversarial attack, which directly drives the model toward task-failing actions. When the adversary additionally prioritizes stealth, BadWAM instantiates an imagination-preserving adversarial attack, which seeks to induce harmful action shifts while keeping the model's predicted future close to its clean imagination. Together, these two attacks capture a spectrum of WAM-specific failures: from overt action hijacking to stealthier cases where the model appears to imagine a plausible future but executes a desynchronized action. We evaluate BadWAM across different variants of WAMs. Results show that our attacks substantially reduce task success rates under closed-loop execution. For example, our action-only attack reduces the model performance from 96.5% to 43.1% success. The results of our imagination-preserving attack further exposes a WAM-specific vulnerability: moderate future-preserving regularization can maintain strong attack performance while reducing future imagination drift.",
+   "published": "2026-07-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2607.15207"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "interpretabilite"
+   ],
+   "tldr": "Démonstration de vulnérabilités critiques dans les modèles World-Action (WAM) via BadWAM : attaques adversariales exploitant des perturbations visuelles pour dissocier prédictions futures et actions réelles, mettant en lumière des risques de sécurité majeurs pour la robotique.",
+   "score": 8.5
+  },
+  {
+   "id": "cd30bafd76b3d9e9",
+   "title": "Smarter and Cheaper at Once: Byte-Exact KV-Cache Grafting Turns a Frozen Small Model into a Verified-Knowledge Flywheel",
+   "url": "https://huggingface.co/papers/2607.14431",
+   "summary": "We report a way to make a frozen small language model both more capable and dramatically cheaper at once, without changing any weights. Verified knowledge is deposited once as a byte-exact key-value (KV) state artifact and later restored, by graft, into a fresh inference context. The restore is bit-exact: under a pinned deterministic configuration, the grafted logits are byte-for-byte identical to a fresh computation (SHA-256 equality), with zero KL divergence and 100% argmax agreement over fifty samples. We show that own-position graft is the unique numerically exact operating point on a model with floating-point rotary encoding, and we verify byte-exactness on two model scales (12B, 31B) and two GPU targets, one through a pre-registered replay. On AIME 2025, a frozen Gemma-4-12B moves from 80.0% to 93.3% once a verified solution library is grafted, above its own 77.5% and its 31B sibling's 89.2% published anchors. On the recurring case, eight problems the base model never solves within a 401,026-token budget are answered from cached verified solutions in 61 total decode tokens, a factor of 6,574 fewer tokens and about 8,700x less energy; the capability claim proper rests on held-out transfer (7 of 7 at 31B). The same byte-exact store widens usable context from 32,768 to 2,854,766 tokens at zero extra accelerator memory, and moves byte-identical between machines of the same architecture. We describe the system at the behavior level; the engine is proprietary, and every reported number is backed by committed input and output hashes so the scoring can be re-checked without it.",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.14431"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Technique de KV-Cache grafting byte-exact pour injecter des connaissances vérifiées dans un modèle gelé sans modifier ses poids, améliorant drastiquement ses performances (ex: +13.3% sur AIME 2025) et réduisant la consommation énergétique de 8700x. Solution révolutionnaire pour l'efficacité des LLM.",
+   "score": 8.5
+  },
+  {
+   "id": "7d51add7a6b91816",
+   "title": "Generative Compilation: On-the-Fly Compiler Feedback as AI Generates Code",
+   "url": "https://huggingface.co/papers/2607.13921",
+   "summary": "Languages with rich static semantics, such as Rust, provide stronger guarantees for AI-generated code, but their strictness makes generation more difficult. Off-the-shelf compilers can provide useful feedback post-generation, but does not guide intermediate generation steps, such as those during autoregressive LLM decoding. Constrained decoding intervenes earlier by rejecting invalid tokens during sampling, but requires white-box model access and costly reimplementation for semantic constraints.We introduce generative compilation, the first approach to obtaining compiler feedback on partial programs during generation. The core technical device is a sealor: a lightweight, mostly syntax-guided transformation that converts partial programs into complete ones that standard compilers can diagnose. It is designed such that possible-to-complete partial programs are never rejected, while preserving enough code context to catch genuine dead ends early. We construct such a sealor on a core Rust-like calculus and prove that it satisfies these properties, all mechanized in Lean. We extend it to the first partial-program checker for real Rust. We evaluate our method on challenging repository-level Rust coding tasks, across both frontier black-box and open-weight models. We show that generative compilation reduces non-compiling outputs and improves functional correctness, relative to standard post-generation feedback. It does so by detecting a broad range of errors close to their source and early during generation, thereby reducing errors cascades and enabling focused diagnostics. More broadly, generative compilation is a step toward making compilers a first-class citizen of AI-assisted programming active during generation, rather than a separate post-generation check.",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.13921"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "outils",
+    "architecture"
+   ],
+   "tldr": "Proposition d'une méthode (*generative compilation*) pour intégrer un feedback du compilateur en temps réel pendant la génération de code par un LLM, améliorant la validité syntaxique et sémantique des programmes générés (notamment en Rust) via un mécanisme de *sealor* validé formellement en Lean.",
+   "score": 8.5
+  },
+  {
+   "id": "0ee63cc33cc63e1a",
+   "title": "SPEAR: A Simulator for Photorealistic Embodied AI Research",
+   "url": "https://huggingface.co/papers/2607.06701",
+   "summary": "Interactive simulators have become powerful tools for training embodied agents and generating synthetic visual data, but existing photorealistic simulators suffer from limited generality, programmability, and rendering speed. We address these limitations by introducing SPEAR: A Simulator for Photorealistic Embodied AI Research. At its core, SPEAR is a Python library that can connect to, and programmatically control, any Unreal Engine (UE) application via a modular plugin architecture. SPEAR exposes over 14K unique UE functions to Python, representing an order-of-magnitude increase in programmable functionality over existing UE-based simulators. Additionally, a single SPEAR instance can render 1920x1080 photorealistic beauty images directly into a user's NumPy array at 73 frames per second - an order of magnitude faster than existing UE plugins - while also providing ground truth image modalities that are not available in any existing UE-based simulator (e.g., a non-diffuse intrinsic image decomposition, material IDs, and physically based shading parameters). Finally, SPEAR introduces an expressive high-level programming model that enables users to specify complex graphs of UE work with arbitrary data dependencies among work items, and to execute these graphs deterministically within a single UE frame. We demonstrate the utility of SPEAR through a diverse collection of example applications: controlling multiple embodied agents with distinct action spaces (e.g., humans, cars, and robots) across several in-the-wild UE projects; rendering photorealistic city-scale environments; manipulating UE's procedural content generation systems; rendering synchronized multi-view images of detailed human faces; coordinating an interactive co-simulation with the MuJoCo physics simulator; and editing scenes with natural language via an AI coding assistant.",
+   "published": "2026-07-07T14:20:33.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.06701"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Simulateur *SPEAR* pour l'IA incarnée, offrant un contrôle programmatique d'Unreal Engine via Python (14K fonctions exposées), avec rendu 4K à 73 FPS et modalités de vérité terrain avancées (décomposition intrinsèque, IDs de matériaux).",
+   "score": 8.5
+  },
+  {
+   "id": "b70f6210d8daff69",
+   "title": "GigaWorld-Policy-0.5: A Faster and Stronger WAM Empowered by AutoResearch",
+   "url": "https://huggingface.co/papers/2607.13960",
+   "summary": "World Action Models (WAMs) improve robot policy learning by jointly modeling actions and future visual observations, using future scene evolution as dense supervision for physically grounded action generation. However, a common design in existing WAMs is to explicitly generate future videos at inference time, incurring substantial computational overhead and hindering real-time closed-loop deployment. GigaWorld-Policy addresses this issue with an action-centered formulation, where future visual dynamics are used during training while action-only decoding is used at inference time. Building upon this framework, we present GigaWorld-Policy-0.5, an enhanced action-centered WAM designed for more efficient robot control. During pretraining, GigaWorld-Policy-0.5 adopts a mixed Action-Conditioned World Modeling (AC-WM) and WAM training strategy. This strengthens the coupling between visual dynamics and robot actions and improves the transferability of action representations for downstream policy learning. For efficient inference, GigaWorld-Policy-0.5 introduces a Mixture-of-Transformers architecture that separates visual dynamics modeling and action generation into specialized experts, reducing active computation during action-only inference and achieving 85 ms inference latency on a local RTX 4090 setup. In addition, we employ an agent-based AutoResearch pipeline to systematically search training configurations, enabling more efficient identification of optimal experimental setups while reducing the time and manual intervention required for hyperparameter tuning. Experiments and ablations show that GigaWorld-Policy-0.5 preserves the training benefits of future visual dynamics while improving inference efficiency for robot control.",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2607.13960"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "optimisation"
+   ],
+   "tldr": "GigaWorld-Policy-0.5 améliore les World Action Models (WAM) pour la robotique en séparant la modélisation des dynamiques visuelles (entraînement) et la génération d'actions (inférence), avec une architecture Mixture-of-Transformers pour l'efficacité temps réel. Pertinent pour les politiques robotiques scalables et deployables.",
+   "score": 8.5
+  },
+  {
+   "id": "f720182eb4e172ee",
+   "title": "Pretraining Data Can Be Poisoned through Computational Propaganda",
+   "url": "https://arxiv.org/abs/2607.15267v1",
+   "summary": "Poisoning pretraining data can introduce harmful behaviors to LMs that are difficult to detect and mitigate. Prior work on poisoning pretraining data has largely exploited established data sources such as Wikipedia, which do not represent the large scale and heterogeneity typical of pretraining corpora, and has ignored the interaction between poisoned data and data curation pipelines. We demonstrate that poisoning attacks on pretraining data are feasible beyond this limited setting through an existing web-scale content injection mechanism: public discussion interfaces. Additionally, to measure whether malicious content is included after web crawling and data curation, we introduce HalfLife, a novel analysis for estimating adversarial content inclusion in web-crawl based LM training data. We use HalfLife to explore the feasibility of poisoning pretraining corpora at web scale through open discussion interfaces. Our analysis demonstrates the importance of estimating whether poison injections are included in pretraining data, and establishes third-party webpage content as a possible vector for attacking language model pretraining.",
+   "published": "2026-07-16T17:56:05+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Victoria Graf, Hannaneh Hajishirzi, Noah A. Smith, David Kohlbrenner, Kyle Lo"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "regulation"
+   ],
+   "tldr": "L'étude démontre la faisabilité de l'empoisonnement des données de pré-entraînement des LLM via des interfaces publiques (ex: discussions) et introduit *HalfLife*, un outil pour estimer l'inclusion de contenu malveillant dans les corpus web-scale. Les résultats soulignent les risques des pipelines de curation ouverts.",
+   "score": 8.3
+  },
+  {
+   "id": "33fea838d0d5223d",
+   "title": "Bridge Evidence: Static Retrieval Utility Does Not Predict Causal Utility in Multi-Step Agentic Search",
+   "url": "https://arxiv.org/abs/2607.15253v1",
+   "summary": "Retrieval systems are trained and evaluated on a static idea of usefulness: hand a document and a question to a reader model, see whether the answer improves, and score the document accordingly. The idea holds up when a document is read on its own. It breaks when a language model works as a search agent, issuing several queries and reasoning across turns, because a document can matter for what it lets the agent do next rather than for what it says about the current question. We measure that gap rather than argue it. Using a ReAct style agent over HotpotQA, we replay 1000 development questions and, for every document the agent read, delete it and re-run the rest of the trajectory from that point. Comparing the original run against its counterfactual gives a Counterfactual Trajectory Utility (CTU) score from three deltas: final answer quality, next query retrieval quality, and turn count. Crossing CTU against Static RAG Utility (SRU) over 23,322 document observations, the two are close to statistically independent (Spearman rho = -0.026). Roughly a third of the documents the agent reads are causally load bearing while looking useless to a static reader; we call these bridge documents. The pattern survives when the reader based axis is swapped for a BM25 and cross encoder proxy, giving a bridge cell of 27.2% on an evenly spread axis. A second experiment pins down the mechanism. Using the Observable Entity Relevance (OER) measure from prior work, entities that discriminate relevant from non-relevant candidates appear in the agent's next query 4.02 times more often than entities found only in non-relevant documents (6.1% vs 1.5%, n = 227,139). A bridge document earns its keep by handing the agent a discriminative entity that redirects the search. Static relevance and causal usefulness are different quantities in agentic retrieval, and optimizing the first does not deliver the second.",
+   "published": "2026-07-16T17:48:29+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Debayan Mukhopadhyay, Utshab Kumar Ghosh, Shubham Chatterjee"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "Cette étude démontre que l'utilité statique des documents en RAG (SRU) ne prédit pas leur utilité causale dans des recherches multi-étapes d'agents (CTU). Un tiers des documents lus par l'agent sont 'bridge documents', cruciaux pour la trajectoire mais invisibles en évaluation statique. Travail clé pour repenser l'évaluation des systèmes RAG et agents.",
+   "score": 8.3
+  },
+  {
+   "id": "440442f20bb4352f",
+   "title": "In-Place Tokenizer Expansion for Pre-trained LLMs",
+   "url": "https://arxiv.org/abs/2607.15232v1",
+   "summary": "A tokenizer fixed at the start of pre-training allocates vocabulary in proportion to the pre-training corpus, reflecting the deployment priorities at that time. When those priorities shift, languages added later are split into many more tokens per word, which can raise latency, compute, and energy consumption for users of those languages. Cloud models can afford a broad vocabulary because the embedding and LM-head matrices are a small fraction of their parameters. On a compact model those matrices are a material share of per-token decode bandwidth, so on-device models ship small vocabularies and accept fragmentation outside a fixed language set. We present tokenizer expansion, an in-place recipe for upgrading a pre-trained model's tokenizer when the model producer controls its design. We continue the existing tokenizer's BPE merges on a multilingual corpus, so most source tokens carry over unchanged as single tokens and every new token has an exact decomposition into source tokens. We copy the carried-over embedding rows unchanged and initialize new rows as the mean of their source sub-token embeddings. A two-stage adaptation, embedding-only training then full-model continued pre-training, recovers source-checkpoint quality. We apply the recipe to a continued pre-trained checkpoint of LFM2-8B-A1B, an 8B-parameter Mixture-of-Experts model, to help produce LFM2.5-8B-A1B with a 128K tokenizer. The expanded tokenizer encodes Hindi and Vietnamese in roughly $2.4\\times$ and $2.6\\times$ fewer tokens than the source (up to $4.0\\times$ on Thai). Combining these reductions with the measured per-token cost of the larger vocabulary, we estimate a $2.2$-$3.7\\times$ per-character decode speedup for these languages across our reference devices. We release the model weights and the expanded tokenizer, and report the negative findings that shaped the recipe.",
+   "published": "2026-07-16T17:32:38+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jimmy T. H. Smith, Tarek Dakhran, Alberto Cabrera, Simon S. Lee, Paul Pak, Aditya Tadimeti"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Tokenizer Expansion propose une méthode pour étendre le vocabulaire d'un LLM pré-entraîné sans réentraînement complet, en conservant les embeddings existants et en initialisant les nouveaux de manière structurée. Solution clé pour l'adaptation des modèles à de nouvelles langues ou domaines avec un coût minimal.",
+   "score": 8.3
+  },
+  {
+   "id": "cc08b9baa67294db",
+   "title": "T^2MLR: Transformer with Temporal Middle-Layer Recurrence",
+   "url": "https://arxiv.org/abs/2607.15178v1",
+   "summary": "Transformer reasoning is limited by autoregressive decoding, which repeat edly compresses rich hidden computation through token space and makes it difficult for intermediate reasoning states to persist across time. We in troduce Transformers with Temporal Middle-Layer Recurrence (T2MLR), a transformers-based latent reasoning architecture that fuses a cached middle layer representation from the previous token directly into an earlier layer of the current token position, enabling abstract intermediate computation to persist across decoding steps with little inference overhead. Across natural-language pretraining and multi-hop reasoning finetuning, T2MLR consistently outperforms data- and parameter-matched Transformer base lines. Moreover, applying recurrence to only a localized middle-layer block (as little as 20% of the network) often outperforms full-layer recurrence. Im portantly, T2MLR does not require pretraining from scratch: retrofitting the recurrent pathway into an existing pretrained 1.7B Transformer and briefly finetuning substantially improves math reasoning, lowering the barrier to practical adoption. These results suggest that effective latent reasoning in Transformers does not require looping over all layers as in previous works, but can instead emerge more strongly from targeted middle-layer recurrence.",
+   "published": "2026-07-16T16:33:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ziyang Cai, Xingyu Zhu, Yihe Dong, Yinghui He, Sanjeev Arora"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Nouvelle architecture T²MLR intégrant une récurrence temporelle au niveau des couches intermédiaires des Transformers, améliorant les capacités de raisonnement multi-étapes et réduisant les coûts d'inférence. Validation sur des tâches de prétraitement et de fine-tuning mathématique.",
+   "score": 8.3
+  },
+  {
+   "id": "a8928d267363cb03",
+   "title": "Long-Context Fine-Tuning with Limited VRAM",
+   "url": "https://arxiv.org/abs/2607.15105v1",
+   "summary": "Parameter-efficient fine-tuning reduces model and optimizer memory, but dense attention still makes long training sequences expensive. We combine Hierarchical Global Attention (HGA) with segment-wise backpropagation and tiered KV storage. Only the active segment remains differentiable in VRAM; older KV is detached into RAM or NVMe, and HGA loads a bounded set of exact historical tokens for each query block. On Qwen3-8B with 4-bit QLoRA and PG19, dense training on a 16 GB Quadro RTX 5000 fits 2,048 tokens but fails at 4,096, whereas HGA reaches 16,384 tokens with 15.28 GB peak VRAM. Under evaluation the same adapter runs through 131,072 tokens on this card; VRAM is not constant but grows gently with the resident chunk summaries, so RAM and NVMe capacity set the practical limit beyond these lengths. At the shared 2K training length, HGA-trained and dense-trained adapters obtain 2.7405 and 2.7383 nat under the same dense-attention readout, while the stock model obtains 2.9541. At this boundary HGA training is already marginally faster (217.75 vs. 207.02 tokens/s), and the HGA-to-dense throughput ratio improves from 1K to 2K; because HGA keeps the attended historical set per token approximately constant while dense work per token grows, we expect this lead to widen as context grows. Dense attention is used for the main quality and retrieval comparisons so that they measure the learned weights and remain compatible with standard generation frameworks. HGA can also be used for retrieval and generation; an optimized production-grade serving implementation is under development.",
+   "published": "2026-07-16T15:16:06+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Vladimir Fedosov, Aleksandr Sazhin, Artemiy Grinenko, Frank Woernle"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode (HGA) combinant attention hiérarchique, backpropagation segmentée et stockage tiersé des KV pour fine-tuner des LLM longue-contexture avec 4-bit QLoRA sur GPU 16GB, atteignant 16K tokens (vs 2K en dense) sans perte de performance. Solution pratique pour l'optimisation mémoire en fine-tuning.",
+   "score": 8.3
+  },
+  {
+   "id": "6f0819d0c1a50b86",
+   "title": "DriftWorld: Fast World Modeling through Drifting",
+   "url": "https://arxiv.org/abs/2607.15065v1",
+   "summary": "Predictive world models enable robots to plan by imagining the outcomes of their actions, but their value for control hinges on generating many rollouts quickly. This creates a bottleneck for diffusion-based world models: multistep sampling makes each rollout expensive, limiting large-scale action search at inference time. We introduce DriftWorld, an action-conditioned world model based on drifting generative models. Rather than denoising iteratively at inference, DriftWorld learns an action-conditioned drift during training, allowing it to generate future frames from the current observation and a candidate action sequence in a single forward pass at 30+ fps, which is 17x faster on average than diffusion based baselines. We evaluate DriftWorld on standard vision-based robotic manipulation benchmarks, including Bridge-V2, RT-1, Language Table, Push-T, and Robomimic. By producing rollouts that are both accurate and fast, DriftWorld achieves state-of-the-art decision-making performance with far less inference time than diffusion-based world model baselines. Beyond online control, DriftWorld can also serve as an offline simulator for ranking real-world robot policies, with rollout-based scores correlating with ground truth at up to 0.99. These results show that drifting models are a strong fit for robot world modeling, where fast, high-quality imagination directly supports planning and policy evaluation.",
+   "published": "2026-07-16T14:37:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Susie Lu, Haonan Chen, Weirui Ye, Yilun Du"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "Modèle de monde action-conditionné (DriftWorld) accélérant les prédictions de 17x via une approche de 'drifting' génératif, permettant un contrôle robotique en temps réel avec des performances SOTA sur des benchmarks standard.",
+   "score": 8.3
+  },
+  {
+   "id": "9b7092bfdc06cda7",
+   "title": "Partition, Prompt, Aggregate: Statistical Self-Consistency in Language Models",
+   "url": "https://huggingface.co/papers/2607.15277",
+   "summary": "In-context learning is commonly interpreted as a form of conditional inference, in which the prompt specifies a context and the model's output is treated as an estimate of the corresponding conditional distribution. If this interpretation holds, then LLM estimates should satisfy basic probabilistic identities. In particular, the law of total probability asserts that prior-weighted conditional distributions aggregate into population-level marginals over any valid partition of the population. In this work, we investigate to what extent LLM estimates adhere to this self-consistency principle. We use binary trees as an evaluation scaffold to recursively partition a population into increasingly fine-grained subpopulations. We then prompt LLMs with verbalized subpopulation descriptions in context, aggregate the resulting estimates back into population-level estimates, and compare them across partitions of varying granularity. Applying this protocol across problem domains and state-of-the-art frontier models, we show widespread violations of basic consistency properties. An in-depth study of persona prompting reveals a pattern we call the macro fallacy: estimates reconstructed from more fine-grained subpopulation responses are often better aligned with human reference data than direct population-level estimates. This effect persists across variations in tree structure and estimation task, and can be partially recovered through implicit prompting. Together, these findings suggest that models possess relevant subpopulation knowledge but do not reliably propagate it into aggregate estimates. This gap establishes statistical self-consistency as an unsaturated, reference-free criterion for evaluating LLMs.",
+   "published": "2026-07-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.15277"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude démontre des violations systématiques du principe de cohérence probabiliste (loi des probabilités totales) dans les estimations des LLM, révélant un biais macro (macro fallacy) où les prompts influencent la reconstruction des distributions marginales. Soulève des questions sur la fiabilité des estimations des LLM et l'impact des biais de persona.",
+   "score": 8.2
+  },
+  {
+   "id": "32efcfa176e6dfa8",
+   "title": "VideoChat3: Fully Open Video MLLM for Efficient and Generalist Video Understanding",
+   "url": "https://huggingface.co/papers/2607.14935",
+   "summary": "Recent advances in video understanding have spanned motion, long video, and streaming interaction, driving this field toward real-world applications. Despite this progress, current open-source models remain limited in several ways. They often struggle to generalize across diverse video types, making them effective only in specific domains. High computational demands further restrict their efficiency and scalability. Moreover, most models are only partially open, with key components such as training code, strategy, or datasets unavailable, which hinders reproducibility and slows community-driven development. To address these issues, we introduce VideoChat3, a fully open, efficient, and generalist video-centric MLLM. VideoChat3 advances video understanding through two complementary designs. For efficiency, we introduce Inflated 3D Vision Transformer (I3D-ViT) and Adaptive Frame Resolution for Streaming Video Perception, which enables efficient spatiotemporal representation and reduces the cost of processing video inputs during training and inference. For effectiveness, we develop a scalable video data synthesis pipeline that curates three diverse, high-quality training datasets: VideoChat3-Academic2M, VideoChat3-LV116K, and VideoChat3-OL617K, covering general, long-form, and streaming video scenarios, improving the model's generalization across domains. By integrating these designs, VideoChat3 achieves a rare balance of broad generalization and computational efficiency. Experiments across general, long-form, and streaming benchmarks demonstrate that VideoChat3 surpasses prior open-source models with equal or larger parameter counts with only 4B parameters and higher efficiency.",
+   "published": "2026-07-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 43,
+    "arxiv_id": "2607.14935"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "vision",
+    "produit"
+   ],
+   "tldr": "VideoChat3 présente un MLLM vidéo open-source, généraliste et efficace, combinant un I3D-ViT et une résolution adaptative pour le streaming. Utilise un pipeline de synthèse de données pour entraîner sur trois jeux de données diversifiés, offrant une alternative open-source aux modèles propriétaires avec des performances compétitives.",
+   "score": 8.2
+  },
+  {
+   "id": "9f360edf214c0e70",
+   "title": "SEED: Self-Evolving On-Policy Distillation for Agentic Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2607.14777",
+   "summary": "Large language models are increasingly trained as interactive agents for long-horizon tasks involving multi-turn interaction, tool use, and environment feedback. Outcome-based reinforcement learning (RL) provides a practical optimization paradigm, but its sparse trajectory-level rewards offer limited guidance on intermediate decisions, leaving a supervision gap between episode-level outcomes and token-level policy learning. We propose SEED (SElf-Evolving On-Policy Distillation), a self-evolving framework that converts completed on-policy trajectories into training-time hindsight skills and distills their behavioral effect back into the policy model. SEED first fine-tunes the policy to analyze completed trajectories and generate natural-language skills that capture reusable workflows, decisive observations, or failure-avoidance rules. During RL, the current policy both collects trajectories and serves as the analyzer that extracts hindsight skills from them. Policy updates therefore improve subsequent decision making and skill analysis together, allowing hindsight supervision to evolve with the policy. SEED then re-scores the sampled actions under ordinary and skill-augmented contexts, converting the skill-induced probability shift into a dense token-level on-policy distillation signal. This signal is jointly optimized with outcome-based RL, keeping the auxiliary supervision aligned with the current trajectory distribution. Extensive experiments on text-based and vision-based agentic tasks show that SEED consistently improves performance and sample efficiency, exhibiting robust generalization to unseen scenarios. Our code is available at https://github.com/jinyangwu/SEED.",
+   "published": "2026-07-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 51,
+    "arxiv_id": "2607.14777"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Cadre SEED pour une distillation on-policy auto-évolutive en RL agentique : extraction de compétences rétrospectives à partir de trajectoires complètes et distillation dans le modèle de politique, permettant une amélioration itérative des décisions intermédiaires. Approche prometteuse pour les tâches multi-tours.",
+   "score": 8.2
+  },
+  {
+   "id": "1023c7efa1f45189",
+   "title": "Tracing Agentic Failure from the Flow of Success",
+   "url": "https://huggingface.co/papers/2607.12747",
+   "summary": "Failure attribution for LLM-based agentic systems, i.e., identifying which steps in a failure trajectory caused the task to fail, is critical for debugging and improving these systems. Existing approaches either rely on prompting-based pipelines, which are computationally expensive, or require post-training on failure trajectories with step-level error annotations, which are costly to collect and difficult to scale. We argue that a practical failure attribution model should be lightweight and trainable without step-level supervision on failure data. To this end, we address unsupervised failure attribution, i.e., training exclusively on successful trajectories and identifying error steps at inference time given a failure trajectory. We propose OAT, which casts this problem as one-class learning with neural controlled differential equations, modeling the dynamical pattern of successful trajectories in latent space. At inference time, each step in a failure trajectory is assigned an anomaly score based on its deviation from the dynamics learned on successful trajectories, which is then used to form a set of error steps. With training on only 100 successful trajectories, experiments show that OAT is 200--5000 times faster than prompting-based baselines, and, at the same time, consistently outperforms them in both in-domain and out-of-distribution datasets with +20% and +7% F1 scores, respectively, demonstrating that OAT is a promising and efficient direction for diagnosing agentic system failures.",
+   "published": "2026-07-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2607.12747"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "OAT (One-Class Attribution with Neural Controlled Differential Equations) attribue automatiquement les échecs dans les trajectoires d'agents en modélisant les dynamiques des trajectoires réussies. Approche légère et non supervisée, entraînée uniquement sur des données positives, pour identifier les étapes problématiques.",
+   "score": 8.2
+  },
+  {
+   "id": "61ed4a9ab6a7052d",
+   "title": "Plover: Steering GUI Agents through Plan-Centric Interaction",
+   "url": "https://arxiv.org/abs/2607.15193v1",
+   "summary": "Graphical user interface (GUI) automation remains challenging in real-world environments, where dynamic layouts, unexpected dialogs, and evolving interface states can cause autonomous agents to drift from user intent. Recent vision-based multimodal agents improve flexibility by operating directly over screenshots and natural language instructions, but planning and adaptation often remain internal, limiting users' ability to inspect, supervise, or correct system behavior. We present Plover, a plan-centric vision-based GUI automation system that externalizes task plans and replanning as persistent, inspectable, and revisable artifacts. Through a planner--executor architecture, Plover supports explicit supervision of evolving execution, localized correction through editable plans, natural-language guidance, and screenshot-grounded interventions, while preserving prior progress during repair. A formative study with six participants informed the interaction design. We then evaluate Plover through benchmark failure-case repair and scenario-based workflow analyses. Our results show that many autonomous GUI-agent failures are structurally repairable when plans remain visible and interventions are localized, and that explicit replanning helps make GUI automation more transparent, controllable, and adaptable.",
+   "published": "2026-07-16T16:48:39+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Madhumitha Venkatesan, Shicheng Wen, Jiajing Guo, Jorge Piazentin Ono, Liu Ren, Dongyu Liu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "Plover externalise les plans d'exécution des agents GUI en artefacts inspectables et modifiables, permettant une supervision humaine directe (corrections, guidage NL) et une réparation des échecs. Étude formative et benchmarks montrent l'efficacité de cette approche interactive.",
+   "score": 8.0
+  },
+  {
+   "id": "667046f93c3dbaad",
+   "title": "Can We Trust Item Response Theory for AI Evaluation?",
+   "url": "https://arxiv.org/abs/2607.15190v1",
+   "summary": "AI benchmarks increasingly leverage item-level statistical models, particularly item response theory (IRT), to estimate model capabilities, rank systems, select informative examples, and diagnose benchmark quality. However, AI benchmark data often departs from the data regime of human testing, for which standard IRT estimation tools were originally developed: benchmarks typically involve fewer evaluated models, far more items, and capability distributions that may be skewed, clustered, or multimodal. We examine how these regime mismatches challenge the reliability of IRT modeling for AI evaluation. Using item parameters and capability distributions derived from six widely used LLM benchmarks, we simulate response matrices under three common IRT models and compare four estimation tools used in recent benchmark studies: marginal maximum likelihood, Markov chain Monte Carlo, variational inference, and a neural pseudo-Siamese estimator. Across 18,000 simulation conditions, we systematically evaluate computational feasibility, scalability, and the reliability of IRT inferences about model rankings, predicted performance, and item characteristics. Results show that classical estimators can become infeasible in large benchmark settings, whereas scalable estimators can produce unreliable item-level and ranking inferences with small or nonnormally distributed model sets. This study identifies when latent trait models reliably support or risk distorting AI benchmarking claims, and what sample sizes and diagnostics are needed for trustworthy use.",
+   "published": "2026-07-16T16:44:40+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Han Jiang, Sunbeom Kwon, Jinwen Luo, Ziang Xiao, Susu Zhang"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "benchmark",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude évalue la fiabilité des modèles IRT (Item Response Theory) pour l'évaluation des LLM, révélant des limites majeures dues aux écarts entre les données de benchmarks et les hypothèses classiques de l'IRT. Analyse rigoureuse des outils d'estimation et de leurs biais sur les classements et diagnostics.",
+   "score": 8.0
+  },
+  {
+   "id": "485adda01e1791b9",
+   "title": "Linear representations of grammaticality in neural language models",
+   "url": "https://arxiv.org/abs/2607.15175v1",
+   "summary": "Whether neural language models (NLMs) possess the ability to distinguish strings on the basis of their grammaticality remains a debated topic in the computational linguistics literature. Existing evidence has largely relied on probability-based measures, testing whether models assign higher probabilities to grammatical than ungrammatical strings. However, probability comparisons have been criticized as a measure for grammatical knowledge based on the assumption that grammaticality is inherently entangled with likelihood. Model-assigned probability is a function of many related sentence properties, such as lexical frequency, plausibility, and world knowledge. In this work, we move beyond probability-based evaluations and investigate whether grammaticality is encoded in the internal representations of NLMs. Using mass-mean probing, we test whether grammatical and ungrammatical sentences are systematically separated in representational space. We further examine the extent to which these representations are independent of sentence properties that are correlated with grammaticality, as well as their generalization across grammatical phenomena and languages. Our results provide evidence that grammaticality is robustly encoded in sentence representations of a wide range of pretrained NLMs, yielding clear representational separation on the dimension of grammaticality that cannot be fully explained by alternative sentence-level factors. Moreover, this encoding generalizes across a broad range of grammatical phenomena and to some degree, across languages, suggesting that grammaticality constitutes a coherent representational dimension in contemporary NLMs. These findings contribute new evidence to debates about the nature of syntactic knowledge in language models and offer a complementary framework for evaluating grammatical competence that is not dependent on string probabilities alone.",
+   "published": "2026-07-16T16:23:56+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jane Li, Najoung Kim"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Démonstration que la grammaticalité est encodée dans les représentations internes des modèles de langage, indépendamment de facteurs comme la fréquence lexicale. Utilisation de probes mass-mean pour analyser la séparation des phrases grammaticales/ungrammaticales.",
+   "score": 8.0
+  },
+  {
+   "id": "3864595a22d3f47c",
+   "title": "MedFailBench: A Clinician-Built Open-Source Benchmark for Medical AI Safety Boundary Inspection",
+   "url": "https://arxiv.org/abs/2607.15166v1",
+   "summary": "Most medical AI benchmarks measure whether a model knows the correct answer. MedFailBench asks a different question: which safety boundary failed? We present a clinician-built synthetic benchmark and failure atlas that labels medical AI errors by severity (1--5) and safety gate type (missed urgent escalation, unsafe remote dosing, unsafe discharge reassurance, evidence fabrication, unsafe protocol execution, source support gap). The current public release (v0.2.1) contains 44 clinician-reviewed synthetic cases with severity annotations, a live HuggingFace leaderboard preview, a safety gate taxonomy, a clinical severity rubric, and an automated pipeline for archiving model-response screening runs. No patient data, clinical validation claims, or model rankings are included. MedFailBench is released under Apache-2.0 and CC-BY-4.0 and carries the Zenodo DOI 10.5281/zenodo.21205535.",
+   "published": "2026-07-16T16:16:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Goktug Ozkan"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "produit",
+    "regulation"
+   ],
+   "tldr": "Benchmark open-source (MedFailBench) conçu par des cliniciens pour évaluer les limites de sécurité des modèles médicaux IA, classant les erreurs par gravité et type de faille. Approche synthétique sans données patients, avec leaderboard et taxonomie des risques.",
+   "score": 8.0
+  },
+  {
+   "id": "af42818f8ea91b5f",
+   "title": "Self in Space: Benchmarking Self-Awareness and Spatial Cognition in UAV Embodied Intelligence",
+   "url": "https://huggingface.co/papers/2607.12477",
+   "summary": "Autonomous UAV systems increasingly rely on multimodal large language models (MLLMs) to operate in complex real-world environments. Such embodied scenarios require not only understanding the surrounding space but also maintaining a coherent representation of the agent itself. However, existing UAV-oriented approaches and benchmarks remain largely environment-centric, primarily focusing on spatial understanding tasks, with the agent's self-awareness remaining implicit. To address this gap, we introduce SIS-Bench, a benchmark for evaluating embodied spatial intelligence in UAV scenarios under a unified self-in-space formulation. SIS-Bench organizes evaluation along two complementary dimensions, space and self, and a three-level hierarchy of perception, memory, and reasoning. It contains 4,856 question--answer pairs across 13 tasks derived from 1,646 real-world UAV videos through a task-conditioned construction pipeline with expert verification.Extensive evaluations reveal that current MLLMs exhibit fundamental limitations in modeling dynamic and agent-centered processes. In particular, we observe a clear imbalance between spatial cognition and self-awareness, as well as a progressive performance degradation across cognitive levels.Motivated by these findings, we further explore a motion-aware representation that incorporates self-related dynamics through optical flow and visual feature fusion. Experimental results show that modeling agent motion consistently improves perception and memory performance, not only in spatial cognition but also in self-awareness, and generalizes to downstream UAV decision-making tasks.Our results highlight the importance of self-awareness for advancing embodied spatial intelligence, and provide both a new benchmark and empirical evidence for motion-aware self-in-space modeling.",
+   "published": "2026-07-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.12477"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark *SIS-Bench* pour évaluer la conscience de soi et la cognition spatiale des UAVs, révélant des lacunes majeures des MLLMs dans la modélisation des processus dynamiques et centrés sur l'agent.",
+   "score": 7.9
+  }
+ ]
+}
