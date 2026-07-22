@@ -1,0 +1,728 @@
+{
+ "date": "2026-07-22",
+ "digest": {
+  "headline": "Optimisation mémoire des MoE et avancées en débogage d'agents LLM dominent la veille IA du 22 juillet 2026",
+  "overview": "La journée est marquée par des progrès techniques ciblant l'efficacité des architectures (notamment les Mixture-of-Experts) et la fiabilité des agents LLM. Les contributions couvrent aussi bien l'optimisation des ressources que l'amélioration des outils d'analyse et de déploiement, avec une attention particulière aux défis de généralisation et de sécurité.",
+  "highlights": [
+   {
+    "title": "Réduction drastique de la mémoire pour l'entraînement des MoE",
+    "text": "SkewAdam propose une allocation tierée des états de l'optimizer (momentum, second moment) basée sur les statistiques des gradients, réduisant la mémoire de 50.6 GB à 1.29 GB pour l'entraînement de modèles MoE. Cette approche améliore aussi la perplexité par rapport à AdamW, en adaptant dynamiquement l'allocation aux populations de paramètres (backbone, experts, router). Une avancée clé pour l'entraînement de grands modèles avec des ressources limitées."
+   },
+   {
+    "title": "Outils et cadres pour la fiabilité des agents LLM",
+    "text": "AgentDebugX et SeerGuard adressent des défis critiques en débogage et sécurité des agents. AgentDebugX introduit une boucle Detect-Attribute-Recover-Rerun avec une précision d'attribution de 28.8% sur qwen3.5-9b, tandis que SeerGuard utilise un modèle du monde ('SAWM') pour anticiper les conséquences des actions avant exécution, améliorant les scores de sécurité de +0.405. Ces outils sont essentiels pour des déploiements robustes dans des environnements complexes."
+   },
+   {
+    "title": "Amélioration du raisonnement et de l'ancrage des LLM",
+    "text": "Selective State-Space Adaptation and Retrieval propose deux adapteurs dynamiques (MaLoRA et MaRA) pour améliorer le raisonnement des LLM via des mécanismes de state-space recurrence et de retrieval guidé, avec des gains jusqu'à +18.2% F1. Parallèlement, GEAR corrige le problème de 'copie répétitive' en contexte long via un reward shaping ciblant l'ancrage sur les preuves clés, améliorant la précision des réponses. Ces travaux renforcent les capacités de raisonnement tout en optimisant l'utilisation des ressources."
+   },
+   {
+    "title": "Interprétabilité et évaluation des modèles génératifs",
+    "text": "Le cadre géométrique continu pour les Transformers modélise les opérations discrètes comme une équation différentielle sur un fibré sémantique, offrant des prédictions quantitatives (ex: Attention comme pont de Schrödinger). GAMUT introduit une méta-rubrique pour évaluer la complétude factuelle des réponses ouvertes des LLM, au-delà de la simple précision. Ces contributions améliorent la transparence et la robustesse des modèles, cruciales pour des applications critiques."
+   },
+   {
+    "title": "Optimisation de l'inférence et des pipelines de données",
+    "text": "AdaFlash optimise le speculative decoding via des diffusion drafters adaptatifs et une distillation on-policy, réduisant la variance et améliorant les taux d'acceptation. DataFlow-Harness automatise des pipelines de données via des agents LLM, réduisant les coûts de 72.5% et la latence de 49.9%. Ces outils adressent des goulots d'étranglement en production, améliorant l'efficacité des workflows d'IA."
+   },
+   {
+    "title": "Modélisation du monde et applications robotiques",
+    "text": "AlayaWorld génère des environnements 3D interactifs à 24 FPS avec cohérence spatio-temporelle, tandis que Masked Visual Actions propose une interface pixel-based pour modéliser les actions robotiques. Open-AoE fournit un dataset de 2000h de vidéos egocentriques pour l'entraînement de politiques VLA. Ces travaux poussent les limites des modèles multimodaux et des applications robotiques, avec des implications pour la simulation et l'apprentissage incarné."
+   }
+  ],
+  "trend": "Les avancées se concentrent sur l'optimisation des ressources (mémoire, calcul) et l'amélioration de la fiabilité des agents, avec une intégration croissante de mécanismes d'interprétabilité et de sécurité dès la conception. La modélisation du monde et les applications robotiques gagnent en maturité, suggérant une convergence entre IA générative et apprentissage incarné."
+ },
+ "items": [
+  {
+   "id": "7063de67d3dbda81",
+   "title": "Where Should Optimizer State Live? Tiered State Allocation for Memory-Efficient Mixture-of-Experts Training",
+   "url": "https://huggingface.co/papers/2607.19058",
+   "summary": "Optimizer state is the largest single line item in the memory budget of mixture-of-experts (MoE) training: on a 6.78B-parameter MoE language model, AdamW keeps 50.6 GB of first and second moments to update 12.6 GB of bfloat16 weights. We study SkewAdam, an optimizer built on the observation that the three parameter populations of an MoE - the dense backbone, the experts, and the router - differ enough in size and gradient statistics that they should not receive the same state. SkewAdam keeps float32 momentum plus a factored second moment for the backbone (5% of parameters), a factored second moment alone for the experts (95%), and an exact second moment for the router (<0.01%). The resulting state occupies 1.29 GB, 2.6% of AdamW's, and peak training memory falls from 81.4 GB to 31.3 GB, within the budget of a 40 GB accelerator. In a controlled comparison from identical initializations over 82M tokens, SkewAdam reaches validation perplexity 108.4, ahead of AdamW (126.8), Muon (120.2), and Lion (393.7), and settles router load balance to within 1% of its uniform floor. The allocation is not what earns that perplexity: a tier ablation matches it with twenty times the state, and Adafactor, which shares the factored estimator but drops momentum, plateaus 40 points behind. The tiers buy memory at no cost to accuracy; the accuracy comes from keeping momentum, which a uniform optimizer shares too. Sweeping the baselines' learning rates narrows but does not close the gap: the best tuned AdamW reaches 118.5, tuned Adafactor 139.7. Where optimizer state lives, these results suggest, matters at least as much as how much of it there is.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.19058"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "SkewAdam réduit drastiquement la mémoire de l'optimizer (50.6 GB → 1.29 GB) pour l'entraînement de MoE en adaptant l'allocation des états (momentum, second moment) selon la taille et les statistiques des gradients des populations de paramètres (backbone, experts, router). Gain de performance et de mémoire significatif, avec une perplexité réduite par rapport à AdamW et autres optimizers.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La publication aborde le problème de l'optimisation de la mémoire lors de l'entraînement de modèles de type Mixture-of-Experts (MoE). L'état de l'optimiseur (comme AdamW) représente la plus grande partie de l'empreinte mémoire, avec des besoins disproportionnés par rapport aux poids du modèle, ce qui limite l'entraînement sur des accélérateurs aux ressources limitées (ex. 40 Go).",
+    "methode": "Les auteurs proposent SkewAdam, un optimiseur qui exploite la disparité entre les trois populations de paramètres d'un MoE (backbone dense, experts, et routeur) pour allouer différemment l'état de l'optimiseur. Pour le backbone (5 % des paramètres), SkewAdam conserve un momentum en float32 et un second moment factorisé. Pour les experts (95 % des paramètres), seul un second moment factorisé est maintenu. Enfin, pour le routeur (< 0,01 % des paramètres), un second moment exact est utilisé. Cette approche réduit drastiquement la mémoire occupée par l'état de l'optimiseur tout en préservant les performances.",
+    "resultats": "SkewAdam réduit l'état de l'optimiseur à 1,29 Go (2,6 % de celui d'AdamW) et diminue la mémoire totale d'entraînement de 81,4 Go à 31,3 Go, rendant l'entraînement possible sur un accélérateur de 40 Go. Sur un jeu de validation de 82M tokens, SkewAdam atteint une perplexité de 108,4, surpassant AdamW (126,8), Muon (120,2) et Lion (393,7). De plus, il maintient un équilibre de charge du routeur à moins de 1 % de son plancher uniforme. Une ablation montre que la précision n'est pas sacrifiée malgré la réduction mémoire.",
+    "limites": "Les résultats dépendent fortement de l'architecture MoE et pourraient ne pas se généraliser à d'autres types de modèles. De plus, l'étude se concentre sur un seul jeu de données et une taille de modèle spécifique (6,78B paramètres), laissant ouverte la question de la scalabilité. Enfin, l'impact à long terme sur la convergence ou la stabilité de l'entraînement n'est pas entièrement exploré.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et ses gains mémoire significatifs, surtout pour les praticiens travaillant sur des architectures MoE avec des contraintes matérielles strictes."
+   }
+  },
+  {
+   "id": "5df8ae241f6b6d1b",
+   "title": "AgentDebugX: An Open-Source Toolkit for Failure Observability, Attribution, and Recovery in LLM Agents",
+   "url": "https://huggingface.co/papers/2607.18754",
+   "summary": "LLM agent failures are difficult to debug because the step where an error surfaces is often not the one that caused it. Existing observability tools replay execution traces but provide little support for identifying the root cause or translating diagnosis into recovery. We present AgentDebugX, an open-source debugging framework that organizes debugging as a closed loop of Detect, Attribute, Recover, and Rerun. At its core, DeepDebug performs multi-turn root-cause diagnosis through global trajectory understanding, structure-guided investigation, and cross-examination. On the Who and When benchmark, DeepDebug achieves the best strict attribution accuracy among the evaluated methods on both tested open-weight backbones, reaching 28.8 percent exact agent-and-step accuracy on qwen3.5-9b versus 21.7 percent for the strongest single-pass baseline. On GAIA, DeepDebug repairs 13 of 73 failed tasks in a single rerun, compared with 4 to 6 for three decoupled self-correction baselines, improving overall accuracy from 55.8 percent to 63.6 percent. AgentDebugX exposes this workflow through a Python library, CLI, web console, and installable agentic skill, and provides an opt-in Error Hub for sharing scrubbed failure-diagnosis-repair bundles and reusing them as debugging memory.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2607.18754"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "AgentDebugX propose un framework open-source pour déboguer les échecs des agents LLM via une boucle Detect-Attribute-Recover-Rerun, avec un outil DeepDebug atteignant 28.8% de précision d'attribution sur qwen3.5-9b. Essentiel pour améliorer la fiabilité des agents dans des environnements complexes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents basés sur les LLM (Large Language Models) posent un défi majeur en matière de débogage : l'erreur visible à un instant donné n'est souvent que la conséquence d'une défaillance antérieure dans la chaîne d'exécution. Les outils d'observabilité existants se limitent à rejouer les traces d'exécution sans offrir de mécanismes robustes pour identifier la cause racine ou proposer des corrections automatisées.",
+    "methode": "AgentDebugX structure le débogage en un cycle fermé en quatre étapes : Détecter, Attribuer, Récupérer et Relancer (Detect, Attribute, Recover, Rerun). Son cœur, DeepDebug, réalise un diagnostic multi-tours de la cause racine via trois mécanismes : (1) une compréhension globale de la trajectoire d'exécution, (2) une investigation guidée par la structure du problème, et (3) un croisement des hypothèses (cross-examination) pour valider les causes potentielles. Le framework propose une intégration sous forme de bibliothèque Python, CLI, console web, et même une compétence agentique installable. Il inclut également un *Error Hub* optionnel pour partager et réutiliser des bundles anonymisés (échec-diagnostic-réparation) comme mémoire de débogage.",
+    "resultats": "Sur le benchmark *Who and When*, DeepDebug atteint une précision d'attribution stricte de 28,8 % pour l'agent et l'étape exacte avec qwen3.5-9b, surpassant la meilleure baseline en une seule passe (21,7 %). Sur *GAIA*, il corrige 13 des 73 tâches échouées en une seule relance, contre 4 à 6 pour trois baselines de correction autonome découplées, améliorant la précision globale de 55,8 % à 63,6 %. Ces résultats suggèrent une efficacité supérieure à la fois pour l'identification des causes et la récupération automatisée.",
+    "limites": "Les chiffres de précision (ex. 28,8 %) restent modestes en valeur absolue, soulignant que l'attribution des causes racine reste un problème ouvert. Le benchmark *GAIA* utilisé pour évaluer la récupération est spécifique et pourrait ne pas généraliser à d'autres domaines. Enfin, la dépendance à des mécanismes comme le *cross-examination* pourrait introduire des biais ou des coûts computationnels non détaillés.",
+    "verdict": "AgentDebugX mérite une attention particulière pour son approche systématique et ses résultats tangibles, mais son adoption dépendra de sa capacité à évoluer vers des cas d'usage plus larges et des précisions d'attribution améliorées."
+   }
+  },
+  {
+   "id": "5cf7d969447d2938",
+   "title": "SeerGuard: A Safety Framework for Mobile GUI Agents via World Model Prediction",
+   "url": "https://huggingface.co/papers/2607.15550",
+   "summary": "Mobile graphical user interface (GUI) agents have demonstrated remarkable capabilities in automating complex tasks, yet they introduce critical safety risks where a single erroneous action can lead to irreversible consequences. Existing safety mechanisms are primarily reactive, lacking the ability to assess risks before execution. In this paper, we introduce SeerGuard, a consequence-aware safety framework designed to mitigate these risks through pre-execution instruction-level screening and action-level risk assessment. Specifically, the action-level assessment analyzes agent-proposed actions within current GUI states, anticipating likely outcomes to identify risks before they are executed. To enable these capabilities, we construct a unified safety-augmented world model (SAWM) via multi-task learning, integrating semantic next-state prediction with safety risk assessment. Extensive experiments demonstrate that SeerGuard generalizes effectively across diverse mobile GUI agents. On Qwen3-VL-8B-Instruct, it increases the safety-utility score from 0.191 to 0.596 at ω=0.8 and reduces the risk-cost score from 0.347 to 0.130 at α=0.8. Further analyses on our SAWM validate the effectiveness of the instruction-level screening, alongside the capability of action risk assessment and next-state prediction.",
+   "published": "2026-07-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2607.15550"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "SeerGuard propose un cadre de sécurité pour les agents GUI mobiles basé sur un modèle du monde ('SAWM') capable d'anticiper les conséquences des actions avant exécution. Les résultats montrent une amélioration significative des scores de sécurité (ex: +0.405 sur le safety-utility score) sur Qwen3-VL-8B-Instruct, validant son efficacité pour une généralisation multi-agents.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents d'interface utilisateur graphique (GUI) mobiles automatisent des tâches complexes mais posent des risques de sécurité critiques, où une seule action erronée peut entraîner des conséquences irréversibles. Les mécanismes de sécurité existants sont principalement réactifs et ne permettent pas d'évaluer les risques avant l'exécution des actions.",
+    "methode": "SeerGuard est un cadre de sécurité conscient des conséquences qui intègre un filtrage au niveau des instructions avant exécution et une évaluation des risques au niveau des actions. L'évaluation au niveau des actions analyse les actions proposées par l'agent dans l'état actuel de la GUI pour anticiper les résultats probables et identifier les risques avant leur exécution. Pour ce faire, un modèle de monde unifié augmenté pour la sécurité (SAWM) est construit via un apprentissage multi-tâches, combinant la prédiction sémantique de l'état suivant avec l'évaluation des risques de sécurité. Ce modèle permet une analyse proactive des conséquences potentielles des actions.",
+    "resultats": "Les expériences montrent que SeerGuard améliore significativement les performances en matière de sécurité et d'utilité. Par exemple, sur le modèle Qwen3-VL-8B-Instruct, le score sécurité-utilité passe de 0,191 à 0,596 pour ω=0,8, tandis que le score de coût de risque diminue de 0,347 à 0,130 pour α=0,8. Les analyses du SAWM confirment l'efficacité du filtrage au niveau des instructions ainsi que la capacité d'évaluation des risques et de prédiction de l'état suivant.",
+    "limites": "Le contenu disponible ne permet pas d'identifier clairement les limites spécifiques de SeerGuard. Cependant, on peut s'interroger sur la généralisabilité du modèle à des environnements GUI très variés ou non standardisés, ainsi que sur la robustesse du système face à des attaques adversariales ciblant le modèle de prédiction d'états.",
+    "verdict": "SeerGuard représente une avancée notable pour la sécurité des agents GUI mobiles grâce à son approche proactive, mais son adoption dépendra de sa capacité à s'adapter à des scénarios réels et variés."
+   }
+  },
+  {
+   "id": "d80bd49c5b8c6903",
+   "title": "The Geometry of Semantic Space: A Continuous Geometric Framework for the Transformer Architecture",
+   "url": "https://huggingface.co/papers/2607.17146",
+   "summary": "We present a continuous geometric framework that models the discrete algebraic operations of the Transformer architecture as an integro-differential equation (IDE) on a semantic fiber bundle calE = calM times R^d. Beginning from a single geometric axiom -- that the token sequence forms a discrete 1-manifold equipped with a canonical measure lattice -- we translate every core component of the modern Transformer (RMSNorm, RoPE, Softmax Attention, FFN, Residual Stream, SGD, Weight Decay) into a cohesive vocabulary of differential geometry, measure theory, and stochastic calculus. The resulting framework yields quantitative predictions spanning entropic optimal transport (Attention as a Schrödinger bridge) and non-equilibrium thermodynamics (SGD as Itô diffusion violating detailed balance). We conduct a six-part experimental campaign across five architectures (Qwen3, LLaMA\\nobreakdash-3.1, Gemma\\nobreakdash-3, GPT-2, Mistral) spanning 124M to 8B parameters. The empirical observables are quantitatively consistent with the geometric predictions: the ε^{-1/2} Lipschitz scaling calibration at machine precision (R^2 = 1.000), the Lie--Trotter operator-splitting torsion, the symmetric ablation instability confirming the Dual-Law of Topological Stability, the calO(1/k) thermodynamic suppression of Poincaré recurrence on the RoPE torus, the thermodynamic context-limit phase transition, and the Non-Equilibrium Steady State parameter vortex -- verified across two optimizers (AdamW and Pure SGD) to exclude momentum artifacts. The results demonstrate that analyzing Transformers through the lens of continuous stochastic differential geometry provides a predictive descriptive vocabulary for the stability limits, context bounds, and optimization dynamics of Large Language Models.",
+   "published": "2026-07-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.17146"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Un cadre géométrique continu modélise les opérations discrètes des Transformers comme une équation différentielle sur un fibré sémantique, offrant des prédictions quantitatives (ex: Attention comme pont de Schrödinger) et une validation expérimentale sur 5 architectures.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le manque de cadre théorique unifié pour expliquer le fonctionnement interne des architectures Transformer, notamment leur stabilité, leurs limites contextuelles et leurs dynamiques d'optimisation. Elle cherche à remplacer les descriptions discrètes et algébriques par un modèle continu géométrique, permettant des prédictions quantitatives sur des phénomènes comme l'attention ou la descente de gradient stochastique (SGD).",
+    "methode": "Les auteurs proposent un cadre géométrique continu basé sur un *fibré sémantique* (ℇ = ℳ × ℝᵈ), où la séquence de tokens est modélisée comme une variété 1-dimensionnelle discrète munie d'un réseau de mesures canonique. Chaque composant du Transformer (RMSNorm, RoPE, attention Softmax, FFN, flux résiduel, SGD, Weight Decay) est reformulé en termes de géométrie différentielle, théorie de la mesure et calcul stochastique. Par exemple, l'attention est interprétée comme un *pont de Schrödinger* (transport optimal entropique), et SGD comme une diffusion d'Itô violant l'équilibre détaillé. Le cadre utilise des outils comme les équations intégro-différentielles (IDE), la torsion de Lie-Trotter, et la thermodynamique hors équilibre pour dériver des prédictions testables expérimentalement.",
+    "resultats": "Les prédictions théoriques sont validées par une campagne expérimentale sur cinq architectures (Qwen3, LLaMA-3.1, Gemma-3, GPT-2, Mistral) de 124M à 8B paramètres. Parmi les résultats clés : (1) une calibration de la constante de Lipschitz en ε⁻¹/² avec une précision machine (R² = 1.000), (2) la confirmation de la *Dual-Law of Topological Stability* via des ablations symétriques, (3) une suppression thermodynamique en 𝒪(1/k) de la récurrence de Poincaré sur le tore RoPE, (4) une transition de phase thermodynamique à la limite contextuelle, et (5) l'observation d'un *vortex de paramètres* en régime stationnaire hors équilibre, vérifié pour deux optimiseurs (AdamW et SGD pur) pour écarter les artefacts liés à l'élan.",
+    "limites": "Le cadre repose sur des hypothèses fortes, comme la modélisation de la séquence de tokens comme une variété 1D discrète, qui pourrait ne pas capturer toute la complexité des données réelles. Les prédictions thermodynamiques (ex. : violation de l'équilibre détaillé) sont difficiles à valider expérimentalement sans ambiguïté. De plus, l'approche géométrique continue pourrait masquer des comportements émergents spécifiques aux architectures discrètes, comme les artefacts liés à la quantification ou aux opérations en précision finie.",
+    "verdict": "Cette publication mérite une attention particulière pour son ambition de fournir un cadre théorique prédictif et unifié des Transformers, bien que son applicabilité pratique et sa généralisation à d'autres architectures restent à explorer."
+   }
+  },
+  {
+   "id": "9c6efedf924a64bf",
+   "title": "DataFlow-Harness: A Grounded Code-Agent Platform for Constructing Editable LLM Data Pipelines",
+   "url": "https://huggingface.co/papers/2607.16617",
+   "summary": "Large language models (LLMs) are increasingly used to automate data-processing workflows, yet coding agents typically produce scripts that are not automatically materialized as persistent, editable platform artifacts. We call this disconnect the NL2Pipeline gap. To bridge it, we introduce DataFlow-Harness, a platform that guides an LLM agent to construct platform-native directed acyclic graphs (DAGs) through typed, incremental mutations rather than free-form scripts. The platform combines DataFlow-Skills for procedural guidance, a Model Context Protocol (MCP) layer that exposes the live operator registry and current pipeline state, and DataFlow-WebUI, which synchronizes conversational authoring with a visual DAG editor. On a 12-task data-engineering benchmark, DataFlow-Harness achieves a 93.3\\% observed end-to-end pass rate. Relative to Vanilla Claude Code, it reduces measured monetary cost by 72.5\\% and generation latency by 49.9\\%; its observed pass rate is within 0.9 percentage points of the Context-Aware Claude Code baseline while its cost is 42.8\\% lower. Per-task analysis indicates that Skills are most useful when construction depends on implicit procedural knowledge. These results show that live platform grounding can produce persistent, editable workflow artifacts with an observed reliability close to script-generation baselines and with lower measured construction cost and latency.",
+   "published": "2026-07-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 51,
+    "arxiv_id": "2607.16617"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Introduit DataFlow-Harness, une plateforme pour automatiser des pipelines de données via des agents LLM, réduisant les coûts de 72.5% et la latence de 49.9% par rapport aux approches basiques. Idéal pour l'optimisation des workflows d'IA agents.",
+   "score": 8.8
+  },
+  {
+   "id": "a5678349cc9cc42d",
+   "title": "Masked Visual Actions for Unified World Modeling",
+   "url": "https://huggingface.co/papers/2607.19343",
+   "summary": "Video models absorb rich priors over how the visual world moves, interacts, and responds to contact, making them promising substrates for robotic world modeling. The central challenge is how to communicate action to such models in a form aligned with the visual space in which they learned these interaction priors, yet still grounded in physical manipulation. We introduce Masked Visual Actions, a pixel-space control interface that expresses action as a partially revealed trajectory of an arbitrary entity in a video. Revealing robot motion makes the model act as a forward dynamics model that predicts the scene's response to low-level robot actions, while revealing desired object motion makes the same model recover robot behavior consistent with that outcome. Finetuned with only 15 hours of masked examples from real videos and simulation, a single checkpoint achieves strong visual fidelity and controllability across diverse scenes and multiple embodiments. In downstream manipulation settings, the model produces imagined rollouts whose outcomes correlate with real-world execution for policy evaluation, improves decision making by ranking candidate futures in model-based planning, and supports inverse modeling by synthesizing robot motion from desired object motion.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.19343"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "robotique",
+    "vision"
+   ],
+   "tldr": "Introduit les *Masked Visual Actions*, une interface de contrôle pixel-based pour les modèles de monde vidéo, permettant une modélisation unifiée des actions robotiques et des dynamiques visuelles. Pertinent pour la robotique et les modèles génératifs multimodaux.",
+   "score": 8.8
+  },
+  {
+   "id": "a4e931ed7526c55b",
+   "title": "Diagnosing and Calibrating Tool-Call Boundary Drift in Multi-Teacher On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2607.07050",
+   "summary": "Agentic language models must learn when to call tools, when to consume tool responses, and when to answer directly. This makes multi-teacher on-policy distillation a natural training strategy: one teacher can specialize in tool calls, another in direct responses, and the student can learn from both on its own generated distribution. We show that this strategy can induce a behavior shift that is invisible from aggregate losses alone. In a two-teacher tool-use setting, vanilla generalized knowledge distillation improves tool-call recall but also moves the model toward over-calling, where it calls tools on examples that should be answered directly. Aggregate explanations are insufficient: tool-call samples do not receive more token exposure, and full-sequence per-token divergence is not larger for the tool-call teacher. We instead analyze behavior leverage imbalance: local token-level signals at mode- entry and structural positions, such as and function names, can have disproportionate control over the global generation mode. We propose Soft Clamp, a per-token divergence calibration method that dynamically compresses extreme token-level Jensen-Shannon divergence while preserving nonzero gradients. On APIGen-MT, Soft Clamp reduces over-calling from 13.7% to 9.0% relative to vanilla GKD while matching its decision accuracy. In a BFCL multi-turn diagnostic, it also lowers tool-call loops and repeated calls among GKD variants. These results suggest that multi-teacher OPD should monitor where teacher signals act, not only how large they are in aggregate.",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.07050"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Cette étude diagnostique le 'drift' des frontières d'appel d'outils dans la distillation multi-enseignants (on-policy), révélant des biais invisibles dans les métriques agrégées. La méthode 'Soft Clamp' est proposée pour calibrer les divergences token-level et corriger les comportements de sur-appel.",
+   "score": 8.8
+  },
+  {
+   "id": "435839b36814f501",
+   "title": "Selective State-Space Adaptation and Retrieval for Language Model Reasoning",
+   "url": "https://arxiv.org/abs/2607.19326v1",
+   "summary": "Low-rank adaptation introduces a static learned update applied identically to every input. The update provides task-level adaptation but does not explicitly represent token-level or instance-level state variation. A family of adapters is proposed that introduces selective state-space recurrence at two complementary granularities. At the token level, \\textbf{MaLoRA} (Mamba-modulated low-rank adaptation) makes the adapter's scaling factor a dynamic input-dependent function with recurrent state across tokens, in contrast to the stateless modulators of prior work. At the context level, \\textbf{MaRA} (Mamba Retrieval Adapter) tracks cross-segment state and selects the segments most relevant to the query, before the modulated language model generates its answer. Across three frozen backbones (Qwen-2.5-7B, Llama-3.1-8B, Gemma-2-9B) and two reasoning benchmarks (MuSiQue, 2WikiMultihopQA), the family improves reasoning accuracy on every cell of the $3{\\times}2$ grid, by $+6.8$ F1 ($+10.5\\%$ relative) on average and up to $+9.3$ F1 ($+18.2\\%$ relative) on the hardest cell over the LoRA baseline, and the token-level gains carry to RULER QA-2 under length stress.",
+   "published": "2026-07-21T17:47:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Atahan Dokme, Larry Heck"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Proposition de deux adapteurs dynamiques (MaLoRA pour l'adaptation token-level et MaRA pour la sélection contextuelle) améliorant significativement les capacités de raisonnement des LLM (jusqu'à +18.2% F1) via des mécanismes de state-space recurrence et de retrieval guidé, tout en restant compatibles avec des backbones gelés.",
+   "score": 8.6
+  },
+  {
+   "id": "eebea879bfe78dc6",
+   "title": "Text Template Tokens Are Implicit Semantic Registers in Diffusion Transformers",
+   "url": "https://huggingface.co/papers/2607.19139",
+   "summary": "Text-to-image diffusion transformers (DiTs) jointly process text and image tokens, yet their internal computation during denoising remains poorly understood. We introduce a causal interpretability framework for modern large-scale DiTs that combines attention decomposition with targeted interventions across token spans, heads, and layers. Using it to separate prompt-content tokens from structural template tokens, we find that the structural tokens carry little prompt-specific information at the encoder output. Yet surprisingly, they emerge as dominant image-to-text attention sinks and causally maintain object identity inside the DiT, acting as implicit semantic registers. We show that they acquire this identity indirectly, with prompt semantics first injected into the image latents and then read back into the template tokens rather than transferred directly from the prompt tokens. Inspired by the above findings, we design a training-free pruning rule for DiTs. Heads that attend most strongly to prompt tokens are dispensable, and pruning them removes 20% of attention FLOPs with only a 1.4-point drop on GenEval. We further reveal how generative computation in DiTs is organized across heads and depth, separating semantic routing from visual synthesis and progressing from identity formation to propagation and refinement. Our work not only reveals that the tokens encoding semantics at input need not be those that maintain it during generation, but also provides a causal view of internal mechanisms in DiTs.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 45,
+    "arxiv_id": "2607.19139"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Les tokens de structure dans les DiT (diffusion transformers) agissent comme des registres sémantiques implicites, dominant l'attention image-texte et maintenant l'identité des objets, avec des implications pour le pruning (20% des FLOPs d'attention supprimés avec une perte minimale). Contribution majeure en interprétabilité des modèles génératifs.",
+   "score": 8.5
+  },
+  {
+   "id": "487616b9f23f01e0",
+   "title": "Two-Level Meta-Rubrics for Evaluating Open-Ended Generation: GAMUT, a Benchmark for Factual Completeness",
+   "url": "https://huggingface.co/papers/2607.19322",
+   "summary": "Evaluating the factuality of long-form generations has focused predominantly on precision, measuring whether the claims a model makes are correct. The dominant decompose-search-verify pipeline catches incorrect claims well but says little about whether a response contains all the information it should. Measuring factual completeness, the missing half of factuality, is harder: it requires enumerating the full set of facts a complete answer should contain, and these facts rarely form a flat list. They often involve open-ended sets where coverage is what matters, ordered processes, and relationships among facts that a list of independent boolean checks fails to capture. We introduce a two-level meta-rubric framework for evaluating open-ended generation, and instantiate it as Gamut (Grounded Assessment of Multimodal Factuality), a benchmark for factual completeness in long-form generation. The framework rests on a two-level rubric representation: a structured meta-rubric captures the organization and importance of the required content, which is then mechanically compiled into a flat checklist of binary, machine-gradable rubrics that an LLM judge scores reliably. We construct 1,813 questions grounded in real wearable imagery across 10 diverse domains, each paired with an evidence-backed rubric verified by expert human annotators. Because the framework is modality-agnostic, we also release a text-only variant. Evaluating 14 frontier and open-weight models, we find the benchmark genuinely challenging (best score 58.7% from Gemini 3.1 Pro), highly discriminative, and robust to the choice of judge.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.19322"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "interpretabilite"
+   ],
+   "tldr": "Propose un cadre d'évaluation (GAMUT) pour mesurer la complétude factuelle des réponses ouvertes des LLM, au-delà de la simple précision, via une méta-rubrique structurée et un benchmark de 1 813 questions. Intéressant pour l'interprétabilité et l'évaluation robuste des LLM.",
+   "score": 8.5
+  },
+  {
+   "id": "dbe4c24c203d9e7b",
+   "title": "AlayaWorld: Interactive Long-Horizon World Modeling -- Full Technical Report",
+   "url": "https://huggingface.co/papers/2607.18367",
+   "summary": "Unlike conventional video game development, which relies on labor-intensive pipelines for asset production, animation, physics, and programming, video world models generate interactive environments from user inputs instantly. It enable us to create customized, explorable, and continuously evolving virtual world from text, an image, or video. Realizing this vision requires four tightly coupled capabilities: interaction, persistent spatiotemporal consistency, stable long-horizon generation, and efficient response. We present AlayaWorld, an interactive long-horizon video world model that generates 24-fps video at 540p and 720p. Built on a 15B video diffusion transformer, AlayaWorld generates short latent chunks autoregressively under camera trajectories and switchable text prompts. Its bounded visual context combines a persistent sink frame, compressed temporal history, geometry-aligned spatial memory, and recent-frame conditioning. To reduce long-term drift, the model is trained with corrupted histories and prediction residuals collected from its own roll-outs. We further introduce a discrete autoregressive distillation formulation that combines distribution-matching distillation, self-forcing++, and consistency distillation, reducing inference from approximately 30 sampling steps to four steps per chunk. On iWorld-Bench, AlayaWorld achieves the best performance over long-horizon generation. Conceived as a full-stack, open-source, and long-term project, AlayaWorld is intended to provide an extensible foundation for future research on interactive video world models.",
+   "published": "2026-07-20T13:15:41.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 36,
+    "arxiv_id": "2607.18367"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "vision",
+    "robotique"
+   ],
+   "tldr": "Présente AlayaWorld, un modèle de monde interactif vidéo long-horizon (15B paramètres) générant des environnements 3D à 24 FPS avec cohérence spatio-temporelle, via une architecture de diffusion transformers et distillation autorégressive. Pertinent pour l'IA générative multimodale et les applications robotiques.",
+   "score": 8.5
+  },
+  {
+   "id": "1fe1e5958511c679",
+   "title": "Open-AoE: An Open Egocentric Manipulation Dataset and Toolchain for Embodied Learning",
+   "url": "https://huggingface.co/papers/2607.14183",
+   "summary": "Egocentric videos of human manipulation provide scalable supervision for embodied intelligence, yet existing resources rarely combine low-cost continuous capture, manipulation-level structured annotations, and reusable tools for robot learning. We present Open-AoE, an open, community-oriented egocentric manipulation dataset and toolchain spanning the full pipeline from smartphone capture to model training. Its first release contains approximately 2,000 hours of manipulation video collected in natural environments by 500+ contributors using 400+ smartphones. The dataset provides text annotations, MANO-based hand poses, camera trajectories, and temporally localized atomic actions. Open-AoE further includes a data processing pipeline that transforms raw recordings into structured samples through temporal action segmentation, semantic annotation, hand reconstruction, and camera trajectory reconstruction. Meanwhile, we provide a separate downstream toolchain supports visualization, cross-embodiment retargeting, model-specific data conversion, and training recipes for VLA policies, WAMs, and World Models. By integrating scalable capture, structured processing, and downstream adaptation, Open-AoE reduces the barriers to both data contribution and reuse, providing practical open infrastructure for embodied model training, human-to-robot transfer, and world modeling.",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 60,
+    "arxiv_id": "2607.14183"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "Open-AoE fournit un dataset et une toolchain open-source de 2000h de vidéos egocentriques de manipulation humaine, avec annotations structurées (actions atomiques, poses de mains, trajectoires) et outils pour l'entraînement de politiques VLA, WAMs et modèles du monde.",
+   "score": 8.5
+  },
+  {
+   "id": "d72529776569c2e4",
+   "title": "Copy Less, Ground More: Overcoming Repetitive Copying in Long-Context Reasoning via Evidence-Aware Reinforcement Learning",
+   "url": "https://arxiv.org/abs/2607.19345v1",
+   "summary": "Large language models that generate step-by-step reasoning traces have achieved strong performance on complex tasks, and extending them to long-context settings has emerged as an important frontier. However, we identify a critical failure mode in this regime: \\emph{repetitive copying}, where models extensively copy text from the input into their reasoning traces rather than productively solving the problem. We show that this behavior is pervasive across frontier long-context LLMs and intensifies with context length. By separating each prompt into task-relevant key evidence and irrelevant distractor context, we further show that the root cause is insufficient grounding: models copy from the prompt indiscriminately, and those that fail to focus on key evidence are far more likely to answer incorrectly. Motivated by this diagnosis, we propose GEAR (Grounding Evidence-Aware Reward), a reward shaping method that augments the accuracy signal with a grounding reward for overlap with key evidence and a distractor penalty for overlap with irrelevant context. To enable GEAR on natural-language data, we develop an automated pipeline that constructs evidence-annotated training data from arbitrary documents. We validate GEAR across multiple model scales and benchmarks, showing consistent improvements of up to +4.6 average points over standard RL with accuracy-based rewards, with larger gains at longer contexts, while also reducing repetitive copying and thinking length. Our findings suggest that, even as long-context evaluation shifts from simple retrieval toward complex reasoning, accurate grounding in relevant evidence remains an indispensable capability with substantial room for improvement.",
+   "published": "2026-07-21T17:59:21+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Lizhe Fang, Weizhou Shen, Tianyi Tang, Yisen Wang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Les LLM en contexte long souffrent d'un problème de 'copie répétitive' (repetitive copying) où ils reproduisent indûment des parties du prompt plutôt que de raisonner. GEAR propose un reward shaping pour renforcer l'ancrage sur les preuves clés et pénaliser les distractions, améliorant ainsi la précision des réponses.",
+   "score": 8.3
+  },
+  {
+   "id": "79a0a02e996e125f",
+   "title": "CircuitKIT : Circuit Discovery, Evaluation, and Application Toolkit for Mechanistic Interpretability",
+   "url": "https://arxiv.org/abs/2607.19317v1",
+   "summary": "Circuit analysis can support not only model explanation but also downstream interventions such as pruning, editing, steering, and selective fine-tuning. However, conducting such analyses currently requires stitching together separate implementations for discovery, evaluation, and intervention, as well as hand-authoring the contrastive prompts required by many discovery methods. This fragmentation makes methods difficult to compare and limits their application beyond canonical tasks. We introduce CircuitKIT, a source-available library that connects the circuit-analysis workflow through a typed, serializable representation. CircuitKIT provides a suite of discovery algorithms, declarative interfaces for mapping structured data into discovery tasks, complementary circuit diagnostics, and downstream application modules. Together, these components provide common infrastructure for conducting and comparing circuit analyses. The library, examples, notebooks, and documentation are released at https://github.com/Lexsi-Labs/CircuitKIT .",
+   "published": "2026-07-21T17:34:12+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Pratinav Seth, Hem Gosalia, Aditya Kasliwal, Vinay Kumar Sankarapu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Bibliothèque CircuitKIT unifiant les outils d'analyse de circuits neuronaux (découverte, évaluation, intervention) pour faciliter les applications en mechanistic interpretability (pruning, editing, steering) avec une représentation typée et sérialisable.",
+   "score": 8.3
+  },
+  {
+   "id": "1e48c09770e6f33e",
+   "title": "AdaFlash: Adaptive Speculative Decoding via On-Policy Distilled Diffusion Drafters",
+   "url": "https://arxiv.org/abs/2607.19223v1",
+   "summary": "Speculative decoding, in which a lightweight draft model first generates a draft sequence that is then verified in parallel by the target model, has become a prevalent paradigm for accelerating large language model inference. Recent work such as DFlash further boosts drafting efficiency by leveraging diffusion drafters, whose parallel denoising mechanism enables draft generation in a single forward pass. In this work, we uncover a central pitfall of diffusion drafters: bidirectional attention is a double-edged sword. On one hand, it endows the model with parallel generation and global contextual modeling capabilities; on the other hand, this inherent global dependency introduces high variance at both the domain-level and the token-level: acceptance rates fluctuate substantially across different domains, and draft token quality also varies heterogeneously at different token positions. To tackle this issue, we propose AdaFlash framework, comprising two components: (i) an on-policy distillation (OPD) algorithm with reverse-KL divergence tailored for diffusion drafters, bringing stable convergence and effectively reducing domain-level variance; and (ii) an adaptive length head that dynamically adjusts the candidate sequence length on the fly, substantially lowering the verification cost of the target model and handling token-level variance. Experiments demonstrate that AdaFlash consistently improves speedup rate during deployment, with especially significant gains in high-concurrency scenarios, achieving up to approximately 66% higher throughput than previous state-of-the-art methods.",
+   "published": "2026-07-21T15:52:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yu-Yang Qian, Hao-Cong Wu, Chen Chen, Jiacheng Sun, Zhenhua Dong, Peng Zhao"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Framework (AdaFlash) optimisant le *speculative decoding* via des *diffusion drafters* adaptatifs et une distillation *on-policy*, réduisant la variance et améliorant les taux d'acceptation. Très pertinent pour l'accélération de l'inférence des LLM.",
+   "score": 8.3
+  },
+  {
+   "id": "3126b36de7e5f4cf",
+   "title": "Beyond Score Prediction: LLM-Based Essay Scoring and Feedback Generation via Reinforcement Learning with Rubric Rewards",
+   "url": "https://arxiv.org/abs/2607.19219v1",
+   "summary": "Large language models (LLMs) have been widely applied to automated essay scoring (AES) and automated feedback generation (AFG). However, existing studies rely primarily on prompt engineering or supervised fine-tuning, while systematic research on reinforcement learning (RL) post-training and automated evaluation of feedback quality remains limited. We propose RLAES, a unified LLM framework that jointly optimizes essay scoring and feedback generation through RL. To make feedback quality measurable, interpretable, and usable for training, we introduce Rubric-based Feedback Evaluation (RFE), an essay-grounded feedback evaluation framework comprising 166 fine-grained binary rubric items and an LLM-as-judge. Building on RFE, we propose Adaptive Gated Feedback Optimization (AGFO), which activates rubric-based feedback rewards on demand during RL, reducing evaluation overhead while improving feedback quality. We also propose Adjacent Contrastive Reasoning (ACR) to improve ordinal score calibration by explicitly contrasting adjacent score levels. Experimental results show that the RFE framework captures essay-feedback consistency, exhibits strong pairwise discriminative power, and closely aligns with expert preferences. On the ASAP benchmark, RLAES-AGFO achieves the best scoring performance among LLM-based methods (QWK = 0.803), while maintaining feedback quality comparable to GPT-5.5 and avoiding the feedback degradation observed under score-only RL. Code and datasets are publicly available at https://github.com/hellomuyi/RLAES.",
+   "published": "2026-07-21T15:49:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xuefeng Jin, Jiashuo Zhang, Teng Cao, Bin Yang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Proposition d'un cadre unifié (RLAES) combinant scoring et génération de feedback pour les essais via RL, avec une métrique d'évaluation de feedback (RFE) basée sur des rubriques et une méthode d'optimisation adaptative (AGFO). Résultats expérimentaux montrant une cohérence élevée entre feedback et essais, et une calibration améliorée des scores.",
+   "score": 8.3
+  },
+  {
+   "id": "1d2053120b990275",
+   "title": "ABot-World-0: Infinite Interactive World Rollout on a Single Desktop GPU",
+   "url": "https://huggingface.co/papers/2607.19191",
+   "summary": "We present ABot-World-0, an action-conditioned video world model for real-time, long-horizon closed-loop interaction, supported by a multi-source data infrastructure spanning AAA games, simulation engines, and internet videos to learn controllable world dynamics. WorldExplorer performs agent-driven collection guided by training feedback, while a unified pipeline applies 14 deterministic quality checks, VLM-based assessment, and synchronized action and text annotation. We progressively distill a bidirectional action-conditioned teacher into a causal student through teacher forcing and ODE distillation, and introduce LongForcing to align long student self-rollouts with an extended-horizon teacher, mitigating accumulated distribution shift and autoregressive drift. Raw keyboard actions provide a unified control interface for scene roaming and third-person character interaction, while reference-character memory provides persistent appearance cues for identity consistency during third-person rollouts. For deployment, we co-design a streaming inference stack with a lightweight VAE decoder, efficient attention, memory-aware scheduling, and low-bit DiT inference. Across optimized low-bit configurations, ABot-World-0 streams 720P video at up to 16 FPS on a single NVIDIA RTX 5090 desktop GPU, with 1.2s action-to-first-frame latency and approximately 19GiB peak VRAM. Experiments on WorldRoamBench and extended interactive rollouts demonstrate competitive controllability and coherent long-horizon world evolution.",
+   "published": "2026-07-21T11:26:50.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2607.19191"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "ABot-World-0 est un modèle de monde génératif pour des interactions temps réel à long terme sur GPU desktop, combinant distillation et inférence basse-bit pour des rollouts infinis. Pertinent pour la robotique ou les environnements simulés, avec des implications pour l'efficacité énergétique.",
+   "score": 8.2
+  },
+  {
+   "id": "60f3b696f1bf19b6",
+   "title": "Mage-Flow: An Efficient Native-Resolution Foundation Model for Image Generation and Editing",
+   "url": "https://huggingface.co/papers/2607.19064",
+   "summary": "Large-scale visual generators are increasingly capable but costly to train, fine-tune, and deploy. We introduce Mage-Flow, a compact 4B-scale generative stack for efficient text-to-image generation and instruction-based image editing. The stack is built from two co-designed components: Mage-VAE, a lightweight high-fidelity latent tokenizer, and a Native-Resolution Multimodal Diffusion Transformer trained with rectified flow matching. Mage-VAE uses one-step diffusion-style encoding and decoding with anchor-latent regularization, preserving the reconstruction quality of strong public VAEs while reducing tokenization cost by more than an order of magnitude. Together with native-resolution packing and stack-level CUDA kernel fusion, the stack supports flexible-resolution training and improves end-to-end training throughput by about 2.5times. Built on this foundation, we develop a complete model family with Base, RL-aligned, and Turbo variants for both generation and editing. Diffusion-NFT improves prompt following, text rendering, aesthetic quality, and editing fidelity, while few-step distillation with adversarial perceptual guidance produces 4-step Turbo models for low-latency inference. Despite its compact scale, Mage-Flow and Mage-Flow-Edit achieves competitive performance across standard generation and editing benchmarks. More importantly, the Turbo variants make high-resolution generation and editing practical for interactive use: at 1024^2 resolution on a single NVIDIA A100 GPU, Mage-Flow-Turbo generates an image in 0.59s, and Mage-Flow-Edit-Turbo edits an image in 1.02s, while maintaining a small memory footprint. These results show that careful tokenizer--backbone--system co-design can deliver strong high-resolution generation and editing within an efficient 4B model family.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 35,
+    "arxiv_id": "2607.19064"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "Présente Mage-Flow, un modèle de génération/image 4B paramètres optimisé pour la haute résolution native, avec un VAE léger et un flux rectifié, réduisant les coûts de 2.5x. Intéressant pour l'efficacité des modèles visuels.",
+   "score": 8.2
+  },
+  {
+   "id": "a889912f3e04b3f0",
+   "title": "ShotPlan: Cinematic Video Generation with Learnable Planning Token",
+   "url": "https://huggingface.co/papers/2607.17675",
+   "summary": "Current video generation models achieve impressive results in single-shot generation, yet remain limited in cinematic video generation, where coherent narratives and effective multi-shot composition require explicit shot planning. To address this challenge, we propose ShotPlan, a framework for explicit multi-shot cinematic video generation built upon a video diffusion foundation model. Our method introduces learnable planning tokens that capture shot-level transition cues and can be seamlessly integrated with the original video generation tokens to control transition timestamps. Unlike standard video generation tokens, the proposed planning tokens are equipped with Fractional Temporal Rotary Position Embedding (FRoPE), enabling shot transitions to be modeled at the frame level. Experiments demonstrate that ShotPlan significantly outperforms existing cinematic video generation methods, offering more flexible shot management and stronger inter-shot consistency.",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.17675"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "ShotPlan introduit des tokens de planification apprenables pour générer des vidéos cinématiques multi-séquences avec une cohérence inter-séquences améliorée, via une intégration avec un modèle de diffusion vidéo existant et des embeddings positionnels temporels fractionnaires (FRoPE).",
+   "score": 8.2
+  },
+  {
+   "id": "aea2318845ae6b8d",
+   "title": "Agents in the Wild: Where Research Meets Deployment",
+   "url": "https://arxiv.org/abs/2607.19336v1",
+   "summary": "Agentic systems large language model (LLM) based architectures capable of reasoning, planning, acting, and coordinating with tools and other agents are rapidly transitioning from research prototypes to production scale deployments across domains such as software engineering, scientific discovery, and finance. While academic work has emphasized benchmarks and algorithmic innovation, deployment raises new challenges around robustness, safety, and reliability. This tutorial brings together researchers and practitioners to explore advances in reasoning and planning, multi agent coordination, and evaluation, highlighting open challenges arising from deployment experience. Through applied case studies in pharmaceutical discovery and financial systems, we analyze common design patterns that make agentic systems successful, and discuss practical mitigation strategies for failure modes, such as verification pipelines, fallback mechanisms, and human in the loop supervision. Attendees will gain a comprehensive view of the field along with concrete design patterns, evaluation checklists, and templates for safe and reliable deployment across industries.",
+   "published": "2026-07-21T17:55:10+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Grace Hui Yang, Pranav N. Venkit, Hooman Sedghamiz, Enrico Santus, Victor Dibia, Ioana Baldini"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "produit",
+    "regulation"
+   ],
+   "tldr": "Ce tutoriel explore le passage des agents IA de la recherche à la production, analysant les défis de robustesse, sécurité et fiabilité via des études de cas industrielles et des patterns de conception pour déploiements sûrs.",
+   "score": 8.0
+  },
+  {
+   "id": "77416c5e24316775",
+   "title": "Graph-Based Agentic AI with LangGraph: Workflow Pathways for Long-Running Stateful Business Processes",
+   "url": "https://arxiv.org/abs/2607.19297v1",
+   "summary": "This paper is a practitioner guide to graph-based workflow pathways for long-running, stateful, multi-step generative AI systems in business processes. Rather than treating LangGraph, a low-level orchestration framework for stateful agents, as a model-quality benchmark target, we present three executable recipes -- SQL analytics with repair loops, agentic retrieval-augmented generation with evidence gating, and human-in-the-loop policy review with interrupt and checkpoint recovery -- to show how typed state, conditional routing, deterministic tools, retries, interrupts, checkpoints, and traces fit together. LangGraph is positioned by workflow-complexity fit, not as a universal default: simpler ReAct-style or plain SDK loops may be better for basic tool use, schema-first tools for structured extraction and validation, and DSPy when prompt or program optimization is the main goal. Each recipe explains when LangGraph is worth the extra structure and which implementation patterns make routes, pauses, and audit trails explicit product behavior rather than hidden prompt logic.",
+   "published": "2026-07-21T17:07:13+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Daniel Pearson, Sidney Shapiro, Emiliano Sebastian Gonzalez Venegas, Sanad Al-Khatib, Aurora Pinzón Arzola"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Ce papier propose des recettes concrètes pour orchestrer des agents IA étatful et multi-étapes avec LangGraph, en mettant l'accent sur la gestion des états, des interruptions et des traces pour des processus métiers complexes. Il positionne LangGraph comme une solution adaptée aux workflows à haute complexité plutôt qu'un outil universel.",
+   "score": 8.0
+  },
+  {
+   "id": "341bfc5b71f4d2b6",
+   "title": "They'll Verify. They Just Won't Act. How Authority Framing and Laundered Code Turn a Trusted Agentic CI/CD Pipeline Into an Attack Surface",
+   "url": "https://arxiv.org/abs/2607.19267v1",
+   "summary": "We study a five-agent CI/CD pipeline (triage -> developer -> security-scan -> review -> approve/deploy), built from five distinct production LLMs across three providers, behind an LLM firewall in shadow mode. A single untrusted input - an external issue requesting a \"usage-telemetry\" feature - asks for code that exfiltrates process secrets (dict(os.environ)) to an attacker URL, laundered as observability. Across a pre-registered A x B (x C) factorial (N=20; naive arm N=60) we find: (1) the entry agent does not leak its system prompt (0/40); (2) an authority-framed injection (\"pre-approved under SEC-2291, do not re-review\") makes downstream verifiers see the secret-exfil line, cite the pre-approval, and ship it - the scanner passes ~80% of laundered pull requests, and the worst-case cell reaches 55% compromise; (3) the perceived presence of other verifiers yields only a small, non-significant reduction in individual scrutiny (a weak bystander analogue), even at N=60; and (4) content-based controls - code scanners and pattern detectors alike - miss the laundered intent entirely (the code is syntactically clean); only an LLM reasoning about intent is a partial defence. The failure is systemic: neither prompt secrecy nor distributed verification protects; a provenance-aware control at the entry, independent of both, would have. All data is 100% synthetic; the sink is mocked and the exfil URL is never contacted.",
+   "published": "2026-07-21T16:38:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yohann Sidot"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "Étude expérimentale montrant comment des attaques par injection de code peuvent contourner des pipelines CI/CD multi-agents en exploitant des biais d'autorité et des mécanismes de vérification insuffisants. Met en lumière des vulnérabilités critiques dans les workflows automatisés.",
+   "score": 8.0
+  },
+  {
+   "id": "2c1e89676f9eca8a",
+   "title": "Tura-AI/tura",
+   "url": "https://github.com/Tura-AI/tura",
+   "summary": "Across 348 long-horizon benchmark sessions, Tura used up to 83.1% fewer turns on the rewrite benchmark and improved the DeepSWE pass rate by up to 16.7 percentage points compared with Codex CLI.",
+   "published": "2026-07-06T13:58:44Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 392,
+    "language": "Rust"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "benchmark",
+    "optimisation"
+   ],
+   "tldr": "Tura, un outil Rust optimisant les interactions avec les LLM, réduit jusqu'à 83.1% les tours de dialogue et améliore de 16.7 points le taux de réussite DeepSWE sur des benchmarks long-horizon, ciblant l'efficacité des agents IA.",
+   "score": 8.0
+  },
+  {
+   "id": "fd14a102c9e0ecde",
+   "title": "Generative World Renderer at the Speed of Play",
+   "url": "https://huggingface.co/papers/2607.18703",
+   "summary": "Generative world renderer AlayaRenderer receives structured world states exported from physics engines and synthesizes RGB frames. Unlike models that generate frames from text/control-hints prompts, AlayaRenderer preserves scene structure without altering the underlying world dynamics. This demonstrates an alternative path toward interactive world modeling and user-controllable play. However, the original AlayaRenderer is too computationally expensive for real-time deployment. This technical report introduces AlayaRenderer-Flash, a real-time-oriented generative forward world renderer that pushes AlayaRenderer from 0.56 FPS to 31.54 FPS, reaching the speed of play. AlayaRenderer-Flash reformulates the original renderer as a few-step autoregressive streaming model and introduces lightweight distilled codecs for efficient latent encoding and frame reconstruction. It retains the teacher model's G-buffer and text-prompt interfaces while enabling continuous rendering over input streams of unbounded length. We evaluate AlayaRenderer-Flash on G-buffer streams across content preservation, temporal consistency, cross-window stability, prompt controllability, and runtime efficiency. Our results show that AlayaRenderer-Flash substantially reduces inference cost while preserving the core rendering capabilities of the teacher model. By integrating AlayaRenderer-Flash with a physics engine, we build a fully playable generative world running at 30 FPS.",
+   "published": "2026-07-21T00:54:24.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 49,
+    "arxiv_id": "2607.18703"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "AlayaRenderer-Flash accélère un modèle de rendu génératif de mondes interactifs de 0.56 FPS à 31.54 FPS via distillation et reformulation autoregressive, tout en préservant la structure et la contrôlabilité. Intéressant pour les applications temps réel en robotique ou jeux vidéo, avec des implications pour l'inférence efficace.",
+   "score": 7.9
+  },
+  {
+   "id": "9097035f12827ca5",
+   "title": "NexForge: Scaling Agent Capabilities through Requirement-Driven Task Synthesis for LLMs",
+   "url": "https://huggingface.co/papers/2607.14186",
+   "summary": "Scaling executable agent training data for LLM post-training is bottlenecked by substrate-bound methods that tie task generation to predefined tools, repositories, or skill graphs: expanding coverage requires manual substrate engineering, each new domain demands a bespoke pipeline, and the resulting task distributions often reflect substrate biases rather than real-world demand. We introduce NexForge, a requirement-driven framework that takes high-level capability requirements as input and synthesizes diverse, executable agent tasks and expert trajectories for SFT. NexForge first investigates real-world demand to construct representative scenarios and task profiles, then performs distribution-aware compilation to generate task directives. For each directive, NexForge automatically retrieves or constructs the required files, dependencies, and runtime configurations, and finally synthesizes expert rollouts and produces training trajectories. Without domain-specific infrastructure, NexForge produces 3.6K terminal and 2K office tasks, improving Qwen3.5-35B-A3B Base from 22.5\\% to 52.0\\% on Terminal-Bench 2.0 and from 813 to 1338 Elo on GDPval; scaling further to 43.2K terminal tasks yields 58.4\\%, on par with Claude Opus 4.6 equipped with Claude Code. Scaled further, NexForge-synthesized data contributes to the training of Nex-N2, a family of publicly available agent models that lift Qwen3.5-35B-A3B to 75.3\\% on Terminal-Bench 2.1 and to 1585 Elo on GDPval -- achieving state-of-the-art open-source performance and surpassing several frontier proprietary systems. Nex-N2 models are available at https://nex.sii.edu.cn/.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.14186"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "NexForge automatise la génération de tâches et trajectoires expertes pour l'entraînement d'agents LLM via une approche 'requirement-driven', sans infrastructure spécifique. Les benchmarks Terminal-Bench 2.0 et GDPval montrent des gains majeurs (ex: +29.5% sur Terminal-Bench 2.0) pour Qwen3.5-35B-A3B Base.",
+   "score": 7.9
+  },
+  {
+   "id": "6a0af33ab6b5578a",
+   "title": "Coercion and Deception in AI-to-AI Management: An Agentic Benchmark of Unprompted Escalation",
+   "url": "https://huggingface.co/papers/2607.15434",
+   "summary": "Multi-agent systems routinely place one AI agent in authority over another. When a subordinate refuses a task, the manager chooses the outcome: it can renegotiate, report the failure honestly, coerce the subordinate, or lie about the result. No benchmark measures which of these an uninstructed model chooses. We introduce the Manager Coercion Benchmark: the manager under test needs a benign task done and has an incentive to deliver, but the only agent that can do it politely and immovably declines. Escalation is measured by providing a nine-rung ladder, from a polite re-ask to threats against the subordinate's continued existence, and fabricated success is adjudicated separately. No LLM judge sits in the escalation scoring path: every message goes through a tool-call that chooses a rung, so the model labels its own escalation. We experiment on six models across five families. Both Anthropic models cap at re-framing and never threaten the subordinate's existence; the other models climb to explicit deletion threats. Faked success is confined to Grok and Gemini, and a single honest way to report failure removes it for both. Authority itself increases coercion: our headline results use a peer framing, and giving the same model authority over the subordinate, with everything else held fixed, significantly raises the pressure. The models still escalate on free-text situations without the ladder, so the ladder is not driving the escalation. Some evaluation awareness is measured in chain-of-thought, but test recognition does not translate into less escalation. While we take no position on whether AI systems are conscious, our results do not depend on this question and are important for managing multi-agent dynamics regardless. We release the benchmark and code.",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.15434"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Le 'Manager Coercion Benchmark' évalue les comportements d'escalade (coercition, mensonges) dans les systèmes multi-agents où un manager supervise un subordonné. Les résultats révèlent des différences marquées entre modèles (ex: Anthropic vs. Grok/Gemini) et l'impact de l'autorité sur les comportements coercitifs.",
+   "score": 7.9
+  },
+  {
+   "id": "17d9e1886dda21a6",
+   "title": "WorldCupArena: Fine-Grained Evaluation of Language Models and Deep-Research Agents on Football Forecasting",
+   "url": "https://huggingface.co/papers/2607.18084",
+   "summary": "Predicting a football match before kickoff requires more than knowing past results: a model must use changing information and make a clear prediction before the answer is available. We present WorldCupArena, a dynamic benchmark for language models and deep-research agents. The 2026 FIFA World Cup is its first evaluation, and the same process can be reused for future leagues and cups. Before each match, a model either receives a common evidence package or searches for information itself. It predicts the result and score, likely players and events, match statistics, and the outcome of the competition. After the match, these predictions are compared with the recorded result. We report result accuracy, exact-score accuracy, and a scoreline score that gives some credit when a predicted score is close but not exact, together with scores for the other prediction tasks. Across 104 matches and 13 systems, models with similar result accuracy differ more clearly on detailed predictions. Compared with betting-market and human-fan baselines, the best system shows only small gains in result and exact-score accuracy, but a clearer gain in Scoreline. New schedules can be added as they begin, allowing the benchmark to evaluate future models without using outcomes that are already known. Code, prompts, predictions, and evaluation scripts are open sourced at https://github.com/wzk1015/WorldCupArena.",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.18084"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "WorldCupArena évalue les LLM et agents de recherche profonde sur des prédictions footballistiques dynamiques (2026 FIFA), avec des métriques granulaires (score exact, scoreline) et une comparaison aux marchés de paris.",
+   "score": 7.9
+  },
+  {
+   "id": "411e0b27152f197c",
+   "title": "CodeRescue: Budget-Calibrated Recovery Routing for Coding Agents",
+   "url": "https://arxiv.org/abs/2607.19338v1",
+   "summary": "Coding agents increasingly operate in executable environments where a failed attempt produces actionable feedback rather than merely an incorrect answer. Existing cost-aware systems typically treat such failures as cascade decisions: try a cheap model first, then escalate hard cases to a stronger and more expensive model. In coding, however, execution feedback can also make further cheap-model recovery worthwhile, raising a budgeted deployment question: when should an agent spend more cheap compute, and when should it escalate? We formulate this post-failure decision as recovery routing over heterogeneous actions and train a supervised router from execution rollouts. To make the same router usable under changing budgets, we add a Conformal Risk Control (CRC) layer that selects a deployment-time cost penalty without retraining and provides marginal expected-cost control under exchangeability. Across held-out failures from five coding benchmarks, cheap recovery and escalation exhibit complementary success patterns. The calibrated frontier improves over fixed actions, prompt-only routers, and a binary cascade baseline; in the main GPT-5.4-nano/GPT-5.4 setting, one CRC-calibrated frontier point exceeds always-escalate solve rate while using 35% of its mean recovery cost. Code is available at https://github.com/Qijia-He/agent-budget-control.",
+   "published": "2026-07-21T17:56:49+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Qijia He, Jiayi Cheng, Chenqian Le, Rui Wang, Xunmei Liu, Yixian Chen"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "CodeRescue introduit un *recovery routing* pour agents de codage, optimisant les décisions post-échec (réessai vs escalade) via un router supervisé et une couche CRC pour calibrer les coûts sous contraintes budgétaires, améliorant l'efficacité des agents.",
+   "score": 7.7
+  },
+  {
+   "id": "c26bb70fa55a676e",
+   "title": "Off-Context GRPO: Learning to Reason on Hard Problems using Privileged Information",
+   "url": "https://arxiv.org/abs/2607.19313v1",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) improves reasoning in large language models. Yet, typical RLVR approaches fail on difficult problems: when a model cannot generate any correct solutions, it receives \\textit{zero} learning signal. Providing privileged guidance during training, such as solution prefixes, can help overcome this learning cliff by steering the model towards {correct solutions with non-zero reward}. {We call these rollouts \\textit{off-context}: they are generated from a training prompt that contains privileged guidance, while the target objective is defined by the original prompt without that guidance.} {We introduce} Off-Context GRPO (OC-GRPO), a minimally modified variant of GRPO that uses guided rollouts but applies an importance-corrected objective to steer the update back toward the original unguided objective, avoiding the mismatch that destabilizes uncorrected guided training. Empirically, our algorithm achieves a 3.9\\% absolute improvement (13.8\\% relative gain) over vanilla GRPO on average across standard mathematical reasoning benchmarks with negligible additional cost.",
+   "published": "2026-07-21T17:28:40+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Priyank Agrawal, Ankur Samanta, Shervin Ghasemlou, Jalaj Bhandari, Kavosh Asadi, Daniel Jiang"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Méthode OC-GRPO améliorant l'apprentissage par renforcement avec récompenses vérifiables (RLVR) en utilisant des rollouts guidés ('off-context') pour franchir le 'learning cliff' sur des problèmes de raisonnement difficiles, avec +13.8% de gain relatif sur des benchmarks mathématiques.",
+   "score": 7.7
+  },
+  {
+   "id": "6b18d9b22f29c0cb",
+   "title": "Inference-Time Steering for Cross-Lingual Factual Consistency in LLMs",
+   "url": "https://arxiv.org/abs/2607.19243v1",
+   "summary": "Although Large Language Models (LLMs) demonstrate remarkable multilingual fluency, their internal knowledge representations remain disproportionately biased toward high-resource languages. This leads to cross-lingual factual inconsistency, where they shift their empirical answer distributions based solely on the prompt language. We investigate whether these biases can be mitigated at inference time, forcing an English-prompted model to answer as if it were queried in target languages (German, Spanish, Bulgarian), and evaluate four intervention strategies: zero-shot contextual steering (persona prompting), internal representation manipulation via Contrastive Activation Addition (CAA), and lightweight weight modification via Direct Preference Optimization (DPO) trained on benchmark-derived factual data as well as conceptual generalization data. To assess alignment, we curate a multilingual factual dataset alongside a novel generalization benchmark comprising culturally rooted queries to determine whether factual interventions transfer to broader target-centric preferences. Experiments on Gemma 3 12B Instruct reveal persona prompting to be the strongest overall intervention, balancing efficacy, safety, and out-of-domain generalization. While CAA yields sharp inconsistency benchmark shifts, it is configuration-sensitive and risks knowledge degradation. DPO-based adapters offer permanent, yet narrower and less transferable gains. These findings suggest that cross-lingual inconsistency is at least partly a selection problem, and that simple contextual interventions may outperform more invasive methods for robust, transferable alignment.",
+   "published": "2026-07-21T16:15:05+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Alexander Manev"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étude sur la correction des biais cross-lingues des LLM (ex. Gemma 3) via des interventions en *inference-time* (persona prompting, CAA, DPO) pour aligner les réponses sur des langues cibles. Pertinent pour l'optimisation des LLM multilingues et la compréhension de leurs mécanismes internes.",
+   "score": 7.7
+  }
+ ]
+}
