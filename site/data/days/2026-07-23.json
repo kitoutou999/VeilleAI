@@ -1,0 +1,763 @@
+{
+ "date": "2026-07-23",
+ "digest": {
+  "headline": "DocOps et Anchor-Align révèlent les limites critiques des agents autonomes et optimisent les VLA pour la robotique, marquant une avancée majeure en évaluation et déploiement réel.",
+  "overview": "La veille du 2026-07-23 met en lumière des progrès significatifs en benchmarking d'agents autonomes, en optimisation de modèles pour la robotique, et en méthodes d'interprétabilité des LLM. Les travaux soulignent aussi des enjeux systémiques comme la fiabilité des licences dans les chaînes d'approvisionnement IA et l'efficacité des architectures hybrides.",
+  "highlights": [
+   {
+    "title": "Benchmark DocOps : évaluer les agents autonomes sur des tâches documentaires complexes",
+    "text": "DocOps introduit un benchmark vérifiable pour tester les agents autonomes sur des opérations documentaires (suivi d'état, édition, vérification sémantique). Les résultats révèlent des défaillances majeures même chez les modèles avancés, notamment en édition destructive et en cohérence sémantique. Ce travail fournit une analyse fine des modes de défaillance, essentielle pour orienter les recherches futures en agents fiables."
+   },
+   {
+    "title": "Anchor-Align et SLAI T-Rex : optimisation des VLA et des LLM à grande échelle",
+    "text": "Anchor-Align améliore le fine-tuning des VLA pour la robotique en combinant ancrage des représentations et alignement langage-action, doublant les taux de succès en environnement réel. Parallèlement, SLAI T-Rex optimise l'entraînement full-parameter de modèles MoE comme DeepSeek-V4 sur Ascend SuperPOD, atteignant 34,22% de MFU (+2,93x) et validant un workflow CPT/SFT pour des tâches opérationnelles. Ces avancées montrent l'importance des optimisations système pour le déploiement à grande échelle."
+   },
+   {
+    "title": "Interprétabilité et contrôle des représentations dans les LLM",
+    "text": "Plusieurs travaux explorent l'interprétabilité des LLM : RECAP rend les explications d'activation vérifiables via des têtes linéaires auxiliaires, tandis qu'une étude sur gemma-4-E4B-it démontre que les mécanismes de science des matériaux sont encodés de manière lisible et contrôlable. Ces méthodes, combinant probes, benchmarks et géométrie des états cachés, ouvrent la voie à des modèles plus transparents et maîtrisables."
+   },
+   {
+    "title": "Efficacité et collaboration modèle : PyroDash et AutoIndex",
+    "text": "PyroDash propose une collaboration token-par-token entre petits et grands modèles pour réduire les coûts d'inférence sans perte de précision, avec des gains jusqu'à +6,36% pour -20,4% de coût. AutoIndex, quant à lui, optimise la récupération d'information via des programmes de représentation appris, améliorant Recall@100 (+8,4%) et nDCG@10 (+8,3%). Ces approches illustrent l'importance des architectures modulaires et des optimisations ciblées."
+   },
+   {
+    "title": "Risques systémiques : license laundering et bornes de sécurité probabilistes",
+    "text": "Une analyse systématique révèle que 62,3% des chaînes de redistribution de licences dans l'écosystème IA (Hugging Face → GitHub) contournent les obligations légales via des artefacts non labellisés. Parallèlement, un cadre théorique propose des bornes probabilistes rigoureuses pour quantifier les risques de génération de contenus nuisibles par les LLM. Ces travaux soulignent l'urgence de mécanismes de gouvernance et de vérification robustes."
+   }
+  ],
+  "trend": "Les recherches actuelles convergent vers une maturité accrue des systèmes IA, avec un focus sur l'évaluation rigoureuse, l'optimisation des architectures pour le déploiement réel, et l'intégration de mécanismes d'interprétabilité et de contrôle. Les enjeux systémiques (licences, sécurité) gagnent en visibilité, reflétant une transition vers des solutions plus robustes et responsables."
+ },
+ "items": [
+  {
+   "id": "ac0705856520c626",
+   "title": "DocOps: A Verifiable Benchmark for Autonomous Agents in Complex Document Operations",
+   "url": "https://huggingface.co/papers/2607.19865",
+   "summary": "As autonomous agents rapidly evolve, their ability to reliably manipulate ubiquitous digital documents has become critical for enabling general-purpose AI assistants and automating complex workspace workflows. In this paper, we introduce DocOps, a deterministically verifiable evaluation framework underpinned by a hierarchical taxonomy that deconstructs document operations inspired by real-world practices into atomic dimensions and escalating workflow complexities. Based on DocOps, we systematically evaluate representative closed- and open-source models across various agentic harnesses, revealing that even the most advanced frontier configurations still exhibit profound limitations when handling highly coupled, long-range tasks. Furthermore, a fine-grained analysis of existing agents' manipulation behaviors uncovers 3 key failure modes: long-term state tracking collapse, shallow semantic verification, and destructive editing of structural metadata. Ultimately, our work exposes the capability boundaries of agents in maintaining global document consistency, shedding light on the future design of robust, non-destructive agents for complex digital ecosystems.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.19865"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "DocOps propose un benchmark vérifiable pour évaluer les agents autonomes dans la manipulation complexe de documents, révélant des limites majeures (suivi d'état, vérification sémantique, édition destructive) même pour les modèles avancés, avec une analyse fine des modes de défaillance.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "L'évaluation des agents autonomes dans la manipulation de documents numériques complexes reste un défi majeur, car les benchmarks existants ne capturent pas fidèlement les opérations réelles, hiérarchisées et interdépendantes. Cela limite le développement d'assistants IA fiables pour automatiser des workflows professionnels exigeant une cohérence globale des documents (ex : métadonnées, structure, sémantique).",
+    "methode": "Les auteurs proposent *DocOps*, un cadre d'évaluation déterministe basé sur une taxonomie hiérarchique des opérations documentaires, inspirée des pratiques réelles. Cette taxonomie décompose les tâches en dimensions atomiques (ex : édition de texte, gestion des métadonnées) et en workflows de complexité croissante (ex : dépendances longues, modifications multi-niveaux). Le benchmark utilise des scénarios vérifiables automatiquement pour mesurer la capacité des agents à maintenir la cohérence des documents. Les modèles évalués incluent des solutions open-source et propriétaires, testées via divers *harnesses* (cadres d'exécution d'agents). L'analyse fine des comportements révèle des modes de défaillance spécifiques, comme la perte de suivi d'état ou la corruption de métadonnées structurelles.",
+    "resultats": "Les résultats montrent que même les configurations d'agents les plus avancées (frontières actuelles) échouent systématiquement sur des tâches fortement couplées ou à longue portée. Par exemple, les agents peinent à préserver la cohérence globale des documents après des éditions successives. Trois modes de défaillance majeurs sont identifiés : (1) effondrement du suivi d'état à long terme, (2) vérification sémantique superficielle, et (3) édition destructive des métadonnées. Aucune métrique quantitative précise (ex : taux d'erreur) n'est fournie dans le résumé disponible.",
+    "limites": "Le résumé ne détaille pas la représentativité des scénarios *DocOps* par rapport aux cas d'usage réels, ni la diversité des formats de documents testés (ex : PDF, Word, LaTeX). De plus, l'absence de chiffres clés limite l'évaluation objective des performances. Enfin, la méthodologie de vérification déterministe pourrait introduire des biais si les scénarios ne couvrent pas suffisamment de cas limites.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique et ses insights sur les limites des agents actuels, mais son impact dépendra de la transparence des données et de l'adoption par la communauté technique."
+   }
+  },
+  {
+   "id": "75b9bf4e53cc607b",
+   "title": "Generalizable VLA Finetuning via Representation Anchoring and Language-Action Alignment",
+   "url": "https://huggingface.co/papers/2607.13429",
+   "summary": "Finetuning a pretrained vision-language model (VLM) on robot demonstrations via behavior cloning (BC) has become the standard recipe for vision-language-action (VLA) policies. However, BC finetuning progressively overwrites the pretrained representations that support visual and semantic generalization. Co-training on web image-text data, a common remedy, does not prevent this; it applies language and action losses to separate observations, leaving VLAs with language-action misalignment that standard manipulation benchmarks do not expose. We propose Anchor-Align, which augments BC with two objectives: Vision-Language Anchoring distills layer-wise representations from a frozen VLM copy to prevent this drift, while Language-Action Alignment converts each action target into a discrete motion-direction label and jointly trains language and action prediction on the same robot observation. On a physical xArm7 robot, across two widely used VLA architectures, Anchor-Align improves real-robot success on both (28% to 54% and 37% to 60%). At scale in simulation, we demonstrate consistent improvements on OOD perturbations, perceptual robustness, and long-horizon control across LIBERO-PRO, LIBERO-Plus, and CALVIN, respectively, suggesting that preserving pretrained representations and effective action learning are not fundamentally at odds. Project page: anchoralignvla.github.io",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.13429"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "optimisation"
+   ],
+   "tldr": "Anchor-Align améliore le fine-tuning des VLA pour la robotique en combinant l'ancrage des représentations (prévention de la dérive) et l'alignement langage-action, boostant les succès en robot réel (28%→54% et 37%→60%).",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le fine-tuning d'un modèle préentraîné de vision-langage (VLM) pour des politiques de vision-langage-action (VLA) via le *behavior cloning* (BC) dégrade progressivement les représentations préentraînées, essentielles pour la généralisation visuelle et sémantique. De plus, le co-entraînement sur des données web image-texte, souvent utilisé pour atténuer ce problème, ne résout pas le désalignement entre le langage et les actions, car les pertes linguistiques et actionnelles sont appliquées à des observations distinctes.",
+    "methode": "La méthode *Anchor-Align* introduit deux objectifs complémentaires au BC : 1) *Vision-Language Anchoring* (ancrage vision-langage), qui distille les représentations couche par couche depuis une copie figée du VLM pour éviter la dérive des représentations. 2) *Language-Action Alignment* (alignement langage-action), qui convertit chaque cible d'action en un label discret de direction de mouvement, puis entraîne conjointement la prédiction du langage et de l'action sur la même observation robotique. Cette approche vise à préserver les capacités de généralisation du VLM tout en améliorant l'apprentissage des actions.",
+    "resultats": "Sur un robot physique xArm7, *Anchor-Align* améliore significativement le taux de succès en conditions réelles pour deux architectures VLA courantes (de 28% à 54% et de 37% à 60%). En simulation, les améliorations sont cohérentes face à des perturbations hors distribution (OOD), à des variations perceptuelles et pour le contrôle à long horizon, testées respectivement sur les benchmarks LIBERO-PRO, LIBERO-Plus et CALVIN.",
+    "limites": "Les détails sur la robustesse de la méthode face à des environnements très dynamiques ou des tâches nécessitant une planification complexe restent limités. De plus, la conversion des actions en labels discrets pourrait introduire une perte de précision pour des mouvements fins ou continus, bien que cela ne soit pas explicitement évalué. Enfin, la dépendance à un VLM préentraîné de qualité pourrait limiter la généralisation à des domaines très spécifiques.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à concilier préservation des représentations préentraînées et apprentissage efficace des actions, avec des gains tangibles en généralisation et en performance robotique."
+   }
+  },
+  {
+   "id": "edf0db64c1b5f23c",
+   "title": "SLAI T-Rex: Full-Parameter Post-training of the DeepSeek-V4 Family on Ascend SuperPOD",
+   "url": "https://huggingface.co/papers/2607.20145",
+   "summary": "Full-parameter post-training of trillion-parameter-scale MoE models introduces substantial system-level challenges for large-scale distributed training, including severe memory pressure, non-overlapped communication overhead, and inefficient kernel execution. While most large-scale LLM training systems are built around GPU-based clusters, this report presents an end-to-end optimization practice on the Ascend NPU SuperPOD. Using the DeepSeek-V4 model family as the target workload, we develop a hierarchical optimization framework spanning model-level parallelism, computation-communication orchestration, and low-level kernel execution. The resulting system achieves 34.22% Model FLOPs Utilization (MFU) with a 2.93x improvement over the open-source baseline recipe while maintaining training stability. Building on this optimized infrastructure, we further establish a CPT and SFT workflow for complex Operations Research (OR) tasks. We refer to the integrated framework as SLAI T-Rex. Using DeepSeek-V4-Flash, we develop OR-oriented CPT and SFT data pipelines that combine collected domain resources with solver-verified synthetic optimization documents. The resulting dataset contains 10K high-quality SFT samples spanning four task categories and three problem representations. The specialized model achieves the highest average zero-shot Pass@1 score among the evaluated models, reaching 71.81% and outperforming GPT-5.4-Mini and the base DeepSeek-V4-Flash model by 3.98 and 11.27 percentage points, respectively. Overall, this work demonstrates a full-stack pathway from efficient trillion-parameter model post-training on Ascend infra to domain-specialized Flash models for solver-grounded mathematical modeling, advancing frontier-model systems for complex reasoning.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2607.20145"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Présente SLAI T-Rex, une optimisation système end-to-end pour l'entraînement full-parameter de modèles MoE à l'échelle trillion (DeepSeek-V4) sur Ascend SuperPOD, atteignant 34.22% de MFU (+2.93x vs baseline) et un workflow CPT/SFT pour tâches d'optimisation opérationnelle (OR) avec un jeu de données de 10K documents synthétiques vérifiés.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde les défis systémiques majeurs liés à l'entraînement post-formation (post-training) à grande échelle de modèles de langage de type Mixture of Experts (MoE) comptant des billions de paramètres. Les obstacles incluent la pression mémoire excessive, les surcoûts de communication non recouvrables entre nœuds et l'exécution inefficace des noyaux de calcul, limitant l'efficacité des infrastructures distribuées actuelles, majoritairement basées sur des GPU.",
+    "methode": {
+     "approche_generale": "Les auteurs proposent une optimisation de bout en bout sur une infrastructure Ascend NPU SuperPOD (unité de traitement neuronale de Huawei), en ciblant le modèle DeepSeek-V4. Leur cadre hiérarchique couvre trois niveaux :",
+     "details_techniques": [
+      {
+       "niveau": "Parallélisme au niveau du modèle",
+       "description": "Stratégies de parallélisme (tensoriel, pipeline, données) adaptées aux spécificités des NPU pour réduire les goulots d'étranglement mémoire et communication."
+      },
+      {
+       "niveau": "Orchestration calcul-communication",
+       "description": "Optimisation des schémas de communication (ex : recouvrement des transferts avec le calcul) pour minimiser les temps d'attente, via des techniques comme le *gradient accumulation* ou le *pipeline scheduling* avancé."
+      },
+      {
+       "niveau": "Exécution des noyaux bas-niveau",
+       "description": "Adaptation fine des noyaux de calcul (kernels) pour exploiter les architectures spécifiques des NPU Ascend, incluant des optimisations matérielles comme le *vectorization* ou la *memory tiling*."
+      }
+     ],
+     "workflow_specialisation": "Sur cette infrastructure optimisée, un workflow de *Continued Pre-Training* (CPT) et *Supervised Fine-Tuning* (SFT) est établi pour des tâches d'*Operations Research* (OR). Les pipelines de données combinent des ressources existantes avec des documents synthétiques générés et vérifiés par des solveurs, produisant un jeu de 10 000 échantillons SFT couvrant 4 catégories de tâches et 3 représentations de problèmes."
+    },
+    "resultats": {
+     "performance_systeme": "Le système atteint une *Model FLOPs Utilization* (MFU) de 34,22%, soit une amélioration de 2,93x par rapport à la recette open-source de référence, tout en maintenant la stabilité de l'entraînement. Ces résultats démontrent l'efficacité des optimisations sur NPU pour des modèles de taille trillion-parameter.",
+     "performance_modele_specialise": "Le modèle spécialisé pour l'OR, basé sur DeepSeek-V4-Flash, obtient un score *zero-shot Pass@1* moyen de 71,81%, surpassant GPT-5.4-Mini (+3,98 points) et le modèle de base DeepSeek-V4-Flash (+11,27 points). Ces performances soulignent l'impact des données synthétiques vérifiées par solveur et du fine-tuning ciblé.",
+     "avancement_domaines": "La publication présente une chaîne complète, de l'optimisation matérielle/logicielle pour l'entraînement massif à la spécialisation pour des tâches complexes de modélisation mathématique, avec des résultats compétitifs face à des modèles fermés comme GPT-5.4-Mini."
+    },
+    "limites": {
+     "specificite_materielle": "Les optimisations sont étroitement liées à l'architecture Ascend NPU, ce qui limite leur généralisabilité à d'autres infrastructures (ex : GPU NVIDIA/AMD). La reproductibilité des résultats sur des clusters hétérogènes ou moins performants n'est pas abordée.",
+     "evaluation_partielle": "Les comparaisons se concentrent sur des métriques comme *Pass@1* pour l'OR, sans analyse approfondie des biais potentiels introduits par les données synthétiques ou des limites des solveurs utilisés pour la vérification. Les performances sur d'autres domaines (ex : raisonnement général) ne sont pas évaluées.",
+     "transparence": "Le rapport manque de détails sur certains aspects critiques, comme la méthodologie exacte de génération des données synthétiques, les hyperparamètres clés du fine-tuning, ou les coûts énergétiques/computationnels réels de l'entraînement."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche systémique combinant optimisations matérielles innovantes (NPU) et spécialisation fine pour des tâches complexes, mais son applicabilité reste contrainte par sa dépendance à une infrastructure propriétaire et un manque de transparence sur certains choix méthodologiques."
+   }
+  },
+  {
+   "id": "b0adeebe9e9e18d4",
+   "title": "Reading and Steering Representations of Materials-Science Mechanisms in an Open-Weight Language Model",
+   "url": "https://huggingface.co/papers/2607.20058",
+   "summary": "Large language models can answer scientific questions, yet a correct output does not reveal whether the model represents or uses the governing physics. Here we show that materials science mechanism information in the open-weight google/gemma-4-E4B-it model has three experimentally separable forms: concepts are readable in individual hidden states, constitutive orientation is carried by controlled transformations between states, and selected internal representations causally control engineering answers. We combine matched direct and Jacobian vocabulary readouts, option-free state geometry, a 60-law counterfactual benchmark and causal interventions. In 50 held-out materials descriptions, three independently fitted Jacobian lenses reproduced concept ranks, and target-free word sets from both readouts enabled blinded identification of 9 of 10 mechanism families. A separate 72-prompt benchmark produced mechanism-specific hidden-state neighborhoods, but an exact graph audit showed that this apparent physical organization was equally explained by numerical comparison. We therefore compared otherwise identical prompts in which only the direction of the physical input was reversed, asking whether the resulting hidden-state movement followed the supplied constitutive law. These state transformations ordered direct, physically neutral and inverse laws across 60 frozen relations and correctly oriented 39 of 40 directional laws, whereas lexical controls were near chance. Bidirectional interventions shifted answer probabilities toward or away from the physically appropriate outcome across all 12 matched cases, while counterfactual state patches transferred opposing decision signals across mechanisms and answer formats. Physical relationships were therefore more visible in controlled state changes than in absolute states alone.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.20058"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Démontre que les mécanismes de science des matériaux dans un LLM open-weight (gemma-4-E4B-it) sont encodés de manière lisible et causalement contrôlables via des interventions, avec une analyse combinant probes, benchmarks et géométrie des états cachés.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé consiste à déterminer si les grands modèles de langage (LLM) comme Gemma-4-E4B-it ne se contentent pas de fournir des réponses correctes en science des matériaux, mais intègrent et utilisent réellement les principes physiques sous-jacents. Il s'agit de vérifier si ces modèles représentent activement les mécanismes gouvernant les phénomènes matériaux, au-delà d'une simple mémorisation ou d'une corrélation statistique.",
+    "methode": {
+     "approche_generale": "Les auteurs combinent plusieurs techniques pour analyser les représentations internes du modèle Gemma-4-E4B-it, en se concentrant sur trois formes d'information : la lisibilité des concepts dans les états cachés, l'orientation constitutive via des transformations contrôlées entre états, et le contrôle causal des réponses par les représentations internes.",
+     "details_techniques": [
+      "Utilisation de *readouts* directs et de Jacobiens (dérivées des sorties par rapport aux états cachés) pour extraire des concepts à partir des états cachés du modèle.",
+      "Analyse géométrique des états sans recourir à des options prédéfinies (*option-free state geometry*), permettant d'étudier les transformations entre états cachés.",
+      "Benchmark contre-factuel de 60 lois physiques pour évaluer la robustesse des représentations, incluant des interventions causales (*causal interventions*).",
+      "Comparaison de prompts identiques sauf pour l'inversion de la direction d'une entrée physique, afin d'observer si les transformations des états cachés suivent les lois constitutives attendues.",
+      "Interventions bidirectionnelles pour modifier les probabilités de réponses vers des issues physiquement cohérentes ou incohérentes, ainsi que des *patches* d'états contre-factuels pour transférer des signaux décisionnels."
+     ]
+    },
+    "resultats": {
+     "lisibilite_concepts": "Sur 50 descriptions de matériaux non vues pendant l'entraînement, trois lentilles Jacobiennes indépendantes ont reproduit les rangs des concepts, et des ensembles de mots extraits (sans cible prédéfinie) ont permis d'identifier 9 familles de mécanismes sur 10 en aveugle.",
+     "transformations_etats": "Un benchmark de 72 prompts a révélé des voisinages d'états cachés spécifiques aux mécanismes, mais une analyse graphique précise a montré que cette organisation apparente pouvait être expliquée par des comparaisons numériques plutôt que par une véritable structuration physique. En revanche, les transformations d'états induites par l'inversion de la direction physique ont correctement orienté 39 lois directionnelles sur 40, contre des performances proches du hasard pour les contrôles lexicaux.",
+     "interventions_causales": "Les interventions bidirectionnelles ont déplacé les probabilités de réponses vers ou à l'opposé des issues physiquement appropriées dans les 12 cas testés, tandis que les patches d'états contre-factuels ont transféré des signaux décisionnels opposés entre mécanismes et formats de réponse."
+    },
+    "limites": {
+     "organisation_physique": "L'organisation apparente des états cachés en voisinages spécifiques aux mécanismes semble davantage liée à des artefacts numériques qu'à une véritable représentation physique, comme le révèle l'audit graphique.",
+     "generalisation": "Les résultats, bien que prometteurs, se limitent à un modèle spécifique (Gemma-4-E4B-it) et à un domaine restreint (science des matériaux). Leur généralisation à d'autres LLM ou disciplines reste à démontrer.",
+     "interpretabilite": "Les méthodes employées, bien que rigoureuses, reposent sur des hypothèses fortes quant à la lisibilité des représentations internes, ce qui peut introduire des biais dans l'interprétation des mécanismes sous-jacents."
+    },
+    "verdict": "Cette étude mérite une attention particulière pour son approche innovante et rigoureuse visant à démêler les représentations physiques des artefacts statistiques dans les LLM, bien que ses conclusions nécessitent des validations supplémentaires sur d'autres modèles et domaines."
+   }
+  },
+  {
+   "id": "9019867c84c761eb",
+   "title": "ISO: An RLVR-Native Optimization Stack",
+   "url": "https://huggingface.co/papers/2607.19331",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) is rapidly advancing the reasoning capabilities of language models, yet the optimization layer that converts reward feedback into weight-space updates remains poorly understood. Building on our prior analysis (Zhu et al., 2025), we study this missing layer through the singular structure of model weights and identify spectral inheritance: RLVR can reuse the base model's weight spectra while acquiring new behavior through changes in the associated input and output singular frames. We operationalize spectral inheritance as Isospectral Optimization (ISO), an RLVR-native, fixed-spectrum optimization framework with complementary offline and online instantiations. Offline, ISO-Merger combines the frame changes of shared-base specialists into a single fixed-spectrum model, requiring no post-merge data, rollouts, gradient updates, or on-policy distillation (OPD). It recovers complementary specialist capabilities and achieves the strongest aggregate performance among the compared data-free merging methods. Online, ISO-Optimizer applies a chosen base optimizer, including AdamW and Muon, to the frame variables while keeping the base spectra fixed. Across reasoning and coding tasks ranging from 1.5B to 8B parameters, ISO-Optimizer improves accuracy in the reported runs and reaches matched scores with substantially fewer training steps. On Qwen3-8B-Base, AdamW reaches an aggregate accuracy of 0.495 after 270 training steps. ISO-AdamW reaches the same accuracy after only 100 training steps and improves further to 0.509 after 210 training steps. Together, ISO offers a concrete answer to RLVR's missing optimization layer: rather than inheriting pre-training optimization wholesale, design post-training around the structure of reward-driven adaptation: inherit the spectrum, optimize the frames.",
+   "published": "2026-07-21T13:51:36.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.19331"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "ISO propose une pile d'optimisation native pour le RLVR (Reinforcement Learning with Verifiable Rewards), exploitant la structure spectrale des poids pour des mises à jour stables et efficaces, avec des versions offline (ISO-Merger) et online (ISO-Optimizer) sans besoin de distillation post-fusion.",
+   "score": 9.1
+  },
+  {
+   "id": "004bbb4400eda52d",
+   "title": "Train the Model, Not the Reader: Decodability Supervision for Verifiable Activation Explanations",
+   "url": "https://huggingface.co/papers/2607.20379",
+   "summary": "Natural-language autoencoders score explanations of hidden activations by reconstruction: an explanation is deemed faithful if the activation can be regenerated from it. The test is structurally insensitive to individual false claims: if flipping a claim does not change the reconstruction, the claim is never penalized. We show the test is passed in two ways, neither faithful. On a released Qwen-2.5-7B verbalizer, explanations reconstruct well above chance while ~2% of specific claims are reconstruction-dependent, so the score tracks gist, not specific facts. Under exact synthetic ground truth, the standard recipe develops co-adapted private codes (false wording the reconstruction depends on) in 5/5 runs, and fixes that leave the target model unchanged do not help. We contribute two audit protocols, the grounded-vs-true cross and the evaluator swap, and RECAP (Readable Encodings via Co-trained Auxiliary Predictors): linear heads trained alongside the target model to keep designated content decodable. On RECAP-trained sandbox models, fresh verbalizers state the designated content truly and the codes vanish, at a +0.001-nat cost. This replicates on a pretrained Pythia-160M: the content becomes reliably probe-decodable, though a fresh verbalizer conveys it only in part (truth 0.44-0.46 vs a near-zero control). For interpretability, high reconstruction does not certify individual claims. For AI safety, RECAP makes designated internal content independently checkable against probes rather than asserted by prose a model can game: an independent probe scores the verbalizer's true claims above its false ones (AUC 0.96, vs 0.82 without RECAP). Against an adversary that edits an explanation to maximize the reconstruction score while lying (suppressing ~87% of its lie penalty), the RECAP probe still flags the lies (AUC 0.95) while the control probe collapses to chance (0.51).",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.20379"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "RECAP introduit une méthode pour rendre les explications d'activation vérifiables en entraînant des têtes linéaires auxiliaires, éliminant les codes privés et améliorant la fidélité des verbalisateurs, avec une perte minimale (+0.001 nat).",
+   "score": 8.8
+  },
+  {
+   "id": "b5df9a039f0c9d28",
+   "title": "AutoIndex: Learning Representation Programs for Retrieval",
+   "url": "https://huggingface.co/papers/2607.18603",
+   "summary": "We present AutoIndex, a framework for learning representation programs: executable transformations that map raw documents into the representations exposed to a retrieval system. Rather than tuning retrievers, rerankers, or a small set of preprocessing hyperparameters, AutoIndex searches over programs that slice, enrich, normalize, reweight, or reorganize documents before indexing. At each iteration, AutoIndex performs validation-guided program search, in which agents diagnose failures of the current program and synthesize candidate updates, retaining only updates that improve retrieval quality under the resulting index. We evaluate AutoIndex on CRUMB, a benchmark of heterogeneous retrieval tasks, with BM25 held fixed across all experiments. The learned programs improve recall over a static full-document BM25 baseline on all 8 tasks, with average gains of +8.4% in Recall@100 and +8.3% in nDCG@10, and largest gains of +30.5% in Recall@100 and +43.6% in nDCG@10. These results suggest that document representation should not be treated as a fixed preprocessing choice made before retrieval begins, but as an explicit optimization target. Code to reproduce our results is available at https://github.com/auto-index/autoindex.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2607.18603"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "rag",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Présente AutoIndex, un framework pour apprendre des programmes de représentation optimisant l'indexation et la récupération (BM25 fixe), améliorant Recall@100 (+8.4%) et nDCG@10 (+8.3%) sur 8 tâches hétérogènes via une recherche guidée par validation.",
+   "score": 8.8
+  },
+  {
+   "id": "2bbeae63656fc17e",
+   "title": "Don't Trust the Label: License Laundering in AI Supply Chains",
+   "url": "https://arxiv.org/abs/2607.20300v1",
+   "summary": "AI artifacts move through a multi-platform supply chain, spanning datasets and models on Hugging Face and applications on GitHub. While each artifact carries a license whose obligations should propagate through redistribution, no study has yet measured whether those obligations survive the chain or are stripped and replaced as artifacts move downstream. We trace 232,270 dataset$\\rightarrow$model$\\rightarrow$application chains and quantify two forms of license laundering: when artifacts with no declared license acquire definitive labels downstream, and when one declared license category replaces another during redistribution. We find that 62.3% of chains pass through at least one artifact with no declared license (concentrated in a small set of foundational datasets), and that every obligation-bearing license category falls below 7% end-to-end survival while the Permissive category reaches 95.1%. Based on these findings, we provide actionable recommendations for practitioners, model publishers, rights holders, and platform owners.",
+   "published": "2026-07-22T15:48:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "James Jewitt, Hao Li, Gopi Krishnan Rajbahadur, Bram Adams, Ahmed E. Hassan"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "regulation",
+    "produit"
+   ],
+   "tldr": "Analyse systématique de 232 270 chaînes de redistribution de licences dans l'écosystème IA (Hugging Face → GitHub), révélant des pratiques de *license laundering* où 62,3% des chaînes passent par des artefacts non labellisés et seulement 7% préservent les obligations des licences restrictives.",
+   "score": 8.6
+  },
+  {
+   "id": "512a271db6d83906",
+   "title": "Beyond Euclidean Clipping: Overcoming Exploration Collapse in LLM RL via Riemannian Isometric Policy Optimization",
+   "url": "https://huggingface.co/papers/2607.10169",
+   "summary": "Reinforcement learning (RL) has become a dominant paradigm for enhancing LLMs' reasoning capabilities. However, RL algorithms with PPO-Clip are inherently limited by exploration collapse. Subsequent works remain primarily heuristic and fail to identify the essential cause of PPO-Clip's failure. This work reveals the fundamental flaw of PPO-Clip: it implicitly measures policy discrepancy using Euclidean metric, which is theoretically inconsistent with the intrinsic geometry on the policy Riemannian manifold. This geometric mismatch results in overly conservative updates in low-probability regions while aggressive in high-probability regions, ultimately collapsing exploration. To correct this geometric flaw, we propose Riemannian Isometric Policy Optimization (RIPO), which guarantees isometric policy updates on the Riemannian manifold, effectively balancing exploration and exploitation. We further show that RIPO achieves a favorable bias-variance trade-off, which stabilizes optimization. Extensive experiments demonstrate that RIPO significantly surpasses existing LLM RL algorithms across seven competition-level benchmarks (up to 60% improvement over GRPO on AIME24).",
+   "published": "2026-07-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2607.10169"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "RIPO corrige l'effondrement de l'exploration en RL pour LLMs en utilisant une optimisation isométrique Riemannienne, surpassant les méthodes existantes (jusqu'à +60% sur AIME24) grâce à un meilleur compromis biais-variance.",
+   "score": 8.5
+  },
+  {
+   "id": "e95f8e8fac39d7bc",
+   "title": "Notes to Self: Can LLMs Benefit from Experiential Abstractions?",
+   "url": "https://arxiv.org/abs/2607.20372v1",
+   "summary": "Humans distill experience into reusable abstractions, e.g., strategies and cautionary reminders, and apply them to gradually solve problems more effectively. We study whether Large Language Models (LLMs) can similarly benefit from such experiential abstractions. From LLMs' solution traces on the MATH training set, a stronger teacher or the LLMs themselves extract natural-language abstractions into a retrievable library. We explore two usage modes: (1) inference-time retrieval and (2) reinforcement learning (RL) with abstraction-augmented training prompts. Experiential abstractions improve LLM performance on mathematical and logical reasoning benchmarks. Self-extracted abstractions match teacher-extracted ones, and our abstraction usage framework can transfer to other datasets and models. These findings suggest LLMs can extract and apply experiential abstractions much as humans leverage distilled experience.",
+   "published": "2026-07-22T17:02:34+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chang Liu, Xinyu Li, Artur Dubrawski"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Les auteurs explorent l'extraction et l'utilisation d'abstractions expérientielles (stratégies, avertissements) à partir des traces de raisonnement des LLM pour améliorer leurs performances en inférence ou en fine-tuning RL. Les abstractions auto-extraites rivalisent avec celles générées par un enseignant et transfèrent à d'autres modèles et tâches, suggérant une capacité intrinsèque des LLM à distiller et réutiliser l'expérience.",
+   "score": 8.3
+  },
+  {
+   "id": "b92d9ed94b7fdb66",
+   "title": "Closing the Lab-to-Store Gap: A Data-Efficient Post-Training and Experience-Driven Learning VLA Framework for Retail Humanoids",
+   "url": "https://arxiv.org/abs/2607.20345v1",
+   "summary": "Closing the gap between benchmark performance and reliable real-world operation remains a central challenge for Vision-Language-Action (VLA) humanoid robots, which must handle execution errors, distribution shifts, and environmental variability. This paper presents DEED (Data-Efficient Post-Training and Experience-Driven Learning), a systems-level approach evaluated on a supermarket chip-restocking task using a Unitree G1-Edu humanoid robot and the GR00T N1.6 foundation model. DEED comprises three key components: (1) a data-efficient post-training pipeline with control-frequency alignment, data curation, task-relevant visual highlighting, and reduced VLA dependence; (2) a real-world study of experience-driven refinement, adapted from RECAP via a text-based advantage prefix and a vision-language value function; and (3) a latent-space analysis tool for studying in- and out-of-distribution behavior. Our results suggest that bridging the lab-to-store gap is primarily a systems integration challenge rather than an architectural one: careful data design and targeted post-training can transform a policy that fails under naive fine-tuning into a competent real-world system using only a single GPU.",
+   "published": "2026-07-22T16:30:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Roger Sala Sisó, Tiago Silvério, Jakob Sand, Tran Nguyen Le"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "llm",
+    "outils"
+   ],
+   "tldr": "DEED propose un cadre pour réduire l'écart entre les performances en laboratoire et en environnement réel pour les robots humanoïdes VLA, en combinant post-entraînement efficace, apprentissage par expérience (RECAP adapté) et analyse des comportements en distribution. Les résultats sur une tâche de réapprovisionnement en supermarché montrent que l'intégration système et la curation des données sont clés pour une opération fiable.",
+   "score": 8.3
+  },
+  {
+   "id": "95c5a09999cbcfc4",
+   "title": "PyroDash: Cost-Efficient Token-Level Small-Large Language Model Collaborative Inference",
+   "url": "https://arxiv.org/abs/2607.20327v1",
+   "summary": "Large language models (LLMs) provide strong reasoning capabilities but are expensive to serve at scale, whereas small language models (SLMs) are cheaper but less reliable on difficult problems. We introduce PyroDash, a cost-aware framework for token-level SLM-LLM collaborative inference. During generation, the SLM decides whether to request assistance by emitting a control token. A Collaborate Engine then sends the query and partial reasoning trace to a frozen LLM for completion through a single handoff. The policy is internalized in the SLM, requiring neither a separate router, LLM retraining, nor access to LLM logits. PyroDash trains the SLM in three stages: control-token embedding learning, offloading-oriented supervised fine-tuning, and cost-aware alignment with Group Relative Policy Optimization. Its reward balances answer accuracy against inference cost normalized by LLM-only inference. Across five mathematical reasoning benchmarks, PyroDash supports different accuracy-cost operating points. With $λ=0.05$, it achieves 64.04 percent average accuracy, 6.36 percentage points above the LLM-only baseline, while reducing cost by 20.4 percent. With $λ=0.6$, it achieves 54.55 percent accuracy with a 1.90 percent LLM token ratio and 0.012 LLM calls per example, reducing total cost from USD 49.36 to USD 1.78. These results show that learned token-level handoffs can reduce LLM use while preserving strong reasoning performance.",
+   "published": "2026-07-22T16:14:26+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Niqi Lyu, Pengtao Shi, Wei Qiu, Jianlin Zhong, Sicong Xia, Jianyao Ma"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "PyroDash introduit un cadre de collaboration token-par-token entre SLM et LLM pour réduire les coûts d'inférence sans sacrifier la précision. Le SLM décide dynamiquement de déléguer au LLM via un token de contrôle, avec un entraînement en trois étapes (embedding, SFT, RL). Sur 5 benchmarks de raisonnement mathématique, le système atteint jusqu'à +6.36% de précision pour -20.4% de coût, ou un compromis inverse selon le paramètre λ.",
+   "score": 8.3
+  },
+  {
+   "id": "b6e5ec4f58551f7f",
+   "title": "Sound Probabilistic Safety Bounds for Large Language Models",
+   "url": "https://arxiv.org/abs/2607.20286v1",
+   "summary": "We propose a novel framework for computing rigorous bounds on the probability that a large language model (LLM) generates harmful output to a given prompt. We study a new application of the Clopper-Pearson confidence intervals to obtain probably approximately correct (PAC) bounds for this problem. As our main technical contribution, we propose an algorithm that leverages features in the latent space to prioritize exploring branches in the auto-regressive generation tree that are more likely to produce harmful outputs. Our approach in particular enables the efficient computation of useful lower bounds, even in scenarios where the true harm probability is extremely small, and crucially, the obtained lower bounds are sound, i.e., formally proven to be less than the actual harmfulness probability: our experimental results demonstrate the effectiveness of our method by computing non-trivial lower bounds on state-of-the-art LLMs. This study newly enables the evaluation and statistical certification of LLMs.",
+   "published": "2026-07-22T15:31:28+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mahdi Nazeri, Anne-Kathrin Schmuck, Sadegh Soudjani, Alessandro Abate"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Propose un cadre théorique pour calculer des bornes probabilistes rigoureuses sur la génération de contenus nuisibles par les LLM, utilisant des intervalles de confiance de Clopper-Pearson et une exploration ciblée des branches de génération, avec des résultats expérimentaux sur des modèles state-of-the-art.",
+   "score": 8.3
+  },
+  {
+   "id": "625d540cb8eef7f7",
+   "title": "ELSAA: Efficient Low-Rank and Sparse Attention Approximation for Training Transformers",
+   "url": "https://arxiv.org/abs/2607.20214v1",
+   "summary": "The quadratic $N\\times N$ attention score matrix remains a central obstacle to extending Transformers to longer input lengths. Existing efficient attention methods usually reduce this bottleneck by either imposing sparsity, so that each query attends to only a small subset of keys, or by using low-rank/kernel sketches, so that global interactions are compressed into a lower-dimensional representation. We propose \\emph{ELSAA}, an efficient low-rank and sparse approximation of attention. Importantly, ELSAA does \\emph{not} decompose the learned projection or output matrices of the Transformer into sparse and low-rank factors. Instead, after dense projections produce $Q,K,V$, ELSAA approximates the induced attention score operator itself: a sparse branch captures selected high-similarity interactions, while a low-rank branch summarizes diffuse global interactions. Since the two branches can be normalized over supports with very different denominator mass, ELSAA introduces a denominator-aware fusion term that scales the sparse branch according to its estimated attention mass relative to the low-rank branch. This gives a practical framework for constructing low-rank and sparse attention outputs without materializing the full quadratic score matrix, aiming to enable longer-context training while preserving both sharp token-level interactions and broad contextual mixing.",
+   "published": "2026-07-22T14:34:49+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mahdi Heidari, Mohammad Mahdi Rahimi, Jaekyun Moon"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Méthode ELSAA combinant attention sparse et low-rank pour réduire la complexité quadratique des transformers, avec une fusion adaptative des branches basée sur la masse attentionnelle, validée empiriquement.",
+   "score": 8.3
+  },
+  {
+   "id": "ddc15bebae814265",
+   "title": "Scaling Laws for Hypernetwork-Based Knowledge Injection in Large Language Models",
+   "url": "https://huggingface.co/papers/2607.19604",
+   "summary": "Injecting factual knowledge into large language models (LLMs) reliably and at scale remains an open challenge. Hypernetworks provide a promising solution to large-scale knowledge injection. Although hypernetworks are typically applied for test-time adaptation, we explore their use in train-time knowledge injection, where, given a large corpus of facts, we train a hypernetwork to generate a fixed LoRA adapter that, when inserted into the target model, enable the model to answer questions about those facts. In this work, we investigate whether hypernetworks can be used to perform train-time knowledge injection and how this ability varies with scale. The scaling behavior of hypernetworks remains largely unstudied. Our design decouples the hypernetwork's injection capacity from the target model's general capability, enabling, for the first time, a rigorous study of scaling laws for hypernetwork architectures. We characterize how loss, reasoning accuracy, and out-of-distribution (OOD) generalization vary with hypernetwork depth, width, and target network size. We construct a large-scale dataset, called MegaWikiQA, containing tens of millions of multi-hop question-answer examples across 39 domains constructed from examples in Wikidata5M. Our results reveal: (i) hypernetwork-based injection exhibits broadly predictive power law scaling along all architecture axes; and (ii) hypernetworks are capable of reliable OOD generalization at increasing scales, suggesting that hypernetwork provides a promising alternative to other train-time adaptation methods such as LoRA finetuning and full fine-tuning, exhibiting steeper scaling exponents in all OOD evaluations. Together, these results establish hypernetworks as a principled and scalable substrate for train-time adaptation, and provide the first empirically grounded scaling laws to guide hypernetworks for factual reasoning in large language models.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.19604"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Cette étude explore l'injection de connaissances via des hyperréseaux pour entraîner des adapteurs LoRA, caractérisant pour la première fois les lois d'échelle (profondeur, largeur, taille du modèle cible) et leur impact sur la précision et la généralisation OOD, avec un dataset massif (MegaWikiQA).",
+   "score": 8.2
+  },
+  {
+   "id": "90ac5ec491576404",
+   "title": "SLPO: Scaling Latent Reasoning via a Surrogate Policy",
+   "url": "https://huggingface.co/papers/2607.19691",
+   "summary": "Reinforcement learning with verifiable rewards has become the predominant recipe for eliciting test-time scaling in explicit Chain-of-Thought reasoners. Yet this scaling path remains computationally costly, since every intermediate step must be decoded as a language token. Latent reasoning instead carries intermediate computation as continuous vectors and already matches or surpasses explicit CoT at far shorter horizons. Despite this promise, latent reasoners remain largely imitation-bound, while explicit CoT has already moved past imitation via outcome-reward RL. Latent trajectories lack a tractable per-step likelihood and an adaptive stopping interface under fixed thinking budgets, so outcome rewards cannot elicit latent test-time scaling. We introduce Surrogate Latent Policy Optimization (SLPO) to bring outcome-reward RL to autoregressive latent reasoners: an empirical surrogate policy density over latent transitions for trajectory-level credit assignment, and a correctness-supervised stopping head that outcome-reward optimization refines into a variable-horizon policy. Across continuous and soft thinking settings, SLPO improves Pass@k under parallel sampling and allocates longer latent computation to harder instances with higher deterministic accuracy.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.19691"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Propose SLPO, une méthode d'optimisation par renforcement (RL) pour les raisonneurs latents autorégressifs, permettant une mise à l'échelle par récompenses de résultat (outcome-reward RL) via une politique surrogate et un mécanisme d'arrêt adaptatif, améliorant Pass@k et l'allocation de budget de réflexion.",
+   "score": 8.2
+  },
+  {
+   "id": "b17f19de03b3baf7",
+   "title": "SeededGrasp: Language-Guided Grasping in Complex Scenes with Multiple Embodiments",
+   "url": "https://huggingface.co/papers/2607.20207",
+   "summary": "Practical robotic grasping in complex scenes requires both 3D spatial reasoning and alignment with task-specific requirements. Vision-language models (VLMs) offer a natural way to specify these requirements using language, but existing approaches either use a VLM to predict the grasp directly with limited spatial awareness, or train the VLM together with the grasping model, which requires significantly more data and compute. These limitations impede performance and have prevented scaling to multiple embodiments in complex scenes. We address this by proposing SeededGrasp, a novel data-efficient framework that enables a VLM to predict a seed point to be used as conditioning for a subsequent lightweight grasp-generation model. Our architecture decouples high-level semantic reasoning from low-level geometric execution, enabling multi-embodiment support while bypassing the need for expensive end-to-end training. To enable training such models, we release the first multi-embodiment tabletop grasping dataset comprising over 2.5M grasps in cluttered scenes. Experimental results demonstrate that our approach outperforms existing baselines, achieving 72% success in simulation and 78% in real-world grasping experiments. See our project site for data and code: https://uoft-isl.github.io/seeded-grasp/",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2607.20207"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "llm",
+    "vision"
+   ],
+   "tldr": "Présente SeededGrasp, une méthode data-efficace pour le préhension robotique guidée par langage, découpant la sémantique (VLM) et la géométrie (modèle léger), avec un dataset multi-embodiment de 2.5M prises, atteignant 72% de succès en simulation et 78% en réel.",
+   "score": 8.2
+  },
+  {
+   "id": "f1fe2025c8389bb7",
+   "title": "EduPanel: A Three-Agent LLM Judge for Teaching Videos -- Reliability, Complementarity, and Human Trust Calibration",
+   "url": "https://huggingface.co/papers/2607.18529",
+   "summary": "Teaching videos are becoming a major medium for education, creating a growing need for scalable evaluation of their pedagogical quality. Existing automatic judges do not fully address this setting because teaching quality depends on multimodal evidence and should be evaluated with respect to the intended learner rather than as a universal property. We present EduPanel, a rubric-grounded, learner-conditioned LLM judge that decomposes evaluation across specialized agents to produce interpretable assessments for different aspects of teaching quality. Across expert studies, architecture ablations, and learner-persona analyses, EduPanel achieves reliability comparable to a median human expert. In expert evaluation, its feedback improves scoring accuracy (MAE 0.87 to 0.73), while experts remain able to detect unreliable outputs (AUC = 0.77) instead of accepting them blindly. These results suggest that EduPanel can serve as effective assistants for educational evaluation rather than replacements for human experts.",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.18529"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "EduPanel introduit un système d'évaluation pédagogique basé sur 3 agents LLM spécialisés, offrant des feedbacks interprétables et fiables (proche d'un expert humain) pour analyser la qualité de vidéos éducatives, avec une amélioration de la précision des scores (MAE de 0.87 à 0.73).",
+   "score": 8.2
+  },
+  {
+   "id": "8bfccfd7071b7672",
+   "title": "H^2SD: Hybrid Hindsight Self-Distillation",
+   "url": "https://huggingface.co/papers/2607.18955",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) has substantially improved the reasoning capabilities of large language models on tasks such as mathematical reasoning and code generation. However, most RLVR methods assign a scalar outcome reward to an entire trajectory, resulting in sparse supervision and limited token-level credit assignment. On-policy distillation (OPD) provides denser supervision by distilling token-level distributions from a stronger teacher model, but requires an additional teacher and typically assumes a shared vocabulary. On-policy self-distillation (OPSD) removes this dependency by conditioning the same model on privileged information to construct a teacher policy. However, directly matching the teacher distribution may cause information leakage and unstable optimization. RLSD avoids direct matching by using the teacher signal only to modulate update magnitudes, but it cannot provide an explicit correction direction when the sampled reasoning fails. To address this tradeoff, we introduce H^{2}SD, a hybrid hindsight self distillation framework that uses the teacher differently according to trajectory correctness. For successful trajectories, the teacher receives the student response confirmed as correct together with a rephrasing instruction, and its probabilities on the original response tokens are used to modulate update magnitudes without changing the direction determined by the reward. For failed trajectories, we condition the teacher on a reference hint containing key reasoning steps and a verified answer, and minimize the reverse KL divergence from the student to the teacher. Experiments on multiple challenging reasoning benchmarks show that H^2SD consistently outperforms representative RLVR, OPSD, and RLSD baselines while maintaining stable optimization and favorable generation efficiency.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.18955"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "H²SD combine distillation auto-supervisée et hindsight learning pour un apprentissage par renforcement plus dense et stable, en adaptant la supervision du teacher selon la réussite des trajectoires et en évitant les fuites d'information.",
+   "score": 8.2
+  },
+  {
+   "id": "65ff9f9d081ea459",
+   "title": "SoftReason: A Fully Differentiable Neuro-Soft-Symbolic Deductive Reasoning Architecture over High-Dimensional Perceptual Data",
+   "url": "https://arxiv.org/abs/2607.20402v1",
+   "summary": "In many reasoning problems, the premises are not observed as discrete symbols, but must be inferred from high-dimensional inputs. Further, the predicate vocabulary, argument structure, and trusted evidence are supplied by a Knowledge Graph (KG), or rule definitions. Classical neuro-symbolic pipelines have a discrete interface between perception and deduction. We present a neuro-soft-symbolic architecture for differentiable deductive reasoning over latent perceptual facts and knowledge-provided predicates. SoftReason removes the gradient gap by representing the deductive state as a local soft interpretation tensor over candidate constants and predicates. Perception proposes probabilistic base facts, KG triples enter as high-confidence soft evidence, and every query anchor, predicate choice, and closure update remains differentiable. Our core innovation is a learned differentiable lift of the immediate-consequence operator. It uses predicate-definition embeddings and latent composition channels to form soft body-predicate mixtures, aggregate over all possible witnesses, propose query-conditioned head facts, and update the interpretation through a monotone probabilistic OR. We instantiate the framework on Knowledge-aware Visual Question Answering (KVQA), and demonstrates how SoftReason supports end-to-end perceptual grounding, KG evidence injection, and differentiable deductive closure in one trainable architecture.",
+   "published": "2026-07-22T17:38:39+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wael AbdAlmageed"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Architecture neuro-soft-symbolique (SoftReason) pour un raisonnement déductif différentiable sur des données perceptuelles haute dimension, intégrant des connaissances symboliques via des graphes de connaissances. Propose une solution élégante au problème du gradient dans les pipelines neuro-symboliques, avec des applications potentielles en LLM et raisonnement.",
+   "score": 8.0
+  },
+  {
+   "id": "d624d0e0078451b1",
+   "title": "PoTRE: Test-Time Reasoning inspired by Cognitive Heterogeneity",
+   "url": "https://arxiv.org/abs/2607.20268v1",
+   "summary": "While Large Language Models (LLMs) excel at many tasks, they frequently struggle with complex reasoning that requires long-horizon planning and iterative error correction. Furthermore, standard single-stream prompting proves brittle when models encounter novel abstractions or rigorous domain constraints. We introduce PoTRE (Poly-Topological Reasoning Ensembles), a heterogeneous framework that decouples inference into four agents: (1) Adversarial Refinement Agent, (2) Hierarchical strategic Planning Agent, (3) Spectrum Search Agent, and (4) Direct Chain Agent. A final Task-Adaptive Aggregation Layer dynamically reconciles these perspectives -- via final candidate selection, semantic synthesis, or neuro-symbolic verification -- to produce a robust global solution. We evaluate PoTRE on three frontier benchmarks: ARC-AGI-2, Humanity's Last Exam (HLE), and PRBench Finance. PoTRE achieves state-of-the-art accuracy of 49.92% on HLE, surpassing the previous best official score. We demonstrate that this architectural heterogeneity achieves improved reasoning performance using similar or fewer inference tokens compared to heavily scaled homogeneous baselines.",
+   "published": "2026-07-22T15:20:53+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Anmol Kankariya, Sercan Ö. Arık"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Nouvelle architecture multi-agents (PoTRE) combinant 4 agents spécialisés (refinement adversarial, planification hiérarchique, recherche spectrale, chaîne directe) avec une couche d'agrégation adaptative, atteignant 49.92% de précision sur HLE et démontrant une amélioration du raisonnement complexe sans augmentation significative des tokens d'inférence.",
+   "score": 8.0
+  },
+  {
+   "id": "60a781ed81fb6f36",
+   "title": "An Exam for Active Observers",
+   "url": "https://huggingface.co/papers/2607.16165",
+   "summary": "Human vision is a closed loop: gaze is continuously redirected by intermediate hypotheses rather than a single snapshot. Decades of psychophysics and cognitive science have argued that this active observation is essential for a wide range of tasks. Whether today's multimodal large language models (MLLMs) exercise active observation is an empirical question that current vision-language benchmarks do not answer. We introduce ActiveVision, a benchmark that makes active observation measurable for MLLMs, comprising 17 tasks across 3 categories. Tasks are designed to force repeated visual perception rather than a single static description. Frontier MLLMs collapse on ActiveVision: the highest-scoring model we evaluate, GPT-5.5 at the highest exposed reasoning-effort tier, solves only 10.6% of items and scores zero on 11 of the 17 tasks, and even Claude Fable 5, despite topping most reasoning and coding leaderboards, solves just 3.5%, far behind three human participants who average 96.1%. Furthermore, much of the gap persists even when models write and run their own vision code: such code is unreliable on realistic imagery, and catching its failures itself requires the active perception the models lack. Together, these results indicate that current MLLMs lack robust active visual observation, motivating architectures and training objectives that close the perception-reasoning loop.",
+   "published": "2026-07-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2607.16165"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "ActiveVision évalue la capacité des MLLMs à l'observation active (vision humaine en boucle fermée), montrant un écart dramatique avec les performances humaines (96.1% vs 10.6% pour GPT-5.5), même avec du code généré par les modèles.",
+   "score": 7.9
+  },
+  {
+   "id": "31d5d4411cf0e277",
+   "title": "Trace: A Taxonomy-Guided Environment for Multidomain Visual Reasoning",
+   "url": "https://huggingface.co/papers/2607.19790",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) has substantially improved language-model reasoning, yet its extension to vision-language models remains constrained by the lack of training data that are simultaneously broad, exactly verifiable, and reproducible. We introduce Trace, a taxonomy-guided environment for multidomain visual reasoning. Trace factorizes task construction into a scene grammar and an executable task program, separating visual realization from answer computation. A shared semantic state determines the rendered image, prompt, typed answer, verifier state, and replayable instance trace. The resulting environment comprises 1,000 tasks over 277 scene grammars and 11 visual domains, with controlled semantic and visual variation. RLVR on 64,000 Trace instances improves the macro-average across 24 external benchmarks by 3.51 percentage points for Qwen2.5-VL-3B and 4.06 points for Qwen2.5-VL-7B, providing evidence that broad procedural training can transfer beyond the generated task distributions. Project page: https://maveryn.github.io/trace/.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.19790"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Trace propose un environnement de raisonnement visuel multi-domaines avec 1 000 tâches générées par grammaire sémantique, améliorant les performances de Qwen2.5-VL-3B/7B de 3.51 et 4.06 points sur 24 benchmarks externes via RLVR.",
+   "score": 7.9
+  },
+  {
+   "id": "eec8d1a94f523c5f",
+   "title": "Test-Time Training for Modality Order Consistency in Vision-Language Models",
+   "url": "https://arxiv.org/abs/2607.20351v1",
+   "summary": "We find that vision-language models are sensitive to a specific semantically irrelevant change: the order in which the image and question are presented. Across three models and three benchmarks, image first prompting consistently outperforms question-first prompting, revealing a repeatable modality order failure. We use this gap to design an order-consistent test-time training method. Our method substantially closes the modality-order gap across all evaluated settings. Surprisingly, it also yields consistent improvements in the stronger image-first branch over the baseline, hence bootstrapping both orderings toward mutual consistency. Activation patching localizes the ordering failure to a narrow mid-network region where representations diverge sharply between prompt orders. We find that the test-time training method repairs this misalignment across layers. Together, our results identify modality-order sensitivity as a circuit-level failure in VLMs and demonstrate that simple, asymmetric test-time adaptation can effectively mitigate it and even improve performance over the baseline.",
+   "published": "2026-07-22T16:37:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Aditi Gupta, Yossi Gandelsman"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Les VLMs souffrent d'une sensibilité à l'ordre des modalités (image/texte) en entrée, avec un biais systématique en faveur de l'ordre 'image d'abord'. La méthode de *test-time training* proposée corrige ce défaut en alignant les représentations internes, améliorant les performances et révélant une faille de cohérence modale localisée dans une couche intermédiaire du réseau.",
+   "score": 7.7
+  },
+  {
+   "id": "bf306bcbb7b0a12b",
+   "title": "The Blessing of Dimensionality: How Near-Orthogonality in High-Dimensional Spaces Explains Temporal Portability",
+   "url": "https://arxiv.org/abs/2607.20301v1",
+   "summary": "Fine-tuning has been widely used to adapt large language models (LLMs) for domain-specific tasks. Parameter efficient fine-tuning (PEFT) methods such as low-rank adaptation (LoRA) are frequently used to reduce computational costs. PortLLM is a training-free and data-free scheme used to adapt LLMs after continual pretraining. Although the initial PortLLM results show that LoRA patches exhibit short-term temporal portability, the long-term performance of PortLLM across several updates of continual pretraining remains underexplored. Furthermore, the intriguing effectiveness of PortLLM is not well understood from a theoretical standpoint. We address these two open questions by (1) performing an extensive empirical study of the long-term temporal portability of PortLLM patches across 10 continual pretraining steps using base models Mistral, Gemma, and Qwen; and (2) offering two theoretical analyses to explain our observation that the simple PortLLM method achieves competitive performance. We find empirically that the portability persists across longer time duration, indicating that repeated fine-tuning is not required when the base model is periodically updated. We find theoretically that near-orthogonality of high-dimensional vectors is a key justification for temporal portability. Our analyses also demonstrate a geometric perspective of the loss landscape in facilitating the theoretical comparison of different adaptation options.",
+   "published": "2026-07-22T15:48:39+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Abigail Woodring, Adrian Chan, Rana Muhammad Shahroz Khan, Sukwon Yun, Chau-Wai Wong, Tianlong Chen"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Étudie la portabilité temporelle des *patches* LoRA dans les LLM après *continual pretraining*, montrant empiriquement et théoriquement que des mises à jour périodiques du modèle de base réduisent le besoin de ré-entraînement, avec des implications pour l'efficacité des *fine-tunings*.",
+   "score": 7.7
+  },
+  {
+   "id": "a8cfb8250ca8ac1c",
+   "title": "Which Values Do LLMs Confuse? A Schwartz-Based Recognition Study",
+   "url": "https://arxiv.org/abs/2607.20270v1",
+   "summary": "Large language models are increasingly evaluated through the values they endorse, but such evaluations presuppose that models can identify the value expressed in a concrete situation. We study this prerequisite as controlled top-1 recognition over Schwartz's ten basic values. Our evaluation set contains 1,000 Russian situational texts, balanced across the ten values and independently labeled by two human annotators per item. We evaluate 21 instruction-tuned LLM runs under a fixed ranked-response protocol; 20 runs with reliable outputs form the semantic panel. Pooled Acc@1 is 0.683 and Acc@3 is 0.892, showing that models often locate the correct motivational region while ranking close alternatives unstably. Adjacent values account for 50.9% of semantic errors, compared with 24.4% under a checkpoint-specific null. Eight directed confusions recur across checkpoints and human-confirmed subsets. Several are strongly asymmetric, including Universalism to Benevolence, Tradition to Conformity, and Security to Power, whereas Stimulation-Hedonism forms a bidirectional boundary. Their severity is checkpoint-specific and can bias higher-order value profiles. The results motivate value-recognition evaluation that combines exact accuracy, ranked recovery, and directed error analysis.",
+   "published": "2026-07-22T15:22:14+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Andrei Chetvergov, Stepan Ukolov, Timofei Sivoraksha, Alexander Evseev, Mikhail Solovev, Valeriia Kuschenko"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étude systématique évaluant la capacité des LLM à reconnaître les 10 valeurs fondamentales de Schwartz dans des contextes situationnels, révélant des biais récurrents et des confusions directionnelles entre valeurs adjacentes (ex: Universalisme→Benevolence), avec des implications pour l'alignement éthique et l'interprétabilité des modèles.",
+   "score": 7.7
+  },
+  {
+   "id": "4379bc2e1164ba2e",
+   "title": "The Ethics of Autonomous AI Agents for Offensive Security",
+   "url": "https://arxiv.org/abs/2607.20255v1",
+   "summary": "LLM-driven autonomous agents are reshaping offensive security. Unlike traditional penetration-testing tooling -- deterministic, narrowly scoped, and operated by trained practitioners -- agentic security tools exhibit \\textit{indeterminacy} along three independent dimensions. First, their actions are drawn from a non-deterministic policy whose outputs resist both ex-ante and ex-post explanation, frustrating incident attribution and pre-deployment safety review. Second, their impact is open-ended due to the non-deterministic actions, agency of utilized models, and opaque LLM supply-chains. Third, their user population is indeterminate in both size and required skill: the operating skill floor for using or developing offensive capabilities has dropped sharply. These three properties are linked thematically, but are not derivable from one another. Combined with the structural cost asymmetry between offense and defense, they enable the industrialization of offensive capability. The net short-term effect favors attackers, even if the same technology may, in the long run, democratize access to defensive practice. Existing dual-use cybersecurity and AI-ethics frameworks were not designed for this combination. Our work analyzes how moral attribution becomes diffuse between users, tool-makers, and third parties when employing autonomous AI agents for offensive security. We also examine the stakeholder impact of this technology and provide stratified recommendations.",
+   "published": "2026-07-22T15:13:15+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Andreas Happe, Jürgen Cito, Jasmin Wachter"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "regulation"
+   ],
+   "tldr": "Analyse des risques éthiques et opérationnels liés aux agents IA autonomes en cybersécurité offensive, mettant en lumière leur indéterminisme structurel (actions, impact, utilisateurs) et son impact sur l'asymétrie coût offense/défense, avec des recommandations pour encadrer leur déploiement.",
+   "score": 7.7
+  },
+  {
+   "id": "d6764a19dc80ba77",
+   "title": "Statistical Inference for Rank Allocation in Low-Rank Adaptation",
+   "url": "https://arxiv.org/abs/2607.20205v1",
+   "summary": "Low-rank adaptation (LoRA) has become a widely used parameter-efficient fine-tuning method for large language models. Since different modules and layers may contribute unequally to downstream adaptation, allocating rank resources under a fixed parameter budget is an important problem for balancing efficiency, expressiveness, and generalization. Existing adaptive rank methods address this problem mainly through carefully designed importance scores constructed from gradient-derived sensitivity and uncertainty measures, without an explicit statistical interpretation. In this paper, we formulate LoRA rank allocation as a statistical hypothesis testing problem and propose StatLoRA, a statistical inference-based rank allocation method. StatLoRA associates each LoRA component with a test statistic and uses estimated p-values to determine which components should be retained or pruned under a prescribed rank budget. The proposed testing procedure is supported by our central limit theory for stochastic optimizer trajectories. In particular, we establish asymptotic normality for a broad class of commonly used optimizers in deep learning, including AdamW, and derive the corresponding asymptotic distributions for the proposed component scores used in hypothesis testing. We evaluate StatLoRA on LoRA fine-tuning of DeBERTaV3-base, BART-Large, and Qwen2.5-7B across natural language understanding, natural language generation, and question answering tasks. Experiments show that StatLoRA achieves comparable or better performance than vanilla LoRA, AdaLoRA, and IGU-LoRA under matched rank budgets. Sensitivity analyses and empirical diagnostics further support the stability of the proposed hypothesis-testing-based allocation rule and provide empirical evidence for the asymptotic theory of component scores.",
+   "published": "2026-07-22T14:25:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yihang Gao, Vincent Y. F. Tan"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode StatLoRA pour allouer des rangs en adaptation low-rank (LoRA) via des tests d'hypothèses statistiques, optimisant l'allocation des ressources paramétriques sous contraintes de budget fixe, avec support théorique pour des optimiseurs comme AdamW.",
+   "score": 7.7
+  },
+  {
+   "id": "50b90178cfdd9e7c",
+   "title": "Beyond Relevance-Centric Retrieval: Rubric-Oriented Document Set Selection and Ranking",
+   "url": "https://huggingface.co/papers/2607.19747",
+   "summary": "As large language models and AI agents become the primary consumers of search results, document set quality determines the upper bound of downstream generation. Yet existing evaluation systems remain confined to scoring documents independently and aggregating via nDCG, ignoring inter-document interactions (redundancy, conflict, complementarity) and unable to answer what makes one document set better than another. To address these issues, we propose a complete evaluate-diagnose-optimize framework. We design SetwiseEvalKit, a three-level, nine-dimension document set evaluation benchmark covering both short-form and long-form scenarios, comprising approximately 28K high-quality evaluation rubrics. We systematically evaluate 12 rerankers: even the best method achieves no more than 45% coverage, cross-document coordination dimensions are universally weak, and no single method maintains top performance across both settings. Building on this, we propose Rubric4Setwise, a training-free method that converts rubric-based evaluation criteria into document set selection signals, achieving the best downstream generation performance with fewer documents and search rounds. It is the only method that maintains state-of-the-art results across both scenarios, validating the effectiveness of closing the loop from evaluation to optimization.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2607.19747"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "rag",
+    "benchmark"
+   ],
+   "tldr": "Rubric4Setwise introduit une méthode de sélection de documents basée sur des rubriques pour optimiser les ensembles de documents, surpassant les rerankers existants (45% de couverture max) et améliorant les performances de génération avec moins de documents.",
+   "score": 7.6
+  },
+  {
+   "id": "004276a102cf2e03",
+   "title": "ATSplat: Compact Feed-forward 3D Gaussian Splatting with Adaptive Token Expansion",
+   "url": "https://huggingface.co/papers/2607.20417",
+   "summary": "3D Gaussian Splatting (3DGS) achieves high-quality novel-view synthesis by optimizing freely placed primitives in 3D and adaptively densifying them in under-reconstructed regions. However, this scene-adaptive capacity allocation is largely lost in existing feed-forward 3DGS methods, which commonly regress Gaussians at input pixels and lift them along camera rays. Such pixel-aligned formulations make the number and placement of primitives depend on image resolution and input viewpoints rather than scene complexity, resulting in dense and often redundant Gaussian sets. We present ATSplat, a feed-forward 3DGS framework that restores the adaptive allocation capability of 3DGS optimization through Adaptive 3D Tokens. ATSplat first lifts coarse patch-level depth and camera cues into sparse 3D anchor tokens, forming a compact scaffold of the scene. Each token is then regressed into local Gaussians with learnable 3D offsets, decoupling primitive placement from input image grids. An Adaptive Token Expansion module predicts a token-level uncertainty score, supervised by rendering error maps, and selectively expands high-uncertainty tokens through learnable expansion layers. This sparse-to-adaptive formulation enables ATSplat to concentrate primitives in challenging regions while maintaining a compact representation. Experiments on two representative datasets, RealEstate10K and DL3DV, show that ATSplat achieves state-of-the-art rendering quality while reducing the number of Gaussians by more than 5.7times compared with dense feed-forward 3DGS methods. From 12 input images at 512 times 960 resolution, ATSplat completes reconstruction in less than a second using a single commercial GPU, and renders high-quality novel views at 1136 FPS (512 times 960) with only 311K Gaussians.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2607.20417"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Propose ATSplat, une méthode feed-forward pour 3D Gaussian Splatting compacte, restaurant l'allocation adaptative de primitives via des tokens 3D et une expansion dynamique, réduisant la redondance et améliorant la qualité de rendu.",
+   "score": 7.6
+  }
+ ]
+}
