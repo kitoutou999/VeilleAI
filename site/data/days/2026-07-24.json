@@ -1,0 +1,720 @@
+{
+ "date": "2026-07-24",
+ "digest": {
+  "headline": "Les agents IA auto-améliorants et les benchmarks résistants à la contamination redéfinissent l'évaluation et l'optimisation des systèmes autonomes.",
+  "overview": "La veille du 2026-07-24 met en lumière des avancées majeures dans la conception d'agents autonomes, avec des approches récursives et des frameworks orientés objet pour améliorer leur fiabilité. Parallèlement, des benchmarks multi-domaines et des méthodes d'optimisation émergent pour répondre aux limites des modèles actuels, notamment en matière de contamination des données et de gestion du contexte.",
+  "highlights": [
+   {
+    "title": "Agents récursifs et auto-améliorants",
+    "text": "AREX introduit des agents de recherche profonde capables de s'auto-améliorer en alternant collecte d'évidence et vérification contrainte-par-contrainte, réduisant la dépendance aux annotations externes. NOOA (NVIDIA) propose un framework Python orienté objet pour structurer méthodes, états et prompts, facilitant le test et la maintenance des agents. Ces travaux adressent un défi clé : la scalabilité et la robustesse des systèmes autonomes dans des tâches complexes à long terme."
+   },
+   {
+    "title": "Benchmarks résistants à la contamination et évaluation dynamique",
+    "text": "Tencent WorkBuddy Bench et ICAE-Bench offrent des cadres d'évaluation pour les agents de codage, avec des protocoles résistants à la contamination (via des commits réels) et des scénarios interactifs simulant des exigences floues. Ces benchmarks couvrent des domaines variés (code, web, sécurité) et soulignent l'importance de contextes réalistes pour mesurer les performances des modèles, au-delà des tâches statiques."
+   },
+   {
+    "title": "Optimisation des LLM et détection précoce des échecs",
+    "text": "Des travaux comme *Token Budget Saturation* et *Test-Time Scaling via Error Localization* (TTEL) améliorent l'efficacité des LLM en détectant précocement les non-convergences (via des sondes linéaires) ou en réduisant les tokens générés de moitié. Ces méthodes ciblent des problèmes critiques : la gestion des budgets de tokens et la stabilité des mises à jour hors politique, avec des gains significatifs sur des benchmarks comme LiveCodeBench."
+   },
+   {
+    "title": "Navigation robotique et vision monocular",
+    "text": "Robostral Navigate et ReferTrack proposent des solutions pour la navigation robotique basée sur des images RGB monoculares, avec des politiques de waypoints en espace image et une séparation des phases de *referring* et *tracking*. Ces approches réduisent les coûts de déploiement et améliorent la généralisation multi-plateformes, tout en atteignant des performances élevées (89,4% de succès sur EVT-Bench)."
+   },
+   {
+    "title": "Gestion du contexte et raisonnement neuro-symbolique",
+    "text": "*Agentic Context Management* structure la mémoire des agents en production pour réduire les coûts, tandis qu'Euclid-MCP intègre des moteurs de raisonnement logique (Prolog) aux LLM via un protocole standardisé. Ces travaux répondent à des enjeux opérationnels (scalabilité) et théoriques (fiabilité dans des domaines critiques), en combinant approches symboliques et neuronales."
+   },
+   {
+    "title": "Limites des LLM face à l'intention évolutive",
+    "text": "Une étude révèle que les LLM performants en settings statiques échouent à suivre une intention utilisateur évolutive dans des interactions multi-tours, avec des chutes de performance significatives. Ce constat souligne un gap fondamental dans la conception des agents collaboratifs, nécessitant des benchmarks adaptés pour évaluer cette capacité."
+   }
+  ],
+  "trend": "Les avancées actuelles convergent vers une maturation des systèmes autonomes, avec une focalisation sur la fiabilité (via des architectures structurées et des benchmarks robustes) et l'efficacité (optimisation des ressources et gestion dynamique du contexte). La tendance suggère un déplacement des efforts vers des solutions hybrides (neuro-symboliques) et des évaluations en conditions réelles, au-delà des performances brutes."
+ },
+ "items": [
+  {
+   "id": "3e8e4cb03a48ca39",
+   "title": "AREX: Towards a Recursively Self-Improving Agent for Deep Research",
+   "url": "https://huggingface.co/papers/2607.21461",
+   "summary": "Deep research requires agents to find answers that jointly satisfy multiple constraints. Discovering such answers is costly, whereas verifying a candidate can often be decomposed into tractable constraint-wise checks. This discovery--verification asymmetry suggests that a research agent should do more than simply search longer: it should recursively improve its current answer by verifying intermediate results and using the partially verified state to guide subsequent refinement. We introduce AREX, a family of Recursively Self-Improving (RSI) deep research agents. AREX alternates between an inner research loop that gathers evidence and constructs a provisional answer, and an outer self-improvement loop that audits the answer constraint-wise, identifies unresolved claims, and launches targeted follow-up research. To sustain RSI over long horizons, AREX learns an autonomous context-update tool that compresses growing interaction history into a compact improvement state preserving verified evidence and unresolved constraints, without relying on an external model. We train AREX on verified synthetic tasks and high-quality trajectories through agentic mid-training and long-horizon reinforcement learning. To mitigate sparse final rewards during long horizon learning, we emphasize key steps where decisive evidence is acquired or erroneous research directions are corrected. We instantiate a dense 4B model and a 122B-A10B Mixture-of-Experts model. Across BrowseComp, WideSearch, DeepSearchQA, Humanity's Last Exam (HLE), and other reasoning and tool-use benchmarks, AREX substantially outperforms comparable-scale baselines and remains competitive with models using substantially more activated parameters.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 50,
+    "arxiv_id": "2607.21461"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "AREX introduit des agents de recherche profonde *recursivement auto-améliorants* (RSI) qui alternent entre collecte d'évidence et vérification contrainte-par-contrainte. En apprenant un outil de mise à jour autonome du contexte, AREX réduit la dépendance aux annotations externes et améliore les réponses sur des tâches complexes à long terme.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi des agents de recherche profonde qui doivent répondre à des questions complexes en satisfaisant simultanément plusieurs contraintes. Actuellement, la découverte de solutions optimales est coûteuse en ressources, tandis que la vérification des réponses candidates peut souvent être décomposée en vérifications partielles et plus simples. Cette asymétrie entre découverte et vérification limite l'efficacité des agents existants.",
+    "methode": "AREX propose une architecture d'agents *Recursively Self-Improving* (RSI) qui alterne entre deux boucles : une boucle interne de recherche pour construire une réponse provisoire, et une boucle externe d'auto-amélioration pour auditer cette réponse par contrainte, identifier les éléments non résolus, et lancer des recherches ciblées. Pour gérer des horizons longs, AREX utilise un outil autonome de mise à jour du contexte, compressant l'historique des interactions en un état compact sans dépendre d'un modèle externe. L'entraînement combine *agentic mid-training* et apprentissage par renforcement sur des trajectoires longues, avec un accent sur les étapes clés (acquisition de preuves décisives ou correction d'erreurs) pour atténuer la rareté des récompenses finales.",
+    "resultats": "AREX, décliné en versions 4B et 122B-A10B (Mixture-of-Experts), surpasse significativement les modèles de taille comparable sur plusieurs benchmarks (BrowseComp, WideSearch, DeepSearchQA, Humanity's Last Exam, etc.). Il rivalise même avec des modèles utilisant bien plus de paramètres activés. Les détails quantitatifs précis (scores, métriques) ne sont pas fournis dans le résumé disponible.",
+    "limites": "Le document manque de précisions sur les limites techniques, comme la robustesse face à des tâches hors distribution ou la scalabilité des coûts computationnels pour les modèles 122B. L'absence de détails sur les mécanismes de compression du contexte ou la gestion des biais dans les trajectoires d'entraînement invite au scepticisme. Enfin, l'évaluation sur des benchmarks synthétiques ou contrôlés peut ne pas refléter les performances en conditions réelles.",
+    "verdict": "AREX mérite une attention particulière pour son approche innovante de l'auto-amélioration récursive et ses résultats prometteurs, mais son applicabilité réelle et ses limites opérationnelles nécessitent une analyse plus approfondie."
+   }
+  },
+  {
+   "id": "583ceed2cdec39d0",
+   "title": "Tencent WorkBuddy Bench: A Multi-Domain Coding-Agent Benchmark with Contamination-Resistant Task Construction",
+   "url": "https://huggingface.co/papers/2607.20911",
+   "summary": "We introduce Tencent WorkBuddy Bench, a multi-domain evaluation suite for coding agents; this report documents its construction methodology, scoring protocol, and a cross-model leaderboard. At its core is a unified evaluation framework for constructing and running distribution-informed coding-agent tasks across four work domains - Code, Web, Office, and Security. Rather than adapting public issue text, every task is reverse-engineered from a real commit, pull request, or business scenario and rewritten as a short, colloquial, role-played request, so that a task's prompt is not recoverable by web-searching the underlying issue, pull request, or commit thread. Because the dataset is released openly - task directories, environment images, evaluation harness, tests, and reference solutions - contamination resistance rests on this construction together with dataset versioning rather than on secrecy. The four subsets - repository-level engineering, front-end development, office and business workflows, and red-/blue-team security - probe complementary facets of real work, each with its own verification style. All are packaged in a uniform task-directory format and run, under a uniform and reproducible protocol, on two agent harnesses (CodeBuddy Code and Claude Code); the full open release makes the benchmark reproducible end to end and directly auditable, since any third party can re-run each task and inspect its content. Because each subset uses a different scoring instrument, scores are not comparable across subsets and the suite reports no suite-wide average. We report a cross-model leaderboard across several model families.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2607.20911"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Tencent WorkBuddy Bench est un benchmark multi-domaines pour évaluer les agents de codage, conçu pour résister à la contamination des données via une construction basée sur des commits réels et des scénarios métier. Il couvre quatre domaines (Code, Web, Office, Sécurité) et propose un protocole d'évaluation unifié avec un leaderboard cross-modèle.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le benchmark Tencent WorkBuddy Bench vise à résoudre deux défis majeurs dans l'évaluation des agents de codage : d'une part, la contamination des jeux de données par des informations accessibles via des recherches en ligne (ex. : problèmes publics de GitHub), et d'autre part, le manque de diversité des tâches couvrant des domaines professionnels variés (développement logiciel, web, bureautique, sécurité). Il cherche aussi à standardiser l'évaluation pour permettre des comparaisons reproductibles et auditable entre modèles.",
+    "methode": "La méthodologie repose sur une **construction inverse des tâches** à partir de commits, pull requests ou scénarios métiers réels, réécrits sous forme de requêtes courtes et colloquiales avec un rôle joué (ex. : 'En tant que développeur front-end, corrige ce bug d'affichage'). Cela rend les prompts non récupérables via des recherches web. Le benchmark couvre quatre domaines : (1) **Code** (ingénierie logicielle au niveau dépôt), (2) **Web** (développement front-end), (3) **Office** (automatisation de workflows bureautiques), et (4) **Security** (tests d'intrusion et défense). Chaque domaine utilise un **style de vérification adapté** (ex. : tests unitaires pour le code, validation visuelle pour le web). Les tâches sont distribuées dans un **format unifié de répertoires**, avec des environnements Docker, des harnais d'évaluation (CodeBuddy Code et Claude Code), et des solutions de référence. La résistance à la contamination repose sur cette construction et la versioning du dataset, plutôt que sur la confidentialité.",
+    "resultats": "Les résultats incluent un **classement multi-modèles** (leaderboard) couvrant plusieurs familles de modèles, mais les scores ne sont pas comparables entre domaines en raison de métriques spécifiques à chacun. Le benchmark est **entièrement open-source** (tâches, environnements, harnais, tests), permettant une reproductibilité et une auditabilité complètes. Aucune donnée quantitative précise (ex. : scores par modèle) n'est mentionnée dans le résumé disponible.",
+    "limites": "L'absence de **métrique agrégée** pour comparer globalement les modèles limite l'interprétation des performances. La résistance à la contamination dépend fortement de la qualité de la réécriture des tâches, ce qui pourrait être contourné par des modèles futurs plus avancés. Enfin, le benchmark se concentre sur des scénarios professionnels, excluant potentiellement des cas d'usage plus académiques ou grand public.",
+    "verdict": "Ce benchmark mérite une attention particulière pour son approche innovante de construction de tâches résistantes à la contamination et sa couverture multi-domaines, mais son utilité dépendra de l'adoption par la communauté et de la transparence des résultats détaillés."
+   }
+  },
+  {
+   "id": "bffdaf5c8b87b667",
+   "title": "NVIDIA-labs OO Agents: Native Python Object-Oriented Agents",
+   "url": "https://huggingface.co/papers/2607.20709",
+   "summary": "Traditional agent development is split across prompt templates, tool schemas, callback code, and workflow graphs. We present NVIDIA Object-Oriented Agents (NOOA), a model-agnostic Python framework for building reliable AI agents. NOOA takes a simpler approach: an agent is a Python object. Its methods are the actions the model can take, fields are its state, docstrings are its prompts, and its type annotations are contracts. A method whose code body consists of \"...\" is completed at runtime by an LLM-driven agent loop, while methods with normal bodies remain standard deterministic Python. This gives developers and agents the same interface, so agent behavior can be tested, traced, refactored, and improved just like other software. This paper makes three contributions. (1) We present the agent-as-a-Python-object programming model and the design principles behind it. Where Python has existing abstractions, we adopt them directly. Agent-specific capabilities--context, events, state rendering, long-term memory, and validated LLM loops--are exposed through simple Pythonic APIs, so both developers and agents share one familiar programming model. (2) We identify six model-facing ideas that NOOA is, to our knowledge, the first to combine on a single surface: typed input/output, pass-by-reference over live objects, code as action, programmable loop engineering, explicit object state, and model-callable harness APIs for context and events. We find the community already converging on several of these ideas--often as experimental or partial features--and present the comparison to encourage further adoption. (3) We demonstrate that current models use this interface effectively, both in targeted capability tests and on agentic and reasoning benchmarks such as SWE-bench Verified and Terminal-Bench 2.0 and ARC-AGI-3.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.20709"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "NVIDIA Object-Oriented Agents (NOOA) propose un framework Python pour concevoir des agents IA fiables en exploitant la programmation orientée objet, où les méthodes, états et prompts sont intégrés dans un modèle unifié. Cela facilite le test, le traçage et la maintenance des agents.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le développement d'agents IA traditionnels est fragmenté entre plusieurs composants disparates : templates de prompts, schémas d'outils, code de rappel (callbacks) et graphes de workflow. Cette fragmentation complique la maintenance, le test et l'évolution des agents, tout en créant une barrière entre le code déterministe et les comportements générés par les modèles de langage (LLM).",
+    "methode": "NVIDIA Object-Oriented Agents (NOOA) propose un cadre unifié où un agent est représenté comme un objet Python natif. Les méthodes de l'objet définissent les actions possibles (avec des corps de méthode soit déterministes, soit complétés par un LLM via '...'), les champs représentent l'état, les docstrings servent de prompts, et les annotations de type agissent comme des contrats. Le framework expose des API Pythoniques pour gérer le contexte, les événements, la mémoire à long terme et les boucles LLM validées. Six concepts clés sont intégrés : typage I/O, passage par référence d'objets actifs, code comme action, ingénierie de boucles programmable, état explicite des objets, et APIs appelables par le modèle pour le contexte et les événements.",
+    "resultats": "NOOA montre une efficacité avec les modèles actuels, validée sur des benchmarks comme SWE-bench Verified (résolution de problèmes logiciels), Terminal-Bench 2.0 (interactions en terminal) et ARC-AGI-3 (raisonnement abstrait). Les chiffres précis ne sont pas détaillés dans le résumé disponible, mais l'approche améliore la testabilité et la traçabilité des agents. La convergence avec des idées émergentes dans la communauté suggère une adoption potentielle accrue.",
+    "limites": "Le résumé ne précise pas les performances relatives par rapport à d'autres frameworks (ex : LangChain, AutoGen), ni les contraintes de scalabilité ou de compatibilité avec des modèles non-NVIDIA. L'approche repose sur une abstraction Python qui pourrait limiter l'interopérabilité avec d'autres langages ou environnements. Enfin, l'efficacité des LLM à exploiter pleinement cette interface reste à prouver pour des cas d'usage complexes ou non standardisés.",
+    "verdict": "Ce framework mérite une attention particulière pour son approche unificatrice et Pythonique, mais son adoption dépendra de démonstrations concrètes de supériorité face aux solutions existantes et de sa capacité à évoluer au-delà des benchmarks académiques."
+   }
+  },
+  {
+   "id": "4089a0c6911b6b14",
+   "title": "Sample-Efficient Learning from Agent Experience",
+   "url": "https://huggingface.co/papers/2607.21051",
+   "summary": "Real-world agent learning is often constrained by costly environment interactions, such as running time-consuming experiments or obtaining human feedback. In-context learning offers a highly sample-efficient way for agents to learn from their own interaction histories, but its gains disappear once that experience is removed from the context. Separately, context distillation provides a mechanism for internalizing contextual information into model weights. However, applying it to agents' interaction histories without sacrificing environment sample efficiency remains underexplored. We term this problem Experience Distillation and develop an implementation that requires no further environment interaction beyond the collected experience. Experiments on 749 curated software-engineering tasks and six text-adventure games show that it retains at least 64.8\\% of the gains from in-context learning across both domains, whereas direct supervised fine-tuning on the collected experience recovers only 3.8\\%. Compared with classical reinforcement-learning baselines, in-context learning from trial-and-error experience followed by Experience Distillation matches their performance with at least \\(9.6\\times\\) fewer environment samples.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.21051"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Ce travail formalise l'*Experience Distillation* pour internaliser les interactions passées des agents sans nouvelle collecte de données, réduisant drastiquement les coûts d'entraînement. Les expériences sur 749 tâches logicielles et 6 jeux textuels montrent que cette méthode préserve 64,8% des gains de l'*in-context learning* contre seulement 3,8% pour le fine-tuning classique, avec des performances comparables aux méthodes RL basées sur l'interaction.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "L'apprentissage des agents en conditions réelles est limité par le coût élevé des interactions avec l'environnement, comme l'exécution d'expériences chronophages ou la collecte de retours humains. Bien que l'apprentissage en contexte (in-context learning) permette une efficacité d'échantillonnage remarquable en exploitant l'historique d'interactions, ses bénéfices disparaissent dès que cet historique est retiré du contexte, ce qui pose un défi pour une utilisation durable et scalable.",
+    "methode": "Les auteurs introduisent le concept de *Experience Distillation*, une approche combinant l'apprentissage en contexte et la distillation de contexte pour internaliser les connaissances issues de l'historique d'interactions d'un agent directement dans les poids du modèle, sans nécessiter d'interactions supplémentaires avec l'environnement. La méthode s'appuie sur des techniques de distillation pour transférer les capacités acquises via l'apprentissage en contexte vers une version du modèle indépendante du contexte. Les expériences sont menées sur 749 tâches d'ingénierie logicielle et six jeux d'aventure textuels, où l'agent apprend à partir de ses propres essais et erreurs. Aucune interaction environnementale supplémentaire n'est requise au-delà des données d'expérience déjà collectées.",
+    "resultats": "Les résultats montrent que l'*Experience Distillation* conserve au moins 64,8 % des gains obtenus par l'apprentissage en contexte dans les deux domaines testés. En comparaison, un fine-tuning supervisé direct sur les mêmes données d'expérience ne récupère que 3,8 % de ces gains. Par ailleurs, cette approche atteint des performances comparables à celles des méthodes classiques d'apprentissage par renforcement (RL) tout en utilisant au moins 9,6 fois moins d'échantillons environnementaux.",
+    "limites": "Le document ne détaille pas les architectures spécifiques des modèles utilisés ni les hyperparamètres critiques, ce qui limite la reproductibilité. De plus, la généralisation de la méthode à des environnements plus complexes ou dynamiques reste à démontrer. Enfin, la dépendance à un historique d'interactions de qualité pourrait poser problème dans des scénarios où les données sont bruitées ou biaisées.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et ses résultats prometteurs en matière d'efficacité d'échantillonnage, bien que des validations supplémentaires soient nécessaires pour en confirmer la robustesse et l'applicabilité à grande échelle."
+   }
+  },
+  {
+   "id": "6a11679b385e31b3",
+   "title": "Robostral Navigate",
+   "url": "https://huggingface.co/papers/2607.20785",
+   "summary": "Deploying navigation systems at scale requires a recipe that minimizes sensor assumptions, generalizes across robot embodiments, and trains efficiently. Yet, today's best systems depend on depth sensors, multi-camera rigs, or pre-built maps, limiting the hardware they support and increasing deployment cost. We introduce Robostral Navigate, an 8B vision-language model built around this scalability objective. The model consumes only a stream of monocular RGB images - the most ubiquitous sensor across robotic platforms and predicts waypoints by pointing to the next target location in the current camera view. Operating purely in image space, rather than robot-specific coordinates, makes the policy naturally robust to changes in camera intrinsics and scene scale, enabling deployment across wheeled, legged, and aerial robots without recalibration. We generate 2.4 million trajectories across 350k simulated scenes to reduce the reliance on real-world data collection and scale easily. We further introduce a prefix-caching training recipe that packs entire episodes into single training sequences, reducing training tokens by 22x and cutting training time from months to days. A tree-based attention mask prevents conditioning on previous ground-truth actions, encouraging visually grounded action prediction, and reinforcement learning is used to further improve exploration and recovery capabilities. On the Room-to-Room and Room-Across-Room in Continuous Environments (R2R-CE and RxR-CE) benchmarks, Robostral Navigate sets a new state of the art. On R2R-CE, it achieves a 77.4% success rate, surpassing the best monocular method by 10.5 points and the strongest depth- or multi-camera system by 5.3 points despite using only a single RGB camera. On RxR-CE, it reaches 75.1% success rate, outperforming all monocular baselines.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.20785"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "llm",
+    "vision"
+   ],
+   "tldr": "Robostral Navigate est un VLM 8B pour la navigation robotique utilisant uniquement des images RGB monoculares, avec une politique basée sur des waypoints en espace image pour une généralisation multi-plateformes. Entraîné sur 2,4M de trajectoires simulées, il réduit les coûts de déploiement et accélère l'entraînement (22x moins de tokens) via un mécanisme de *prefix-caching*.",
+   "score": 8.8
+  },
+  {
+   "id": "35f8559be07c8d58",
+   "title": "ReferTrack: Referring Then Tracking for Embodied Visual Tracking",
+   "url": "https://huggingface.co/papers/2607.20061",
+   "summary": "Embodied visual tracking (EVT) requires a mobile agent to continuously follow a specific target described in natural language using only onboard vision. While recent vision-language-action (VLA) policies unify target identification and trajectory planning, their chain-of-thought (CoT) reasoning often operates in abstract spatial latents that are difficult to supervise and weakly aligned with explicit image-space detections. To address this, we introduce ReferTrack, a referring-then-tracking paradigm that grounds EVT using a single forward-facing camera. Our model first selects the target from an indexed set of bounding boxes, then decodes tracking waypoints conditioned on this image-grounded decision. To preserve target motion cues over time, ReferTrack maintains a sliding-window queue of previously selected bounding boxes, injecting their geometric features into the visual history via temporal-viewpoint-bbox indicator (TVBI) tokens. We further enhance target identification by co-training on a custom Refer-QA dataset. On EVT-Bench, ReferTrack achieves state-of-the-art single-view performance with success rates of 89.4%, 73.3%, and 74.1% on the single-target, distracted, and ambiguity tracking splits, respectively -- matching or even surpassing several multi-camera baselines on identification-heavy tasks. Finally, real-world deployments on legged and humanoid robots validate its robust sim-to-real transfer capabilities. Code is available at https://github.com/MedlarTea/referTrack.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 29,
+    "arxiv_id": "2607.20061"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "vision",
+    "agents"
+   ],
+   "tldr": "ReferTrack sépare la phase de *referring* (sélection de la cible via boîtes englobantes) et de *tracking* (prédiction de waypoints) pour l'EVT, améliorant l'alignement avec les détections explicites. Sur EVT-Bench, il atteint 89,4% de succès en single-target, surpassant les méthodes existantes avec une seule caméra frontale.",
+   "score": 8.8
+  },
+  {
+   "id": "4fdefd8c9fbf6043",
+   "title": "ICAE-Bench: Evaluating Coding Agents as Interactive Project Builders",
+   "url": "https://huggingface.co/papers/2607.21217",
+   "summary": "The recent emergence of vibe-coding workflows is changing what coding agents are expected to do. Instead of merely completing code under fully specified instructions, agents are increasingly expected to transform incomplete product intent into working software by combining various abilities including planning, requirement clarification, tool use, debugging, and repository-level construction. Yet existing benchmarks have not fully caught up with this shift, evaluating agents on static, fully specified tasks. In this paper, we introduce ICAE-Bench, a benchmark for evaluating coding agents under interactive project-building settings. The basic idea is to start from a fuzzy product requirement, simulating the dynamic paradigm with an automated User Agent. To make this setting both realistic and evaluable, ICAE-Bench introduces three key designs. First, to avoid the ambiguity of unconstrained fuzzy requirements, each task derives ambiguity from a precise real open-source repository with executable behavior. Second, to ensure high-quality and reproducible user simulation, ICAE-Bench grounds interaction through User Agent Data, allowing the User Agent to reveal hidden constraints without inventing new requirements or leaking implementation artifacts. Third, to evaluate open-ended repositories fairly, ICAE-Bench uses standardized black-box tests together with multi-dimensional diagnostics, including functional correctness, semantic and API similarity, structural fidelity, design quality, and interaction quality.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.21217"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "ICAE-Bench évalue les agents de codage dans des scénarios interactifs de construction de projets, où un agent utilisateur simule des exigences floues et des contraintes cachées. Le benchmark combine des données de dépôts open-source et un protocole d'interaction dynamique pour tester la planification et l'adaptation.",
+   "score": 8.8
+  },
+  {
+   "id": "d7472c384d8ba7d2",
+   "title": "Subliminal Clocks: Latent Time Modelling in Diffusion Language Models",
+   "url": "https://huggingface.co/papers/2607.01774",
+   "summary": "Diffusion Language Models (DLMs) have recently emerged as a promising alternative to autoregressive models. Unlike standard diffusion-based approaches, DLMs are not explicitly conditioned on a timestep, raising a natural question: do these models internally represent denoising progress, and how is such information used downstream? In this work, we show that DLMs do in fact encode a latent representation related to the diffusion timestep within their residual streams. We find that this signal can be reliably extracted using probes across layers, indicating that denoising progress is decodable from internal activations. We further demonstrate that steering the model along a low-dimensional subspace associated with the inferred timestep allows us to systematically modulate its notion of denoising progress, leading to predictable changes in model confidence and entropy. Finally, we analyse the geometry of the identified representation, showing that it exhibits structured and interpretable properties in activation space, and shedding light on how such a signal is processed by these models.",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 36,
+    "arxiv_id": "2607.01774"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Découverte d'une représentation latente du temps de diffusion dans les modèles de langage diffusion (DLMs), exploitable via des probes et modifiable pour contrôler la confiance et l'entropie du modèle, révélant une structure interprétable dans l'espace des activations.",
+   "score": 8.8
+  },
+  {
+   "id": "d140dea79f32e7f8",
+   "title": "Agentic coding without the cloud: evaluating open-weight large language models on longitudinal data preparation tasks",
+   "url": "https://arxiv.org/abs/2607.21482v1",
+   "summary": "Large language models (LLMs) and agents are now widely used tools in code development, with data typically sent to third-party cloud-based models. Their adoption in research using personal data is constrained by governance requirements that typically prohibit data transmission to external services. Locally deployable open-weight models offer an alternative since sensitive data never leave the local environment. We introduce an open-source framework for evaluating the efficacy of AI agents powered by open-weight LLMs on one of the most persistent bottlenecks in research on longitudinal population studies: data preparation. The framework comprises: a curated ground-truth dataset (cleaning scripts preparing six sweeps of data from a British cohort study), task definitions encompassing tasks such as category harmonization and multi-wave merging, and automated routines for evaluating the LLM-produced R code and outputted data. We benchmark LLMs across the (consumer grade) deployment spectrum to assess their efficacy in 20 data preparation tasks (creation of 102 variables). Current state-of-the-art, 31-35B parameter models almost saturated our benchmark (\"average task completion\" up to 87.9%). The performance of open-weight LLMs running on consumer-grade hardware shows promise of a viable path toward AI-assisted data preparation in governance-restricted research settings. Our framework is publicly available at: https://github.com/UCL-ARC/RRBench.",
+   "published": "2026-07-23T16:23:42+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mack Nixon, Liam Wright, Yevgeniya Kovalchuk, Alison Fang-Wei Wu, Martin Danka, Andy Boyd"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Cadre open-source pour évaluer des agents LLM open-weight sur des tâches de préparation de données longitudinales (ex : harmonisation de catégories), avec un jeu de données de référence et des métriques automatisées. Résultats : modèles de 31-35B paramètres saturant le benchmark (jusqu'à 86% de tâches complétées).",
+   "score": 8.6
+  },
+  {
+   "id": "1604c2ac67e36484",
+   "title": "K12-KGraph: A Curriculum-Aligned Knowledge Graph for Benchmarking and Training Educational LLMs",
+   "url": "https://huggingface.co/papers/2605.09635",
+   "summary": "Large language models are increasingly used in K-12 education, but existing benchmarks mainly test exam question answering rather than understanding how curriculum knowledge is structured and visually presented. We call this capability curriculum cognition. It covers prerequisite chains, concept taxonomies, experiment-concept links, pedagogical sequencing, and visual grounding. We introduce K12-KGraph, a curriculum-aligned knowledge graph extracted from official People's Education Press textbooks in mathematics, physics, chemistry, and biology across primary, middle, and high school. It contains nine node types and fourteen relation types covering curriculum structure and visual grounding. From this graph, we derive K12-Bench, a 23,640-question multi-select benchmark with five task families: Ground, Prereq, Neighbor, Evidence, and Locate. We also build K12-Train, a graph-guided supervised fine-tuning corpus of 7,335 samples, including 2,267 text-only QA pairs and 5,068 multimodal VQA pairs. On K12-Bench, Gemini-3-Flash achieves only 57 percent exact match and Gemma-4-31B-IT reaches 46 percent, with Prereq and Neighbor being the hardest tasks. Our training experiments show that domain-specific supervision can reduce this gap. Under a matched 2,300-sample budget, K12-Train-Text consistently outperforms equally sized subsets of eight mainstream instruction-tuning corpora on GaokaoBench and EduEval. For vision-language models, K12-Train-Full achieves the best overall results on Gaokao-MM, MDK12-medium, and K12Vista among all compared training configurations, despite using fewer samples than the full DataFlow and WizardLM baselines. It also surpasses both text-only and multimodal-only variants, showing that textual and visual supervision are complementary. We release the graph, benchmark, training data, and complete construction pipeline.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 36,
+    "arxiv_id": "2605.09635"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "architecture"
+   ],
+   "tldr": "K12-KGraph propose un graphe de connaissances pédagogiques structuré à partir de manuels scolaires chinois, accompagné de benchmarks (K12-Bench) et d'un corpus de fine-tuning (K12-Train) pour évaluer et améliorer les LLM dans des tâches de cognition curriculaire (chaînes de prérequis, taxonomies, liens expérimentaux). Les résultats montrent des performances limitées des modèles actuels (Gemini-3-Flash à 57%, Gemma-4-31B-IT à 46%), soulignant un gap dans la compréhension des structures pédagogiques.",
+   "score": 8.5
+  },
+  {
+   "id": "dcb622af86bf72eb",
+   "title": "Beyond Sycophancy: Structured Resistance and Compliance in LLM Moral Reasoning",
+   "url": "https://arxiv.org/abs/2607.21558v1",
+   "summary": "Building socially calibrated large language models, which can learn from others without simply yielding to them, requires more than reducing sycophancy as a one-dimensional failure mode. Models must distinguish when to incorporate others' perspectives from when to maintain a well-grounded moral judgment. We study the broader resistance-compliance process governing this distinction. Across three studies, we show that models' judgment revision is structured along three dimensions that parallel classic phenomena in human social psychology: the distance between an incoming view and the model's initial position, the source attribution of that view, and the coalition structure supporting it. Models are generally more receptive to nearby positions, more influenced by views presented as their own prior judgments, and differently responsive to group pressure. These findings recast sycophancy as one expression of a broader judgment-updating process shaped by social influence. Our framework provides a principled basis for distinguishing constructive belief revision from sycophantic compliance, thereby supporting better alignment in morally consequential interactions.",
+   "published": "2026-07-23T17:40:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Baihui Wang, Bernard Koch"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étude sur la résistance et la conformité dans le raisonnement moral des LLM, révélant que leur mise à jour de jugement suit des mécanismes structurés (distance aux positions, attribution des sources, pression de groupe), offrant une base pour distinguer révision constructive et sycophantie. Intéressant pour l'alignement des modèles dans des interactions moralement sensibles.",
+   "score": 8.3
+  },
+  {
+   "id": "09786265a3ec4b4c",
+   "title": "Test-Time Scaling via Error Localization",
+   "url": "https://arxiv.org/abs/2607.21453v1",
+   "summary": "Scaling inference-time computation has emerged as a reliable method to improve the performance of large language models on complex reasoning and programming tasks. However, standard approaches such as independent sampling and sequential multi-turn refinement operate without token-level credit assignment, resulting in computational inefficiency, since valid reasoning prefixes are frequently discarded. In this work, we introduce Test-Time Scaling via Error Localization (TTEL), an inference-time algorithm that utilizes fixed or environment feedback to perform token-level error localization. By comparing conditional probabilities under informed feedback against a null-context baseline, TTEL isolates the step at which an error occurred. The algorithm then truncates the trajectory and branches a new generation, maximally reusing the valid prefix. Extensive evaluations demonstrate that TTEL establishes strictly dominating Pareto frontiers across sequential reasoning domains, measured by pass-at-k vs. generated-token cost. With Qwen3-8B on LiveCodeBench, TTEL attains a pass@64 of 71.0% while generating approximately half as many tokens as independent sampling (360.4k vs. 735.0k). Generalizing to math benchmarks AIME-2025 and HMMT-2025, TTEL cleanly outperforms competing test-time baselines across both Qwen3-8B and Qwen3-4B-Thinking-2507.",
+   "published": "2026-07-23T15:55:29+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Rajiv Shailesh Chitale, Rahul Madhavan, Taneesh Gupta, Deepanway Ghosal, Aravindan Raghuveer"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Algorithme (TTEL) pour optimiser l'inférence des LLM en localisant les erreurs token par token via feedback fixe/environnement, permettant de réutiliser les préfixes valides et réduisant les tokens générés de moitié pour une performance équivalente (ex : pass@64 à 71% sur LiveCodeBench).",
+   "score": 8.3
+  },
+  {
+   "id": "7e1414e9c947a303",
+   "title": "Token Budget Saturation and Mechanistic Early Detection of Reasoning Non-Convergence in Chain-of-Thought Models",
+   "url": "https://arxiv.org/abs/2607.21433v1",
+   "summary": "Chain-of-thought reasoning models such as DeepSeek-R1-Distill-Qwen-7B exhibit a bimodal convergence pattern: generations either terminate within a token budget (converged) or exhaust it without reaching a conclusion (non-converged). We characterize this phenomenon empirically, showing that converged generations achieve 90.3% accuracy on AIME 1983-2024 while non-converged ones achieve only 6.6%, with an overall convergence rate of 62.0%. We then ask whether this outcome is detectable early in the thinking chain using internal model representations. Training linear probes on hidden-state activations at token positions 50-300, we find that layer-20 activations at token 150 achieve AUC 0.608 (+-0.080, 5-fold CV), reliably above chance even at token 50. Activation probes consistently outperform behavioral baselines derived from token entropy and repetition statistics. A sweep-level permutation test yields p=0.063 (100,000 permutations), consistent with a modest signal that our sample size cannot confirm at conventional thresholds. These findings suggest that convergence fate is partially encoded in intermediate representations well before the generation ends, opening a path toward early-exit inference and adaptive compute allocation.",
+   "published": "2026-07-23T15:37:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Renuka Oladri, Niveda Jawahar, Abdirisak Mohamed"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "L'étude caractérise un phénomène de convergence bimodale dans les modèles de raisonnement (ex: DeepSeek-R1) : les générations soit terminent dans le budget de tokens (convergence, 90.3% d'exactitude) soit l'épuisent sans conclusion (non-convergence, 6.6% d'exactitude). Des sondes linéaires sur les activations cachées détectent précocement (dès le token 150) cette non-convergence avec une AUC de 0.608, ouvrant la voie à des mécanismes d'arrêt précoce.",
+   "score": 8.3
+  },
+  {
+   "id": "96f5d905c9b5a0ed",
+   "title": "Euclid-MCP: A Model Context Protocol Server for Deterministic Logical Reasoning via Prolog",
+   "url": "https://arxiv.org/abs/2607.21412v1",
+   "summary": "Large Language Models (LLMs) excel at natural language understanding and generation but remain unreliable for multi-step logical reasoning, especially in safety-critical or compliance-sensitive domains. Recent neuro-symbolic approaches address this gap by coupling neural models with external symbolic engines, yet most integrations are bespoke and lack a standardized interface for tool-augmented agents. This paper presents Euclid-MCP, an open-source MCP server that provides deterministic logical reasoning via SWI-Prolog. Euclid-MCP introduces Euclid-IR, an engine-agnostic intermediate representation for Horn-clause logic that is human-readable, easy for LLMs to generate, and straightforward to compile into Prolog or alternative backends. The server exposes a compact tool interface that supports a translate-run-inspect-repair loop, enabling LLM clients to delegate inference while retaining full access to proof traces and derivation logs. We evaluate Euclid-MCP on a realistic IT security and compliance use case. Results show that while LLMs alone are sufficient on small knowledge bases, they hallucinate systematically on larger problems, whereas Euclid-MCP delivers exact answers with lower latency and more compact outputs. We argue that semantic RAG is fundamentally unsuited for rule enforcement, and that Euclid-MCP can serve as a stable, shared reasoning substrate for both RAG-based assistants and agentic systems.",
+   "published": "2026-07-23T15:15:37+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Bartolomeo Bogliolo"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Euclid-MCP introduit un protocole standardisé (MCP) pour intégrer des moteurs de raisonnement logique déterministe (Prolog) aux LLM, améliorant la fiabilité des agents dans des domaines critiques. Solution concrète pour combler le fossé neuro-symbolique avec une évaluation sur des cas de sécurité IT.",
+   "score": 8.3
+  },
+  {
+   "id": "e34a3e3542c755e3",
+   "title": "LLMs Get Lost in Evolving User Intent",
+   "url": "https://huggingface.co/papers/2607.20734",
+   "summary": "As LLMs become more capable, they are increasingly deployed as collaborative agents, taking on user-delegated tasks through iterative interaction. Yet genuine interaction is inherently dynamic: users rarely specify their intent upfront, instead disclosing, revising, and reshaping it as the conversation unfolds. Despite this, LLMs are still predominantly evaluated or trained in single-turn, fully-specified settings, leaving open a fundamental question: how well do LLMs track and act on user intent as it evolves over the course of a conversation? To study this, we introduce a framework that transforms static, single-turn tasks into dynamic multi-turn conversations in which the user's intent evolves across turns--incrementally revealed, revised, and at times redirected mid-conversation--while preserving each task's original evaluation protocol, enabling existing benchmarks to be reused as controlled testbeds without new annotation. Across multiple tasks, we surface a consistent phenomenon: strong static-setting performance does not transfer to the evolving-intent setting, with substantial drops across model families. Our findings point to a fundamental gap: today's LLMs do not yet faithfully track and act on the user's evolving intent, a capability invisible to static evaluation yet critical for future collaborative agents.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2607.20734"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude révèle que les LLM performants en settings statiques échouent à suivre l'intention utilisateur évolutive dans des interactions multi-tours, avec des chutes de performance significatives. Le cadre proposé permet de réutiliser des benchmarks existants pour évaluer cette capacité, mettant en lumière un gap fondamental dans la conception des agents collaboratifs.",
+   "score": 8.2
+  },
+  {
+   "id": "8ce96ceba225ab69",
+   "title": "Predictive Divergence Masks for LLM RL",
+   "url": "https://huggingface.co/papers/2607.10848",
+   "summary": "Reinforcement learning for large language models (LLMs) typically relies on trust-region masks to stabilize off-policy updates. The dominant PPO-style approach uses the sampled-token importance ratio for two criteria: a proximity criterion, which asks whether the policy has moved too far from the behavior policy, and a direction criterion, which asks whether the update pushes it farther away. Recent work DPPO improves the proximity criterion by replacing PPO's ratio-based test with a probability divergence between the behavior and training policies. However, its direction criterion is still inherited from PPO. A token can be masked only when the sampled-token importance ratio moves away from one. We observe that this ratio-based direction criterion is a single-sample proxy that can disagree in sign with the change of the divergence that defines the proximity criterion. We therefore propose the predictive divergence mask, which asks whether the next policy-gradient step will increase or decrease the same divergence used by the trust region. For the discrete softmax policies used in LLM RL, we derive this prediction in closed form. Because production rollout engines expose only a truncated (top-K) view of the vocabulary, we develop two lightweight top-K estimators for this prediction. Detailed analysis shows the divergence-based direction is better aligned with the realized change of the divergence than the sampled ratio, and the resulting masks improve RL training across model scales and precision settings.",
+   "published": "2026-07-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.10848"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Predictive Divergence Masks introduit une méthode de masquage pour le RL des LLM basée sur la divergence prédictive, corrigeant les incohérences des critères de proximité/direction actuels. La solution, dérivée analytiquement pour les politiques softmax, améliore la stabilité des mises à jour hors politique.",
+   "score": 8.2
+  },
+  {
+   "id": "26bcae1f35a7eb8b",
+   "title": "FVAttn: Adaptive Sparse Attention with Runtime Load Balancing for Video Generation",
+   "url": "https://huggingface.co/papers/2607.16190",
+   "summary": "Video Diffusion Transformers process long spatio-temporal sequences, making self-attention the main bottleneck in high-resolution video generation. Training-free sparse attention reduces this cost, but adaptive Top-p routing creates uneven per-head workloads under multi-GPU sequence parallelism. The resulting workload heterogeneity turns sparse attention into a rank-level straggler problem. We present , a training-free sparse-attention system that improves the distributed execution efficiency of adaptive sparse attention under multi-GPU sequence parallelism. uses Top-p routing, a Top-k safety floor, and video-aware block organization as the sparse-routing frontend, then repairs the materialized mask at runtime. Runtime Load Balancing migrates a small number of heavy heads via P2P communication to shorten the current critical path. Slack-Aware Sparse Augmentation fills residual non-critical-rank slack with additional high-value blocks, while overlap hides scheduling and migration overhead behind existing computation. On step-distilled Wan2.2 I2V, reduces average load imbalance from 1.34 to 1.08 and delivers a 4.41times attention speedup over FlashAttention, while achieving a 2.02--2.11times DiT inference speedup with competitive video quality.",
+   "published": "2026-07-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.16190"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Méthode FVAttn pour optimiser l'attention sparse dans les transformers vidéo (Wan2.2 I2V), réduisant le déséquilibre de charge entre GPU et accélérant l'inférence de 4.41x vs FlashAttention, avec une amélioration de l'efficacité distribuée.",
+   "score": 8.2
+  },
+  {
+   "id": "bafe4e5eea4bb7c7",
+   "title": "GS-Agent: Creating 4D Physical Worlds With Generative Simulation",
+   "url": "https://arxiv.org/abs/2607.21522v1",
+   "summary": "Creating dynamic and physically realistic 4D worlds from natural language descriptions is both fascinating and challenging. Traditional computer graphics methods rely on manual creation, requiring extensive human effort to fine-tune materials, motions, and visual fidelity. Recent advances in generative foundation models have sparked interest in learning to generate such 4D worlds from large-scale data; however, existing methods still struggle to ensure physical plausibility and controllability. In this work, we take a different path by leveraging foundation models to construct an agentic system that emulates how humans traditionally create 4D worlds, yet automates the entire process. We present GS-Agent, an end-to-end multi-agent framework that integrates physics engines in the loop to generate realistic, dynamic, and controllable 4D physical worlds from natural language. Inspired by how humans build 4D worlds, GS-Agent decomposes the task into entity management, covering 3D asset curation, material tuning, placement, and motion control, and rendering configuration, including camera and lighting manipulation. Multiple agents with distinct expertise interact with the physics engine via code, seek multimodal feedback, and collaborate to iteratively construct 4D worlds that align with the given descriptions. Experimental results show that GS-Agent effectively converts natural language into diverse and physically plausible 4D worlds exhibiting rich interactions among liquids, deformable objects, and rigid bodies, while achieving cinematic camera and lighting control. We envision GS-Agent as a foundation for a new paradigm in 4D world generation, empowering creative content creation and physical AI. Project page at https://umass-embodied-agi.github.io/gs-agent/",
+   "published": "2026-07-23T17:04:36+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hongxin Zhang, Chunru Lin, Junyan Li, Zhou Xian, Tsun-Hsuan Wang, Chuang Gan"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Système multi-agents (*GS-Agent*) générant des mondes physiques 4D réalistes à partir de descriptions textuelles, intégrant des moteurs physiques pour automatiser la création d'actifs 3D, matériaux, mouvements et rendu.",
+   "score": 8.0
+  },
+  {
+   "id": "718c372d45085803",
+   "title": "Agentic Context Management: Solving Agent Memory and Cost by Treating Them as Lifecycle and Architecture Problems",
+   "url": "https://arxiv.org/abs/2607.21503v1",
+   "summary": "Production AI agents' failures are less often due to an inability to reason well and more often because they cannot manage what is in their reasoning context: conversation histories, large prompts, large tool definitions, and ballooning tool outputs. Agents drown in their own accumulating history while paying a token cost that grows every turn, producing missing recalls within and across conversations. The incumbent response treats this as a storage-and-retrieval problem. We argue that framing is too narrow. Actively managing what an agent holds in mind is a lifecycle, not merely a store: it spans deciding what to remember, extracting and structuring it, choosing the right store per data type, consolidating and forgetting while preserving provenance, deciding what is relevant now, anticipating what is needed next, and compacting context to a budget without losing what matters. In serious production this operates not over a single user but across an organizational scope hierarchy. We name this discipline Agentic Context Management (ACM) and decompose it into five primitives: architecting, ingesting, scoping, anticipating, and compacting & consolidation. We then make the economic case: naive context accumulation grows token cost quadratically in conversation length, crude summarization buys linear cost at the price of an accuracy cliff, and only validated compaction achieves linear cost with preserved fidelity. We describe a reference implementation, Maximem Synap, that realizes the five primitives as a multi-tenant service and reports 92% on LongMemEval and 93.2% on LoCoMo under the configuration detailed in Section 6. We close with dimensions existing benchmarks do not yet capture, latency, token efficiency, and context-rot resistance, and the frontier of decision-level and organization-level context the category points toward.",
+   "published": "2026-07-23T16:51:31+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Gaurav Dadhich"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Proposition d'une discipline (*Agentic Context Management*) pour gérer dynamiquement le contexte des agents IA en production, structurant leur mémoire et réduisant les coûts via des primitives comme l'anticipation et la consolidation.",
+   "score": 8.0
+  },
+  {
+   "id": "690e88397d038ae1",
+   "title": "KroQuant: Kronecker-Structured Block Transforms for Efficient Post-Training Quantization of Diffusion Transformers",
+   "url": "https://arxiv.org/abs/2607.21446v1",
+   "summary": "Post-training quantization (PTQ) of diffusion transformers (DiTs) to W4A4 severely degrades output quality, because activations entering each linear layer contain outliers that 4-bit formats cannot represent. The standard fix applies an invertible linear transform to the activations and its inverse to the weights before quantizing both. Normalization layers between blocks force this transform to run online at every denoising step, making its inference computation cost the binding design constraint. Existing options trade quantization quality for inference cost: per-channel scaling (SmoothQuant) is computationally cheap but impacts the magnitude of the channels, which can harm quantization accuracy; fixed Hadamard transforms yield better quantization accuracy but require large block sizes that incur a high online cost; learned full-$d$ invertible transforms calibrate best but entail a prohibitive dense $d \\times d$ matrix multiplication (GEMM) per layer per step. We propose KroQuant, a PTQ method that applies a learned Kronecker-structured invertible transform to each 32-element block of the activation, storing less than half the parameters of per-channel scaling. The block-local structure runs as small tensor-core GEMMs, and on an MI350 GPU the KroQuant quantizer kernel is up to $14\\%$ faster than the SmoothQuant kernel. Offline LoRaQ weight calibration then absorbs the residual per-weight quantization error. On PixArt-$Σ$, SANA, and FLUX.1-schnell at W4A4 (MXFP4e2), KroQuant produces outputs closer to the FP reference than SVDQuant and LoRaQ on MJHQ-30K and SDCI, while preserving or improving image quality.",
+   "published": "2026-07-23T15:52:20+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yann Bouquet, Alireza Khodamoradi, Kristof Denolf, Mathieu Salzmann"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "Méthode (KroQuant) pour la quantification post-entraînement (W4A4) des transformers de diffusion (DiTs) via des transformations inversibles structurées en blocs Kronecker, réduisant les paramètres de 50% vs. scaling par canal tout en préservant la qualité de quantification.",
+   "score": 8.0
+  },
+  {
+   "id": "70ef640b19f00f9b",
+   "title": "When Trivia Is Not Trivial: Everyday Knowledge Failures in Multilingual LLMs",
+   "url": "https://arxiv.org/abs/2607.21445v1",
+   "summary": "Quiz rooms, trivia nights, and quiz shows challenge human knowledge across a wide range of topics, from canonical facts to everyday culture. In this paper, we examine whether large language models (LLMs) can perform competitively in such settings, using quiz-style questions to test them on both common and niche topics. We introduce TriviaRoomQA, a multilingual benchmark designed to evaluate everyday, culturally grounded, and long-tail knowledge across 288 topics. The benchmark contains 3,300 parallel multiple-choice questions in six European languages and additional 5,340 French-only questions for a more fine-grained case study. We evaluate 30 open-weight LLMs from European, Asian, and North American providers, covering models from 7 to 70B parameters. We find that models are strong on knowledge-intensive topics such as history, geography, and mathematics, but substantially weaker on everyday popular-culture topics such as celebrities, music, movies, and news. Moreover, model performance varies across languages even for the same underlying questions, suggesting that access to factual knowledge is not always language-independent. In sum, our dataset and experiments demonstrate an important knowledge gap which is not captured by existing academic-based saturated benchmarks.",
+   "published": "2026-07-23T15:52:00+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Anna Mosolova, Djamé Seddah"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Le papier introduit TriviaRoomQA, un benchmark multilingue de 8 640 questions à choix multiples évaluant les connaissances culturelles et factuelles des LLMs sur 288 sujets dans 6 langues européennes. Les résultats montrent une performance élevée sur des domaines comme l'histoire ou les mathématiques, mais des lacunes marquées sur la culture populaire (célébrités, musique), avec des variations significatives entre langues, révélant des biais dans l'accès aux connaissances.",
+   "score": 8.0
+  },
+  {
+   "id": "5b9e9187ac6f6a2b",
+   "title": "Anti-Periodic Positional Encoding: Möbius Boundary Conditions Make In-Context Retrieval Reliable",
+   "url": "https://arxiv.org/abs/2607.21405v1",
+   "summary": "Möbius RoPE is a rotary positional encoding built on the anti-periodic frequency ladder $θ_i=π(2i+1)/N$: every rotation plane advances by an odd multiple of $π$ across the training context, so the positional holonomy is $-1$ and the two ends of the sequence are deterministically coupled through a closed-form Dirichlet \"dipole\"; to our knowledge this is the first anti-periodic boundary condition in positional encoding. We verify the theory numerically to $\\sim 10^{-6}$ and pretrain 48 models spanning six 160M-class and three 410M-class arms (2B FineWeb-Edu tokens each; the hybrid arm puts Möbius frequencies on 25% of heads). Hybrid perplexity is unchanged (29.66 vs. 29.72), but needle-in-a-haystack retrieval becomes reliable: $90.3\\pm5.7\\%$ versus $63.3\\pm31.4\\%$ at context 512 ($n=6$ seeds), observed worst seed 86% versus 14%, robust variance tests $p=0.013$-$0.029$ (unadjusted), recurring at 410M (Levene $p=0.040$). Matched controls isolate the mechanism: an aperiodic ladder in the same frequency band reproduces none of the effect, and a periodic (holonomy $+1$) ladder only a fraction. Swapping trained models' frequency table back to standard RoPE (weights frozen) collapses retrieval, with damage concentrated on far needles: trained models depend on this long-range geometry. A NoPE arm is even more reliable at short context but pays a 13% perplexity tax and extrapolates worst; only the anti-periodic hybrid pairs baseline perplexity with a high reliability floor. The effect is scoped to single-needle retrieval within the training window; a one-line frequency swap thus provides zero-cost insurance against the retrieval seed lottery.",
+   "published": "2026-07-23T15:04:44+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ji Ho Bae"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "llm"
+   ],
+   "tldr": "Möbius RoPE, une variante anti-périodique de l'encodage positionnel, améliore significativement la fiabilité de la récupération en contexte (needle-in-a-haystack) sans sacrifier la perplexité. Mécanisme théorique validé empiriquement sur des modèles de 160M à 410M paramètres.",
+   "score": 8.0
+  },
+  {
+   "id": "c3c4f3a4a40f3acf",
+   "title": "wanshuiyin/Anti-Autoresearch",
+   "url": "https://github.com/wanshuiyin/Anti-Autoresearch",
+   "summary": "Don't trust an autoresearch paper at face value. Reviewer-side integrity forensics (self-consistency + fabrication), deterministic verdict. 61 signals: 46 integrity hack-patterns (families A–H, verdict-bearing) + 13 zero-weight AI writing-style impressions (AIS) + 2 advisory. Not an opaque AI-text classifier. The dual of ARIS.",
+   "published": "2026-06-26T04:19:19Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 108,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "outils"
+   ],
+   "tldr": "Outil Python pour détecter les incohérences et fraudes dans les articles de recherche (auteurs-reviewers). Approche rigoureuse et utile pour la vérification de l'intégrité scientifique, avec des patterns de détection concrets.",
+   "score": 8.0
+  },
+  {
+   "id": "e4e6bb9b34df32ea",
+   "title": "Streaming Multi-Agent Autoregressive Diffusion Model with World State Registers",
+   "url": "https://huggingface.co/papers/2607.21594",
+   "summary": "Multi-agent interactive world models should not only generate consistent observations, but also maintain world states that persist across agents and evolve across views. Existing autoregressive video diffusion pipelines carry forward observation history as conditioning context, which makes shared state difficult to maintain in multi-agent and multi-view settings. We present WorldWeaver (W^2), a streaming multi-agent video diffusion model that augments rollout with cross-agent world state registers: learnable tokens that store shared world information, track individual agent status, and are dynamically updated after each generated chunk. We ground these registers with supervision signals spanning individual agent status, global state views including bird's-eye views, and scene text. We further improve the architecture with a Mixture-of-Transformers design that uses separate weights for world state modeling and visual frame modeling. Extensive experiments in two-agent Minecraft video generation show that explicit world-state modeling improves logical consistency and generation quality.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.21594"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "WorldWeaver (W²) est un modèle de diffusion vidéo multi-agents avec des registres d'état partagés pour maintenir la cohérence logique entre agents et vues. Les expériences sur Minecraft montrent une amélioration de la qualité de génération grâce à la modélisation explicite de l'état du monde.",
+   "score": 7.9
+  },
+  {
+   "id": "3738e9d61fd88bf5",
+   "title": "3D-Aware VLMs with Implicit and Explicit Geometries",
+   "url": "https://arxiv.org/abs/2607.21595v1",
+   "summary": "Despite rapid progress, most existing vision-language models (VLMs) built from 2D visual inputs often struggle when handling various 3D tasks that require fine-grained spatial understanding and reasoning. To bridge this gap, we present VLM-IE3D, a unified framework that enhances the 3D spatial awareness of VLMs by equipping them with both implicit and explicit 3D geometries learned from RGB videos. Our VLM-IE3D introduces Implicit Geometry Tokens (IGTs) that capture high-level geometric priors from input videos, as well as complementary Explicit Geometry Tokens (EGTs) that encode detailed geometric structures from reconstructed 3D attributes. On top of that, VLM-IE3D comes with a 3D-aware adapter that effectively fuses the two types of geometric representations with 2D visual cues. This RGB-only design injects strong 3D inductive biases for fine-grained spatial understanding and reasoning without requiring any additional 3D inputs. Extensive experiments show that VLM-IE3D achieves superior performance consistently across various 3D tasks including 3D video detection, 3D visual grounding, 3D dense captioning, and spatial reasoning. Code and models are available at https://github.com/Vegetebird/VLM-IE3D.",
+   "published": "2026-07-23T17:59:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wenhao Li, Xueying Jiang, Quanhao Qian, Deli Zhao, Ran Xu, Shijian Lu"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "VLM-IE3D est un cadre unifié qui améliore la conscience spatiale 3D des modèles vision-langage (VLMs) en intégrant des géométries implicites (tokens IGT) et explicites (tokens EGT) extraites de vidéos RGB, sans nécessiter d'entrées 3D. Il se distingue par son adaptateur 3D-aware qui fusionne ces représentations avec les indices visuels 2D, permettant des performances supérieures sur des tâches comme la détection vidéo 3D ou le raisonnement spatial.",
+   "score": 7.7
+  },
+  {
+   "id": "62233e453547de43",
+   "title": "Windowed-MTP: Removing the Full-Context Draft-KV Tax at Million-Token Context",
+   "url": "https://arxiv.org/abs/2607.21535v1",
+   "summary": "Speculative decoding accelerates autoregressive generation by having a cheap draft propose tokens that a target verifies in parallel. Frontier models increasingly ship a built-in Multi-Token-Prediction (MTP/NEXTN) draft head under the assumption that the draft is negligibly cheap. At million-token context this breaks: an MTP draft head typically runs full attention over the entire KV cache at every draft step, so its read grows linearly with context and comes to dominate the draft cost -- precisely where speculation is most valuable. The effect compounds with draft length (a deep native draft can turn net-negative, slower than no speculation) and sharpens under hybrid/linear-attention targets, where cheaper verification leaves the draft's full-attention read exposed. We apply a StreamingLLM-style sliding window plus attention sink to the draft's attention only (Windowed-MTP), leaving full-attention verification intact. It is training-free, drop-in, and lossless by construction: the full-attention target still decides every accepted token, so windowing changes only which tokens are proposed, never which are accepted. It bounds the draft's KV working set to a constant, dropping ~99% of KV entries at 1M. Across three architecture families (Qwen GDN-MoE 35B/122B and a Mamba2-hybrid NoPE 120B) at 1M context on a single GPU in SGLang, windowing cuts the per-decode-step cost over the shipping native MTP draft by +28% to +44%, an input-invariant margin that widens with context. Since per-token latency is this cost divided by acceptance length, at matched acceptance end-to-end decode latency improves by the same amount, and more where windowing also lifts acceptance, while preserving the target's verified output distribution. Finally, the unread draft KV -- 7.7-11% of total KV at 1M -- is reclaimed via a compact ring buffer at no acceptance or quality cost.",
+   "published": "2026-07-23T17:21:44+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Alagappan Valliappan"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode Windowed-MTP pour réduire le coût du draft-KV en contexte million-token dans le décodage spéculatif, en appliquant un fenêtrage sliding-window uniquement à l'attention du draft. Réduit de ~99% la mémoire KV du draft sans perte de qualité, résolvant le problème de coût linéaire avec la taille du contexte.",
+   "score": 7.7
+  },
+  {
+   "id": "6cfadec773e50db8",
+   "title": "From Resource Flow to Executable Tests: Petri-Net-Guided LLM Test Generation for Concurrent Stateful Rust APIs",
+   "url": "https://arxiv.org/abs/2607.21530v1",
+   "summary": "Concurrent stateful library APIs expose behavior through evolving resource ownership, lifecycle states, and competing interleavings. Large language models can synthesize executable Rust tests, but their outputs often violate API preconditions, remain shallow, or reduce concurrency to accidental sequential traces. Conversely, model-based and systematic testing techniques provide semantic control but commonly require substantial handwritten code to turn abstract scenarios into executable tests. This paper addresses the gap between formal scenario design and low-cost test concretization. We present a Petri-net-guided methodology for test generation over concurrent stateful Rust APIs. The method represents API resources, lifecycle conditions, and causal dependencies as colored tokens and transitions; derives legal deep-state, near-legal, and partial-order concurrent scenarios; and uses these scenarios as a constrained intermediate representation for LLM-based code synthesis. A local-faithfulness contract and structural repair loop preserve the modeled intent during concretization, while Petri-guided schedule shaping prioritizes high-conflict concurrency skeletons for systematic exploration. A layered semantic oracle then distinguishes synthesis failures from violations of the target API's expected behavior.",
+   "published": "2026-07-23T17:15:53+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kaiwen Zhang, Guanjun Liu"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Méthode utilisant des réseaux de Petri pour guider la génération de tests concurrents et stateful pour des APIs Rust, combinant formalisme sémantique et synthèse par LLM afin d'améliorer la couverture et la validité des tests générés.",
+   "score": 7.7
+  },
+  {
+   "id": "83e4a5f56a69a169",
+   "title": "Compact Latent Coordination for Autonomous Vehicles at Unsignalized Intersections",
+   "url": "https://arxiv.org/abs/2607.21488v1",
+   "summary": "Coordinating autonomous vehicles at unsignalized intersections remains a critical challenge for multi-agent reinforcement learning (MARL) systems, which typically struggle with combinatorial action spaces, reliance on privileged information, or rigid agent designs. We propose Master-Agent Proto-plan System (MAPS), a hierarchical deep reinforcement learning (DRL) architecture in which a centralized Master agent generates a compact, continuous embedding, denoted as proto-plan, that encodes a global coordination strategy. Decentralized Worker agents integrate this embedding with local observations to execute vehicle-specific control, decoupling strategic intent from tactical execution and enabling independent optimization of each module. As a proof-of-concept evaluation of this coordination mechanism, we test MAPS across 72 intersection configurations in HighwayEnv. MAPS achieves collision-free navigation while significantly reducing average travel time, outperforming state-of-the-art baselines. The learned proto-plans further exhibit robust generalization: a system trained with three agents achieves a 94% success rate when deployed zero-shot to five-agent scenarios, confirming that proto-plan-based hierarchical learning provides a promising framework for multi-vehicle coordination.",
+   "published": "2026-07-23T16:28:35+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Gil Lifshits, Igal Bilik, Gilad Katz"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Proposition d'une architecture hiérarchique (MAPS) pour la coordination de véhicules autonomes en intersections non signalées, utilisant un agent central générant des embeddings globaux ('proto-plans') pour guider des agents décentralisés. Résultats : navigation sans collision, réduction du temps de trajet, et généralisation robuste (94% de succès en zero-shot pour 5 agents après entraînement avec 3).",
+   "score": 7.7
+  },
+  {
+   "id": "2af7e9352c3787b4",
+   "title": "AREX: Towards a Recursively Self-Improving Agent for Deep Research",
+   "url": "https://arxiv.org/abs/2607.21461v1",
+   "summary": "Deep research requires agents to find answers that jointly satisfy multiple constraints. Discovering such answers is costly, whereas verifying a candidate can often be decomposed into tractable constraint-wise checks. This discovery--verification asymmetry suggests that a research agent should do more than simply search longer: it should recursively improve its current answer by verifying intermediate results and using the partially verified state to guide subsequent refinement. We introduce AREX, a family of Recursively Self-Improving (RSI) deep research agents. AREX alternates between an inner research loop that gathers evidence and constructs a provisional answer, and an outer self-improvement loop that audits the answer constraint-wise, identifies unresolved claims, and launches targeted follow-up research. To sustain RSI over long horizons, AREX learns an autonomous context-update tool that compresses growing interaction history into a compact improvement state preserving verified evidence and unresolved constraints, without relying on an external model. We train AREX on verified synthetic tasks and high-quality trajectories through agentic mid-training and long-horizon reinforcement learning. To mitigate sparse final rewards during long horizon learning, we emphasize key steps where decisive evidence is acquired or erroneous research directions are corrected. We instantiate a dense 4B model and a 122B-A10B Mixture-of-Experts model. Across BrowseComp, WideSearch, DeepSearchQA, Humanity's Last Exam (HLE), and other reasoning and tool-use benchmarks, AREX substantially outperforms comparable-scale baselines and remains competitive with models using substantially more activated parameters.",
+   "published": "2026-07-23T16:05:46+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shuqi Lu, Chaofan Li, Kun Luo, Zhang Zhang, Hui Wang, Hongwang Xiao"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Agent de recherche profonde (AREX) utilisant une boucle de vérification récursive pour améliorer itérativement les réponses via des contraintes décomposables. Méthode : compression autonome de l'historique et ciblage des lacunes. Résultats : entraînement sur tâches synthétiques et trajectoires agentiques.",
+   "score": 7.7
+  },
+  {
+   "id": "7cee3929f0fcea4b",
+   "title": "PATS: Policy-Aware Training Scaffolding for Agentic Reinforcement Learning",
+   "url": "https://arxiv.org/abs/2607.21419v1",
+   "summary": "In long-horizon LLM agent reinforcement learning, weak policies often repeat similar failures, producing uninformative rollout trajectories and limiting effective policy optimization. Existing skill-centric methods improve exploration by optimizing, filtering, or internalizing reusable skills. However, they remain centered on the skills themselves rather than being designed as adaptive training-time support for the evolving policy. To address this, we propose a policy-centric training paradigm that reframes skills as a dynamic training scaffold. Our framework, Pats, converts rollout groups from the latest policy into evidence cards and uses task-specific evaluation to adjust the context used in subsequent rollouts. Concrete guidance helps weak policies to complete challenging tasks. As policy improves, redundant context is revised or removed to reduce reliance on explicit guidance while preserving useful rollout variation. The policy is optimized with environmental rewards using standard RLVR, and the training scaffold is discarded at deployment. On ALFWorld and WebShop, Pats improves over strong baselines by up to 18.6%. Across seven search-augmented QA benchmarks, it remains competitive while using 32.1% fewer prompt tokens than the baseline.",
+   "published": "2026-07-23T15:24:35+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yipeng Shi, Zhipeng Ma, Yue Wang, Qitai Tan, Yang Li, Peng Chen"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "PATS (Policy-Aware Training Scaffolding) introduit un échafaudage d'entraînement dynamique pour l'apprentissage par renforcement agentique, convertissant les rollouts en cartes d'évidence pour guider les politiques faibles. Le cadre améliore les performances jusqu'à 18.6% sur ALFWorld/WebShop et maintient une compétitivité sur 7 benchmarks de QA augmentée, tout en étant jetable à l'inférence.",
+   "score": 7.7
+  }
+ ]
+}
