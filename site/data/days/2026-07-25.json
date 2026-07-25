@@ -1,0 +1,644 @@
+{
+ "date": "2026-07-25",
+ "digest": {
+  "headline": "TableVerse et FinanceComplexQA redéfinissent les benchmarks pour la robotique et les agents financiers avec des jeux de données à grande échelle et des évaluations rigoureuses",
+  "overview": "La veille du 2026-07-25 met en lumière des avancées majeures en robotique, évaluation d'agents et optimisation de modèles. Les contributions se concentrent sur des benchmarks robustes, des méthodes d'entraînement efficaces et des outils pour améliorer la généralisation et l'interprétabilité des systèmes IA. Plusieurs travaux abordent également les limites des approches existantes dans des contextes réalistes, comme les environnements faiblement éclairés ou les documents financiers complexes.",
+  "highlights": [
+   {
+    "title": "TableVerse : un benchmark réaliste pour la manipulation robotique",
+    "text": "TableVerse introduit un pipeline Real2Sim générant 100 000 scènes tabletop physiquement cohérentes à partir d'images réelles, avec des trajectoires de manipulation annotées. Ce jeu de données permet d'entraîner des politiques de robotique généralisables, comblant le fossé entre simulation et déploiement réel. Son approche systématique et son échelle en font un outil clé pour évaluer et améliorer les performances des systèmes de manipulation."
+   },
+   {
+    "title": "FinanceComplexQA et ProVisE : évaluer les agents et la cognition spatiale",
+    "text": "FinanceComplexQA propose un benchmark open-source pour évaluer le raisonnement agentique sur 1 009 documents financiers complexes, avec une méthodologie *Agent-as-a-Judge* et des questions bilingues. Parallèlement, ProVisE et SpatialGen-Bench évaluent la cognition spatiale des modèles génératifs via des réponses visuelles protocolisées, évitant les biais des évaluations textuelles. Ces travaux soulignent l'importance de benchmarks spécialisés pour mesurer les capacités des systèmes dans des domaines critiques."
+   },
+   {
+    "title": "Optimisation des modèles vidéo et distillation d'agents",
+    "text": "Self Gradient Forcing (SGF) améliore la cohérence temporelle des modèles vidéo autorégressifs en restaurant la supervision des gradients pour les latents générés, sans backpropagation complète. ReOPD optimise quant à lui l'on-policy distillation multi-tours pour agents LLM en réutilisant des trajectoires pré-collectées, réduisant les coûts d'interaction. Ces méthodes adressent des défis clés en optimisation et généralisation des modèles séquentiels."
+   },
+   {
+    "title": "SLAM et perception en conditions réelles",
+    "text": "Une étude comparative révèle les limites des systèmes SLAM classiques (ORB-SLAM3, DSO) en environnements faiblement éclairés, où les méthodes learning-based (DPVO, DPV-SLAM) montrent une robustesse relative malgré des erreurs absolues élevées. Parallèlement, SDM sépare explicitement les dynamiques de caméra et d'objets dans les vidéos via un modèle auto-supervisé, améliorant la robustesse des représentations de mouvement. Ces travaux mettent en lumière les défis persistants de la perception en conditions non idéales."
+   },
+   {
+    "title": "Outils et frameworks pour agents et évaluation",
+    "text": "Cognitive-Core-Skills propose une taxonomie universelle des compétences cognitives pour LLM et agents, avec 159 cartes de compétences et benchmarks intégrés. OpenForgeRL permet d'entraîner des agents basés sur des *harnesses* (comme Claude Code) de manière end-to-end, en découplant inférence et entraînement. Ces outils facilitent l'évaluation et l'optimisation des systèmes agents dans des environnements réels, tout en standardisant les métriques de performance."
+   }
+  ],
+  "trend": "Les avancées récentes confirment une tendance vers des benchmarks plus réalistes et spécialisés, ainsi que des méthodes d'optimisation ciblant des défis spécifiques (cohérence temporelle, généralisation, efficacité). L'intégration de frameworks open-source et de taxonomies standardisées suggère une maturation des outils pour évaluer et déployer des systèmes IA dans des contextes industriels ou robotiques."
+ },
+ "items": [
+  {
+   "id": "c11322b312ee4c9b",
+   "title": "TableVerse: A Large-scale Tabletop Dataset with Real-world Grounded Layouts for Generalizable Manipulation",
+   "url": "https://huggingface.co/papers/2607.21017",
+   "summary": "The development of generalizable robotic manipulation policies is inherently bounded by the availability of large-scale, high-fidelity scene data. While recent automated synthesis methods attempt to bridge this gap via text-to-layout hallucination or simplified procedural generation, they frequently suffer from physical implausibility and fail to capture the complex, dense clutter of actual human environments. In this paper, we introduce TableVerse, a fully automated Real2Sim pipeline that shifts the paradigm from imaginative layout generation to deterministic reconstruction from unstructured, in-the-wild image data. Our framework seamlessly processes unscripted internet media into high-fidelity, simulation-ready tabletop environments with accurate metric scales, authentic topologies, and verified mechanical stability. Furthermore, an automated task-conditioned trajectory generation framework is integrated to synthesize high-quality, collision-free pick-and-place demonstrations. Leveraging this complete pipeline, we construct the TableVerse-100K Dataset, a large-scale corpus comprising 100,000 unique, physically consistent environments paired with interactive manipulation trajectories. By capturing diverse asset compositions, realistic spatial distributions, and high-quality demonstrations, TableVerse-100K establishes a highly scalable and high-fidelity data foundation, providing significant value to facilitate future research in generalizable robotic manipulation tasks.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.21017"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "TableVerse introduit un pipeline Real2Sim pour reconstruire des environnements tabletop réalistes à partir d'images in-the-wild, générant 100k scènes physiquement cohérentes et des trajectoires de manipulation. Ce jeu de données (TableVerse-100K) permet d'entraîner des politiques de robotique généralisables avec des applications concrètes en manipulation.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le développement de politiques de manipulation robotique généralisables est limité par le manque de données de scènes réalistes à grande échelle. Les méthodes actuelles de génération automatique de scènes, comme la synthèse textuelle ou procédurale simplifiée, produisent souvent des environnements physiquement irréalistes et ne reflètent pas la complexité des environnements humains réels, notamment en termes d'encombrement dense et de dispositions naturelles.",
+    "methode": "TableVerse propose une approche *Real2Sim* entièrement automatisée, qui reconstruit de manière déterministe des environnements de table à partir d'images non structurées issues du monde réel (médias en ligne). Le pipeline traite ces images pour générer des scènes simulables avec des échelles métriques précises, des topologies authentiques et une stabilité mécanique vérifiée. Un cadre de génération automatique de trajectoires, conditionné par des tâches, est intégré pour produire des démonstrations de manipulation *pick-and-place* sans collision. La méthode évite ainsi la génération imaginative de layouts en s'appuyant sur des reconstructions fidèles aux données réelles.",
+    "resultats": "Le pipeline a permis de construire le jeu de données *TableVerse-100K*, contenant 100 000 environnements uniques et physiquement cohérents, accompagnés de trajectoires de manipulation interactives. Ce corpus capture une diversité d'agencements d'objets, des distributions spatiales réalistes et des démonstrations de haute qualité, offrant une base de données scalable et haute fidélité pour la recherche en manipulation robotique généralisable.",
+    "limites": "Les détails techniques sur la précision de la reconstruction métrique ou les critères de validation de la stabilité mécanique ne sont pas explicitement fournis. De plus, la dépendance aux images *in-the-wild* pourrait introduire des biais liés à la qualité ou à la représentativité des sources utilisées. Enfin, l'évaluation comparative avec d'autres méthodes de génération de données reste à clarifier.",
+    "verdict": "TableVerse mérite une attention particulière pour son approche innovante de reconstruction réaliste et son potentiel à combler un manque critique de données pour la manipulation robotique généralisable."
+   }
+  },
+  {
+   "id": "315b391b756d57a6",
+   "title": "FinanceComplexQA: Benchmarking Agentic Reasoning on Industrial-grade Financial Documents",
+   "url": "https://huggingface.co/papers/2607.19238",
+   "summary": "Agentic Reasoning has become a transformative force in financial analysis due to its ability to integrate large-scale information and generate reliable and accurate content. However, when handling complex real-world problems, different agents still show significant performance variation. In this work, we design Finance-LaTeX SKILL, a skill for synthesizing financial documents with complex layouts based on expert knowledge. Using an agent workflow built on this skill, we generate 2,000 professional financial documents along with 6,000 high-quality question-answer pairs. To evaluate the overall capability of agents, we introduce FinanceComplexQA, a comprehensive open-ended generation benchmark for financial documents that closely resembles real-world scenarios. It contains 2,026 deep research tasks targeting 1009 financial documents. FinanceComplexQA has 8 key features: bilingual support; coverage of six mainstream scenarios and seven tasks; expert-level document reasoning questions; deep research of complex layouts; relatively stable and permanent reference answers; and precise evaluation through an Agent-as-a-Judge with multiple evaluation metrics. Using FinanceComplexQA, we conduct a comprehensive evaluation of leading RAG systems and agentic reasoning tools for financial document QA. Through identifying and analyzing failure cases, we provide an in-depth study of their capabilities in numerical computation, multi-hop reasoning, content summarization, and industry analysis.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.19238"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "FinanceComplexQA est un benchmark open-source évaluant le raisonnement agentique sur des documents financiers complexes (2 026 tâches, 1 009 documents), avec des questions bilingues et une évaluation *Agent-as-a-Judge*. Complété par Finance-LaTeX SKILL pour synthétiser des documents à mise en page complexe.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le benchmark FinanceComplexQA vise à résoudre le défi de l'évaluation fiable des systèmes d'agents conversationnels et de raisonnement (Agentic Reasoning) dans le domaine financier, où les documents complexes et les questions nécessitent une compréhension approfondie, une analyse multi-sauts et une précision numérique. Actuellement, les performances des agents varient considérablement face à des scénarios industriels réalistes, limitant leur adoption en production.",
+    "methode": {
+     "synthese_documents": "Les auteurs ont développé *Finance-LaTeX SKILL*, une compétence spécialisée pour générer des documents financiers réalistes avec des mises en page complexes, en s'appuyant sur des connaissances expertes. Cette approche permet de simuler des rapports annuels, des prospectus ou des analyses sectorielles avec une fidélité élevée aux standards professionnels.",
+     "generation_jeu_donnees": "À partir de cette compétence, un workflow d'agent a produit 2 000 documents financiers et 6 000 paires question-réponse de haute qualité, couvrant 6 scénarios (ex : analyse de risques, évaluation d'entreprises) et 7 tâches (ex : calculs numériques, raisonnement multi-hop).",
+     "benchmark": "FinanceComplexQA inclut 2 026 tâches de recherche approfondie sur 1 009 documents, avec 8 caractéristiques clés : support bilingue (anglais/chinois), questions exigeant un raisonnement expert, évaluation via un *Agent-as-a-Judge* avec métriques multiples (précision, cohérence, etc.), et réponses de référence stables pour une évaluation reproductible.",
+     "evaluation": "Le benchmark a été utilisé pour tester des systèmes RAG (Retrieval-Augmented Generation) et des outils de raisonnement agentique, en analysant leurs performances sur des critères comme la computation numérique, la synthèse de contenu et l'analyse sectorielle."
+    },
+    "resultats": "Les évaluations révèlent des écarts significatifs entre les systèmes, avec des faiblesses identifiées dans le raisonnement multi-hop et la précision des calculs financiers. Les auteurs fournissent une analyse détaillée des cas d'échec, mais les chiffres précis (ex : scores par modèle ou tâche) ne sont pas disponibles dans le résumé fourni. Le benchmark est présenté comme une référence ouverte pour stimuler les améliorations dans le domaine.",
+    "limites": {
+     "representativite": "Bien que les documents générés s'inspirent de cas réels, leur synthèse artificielle pourrait ne pas capturer toutes les nuances des documents financiers réels (ex : ambiguïtés juridiques, erreurs humaines).",
+     "evaluation": "L'utilisation d'un *Agent-as-a-Judge* pour l'évaluation introduit un biais potentiel, car la subjectivité des métriques automatisées (ex : cohérence) peut varier selon les implémentations. Les réponses de référence, bien que stables, pourraient ne pas couvrir toutes les interprétations valides.",
+     "generalisation": "Le benchmark se concentre sur des scénarios spécifiques (6 scénarios, 7 tâches) et deux langues, ce qui limite sa généralisation à d'autres domaines financiers ou contextes multilingues moins représentés."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique et son potentiel à standardiser l'évaluation des agents financiers, mais ses limites en termes de représentativité et de biais d'évaluation nécessitent une validation complémentaire avant une adoption large."
+   }
+  },
+  {
+   "id": "f600ab97f8273fe4",
+   "title": "Show, Don't Tell: Evaluating Spatial Cognition in Generative Pixels Rather Than LLM Text",
+   "url": "https://huggingface.co/papers/2607.21072",
+   "summary": "Spatial intelligence is essential for agents to move from static semantic understanding toward interacting with the physical world. Many spatial tasks are grounded in continuous visual scenes, where locations, regions, and paths are more naturally expressed by pointing, marking, or drawing than by reporting precise coordinates or discrete textual symbols. Yet existing spatial reasoning benchmarks usually require coordinates, options, or text, creating an answer-interface mismatch for image-generation models. This makes it difficult to evaluate image-generation models under the same task semantics as text-output VLMs, despite their ability to externalize spatial judgments directly in pixel space. We propose ProVisE (Protocolized Visual Evaluation), a benchmark-agnostic framework that elicits protocol-constrained visual answers from image-generation models and parses them into structured predictions compatible with original metrics. ProVisE also includes an Agentic builder that constructs and validates task-specific protocols for new benchmarks. We further introduce SpatialGen-Bench, a curated diagnostic benchmark of 470 samples across 14 spatial subtasks, four capability levels, and diverse answer forms. We evaluate representative text-output VLMs and image-generation models in a unified setting and validate Agentic protocol construction on six external spatial benchmarks. Results show that image-generation models are competitive when spatial answers can be externalized directly in pixel space, while text-output VLMs retain a clear advantage in compositional spatial reasoning. These findings reveal complementary strengths of pixel-space expression and text-based reasoning and establish a metric-compatible testbed for studying spatial cognition in image-generation models.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 34,
+    "arxiv_id": "2607.21072"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "ProVisE et SpatialGen-Bench proposent un cadre pour évaluer la cognition spatiale des modèles génératifs (images) via des réponses visuelles protocolisées (pixel space), plutôt que du texte. Benchmark de 470 échantillons couvrant 14 sous-tâches et 4 niveaux de capacité, avec un *Agentic builder* pour créer de nouveaux protocoles.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'évaluation inadéquate des capacités de cognition spatiale des modèles de génération d'images. Les benchmarks actuels imposent des réponses sous forme de coordonnées précises, d'options discrètes ou de texte, ce qui crée un décalage avec les capacités naturelles des modèles génératifs à exprimer des jugements spatiaux directement dans l'espace pixel (par exemple, en dessinant des régions ou des chemins). Cela limite la comparaison équitable entre les modèles de langage visuel (VLM) à sortie textuelle et les modèles de génération d'images.",
+    "methode": "Les auteurs proposent **ProVisE** (Protocolized Visual Evaluation), un cadre indépendant des benchmarks qui permet d'extraire des réponses visuelles contraintes par des protocoles depuis les modèles de génération d'images. Ces réponses sont ensuite converties en prédictions structurées compatibles avec les métriques originales des benchmarks. ProVisE inclut également un **Agentic builder**, un outil automatisé pour concevoir et valider des protocoles spécifiques à de nouveaux benchmarks. Parallèlement, ils introduisent **SpatialGen-Bench**, un benchmark diagnostique de 470 échantillons couvrant 14 sous-tâches spatiales, 4 niveaux de complexité et diverses formes de réponses. L'évaluation unifiée compare des VLM à sortie textuelle et des modèles de génération d'images, tout en validant la construction de protocoles sur six benchmarks externes.",
+    "resultats": "Les résultats montrent que les modèles de génération d'images sont compétitifs lorsque les réponses spatiales peuvent être externalisées directement dans l'espace pixel, tandis que les VLM à sortie textuelle conservent un avantage clair en raisonnement spatial compositionnel. Ces conclusions révèlent des forces complémentaires entre l'expression en pixels et le raisonnement textuel. Aucune métrique quantitative précise (comme des scores de performance) n'est explicitement mentionnée dans le résumé disponible.",
+    "limites": "Le résumé ne détaille pas les biais potentiels des protocoles générés par l'Agentic builder, ni la robustesse des méthodes de parsing des réponses visuelles en prédictions structurées. De plus, la généralisation des résultats à d'autres types de tâches spatiales ou à des modèles moins représentatifs reste à explorer. La dépendance aux benchmarks existants pour la validation pourrait aussi introduire des limitations non adressées.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante visant à unifier l'évaluation des modèles génératifs et textuels en cognition spatiale, malgré des limites méthodologiques à approfondir."
+   }
+  },
+  {
+   "id": "60b39830d3e3ba15",
+   "title": "Self Gradient Forcing: Native Long Video Extrapolation",
+   "url": "https://huggingface.co/papers/2607.20368",
+   "summary": "Recent autoregressive video diffusion methods are increasingly built upon Self Forcing, where the student is trained on histories produced by its own rollout rather than ground-truth video contexts. This reduces exposure bias, but the historical key-value cache is still used by future frames only as frozen rollout state. As a result, future losses cannot supervise how earlier generated latents should be written into more useful keys and values for later video-latent generation. We call this the historical context-gradient gap. We propose Self Gradient Forcing (SGF), a two-pass training strategy that restores this missing supervision signal without backpropagating through the full serial rollout. Pass 1 performs a no-gradient autoregressive rollout matching inference and, at a sampled denoising exit step, records both the self-generated context and the noisy latents fed to the model. Pass 2 performs parallel context-gradient reconstruction for the recorded exit step. The generated context is used as stop-gradient clean-latent input, while the model recomputes the context KV representations and future-to-context causal attention. Thus, SGF provides the missing memory-writing supervision within the native autoregressive training objective, using losses on future video latents to train the model to encode context into more effective causal memory. Across extensive long-horizon frame-wise and chunk-wise experiments under different initializations, SGF achieves stronger native long-video extrapolation than Self Forcing, especially in subject identity, background/layout consistency, and temporal stability. Remarkably, using only a 5-second training window, SGF can extrapolate to videos lasting several minutes. Code and models will be released to advance research on autoregressive video generation.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 30,
+    "arxiv_id": "2607.20368"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Self Gradient Forcing (SGF) comble le 'historical context-gradient gap' dans les modèles vidéo autorégressifs en restaurant la supervision des gradients pour les latents générés, améliorant la cohérence temporelle sans backpropagation complète à travers les séquences.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'exposition biaisée et le manque de supervision efficace dans les méthodes de diffusion vidéo autoregressives. Plus précisément, les modèles actuels comme Self Forcing utilisent des historiques générés par le modèle lui-même pour l'entraînement, mais ces historiques (cache clé-valeur) sont figés lors de la génération des frames futures, empêchant ainsi une optimisation des représentations latentes antérieures pour améliorer la cohérence et la qualité des vidéos longues.",
+    "methode": {
+     "description_generale": "Self Gradient Forcing (SGF) est une stratégie d'entraînement en deux passes conçue pour combler le 'historical context-gradient gap'.",
+     "pass_1": "La première passe effectue un *rollout* autoregressif sans gradient, simulant l'inférence. À une étape de dénoising échantillonnée, elle enregistre le contexte généré (cache clé-valeur) et les latents bruités fournis au modèle.",
+     "pass_2": "La seconde passe réalise une *reconstruction parallèle du gradient de contexte* pour l'étape enregistrée. Le contexte généré est utilisé comme entrée *stop-gradient* (latents 'propres'), tandis que le modèle recalcule les représentations clé-valeur du contexte et l'attention causale future-vers-contexte. Cela permet de superviser la manière dont le modèle encode le contexte pour optimiser la génération des latents futurs.",
+     "objectif_technique": "SGF introduit une supervision directe sur la *mémoire causale* (cache clé-valeur) en utilisant les pertes sur les latents futurs pour entraîner le modèle à écrire des représentations contextuelles plus efficaces, le tout sans rétropropagation à travers l'intégralité du rollout sériel."
+    },
+    "resultats": {
+     "performances": "SGF surpasse Self Forcing en extrapolation native de vidéos longues, avec des améliorations notables en cohérence de l'identité des sujets, stabilité du fond/agencement, et stabilité temporelle. Les expériences incluent des évaluations *frame-wise* et *chunk-wise* sous différentes initialisations.",
+     "extrapolation": "Avec une fenêtre d'entraînement de seulement 5 secondes, SGF parvient à extrapoler des vidéos de plusieurs minutes, démontrant une capacité accrue à maintenir la cohérence sur de longues séquences.",
+     "disponibilite": "Le code et les modèles seront publiés pour favoriser la recherche en génération vidéo autoregressive."
+    },
+    "limites": {
+     "complexite": "La méthode ajoute une complexité computationnelle avec sa stratégie en deux passes, ce qui pourrait limiter son adoption dans des environnements aux ressources contraintes.",
+     "evaluation": "Les résultats manquent de détails quantitatifs précis (métriques comme FVD, IS, ou comparaisons directes avec d'autres méthodes), rendant difficile une évaluation objective de l'ampleur des améliorations.",
+     "generalisation": "Il n'est pas clair si les gains observés se généralisent à des scénarios hors-domaine ou à des vidéos avec des dynamiques complexes (ex : mouvements rapides, changements de scène)."
+    },
+    "verdict": "SGF mérite une attention particulière pour son approche innovante visant à résoudre un problème fondamental des modèles vidéo autoregressifs, mais son adoption dépendra de la validation de ses performances sur des benchmarks standardisés et de son efficacité computationnelle en pratique."
+   }
+  },
+  {
+   "id": "47fab1abf66fa30d",
+   "title": "Multi-Turn On-Policy Distillation with Prefix Replay",
+   "url": "https://huggingface.co/papers/2607.04763",
+   "summary": "We study on-policy distillation (OPD) for agentic tasks, where an LLM agent interacts with an environment over multiple turns and a student imitates a teacher over these multi-turn interaction histories. Fully online OPD is costly because each update requires fresh student rollouts through the environment and teacher queries at visited histories. We propose Replayed-Prefix On-Policy Distillation (ReOPD), an off-environment alternative that reuses pre-collected teacher trajectories as replayed prefixes: the student acts at selected steps, while the teacher provides dense per-step supervision without executing new environment interactions. We show that multi-turn OPD introduces a prefix trap: making histories more student-on-policy improves relevance to the student, but can query the teacher on histories where its target is unreliable. This creates a two-sided distribution shift between student occupancy and teacher reliability. ReOPD addresses this by treating multi-turn OPD as a reliability-aware prefix distribution design and implements it with a simple step-decaying sampling schedule that emphasizes early, lower-shift prefixes. Across mathematical reasoning with Python and search environments over multiple teacher and student model scales, ReOPD preserves or improves OPD-level accuracy, uses zero tool calls during student training, and is at least 4times faster per rollout than OPD. ReOPD therefore turns expensive agent-environment interaction into a reusable offline resource, enabling scalable distillation across tools, tasks, and environments.",
+   "published": "2026-07-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.04763"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "agents"
+   ],
+   "tldr": "ReOPD améliore l'on-policy distillation multi-tours pour agents LLM en réutilisant des trajectoires pré-collectées comme *prefixes replay*, évitant des interactions coûteuses avec l'environnement. Solution qui gère le *prefix trap* (décalage distributionnel) via un échantillonnage décroissant, validée sur des tâches de raisonnement mathématique et de recherche.",
+   "score": 8.2
+  },
+  {
+   "id": "0d3d19b267bf3a68",
+   "title": "SLAM in Low-Light Environments: Project Report",
+   "url": "https://huggingface.co/papers/2607.17699",
+   "summary": "Simultaneous localization and mapping (SLAM) is one of the fundamental problems in robotics, as it enables autonomous operations in real-world scenarios. Under low illumination, reduced contrast, sensor noise, and motion blur degrade both feature extraction and feature matching, while compensating with LiDAR, depth, or thermal sensors raises cost, power draw, and integration complexity. Existing benchmarks remain dominated by well-lit indoor or daylight sequences, leaving open how far SLAM with standard RGB cameras can be pushed in the dark. We benchmark six systems spanning the feature-based, direct, filter-based, and learning-based paradigms - ORB-SLAM3, DSO, Kimera-VIO, OpenVINS, DPVO, and DPV-SLAM - on five LaMARia sequences of varying difficulty and illumination, reporting absolute and relative pose error alongside control-point recall. Kimera-VIO is the only system to track all five sequences to completion, combining the lowest relative pose error with steadily growing absolute error due to the absence of loop closure; DPVO and DPV-SLAM never lose tracking but incur absolute errors of roughly 100 m under low light; and the classical monocular pipelines (ORB-SLAM3, DSO) together with the filter-based OpenVINS fail outright or diverge on most of the harder and low-light sequences. The results suggest that RGB-only SLAM maintains stable low-light tracking only when both inertial fusion and global optimization are present. Closing the remaining gap will likely require low-light-specific learned front-ends or a return to complementary sensing.",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.17699"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark",
+    "vision"
+   ],
+   "tldr": "Cette étude évalue 6 systèmes SLAM (dont ORB-SLAM3, DSO, DPVO) en environnement faiblement éclairé, mettant en lumière les limites des approches classiques (perte de suivi, erreurs de pose) et la robustesse relative des méthodes learning-based (DPVO, DPV-SLAM) malgré des erreurs absolues élevées.",
+   "score": 8.2
+  },
+  {
+   "id": "66e943fbde5f465e",
+   "title": "eli-labz/Cognitive-Core-Skills",
+   "url": "https://github.com/eli-labz/Cognitive-Core-Skills",
+   "summary": "A universal, industry-neutral taxonomy of cognitive core skills (perception, memory, reasoning, planning, action, verification, learning, governance) for LLMs, SLMs, AI agents, and world models — with schemas, 159 skill cards, benchmarks, and CI.",
+   "published": "2026-07-05T21:25:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 213,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Taxonomie universelle des compétences cognitives fondamentales (perception, raisonnement, planification, etc.) pour LLM/agents, incluant 159 cartes de compétences, benchmarks et CI, avec un potentiel applicatif majeur en évaluation.",
+   "score": 8.0
+  },
+  {
+   "id": "c703ab42458ab454",
+   "title": "OpenForgeRL: Train Harness-native Agents in Any Environment",
+   "url": "https://huggingface.co/papers/2607.21557",
+   "summary": "Modern AI agents rely on elaborate inference harnesses such as Claude Code, Codex, and OpenClaw to drive multi-turn reasoning, tool use, and access to external systems. While powerful, these complex harnesses also make agents hard to train end-to-end with open infrastructure, whose SFT/RL stacks cannot natively express stateful, multi-process harness inference. To address this, we present OpenForgeRL, an open-source framework for training harness-based agents end-to-end in diverse environments. OpenForgeRL achieves this with a lightweight proxy that serves the harness's model calls while recording them as training data for a standard RL codebase (e.g., veRL), and a Kubernetes orchestrator that runs each rollout in its own remote container, together enabling training on any harness in any environment at scale. By decoupling training and inference, OpenForgeRL allows researchers to easily train, study, and improve agents directly in the real harnesses and environments they are deployed with. We validate our framework across diverse, complex harnesses and environments, spanning tool/claw-based agents and multimodal GUI browser- and computer-use agents. Using only hundreds to a few thousand tasks, OpenForgeClaw reaches 31.7 pass^3 and 55.9 pass@3 on ClawEval and 33.7 on QwenClawBench. OpenForgeGUI reaches 37.7 on OSWorld-Verified, 63.0 on Online-Mind2Web, and 72.3 on WebVoyager. Both outperform open baselines of similar size on nearly all benchmarks, and in the GUI setting match or surpass models several times larger. Beyond benchmarks, we analyze how harness choice (e.g., ZeroClaw, OpenClaw, Codex) and RL shape agent behavior. We find that some harnesses are substantially harder to learn than others, and that RL improves agentic reliability, such as self-verification, tool coverage, and completing multi-step plans, though critical abilities such as error recovery remain weak.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2607.21557"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "OpenForgeRL propose un framework open-source pour entraîner des agents basés sur des *harnesses* (comme Claude Code) de manière end-to-end, en découplant l'inférence (via un proxy léger) et l'entraînement (via un orchestrateur Kubernetes). Cela permet d'étudier et d'optimiser des agents dans leurs environnements réels, avec une validation sur des tâches complexes (outils, GUI, multimodal).",
+   "score": 7.9
+  },
+  {
+   "id": "41cdbff4d88ae568",
+   "title": "Self-Supervised Learning of Structured Dynamics from Videos",
+   "url": "https://huggingface.co/papers/2607.21576",
+   "summary": "Understanding motion in video is a fundamental challenge for visual learning, as frame-to-frame change entangles two sources of dynamics: camera motion and object motion. This decomposition has remained underexplored in representation learning, partly because these factors are tightly coupled in natural videos and difficult to supervise separately. Yet recovering it is important for learning robust motion representations that separate meaningful object dynamics from camera-induced variation. We study whether such structured motion representations can be recovered from frozen features of a pretrained image vision transformer. We propose the Structured Dynamics Model (SDM), which explicitly separates the dominant source of temporal change from residual dynamics through future-feature prediction, rather than representing video change with a single entangled latent or with unstructured, spatially dense transition tokens. Training combines self-supervised learning on real video with weak supervision of scene dynamics on synthetic Kubric data. We evaluate SDM on ProbeMotion, a new evaluation suite spanning synthetic and real videos with camera motion, object motion, and combined dynamics. SDM outperforms backbone baselines using global CLS or average-pooled features, and compares favorably to strongly supervised representations such as VGGT on several probes, despite using substantially weaker supervision. These results suggest that pretrained image models can be readily repurposed into structured video-dynamics representations, providing a useful inductive bias for learning and analyzing latent video dynamics.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2607.21576"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "SDM (Structured Dynamics Model) sépare explicitement les dynamiques de caméra et d'objets dans les vidéos via un modèle auto-supervisé, en prédisant les futures *features* d'un ViT pré-entraîné. Évalué sur ProbeMotion, il améliore la robustesse des représentations de mouvement par rapport aux approches non structurées.",
+   "score": 7.9
+  },
+  {
+   "id": "44b947170cccb912",
+   "title": "Dataset Distillation by Influence Matching",
+   "url": "https://huggingface.co/papers/2607.16859",
+   "summary": "We revisit dataset distillation from an outcome-centric perspective. Rather than aligning process surrogates (per-step gradients or training trajectories), Influence Matching (Inf-Match) aligns the final outcome of training: it learns a compact synthetic set whose effect on the converged parameters matches that of the full dataset. Concretely, we introduce a fully differentiable, sample-level influence estimator that quantifies parameter shifts from adding or removing data, without time-consuming inverse-Hessian products or convexity assumptions. The estimator runs in linear time by unrolling the optimization dynamics and applying a first-order Taylor approximation. We then learn the synthetic set by minimizing the mismatch between its influence and that of the real dataset, yielding outcome alignment rather than heuristic process imitation. Inf-Match delivers the best accuracy across standard classification benchmarks. For instance, on Tiny-ImageNet (IPC=10), Inf-Match attains 31.5\\%, a +4.7\\% improvement over NCFM. Beyond classification, Inf-Match scales to vision-language distillation on Flickr30K, outperforming strong process-matching baselines. For instance, with 200 to 1000 synthetic samples, our method achieved a leading impressive average on image/text retrieval tasks, higher than NCFM by 2.5\\%. The code will be released via https://github.com/hrtan/infmatch.",
+   "published": "2026-07-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2607.16859"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Inf-Match revisite la distillation de datasets en alignant l'*outcome* final (paramètres convergés) plutôt que les trajectoires d'entraînement, via un estimateur d'influence différentiable et linéaire. Méthode qui surpasse les approches existantes (ex: +4.7% sur Tiny-ImageNet IPC=10) et s'étend à la distillation vision-langage (Flickr30K).",
+   "score": 7.6
+  },
+  {
+   "id": "5d63722913c897ce",
+   "title": "Visual Contrastive Self-Distillation",
+   "url": "https://huggingface.co/papers/2607.21556",
+   "summary": "On-policy self-distillation (OPSD) is promising as it removes the external teacher required by on-policy distillation (OPD), yet it still needs asymmetric information between teacher and student to ensure that the self-teacher provides a stronger learning signal than the student. Existing methods create this asymmetry either through privileged answers or visual evidence. We ask whether both can be removed, yielding a simpler form of OPSD driven purely by input conditioning. For this purpose, we propose Visual Contrastive Self-Distillation, namely VCSD, which converts image-content removal into an on-policy self-distillation signal. At each student-generated response prefix, the EMA teacher produces two next-token distributions under the same prompt and prefix -- one conditioned on the original image and the other on a content-erased control. Their token-wise log-probability difference highlights candidates whose likelihood is specifically increased by the instance-level visual content. We use this contrast to sharpen the teacher's original-image distribution within its plausible support, and distill the resulting full-distribution target into the student. Using ViRL39K dataset, VCSD consistently outperforms matched OPSD across Qwen3-VL and Qwen3.5 models. For example, on Qwen3-VL, it improves the seven-benchmark aggregate from 62.27% rightarrow 67.04% at 2B, 71.30% rightarrow 73.16% at 4B, and 72.51% rightarrow 76.26% at 8B. Furthermore, VCSD requires no external teacher, privileged answers, visual evidence signals, reasoning traces, or additional inference-time cost.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 41,
+    "arxiv_id": "2607.21556"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "VCSD (Visual Contrastive Self-Distillation) supprime le besoin d'un enseignant externe en utilisant un contraste visuel (image vs. image effacée) pour générer un signal de distillation auto-supervisé. Méthode évaluée sur ViRL39K, où elle améliore la qualité des réponses des LLM en exploitant le contenu visuel.",
+   "score": 7.6
+  },
+  {
+   "id": "8d7a0cecb98fddaa",
+   "title": "GraphVid: Interactive Graph-Controllable Video Generation",
+   "url": "https://huggingface.co/papers/2607.21580",
+   "summary": "Controllable video generation remains challenging due to the difficulty of specifying precise multi-object interactions using text prompts or motion-control inputs that primarily constrain pixel movement. In practice, trajectory-based control often requires users to draw accurate tracks for multiple objects, which scales poorly with scene complexity and becomes ambiguous under occlusion or overlap. To enable flexible yet precise multi-subject control, we introduce GraphVid, a graph-conditioned image-to-video generation model that enables interactive control through structured interaction graphs. We further curate GraphVid-Bench, a large-scale interaction-centric video dataset with structured relational annotations to enable training of interaction-aware video generation models. Despite using substantially less training data and fewer trainable parameters than prior motion-control methods, GraphVid delivers strong controllability and video quality. Compared with Motion-I2V, GraphVid reduces FID by up to 39.9% and FVD by 37.6%, while improving PSNR (9.87=>15.98) and SSIM (0.38=>0.61). Our results highlight the potential of structured semantic interfaces as a powerful paradigm for controllable video generation.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.21580"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "GraphVid propose un modèle de génération vidéo contrôlable via des graphes d'interactions structurés, offrant une précision supérieure aux méthodes basées trajectoire tout en réduisant les données d'entraînement et les paramètres. Un benchmark dédié (GraphVid-Bench) valide ses performances avec des gains significatifs en métriques de qualité vidéo (FID, FVD, PSNR, SSIM).",
+   "score": 7.6
+  },
+  {
+   "id": "ebd230067c1e10cb",
+   "title": "G-MAD: A Game-Based Data Generation Framework for Multi-View RGB-T Aerial Object Detection",
+   "url": "https://huggingface.co/papers/2607.19942",
+   "summary": "This work introduces G-MAD, an open-source framework that uses Arma3 to generate synchronized multi-view RGB-T data for aerial object detection. G-MAD addresses key limitations of real-world aerial dataset construction, including limited viewpoint control, imperfect RGB-T alignment and high annotation cost. The framework supports structured scenario specification, controllable multi-view camera placement, simultaneous visible/thermal capture, and automatic bounding box annotation using engine-level geometric metadata. These capabilities enable controlled studies of viewpoint variation, multi-modal fusion, and synthetic-to-real transfer in aerial object detection. Besides, using G-MAD, we construct and release AMOD, a new large-scale multi-view aerial RGB-T object detection benchmark. The source code and the dataset are available at https://unique-chan.github.io/G-MAD-Project.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.19942"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "G-MAD utilise Arma3 pour générer des données RGB-T multi-vues synchronisées pour la détection d'objets aériens, avec contrôle précis des caméras et annotations automatiques. Le benchmark AMOD associé facilite l'étude de la fusion multi-modale et du transfert synthétique-réel.",
+   "score": 7.6
+  },
+  {
+   "id": "5b3393d0adf32e3d",
+   "title": "SANA-Video 2.0: Hybrid Linear Attention with Attention Residuals for Efficient Video Generation",
+   "url": "https://huggingface.co/papers/2607.21553",
+   "summary": "We introduce SANA-Video 2.0, a hybrid video diffusion transformer instantiated at 5B and 14B scales under a unified architecture. Designed to generate high-quality video up to 720p on a single GPU, SANA-Video 2.0 matches full-softmax video DiTs in quality while retaining the favorable long-sequence scaling of linear attention. To avoid quadratic attention throughout, Hybrid Linear-Softmax Attention combines gated linear attention for O(N)-dominated mixing with periodic gated-softmax anchors at a 3:1 ratio, restoring the full-rank token interactions that pure linear attention lacks. To propagate these refreshed representations across depth, Block Attention Residuals (AttnRes) route completed block summaries into later linear layers, enabling anchor-feature reuse and boosting deep-layer effective rank by ~12%. Through from-scratch training, SANA-Video 2.0 learns the complete hybrid directly rather than linearizing pretrained models, with reduced-resolution proxy studies establishing 25% softmax as the optimal quality-efficiency trade-off. With 40-step sampling, SANA-Video 2.0 achieves a VBench score of 84.30 in 13.2s at 480p on a single H100, remaining competitive with far larger softmax video DiTs at a fraction of the latency. Its compiled DiT forward pass is 3.2x faster than a matched full-softmax baseline at 720p/60s, a gap that expands with video duration. Furthermore, full-stack Sol-Engine optimization (kernel fusion, caching, and sparse attention) accelerates this hardware-friendly backbone by a further 3.58x, bringing the 5B pipeline to 13.06s at 720p/5s and making it 120x faster than Wan 2.2-A14B on one H100. Overall, our hybrid design recovers softmax-level expressiveness at substantially reduced cost, unlocking scalable long, high resolution video generation.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2607.21553"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "SANA-Video 2.0 introduit une attention hybride (linéaire + softmax partiel) et des *Attention Residuals* pour générer des vidéos haute qualité (720p) sur GPU unique, avec un score VBench de 84.30 en 13.2s. Architecture 5B/14B qui combine efficacité et qualité, optimisée via des études proxy à résolution réduite.",
+   "score": 7.3
+  },
+  {
+   "id": "be88b65e0bfb635e",
+   "title": "SmileLikeYe/agent-chief",
+   "url": "https://github.com/SmileLikeYe/agent-chief",
+   "summary": "Attention is your scarcest resource. Chief is the local-first layer that guards it — turning every agent, alert, and feed into one honest call: interrupt, or not.",
+   "published": "2026-07-04T15:28:56Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1014,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Framework open-source pour gérer l'interruption intelligente des agents IA ('attention is your scarcest resource'), avec une approche locale-first pour optimiser les appels et réduire la surcharge cognitive des systèmes multi-agents.",
+   "score": 7.1
+  },
+  {
+   "id": "f9e111d7aafb4e53",
+   "title": "Recurrent Sinusoidal INRs for Efficient High-Fidelity Representation",
+   "url": "https://huggingface.co/papers/2607.21485",
+   "summary": "We study sinusoidal recurrence as an iterative mechanism for harmonic spectral enrichment in implicit neural representations (INRs). Our analysis reveals that sinusoidal activations induce a harmonic line spectrum, providing a spectral account of how recurrent unrolling enriches the effective spectral support. We realize this principle with a shared sinusoidal block that iteratively refines the latent representation. We empirically validate the resulting spectral behavior against feed-forward INRs, non-sinusoidal recurrent variants, and equilibrium-style sinusoidal models. Complementing this analysis, we evaluate the proposed architecture across image and 3D representation tasks. On RGB image benchmarks, our method achieves higher fidelity than feed-forward baselines with fewer parameters and fewer optimization steps, and it further transfers favorably to super-resolution, NeRF, and SDF tasks.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.21485"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "RS-INRs utilise des activations sinusoïdales récurrentes pour enrichir spectralement les représentations implicites (INRs), offrant une meilleure fidélité avec moins de paramètres et d'étapes d'optimisation. Validé sur des tâches 2D/3D (images, NeRF, SDF) et transférable à la super-résolution.",
+   "score": 7.0
+  },
+  {
+   "id": "ac6075864a3d7535",
+   "title": "ENTRAP-VL: A Taxonomic Probe for Dual Contextual Entrainment in Vision-Language Models",
+   "url": "https://huggingface.co/papers/2607.20092",
+   "summary": "Contextual entrainment is the tendency of a model to let auxiliary context in its input pull its output, independently of whether that context is relevant, true, or even meaningful. Recently, it has been identified and given a mechanistic account in unimodal language models. Whether and how it manifests in vision-language models (VLMs) is, by contrast, largely unexamined, and the field lacks a purpose-built instrument with which to investigate it. We take the position that studying contextual entrainment in VLMs requires more than porting an existing text-only benchmark to the multimodal setting: it requires a taxonomically structured, dual-modality instrument whose conditions are constructed around the item at hand (the depicted image in the textual stream, the textual query in the visual stream). We argue that the move to VLMs is substantive rather than incremental. It makes entrainment a dual phenomenon, drivable independently by textual and by visual context, and it opens a veracity distinction (context that is false of the depicted scene yet possible in the world) that has no counterpart in the unimodal, world-knowledge-only formulation of prior work. To make this position concrete and actionable, we introduce ENTRAP-VL (ENTRainment Assessment Probe for Vision and Language), a manually curated dataset of 1,500 items across eight categories, organized by a taxonomy that spans two axes, i.e., the association of context with the item and its relationship to truth, and split into a textual-entrainment stream (eight context conditions) and a visual-entrainment stream (three context conditions). We do not claim to measure entrainment in any particular model; we provide the instrument, the taxonomy that motivates it, and the evaluation protocols it enables, so that the community can investigate the phenomenon rigorously. We will release the dataset and its documentation publicly.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.20092"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "ENTRAP-VL étudie l'entrainement contextuel dans les modèles vision-langage (VLM), révélant un phénomène dual où le contexte visuel et textuel influence indépendamment les sorties. Un benchmark taxonomique est proposé pour analyser ce biais, soulignant des distinctions de véracité absentes dans les modèles unimodaux.",
+   "score": 7.0
+  },
+  {
+   "id": "fcaa36a66eddfe47",
+   "title": "Moving Alphabet: A Controlled Study of Training Data for Text-to-Video Generation",
+   "url": "https://huggingface.co/papers/2607.18789",
+   "summary": "Text-to-video generation has advanced significantly over the past five years through scaling of model size, data, and compute. Unlike model architecture, training data is often underexplored. Real-world data curation is complex and non-trivial, involving clip selection from raw videos and captioning to create video-text pairs for learning text-to-video mappings. We study how data distribution and caption quality impact text-to-video models. To enable controlled experiments, we introduce Moving Alphabet, a procedural testbed that renders letters with varying fonts, colors, sizes, and positions, moving in different directions and speeds against a black background. This design allows precise control over data distribution and caption quality by corrupting ground-truth metadata. Our experiments yield three findings: a) a diverse and balanced distribution of video content and duration is critical for generalization; b) caption quality significantly affects both model performance and training efficiency, suggesting that text-to-video models are bounded by video understanding capabilities; and c) classifier-free guidance and fine-tuning on high-quality data provide partial recovery from models trained on corrupted captions, but cannot fully compensate for poor pre-training data. We believe these insights can inform the development of large-scale text-to-video models, and we advocate for greater attention to the science of pre-training data.",
+   "published": "2026-07-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.18789"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "benchmark",
+    "architecture"
+   ],
+   "tldr": "Moving Alphabet explore l'impact de la distribution et de la qualité des données sur les modèles de génération vidéo texte-à-vidéo via un testbed procédural contrôlé, révélant l'importance de la diversité des données et de la qualité des légendes pour l'efficacité et la généralisation.",
+   "score": 6.7
+  },
+  {
+   "id": "6591db776940b39d",
+   "title": "pax-beehive/paxm",
+   "url": "https://github.com/pax-beehive/paxm",
+   "summary": "Persistent, provider-neutral memory for Codex, Claude Code, OpenCode, Pi, and MCP coding agents.",
+   "published": "2026-07-09T02:40:57Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 407,
+    "language": "Go"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Bibliothèque Go pour ajouter une mémoire persistante et neutre aux agents de codage (Codex, Claude, etc.). Pertinent pour l'écosystème agents, mais manque de profondeur technique.",
+   "score": 6.5
+  },
+  {
+   "id": "146570af612bcc33",
+   "title": "Color Pass-Through via Camera-Display Coupling",
+   "url": "https://huggingface.co/papers/2607.12746",
+   "summary": "When a real-world scene is captured by a smartphone camera and viewed on its screen, the displayed image often differs noticeably from the original scene in color, brightness, and contrast. This gap persists despite substantial advances in both modern cameras and displays. A key reason is that most pipelines factor the high-dimensional capture-to-display process into two separately calibrated camera and display stages, and then connect them through low-dimensional color transforms, leading to information bottlenecks and inevitable error accumulation. To address this systemic challenge, we propose Color Pass-Through, an end-to-end learned framework that operates directly on captured images. Our key insight is to treat the camera and display as a coupled system rather than calibrating them in isolation. Coupling the camera and display yields two practical advantages: (1) it brings the entire real-world scenes to the display via end-to-end optimization, and (2) it allows efficient one-step calibration for each distinct observer via complete capture-to-display path. We validate Color Pass-Through using both digital and human observers. Compared with representative baselines, our method achieves an average gain of +2.0 points on a 5-point user study and more than 2x improvement on quantitative metrics, demonstrating improved reproduction of the perceived color of the original scene.",
+   "published": "2026-07-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2607.12746"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "autre"
+   ],
+   "tldr": "Color Pass-Through optimise end-to-end le pipeline caméra-écran en traitant le système comme un tout couplé, plutôt que de calibrer séparément chaque composant. Méthode qui réduit les écarts de couleur/brillance entre scène réelle et affichage, validée par des observateurs humains et des métriques numériques.",
+   "score": 6.4
+  },
+  {
+   "id": "7672d49beeaca38f",
+   "title": "Differentiable Logic Gate Networks for Low-Latency EEG Classification on Edge Devices",
+   "url": "https://huggingface.co/papers/2607.18149",
+   "summary": "Real-time EEG classification on edge devices is bottlenecked by the floating-point arithmetic of conventional neural networks. We investigated Differentiable Logic Gate Networks (Diff-Logic) as a hardware-native alternative that compiles models into pure Boolean circuits executable via bitwise CPU operations. Through rigorous iso-parameter experiments across four EEG datasets spanning two classification tasks, binary dementia detection and 3-class emotion recognition, we compared Diff-Logic against matched-capacity Multi-Layer Perceptron (MLP) and Binarized Neural Network (BNN) baselines at four complexity tiers (50k-500k parameters). On dementia screening, Diff-Logic achieved 80.2% Macro F1, outperforming the MLP baseline by 6.8%. On emotion recognition, the MLP retained a moderate performance advantage but incurred a 2.3times higher latency and 14times larger model size when deployed on a power-constrained (7W) Nvidia Jetson Orin Nano CPU (Single-core). Critically, Diff-Logic inference time remained nearly constant across a 10times increase in model scale, achieving a peak speedup of 2.9times over MLPs at the largest complexity tier. Our results establish logic-based neural architectures as a practical paradigm for resource-constrained brain-computer interfaces, achieving competitive or superior performance while natively satisfying the latency and memory constraints of portable edge deployment. Code is available on GitHub: https://github.com/Shyamal-Dharia/eeg-difflogic",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.18149"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Diff-Logic Networks remplace les opérations flottantes par des circuits booléens différentiables pour la classification EEG en temps réel sur devices edge, réduisant latence et taille du modèle tout en maintenant des performances compétitives (jusqu'à 2.9x de speedup).",
+   "score": 6.4
+  },
+  {
+   "id": "b246b19b09c55219",
+   "title": "xuzhougeng/wisp-science",
+   "url": "https://github.com/xuzhougeng/wisp-science",
+   "summary": "Open-source, local-first desktop AI research workbench for scientific computing with Python/R, MCP bioinformatics tools, SSH/WSL/GPU runtimes, and OpenAI/Anthropic models.",
+   "published": "2026-07-01T07:57:11Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 411,
+    "language": "HTML"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "outils",
+    "llm"
+   ],
+   "tldr": "Workbench de recherche IA open-source pour le calcul scientifique (Python/R), intégrant des outils MCP, des runtimes GPU et des modèles LLM, mais avec une documentation et une crédibilité technique limitées.",
+   "score": 5.6
+  },
+  {
+   "id": "3f3904d426270450",
+   "title": "arcships/light-ocr",
+   "url": "https://github.com/arcships/light-ocr",
+   "summary": "Fast, offline OCR for Node.js & C++. PP-OCRv6 with Core ML / WebGPU hardware acceleration — recognize text in images with confidence scores & coordinates. npm: @arcships/light-ocr",
+   "published": "2026-07-14T01:32:23Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 414,
+    "language": "C++"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "OCR hors ligne ultra-rapide (PP-OCRv6) optimisé pour Node.js/C++ avec accélération matérielle (Core ML/WebGPU), utile pour le traitement de texte dans des images, mais sans benchmark comparatif solide.",
+   "score": 5.3
+  },
+  {
+   "id": "5dd840a03a214ac6",
+   "title": "runvendo/vendo",
+   "url": "https://github.com/runvendo/vendo",
+   "summary": "Embedded agents your customers use to automate work, build views, and connect their tools.",
+   "published": "2026-06-30T06:42:46Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 319,
+    "language": "TypeScript"
+   },
+   "relevance": 5,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Framework TypeScript pour déployer des agents embarqués automatisant des tâches pour des clients. Approche concrète mais générique, sans innovation majeure.",
+   "score": 5.0
+  },
+  {
+   "id": "202b977a01a39823",
+   "title": "Hetzner is working on LLM Inference",
+   "url": "https://sliplane.io/blog/hetzner-inference",
+   "summary": "",
+   "published": "2026-07-24T09:24:44Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 148,
+    "comments": 79
+   },
+   "relevance": 5,
+   "reliability": 2,
+   "tags": [
+    "llm"
+   ],
+   "tldr": "Hetzner explore l'inférence LLM sur ses serveurs, mais sans informations précises sur les modèles ciblés, les optimisations envisagées ou les résultats obtenus.",
+   "score": 4.1
+  }
+ ]
+}
