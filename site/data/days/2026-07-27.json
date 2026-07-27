@@ -1,0 +1,615 @@
+{
+ "date": "2026-07-27",
+ "digest": {
+  "headline": "Skill Self-Play propose un cadre co-évolutif pour repousser les limites des capacités des LLM via des compétences dynamiques et un routage adaptatif",
+  "overview": "La veille du 2026-07-27 met en lumière des avancées majeures en architectures d'agents, benchmarks pour l'évaluation des LLM, et optimisations multimodales. Les travaux explorent à la fois des mécanismes d'auto-amélioration, des méthodes de contrôle latent, et des frameworks pour l'apprentissage par renforcement agentique, avec une attention particulière aux défis de scalabilité et de cohérence.",
+  "highlights": [
+   {
+    "title": "Auto-amélioration des LLM via Skill Self-Play",
+    "text": "Le cadre *Skill Self-Play (Skill-SP)* introduit un mécanisme co-évolutif où les LLM développent et affinent dynamiquement des compétences via un routage adaptatif. Cette approche combine diversité des tâches et vérification fiable pour améliorer les performances sans dépendre exclusivement de données externes. Son intérêt réside dans son potentiel à réduire la dépendance aux données labellisées tout en améliorant la robustesse des modèles."
+   },
+   {
+    "title": "Benchmarks pour la préparation de données et l'action en 3D",
+    "text": "*DataPrep-Bench* évalue les capacités des LLM à préparer des données d'entraînement, avec un protocole *downstream-grounded* et un agent *Data-Construction-Skill* améliorant les performances de 20 points. Parallèlement, *SceneActBench* teste les agents VLM sur des tâches 3D multi-objets, révélant des lacunes persistantes dans l'action visuellement conditionnée. Ces benchmarks fournissent des outils critiques pour mesurer et améliorer les systèmes existants."
+   },
+   {
+    "title": "Contrôle latent et optimisation des architectures multimodales",
+    "text": "*Multi-Head Latent Control* permet de contrôler les décisions des agents LLM (déferrement, outils, abstention) directement à partir des états latents, évitant un fine-tuning coûteux. En multimodal, une étude systématique des lois de scaling pour l'entraînement natif révèle des comportements distincts entre objectifs linguistiques et visuels, guidant l'optimisation des architectures et des budgets de calcul."
+   },
+   {
+    "title": "Frameworks et outils pour l'apprentissage agentique",
+    "text": "*Molt* propose un framework PyTorch-native pour l'apprentissage par renforcement agentique, optimisé pour la modifiabilité des algorithmes avec des performances comparables à Megatron. *ShenSeanChen/waku-agent* offre une implémentation open-source d'un agent personnel local, modulaire et lisible, idéal pour explorer les systèmes multi-agents légers. Ces outils facilitent l'expérimentation et le déploiement d'agents autonomes."
+   },
+   {
+    "title": "Optimisations pour la génération et la compression",
+    "text": "*Spectral Alignment (SPA)* corrige le biais d'exposition dans les modèles de diffusion avec un surcoût minimal (3-4%), améliorant les métriques comme le FID. *VisCo* utilise les LLM comme encodeurs intrinsèques pour compresser les tokens visuels dans les VLMs, surpassant les approches existantes même avec une compression extrême. Ces méthodes adressent des défis clés en efficacité et qualité de génération."
+   }
+  ],
+  "trend": "Les avancées récentes suggèrent une maturation des architectures d'agents et des méthodes de contrôle latent, avec un accent croissant sur l'autonomie, la scalabilité et l'intégration multimodale. Les benchmarks et frameworks open-source jouent un rôle clé pour standardiser l'évaluation et accélérer l'innovation."
+ },
+ "items": [
+  {
+   "id": "33b513a285c466cc",
+   "title": "Skill Self-Play: Pushing the Frontier of LLM Capability with Co-Evolving Skills",
+   "url": "https://huggingface.co/papers/2607.22529",
+   "summary": "LLM training is shifting from manual design and annotation to interaction-driven self-evolution. However, existing self-evolutionary methods face a fundamental dilemma between task diversity and verification reliability: environment-bound methods obtain precise feedback but confine learning to narrow domains, while open-ended self-generation broadens the task space but lacks reliable verification, allowing misleading rewards to pollute the training loop. We identify agent skills as a powerful middle ground to reconcile this tension: each skill ensures deep, verifiable execution in a specific scenario, while dynamic routing across skills maintains open-ended task variety. Leveraging this insight, we introduce Skill Self-Play (Skill-SP), a co-evolutionary framework comprising a proposer, a solver, and a dynamic skill controller. Orchestrated via a reinforcement learning loop, these components co-evolve in a continuous self-play loop: the proposer generates challenging tasks conditioned on dynamically sampled skills; the solver explores candidate solutions to push its capability boundaries; and the skill controller collects execution feedback to update and expand the skill library. This interactive co-evolution effectively bridges the gap between structured verification and open-ended exploration. Empirical evaluations on tool-use and reasoning benchmarks demonstrate that Skill-SP, serving as a robust evolution engine, consistently pushes the performance ceiling of competent backbones while catalyzing striking turnarounds for initially misaligned models. Our code is available at https://github.com/Qwen-Applications/skill-self-play.",
+   "published": "2026-07-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2607.22529"
+   },
+   "relevance": 10,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Cadre co-évolutif Skill Self-Play (Skill-SP) pour l'auto-amélioration des LLM via des compétences dynamiques et un mécanisme de routage, combinant diversité des tâches et vérification fiable pour repousser les limites des capacités des modèles.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le document aborde un défi central dans l'entraînement des grands modèles de langage (LLM) : l'équilibre entre la diversité des tâches et la fiabilité de la vérification. Les méthodes actuelles sont soit limitées à des domaines étroits avec un retour précis, soit trop ouvertes avec un risque de récompenses trompeuses, ce qui pollue le processus d'apprentissage.",
+    "methode": "Skill Self-Play (Skill-SP) propose un cadre co-évolutif composé de trois composants : un *proposer* (générateur de tâches conditionnées par des compétences dynamiques), un *solver* (explorateur de solutions pour repousser les limites du modèle), et un *skill controller* (gestionnaire de compétences qui met à jour et étend une bibliothèque de compétences via des retours d'exécution). Ces éléments interagissent dans une boucle de renforcement (RL) pour concilier vérification structurée et exploration ouverte. Les compétences (*skills*) servent de pont en garantissant une exécution vérifiable dans des scénarios spécifiques tout en permettant une variété de tâches via un routage dynamique.",
+    "resultats": "Les évaluations empiriques sur des benchmarks de raisonnement et d'utilisation d'outils montrent que Skill-SP améliore systématiquement les performances de modèles compétents et corrige des modèles initialement mal alignés. Aucune métrique quantitative précise (ex. scores exacts) n'est fournie dans le résumé disponible, mais l'impact est décrit comme significatif et reproductible via le code partagé.",
+    "limites": "Le résumé ne détaille pas les mécanismes de vérification des compétences ni les risques de biais dans la génération de tâches par le *proposer*. La dépendance à une boucle RL pourrait aussi introduire des instabilités ou des coûts computationnels élevés, non évoqués ici. Enfin, l'absence de résultats comparatifs détaillés limite l'évaluation de la supériorité par rapport aux méthodes existantes.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante de co-évolution des compétences, mais une analyse critique des détails techniques et des résultats complets est nécessaire avant adoption."
+   }
+  },
+  {
+   "id": "a57524bd7103cf34",
+   "title": "DataPrep-Bench: Benchmarking LLMs as Training Data Preparators",
+   "url": "https://huggingface.co/papers/2607.20465",
+   "summary": "The quality of training data fundamentally determines the capabilities of large language models (LLMs), yet no unified benchmark exists to measure how well LLMs, agents, and data-centric workflows actually prepare training data end to end. We view LLM-driven data preparation as comprising two complementary capabilities: data construction, which transforms raw sources into supervised training data, and data quality evaluation, which predicts the training value of candidate datasets before downstream training; throughout, \"quality\" refers to downstream training utility rather than surface-level textual properties. We introduce DataPrep-Bench, the first unified benchmark that jointly evaluates both capabilities under a shared downstream-grounded protocol over six domains and multiple base models. For data construction, methods consume identical raw sources and are scored by fine-tuning a base model on their outputs jointly with Dolly-15k; alongside this track we release Data-Construction-Skill, a skill-guided agent that lifts the Dolly-only baseline by nearly 20 points absolute on Llama-3.1-8B Finance and is competitive with the strongest agent- and DataFlow-based methods in knowledge-extraction-dense domains. For data quality evaluation, scoring functions are scored by Pearson correlation with downstream performance on a shared candidate pool; we release the Distributional Alignment Score (DAS), a distribution-based evaluator that uses MMD between a candidate dataset and a domain proxy. DAS attains the strongest cross-model correlation in four of six domains and is the only metric clearing r > 0.70 simultaneously in Math, Science, and Medical, outperforming existing quality-, diversity-, and heuristic-based evaluators. DataPrep-Bench provides a unified, downstream-grounded framework for measuring progress on both capabilities as co-equal targets of LLM-driven data preparation.",
+   "published": "2026-05-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2607.20465"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Benchmark *DataPrep-Bench* évaluant les capacités des LLM à préparer des données d'entraînement (construction et évaluation de qualité) via un protocole downstream-grounded, avec un agent *Data-Construction-Skill* améliorant les performances de 20 points absolus.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "La qualité des données d'entraînement est un facteur déterminant pour les performances des grands modèles de langage (LLM), mais il n'existe pas de benchmark unifié pour évaluer l'efficacité des LLM, des agents ou des workflows centrés sur les données dans la préparation de ces données de bout en bout. Actuellement, il est difficile de mesurer objectivement comment ces systèmes transforment des sources brutes en données supervisées et évaluent leur utilité pour l'entraînement en aval.",
+    "methode": "DataPrep-Bench propose un cadre unifié pour évaluer deux capacités complémentaires : la *construction de données* (transformation de sources brutes en données d'entraînement supervisées) et l'*évaluation de la qualité des données* (prédiction de la valeur d'un jeu de données pour l'entraînement en aval). Le benchmark couvre six domaines et plusieurs modèles de base. Pour la construction, les méthodes utilisent des sources brutes identiques et sont notées en fonction des performances d'un modèle fine-tuné sur leurs sorties, combinées avec Dolly-15k. Un agent guidé par des compétences (*Data-Construction-Skill*) est également introduit pour améliorer les performances. Pour l'évaluation de la qualité, les fonctions de scoring sont notées par leur corrélation de Pearson avec les performances en aval sur un pool de candidats commun. Le *Distributional Alignment Score (DAS)*, basé sur la distance MMD entre un jeu de données candidat et un proxy de domaine, est proposé comme métrique innovante.",
+    "resultats": "L'agent *Data-Construction-Skill* améliore les performances de près de 20 points absolus sur Llama-3.1-8B dans le domaine financier par rapport à un baseline utilisant uniquement Dolly-15k, et rivalise avec les méthodes les plus performantes dans les domaines riches en extraction de connaissances. Le *Distributional Alignment Score (DAS)* obtient la meilleure corrélation croisée avec les performances en aval dans quatre des six domaines, avec un coefficient de Pearson supérieur à 0,70 dans les domaines des mathématiques, des sciences et de la médecine, surpassant les évaluateurs basés sur la qualité, la diversité ou des heuristiques.",
+    "limites": "Le benchmark se limite à six domaines, ce qui peut ne pas couvrir toute la diversité des cas d'usage réels. La métrique DAS, bien que performante, repose sur un proxy de domaine dont la représentativité n'est pas garantie dans tous les contextes. Enfin, l'évaluation se concentre sur des modèles de taille moyenne (comme Llama-3.1-8B), et les résultats pourraient différer pour des modèles plus grands ou plus petits.",
+    "verdict": "DataPrep-Bench est une avancée significative pour standardiser l'évaluation des pipelines de préparation de données pour les LLM, et mérite l'attention des chercheurs et ingénieurs travaillant sur l'optimisation des données d'entraînement."
+   }
+  },
+  {
+   "id": "634457f03c20b696",
+   "title": "Scaling Native Multimodal Pre-Training From Scratch",
+   "url": "https://huggingface.co/papers/2607.22043",
+   "summary": "Although large language models (LLMs) exhibit remarkable reasoning capabilities, their reliance on text-only pre-training restricts the perception of the multimodal physical world. Native multimodal pre-training avoids this limitation by training models from scratch on multimodal inputs, thereby achieving deep cross-modal integration and mitigating optimization asymmetries inherent to traditional late-fusion architectures. Despite these advantages, the scaling properties of this paradigm remain systematically uncharacterized. To address this gap, we investigate the optimal model size and token count for training a transformer-based vision-language model under a fixed computational budget. We demonstrate that minimal objective loss adheres to a predictable compute law, whereas compute-optimal model sizes and token counts scale as power laws. Notably, language and multimodal objectives manifest distinct scaling behaviors. The language allocation law is largely invariant to the composition of the data, indicating stable language learning regardless of the multimodal data ratio. Conversely, the multimodal allocation law is highly sensitive to this composition. Specifically, text-heavy mixtures become compute-efficient only at larger model scales, shifting the optimal resource allocation toward greater model capacity. Additionally, by modeling the influence of data composition on compute laws and allocation exponents, we derive an efficiency frontier specifying precise configurations of model size, token count, and data mixture. Downstream evaluations further reveal that native multimodal pre-training induces positive cross-modal transfer, thereby enhancing pure-text spatial reasoning and enabling robust multimodal in-context learning. In summary, this empirical research establishes the essential groundwork for predictably scaling multimodal foundation models.",
+   "published": "2026-07-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2607.22043"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Étude systématique des lois de scaling pour l'entraînement multimodal natif (vision-langage) depuis zéro, révélant des comportements distincts entre objectifs linguistiques et multimodaux, avec des implications pour l'optimisation des architectures et des budgets de calcul.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage de grande taille (LLL) actuels, bien que performants en raisonnement textuel, sont limités par leur pré-entraînement unimodal (texte uniquement), ce qui les empêche de percevoir et d'intégrer efficacement le monde physique multimodal. Les architectures traditionnelles de fusion tardive introduisent des asymétries d'optimisation et une intégration superficielle des modalités, tandis que les propriétés de mise à l'échelle des modèles multimodaux natifs restent mal comprises.",
+    "methode": "Les auteurs étudient la mise à l'échelle optimale d'un modèle transformer vision-langage entraîné *from scratch* sur des données multimodales, sous une contrainte de budget computationnel fixe. Ils analysent les lois de scaling (taille du modèle, nombre de tokens) en fonction de la perte objective, en comparant les comportements des objectifs linguistiques et multimodaux. Une attention particulière est portée à l'impact de la composition des données (ratio texte/image) sur l'efficacité computationnelle, avec une modélisation des exposants d'allocation et des frontières d'efficacité. L'approche inclut aussi une évaluation des transferts inter-modaux et des capacités d'apprentissage *in-context* multimodal.",
+    "resultats": "La perte objective minimale suit une loi de scaling prévisible en fonction du budget computationnel. Les tailles optimales de modèle et le nombre de tokens suivent des lois de puissance, mais avec des comportements distincts pour les objectifs linguistiques et multimodaux : les premiers sont stables quel que soit le ratio de données, tandis que les seconds sont très sensibles à la composition. Les mélanges riches en texte ne deviennent efficaces qu'à grande échelle, favorisant une allocation des ressources vers une capacité de modèle accrue. Les évaluations en aval montrent que le pré-entraînement multimodal natif améliore le raisonnement spatial purement textuel et permet un apprentissage *in-context* robuste en multimodal.",
+    "limites": "L'étude se concentre sur un cadre expérimental spécifique (modèle transformer, budget fixe), sans explorer d'autres architectures ou contraintes. Les lois de scaling dérivées dépendent fortement des hypothèses sur la composition des données, dont la généralisation à d'autres corpus n'est pas garantie. Enfin, les mécanismes exacts du transfert inter-modal positif restent à élucider, notamment son impact sur des tâches complexes hors du domaine évalué.",
+    "verdict": "Ce travail apporte des fondations empiriques cruciales pour la mise à l'échelle prévisible des modèles multimodaux natifs, justifiant une attention particulière des chercheurs et ingénieurs en IA générative."
+   }
+  },
+  {
+   "id": "bbfacf6030acb6a1",
+   "title": "Multi-Head Latent Control: A Unified Interface for LLM Agent Decision Making",
+   "url": "https://huggingface.co/papers/2607.14277",
+   "summary": "Large language models are increasingly deployed as agents, but reliable agentic behavior requires more than next-token prediction. At inference time, it is preferred that an agent can decide whether to proceed with its current reasoning, defer to a stronger model, request additional information, invoke external tools, or abstain under the given setup. Existing approaches address these decisions through prompt-level routing, external orchestration, or task-specific fine-tuning, which primarily rely on input-side signals, and are often costly and difficult to maintain as model backbones evolve. We ask whether such control decisions can be inferred directly from a model's latent generation process. We introduce Multi-Head Latent Control, a lightweight layer that reads hidden-state trajectories from a frozen LLM or VLM to produce deployment-time control signals. A Capability Head predicts whether the current model can solve the instance or should defer to a stronger collaborator, while a Resolution Head predicts appropriate resolution decision Clarification, Tool Use, Abstention, or Direct Answering. Both heads are trained only on latent traces from the same frozen LLM backbone, enabling post hoc adaptation without modifying the model. Across language and vision-language settings, Multi-Head Latent Control consistently improves the quality-cost tradeoff of multi-model systems, enabling early handoff from partial generations and more accurate intervention decisions. In routed execution (small + large model), it reduces large-model usage by up to 90.7 percent on AndroidWorld and 27-53 percent on average across benchmarks, while retaining most of large-model performance. Additionally, the learned control signals improve tool-use decision quality, yielding up to +158 percent relative score gain and 65.5 percent fewer missed-required tool calls.",
+   "published": "2026-07-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.14277"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Méthode *Multi-Head Latent Control* pour contrôler les décisions des agents LLM (déferrement, outils, abstention) directement à partir des états latents, sans fine-tuning coûteux du backbone.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage (LLM) déployés en tant qu'agents nécessitent des mécanismes de décision fiables au-delà de la simple prédiction du prochain token. Actuellement, les approches existantes (routage par prompt, orchestration externe ou fine-tuning spécifique) dépendent principalement de signaux côté entrée, sont coûteuses et difficiles à maintenir face à l'évolution des architectures de modèles.",
+    "methode": "L'article propose *Multi-Head Latent Control*, une couche légère qui exploite les trajectoires des états cachés (*hidden states*) d'un LLM ou VLM gelé pour générer des signaux de contrôle en temps réel. Deux têtes spécialisées sont ajoutées : (1) une *Capability Head* évalue si le modèle peut résoudre la tâche ou doit déléguer à un modèle plus puissant, (2) une *Resolution Head* prédit la décision appropriée parmi quatre options (clarification, utilisation d'outils, abstention, réponse directe). Ces têtes sont entraînées uniquement sur les traces latentes du même modèle gelé, sans modifier son architecture, permettant une adaptation *post hoc*.",
+    "resultats": "Les résultats montrent une amélioration significative du compromis qualité-coût dans des systèmes multi-modèles. En routage (modèle petit + grand), l'utilisation du grand modèle est réduite jusqu'à 90,7 % sur AndroidWorld et de 27 à 53 % en moyenne sur d'autres benchmarks, tout en conservant la majorité des performances du grand modèle. Pour l'utilisation d'outils, les signaux de contrôle améliorent la qualité des décisions avec un gain relatif de score jusqu'à +158 % et une réduction de 65,5 % des appels d'outils manqués.",
+    "limites": "Les détails sur la généralisation à d'autres architectures ou tâches complexes manquent. La dépendance aux états cachés pourrait limiter la robustesse face à des distributions de données très différentes de celles d'entraînement. De plus, l'évaluation se concentre sur des benchmarks spécifiques, laissant des zones d'ombre sur son efficacité en production réelle.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à optimiser les systèmes multi-agents sans modifier les modèles sous-jacents, mais sa maturité opérationnelle reste à valider sur des cas d'usage variés."
+   }
+  },
+  {
+   "id": "87f29841239ba9af",
+   "title": "SceneActBench: Can Agents Act on the 3D Scenes They See?",
+   "url": "https://huggingface.co/papers/2607.22393",
+   "summary": "Vision-language model (VLM) agents increasingly use tools to act on 3D scenes rather than only describe them. Existing 3D benchmarks score textual responses or single-object operations, leaving agent action on complete multi-object 3D scenes under evaluated. We present SceneActBench, a benchmark for visually conditioned action across five 3D tasks under a unified agent-environment loop. Given PNG images or sampled video frames and, where applicable, supplied 3D assets, an agent acts on a 3D environment. We evaluate each final output against hidden ground truth with task-specific geometric metrics. SceneActBench comprises five tasks built from 210 source instances, yielding 520 task cases including paired input conditions. Every task runs through one fixed agent loop to keep the comparison fair. Across eleven proprietary VLM configurations, Overall scores span 38.6-50.2, and none performs consistently well across tasks. We further analyse where and how failures manifest.",
+   "published": "2026-07-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.22393"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark SceneActBench évaluant la capacité des agents VLM à agir dans des scènes 3D complexes via 5 tâches multi-objets, révélant des performances limitées et des lacunes persistantes dans l'action visuellement conditionnée.",
+   "score": 8.5
+  },
+  {
+   "id": "764d0679274c8e9d",
+   "title": "Molt: A Scalable PyTorch-Native Training Framework for Agentic Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2607.21653",
+   "summary": "Agentic reinforcement learning research is constant algorithm modification, new estimators, new pipeline stages, new rollout schemes, and in mainstream frameworks each change threads through layers of trainer, distributed backend, and rollout glue: the cost lands on the researcher at every iteration. Molt is a PyTorch-native training framework built to keep that cost small: a codebase compact and clean enough for a researcher to hold in their head, and for an AI coding assistant to read and reason about in its entirety, so the algorithm flow can be traced and changed end to end. The agent is an ordinary program, and one asynchronous loop trains multimodal and mixture-of-experts policies while never training on a token it did not generate, consistent in tokens, policy versions, and model semantics. Leanness does not cost performance: under a matched, fully asynchronous protocol, Molt is statistically comparable to a state-of-the-art Megatron-based stack. Molt is open source and provides recipes and containers at https://github.com/NVIDIA-NeMo/labs-molt.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2607.21653"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Framework *Molt* pour l'apprentissage par renforcement agentique en PyTorch, optimisé pour la modifiabilité des algorithmes avec une performance comparable aux stacks state-of-the-art (Megatron).",
+   "score": 8.2
+  },
+  {
+   "id": "8451009939e6a85c",
+   "title": "ShenSeanChen/waku-agent",
+   "url": "https://github.com/ShenSeanChen/waku-agent",
+   "summary": "Waku Waku! Waku agent is your personal AI agent, on your own laptop, in code you can read in an afternoon — harness + loop + memory + eval",
+   "published": "2026-07-10T12:20:50Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 556,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Agent IA personnel open-source conçu pour fonctionner localement sur un ordinateur portable, avec une architecture lisible et des composants modulaires (boucle, mémoire, évaluation), idéal pour explorer les systèmes multi-agents légers.",
+   "score": 8.0
+  },
+  {
+   "id": "8bd793b69cfcac8b",
+   "title": "Spectral Prior for Reducing Exposure Bias in Diffusion Models",
+   "url": "https://huggingface.co/papers/2607.22091",
+   "summary": "Diffusion models typically suffer from error accumulation during iterative sampling, commonly referred to as exposure bias. We reveal systematic frequency-dependent discrepancies between training and inference, which can be interpreted as frequency-dependent SNR error. Crucially, the direction of this mismatch varies across models and timesteps, indicating that fixed correction rules do not generalize. We propose Spectral Alignment (SPA), a lightweight, guidance-based method that calibrates the power spectrum of intermediate predictions to a pre-computed prior. Our approach consists of two stages: (1) offline fitting of a parametric spectrum model from training data, and (2) inference-time guidance via efficient FFT-based gradient computation. SPA introduces minimal computational overhead (3-4\\%) and is complementary to Classifier-Free Guidance (CFG). We demonstrate consistent improvements across diverse architectures, from pixel-space models (DDPM, ADM) to latent diffusion models (SD2.0, SDXL) and flow-matching models (SD3.5, FLUX). Our implementation is available at https://github.com/SonyResearch/SPA.",
+   "published": "2026-07-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.22091"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Méthode *Spectral Alignment (SPA)* pour corriger le biais d'exposition dans les modèles de diffusion en alignant le spectre des prédictions intermédiaires avec un prior calculé hors ligne, améliorant les performances (FID, SDXL) avec un surcoût minimal (3-4%).",
+   "score": 7.9
+  },
+  {
+   "id": "943ef20f0a529ebd",
+   "title": "Agentic Context Management: Solving Agent Memory and Cost by Treating Them as Lifecycle and Architecture Problems",
+   "url": "https://huggingface.co/papers/2607.21503",
+   "summary": "Production AI agents' failures are less often due to an inability to reason well and more often because they cannot manage what is in their reasoning context: conversation histories, large prompts, large tool definitions, and ballooning tool outputs. Agents drown in their own accumulating history while paying a token cost that grows every turn, producing missing recalls within and across conversations. The incumbent response treats this as a storage-and-retrieval problem. We argue that framing is too narrow. Actively managing what an agent holds in mind is a lifecycle, not merely a store: it spans deciding what to remember, extracting and structuring it, choosing the right store per data type, consolidating and forgetting while preserving provenance, deciding what is relevant now, anticipating what is needed next, and compacting context to a budget without losing what matters. In serious production this operates not over a single user but across an organizational scope hierarchy. We name this discipline Agentic Context Management (ACM) and decompose it into five primitives: architecting, ingesting, scoping, anticipating, and compacting & consolidation. We then make the economic case: naive context accumulation grows token cost quadratically in conversation length, crude summarization buys linear cost at the price of an accuracy cliff, and only validated compaction achieves linear cost with preserved fidelity. We describe a reference implementation, Maximem Synap, that realizes the five primitives as a multi-tenant service and reports 92% on LongMemEval and 93.2% on LoCoMo under the configuration detailed in Section 6. We close with dimensions existing benchmarks do not yet capture, latency, token efficiency, and context-rot resistance, and the frontier of decision-level and organization-level context the category points toward.",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.21503"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "produit",
+    "regulation"
+   ],
+   "tldr": "Proposition du cadre *Agentic Context Management (ACM)* pour gérer dynamiquement le contexte des agents IA (mémoire, coûts, pertinence) via 5 primitives (architecting, ingesting, scoping, anticipating, compacting), avec une analyse économique des coûts.",
+   "score": 7.9
+  },
+  {
+   "id": "21e1be24838ca195",
+   "title": "LAMAR: An Open Language-Aware Multilingual Alignment Reranker",
+   "url": "https://huggingface.co/papers/2607.22042",
+   "summary": "In multilingual retrieval augmented generation, a retriever can retrieve relevant documents written in multiple languages, which are subsequently reranked before answer generation. However, it remains unclear whether existing multilingual rerankers consider document language when ordering semantically relevant candidates. Our analysis shows that these rerankers do not consistently prioritize documents written in the same language as the query when semantically equivalent documents are available across languages, even though document language can affect answer generation. We release LAMAR, a language aware multilingual cross encoder trained to account for both semantic relevance and language coherence. LAMAR first uses English anchored relevance distillation to establish consistent relevance scoring across multilingual inputs and then applies preference alignment for language coherence to encourage documents written in the same language as the query to receive higher rankings while retaining semantic relevance. In a controlled experiment designed to assess language coherence, LAMAR achieves the best performance overall and across all languages examined individually. LAMAR also remains competitive on established multilingual reranking benchmarks. In practical retrieval settings, LAMAR achieves the best results across all reported metrics when reranking candidates retrieved in the first stage. These results demonstrate that LAMAR accounts for language coherence while achieving strong performance on general multilingual reranking benchmarks.",
+   "published": "2026-07-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2607.22042"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "rag",
+    "benchmark"
+   ],
+   "tldr": "Reranker multilingue *LAMAR* améliorant la cohérence linguistique dans les systèmes RAG en priorisant les documents dans la langue de la requête, avec des gains significatifs dans un cadre contrôlé.",
+   "score": 7.9
+  },
+  {
+   "id": "12e4516859cdb6f8",
+   "title": "Closing the Loop: Training-Free Revisit Consistency for Autoregressive Generative Rendering",
+   "url": "https://huggingface.co/papers/2607.21848",
+   "summary": "Recent conditional video generation models have shown promising potentials to transform 3D engine renderings, such as depth maps and untextured geometry, into photorealistic videos for gaming and immersive content creation. These applications require long-horizon auto-regressive generation that continuously synthesizes new frames while preserving a persistent 3D world. Auto-regressive generators synthesize video chunk by chunk with a bounded KV cache, so when the camera revisits a location after its context has been evicted, the model often regenerates inconsistent appearance, even though the conditioning renderings (e.g., depth) remain perfectly aligned with the underlying geometry.We address this revisit inconsistency without any post-training by exploiting correspondences the 3D engine already provides: temporal correspondence retrieves pose-matched historical latent chunks into the KV cache as loop-closure memory, while spatial correspondence from camera pose and depth reprojection biases token-level attention toward geometrically corresponding regions of the retrieved chunks. We demonstrate our method on loop-closure trajectories mined from TartanAir and TartanGround dataset to mirror complicate real-world application scenarios, where it outperforms existing training-free baselines on revisit consistency without losing overall video quality. Project Page: https://wenchao-m.github.io/ClosetheLoop.github.io/",
+   "published": "2026-07-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.21848"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Méthode de génération vidéo auto-régressive sans fine-tuning qui résout l'incohérence de revisite (revisit inconsistency) en exploitant les correspondances 3D (temporelles et spatiales) fournies par le moteur 3D, améliorant la cohérence visuelle sur des trajectoires longues. Intéressant pour l'optimisation des modèles de génération vidéo conditionnelle et leur intégration dans des pipelines 3D.",
+   "score": 7.9
+  },
+  {
+   "id": "392384eef4d9b012",
+   "title": "hahhforest/pi-textbook",
+   "url": "https://github.com/hahhforest/pi-textbook",
+   "summary": "《动手学 Pi》：沿 15 个真实 checkpoint 从零构建 Pi-style Agent",
+   "published": "2026-07-21T04:17:35Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 544,
+    "language": "TypeScript"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Ressource pédagogique en chinois pour construire un agent de type Pi-style à partir de checkpoints réels, offrant une approche pratique pour comprendre les architectures d'agents, mais limitée par sa langue et son public cible.",
+   "score": 7.4
+  },
+  {
+   "id": "33e462be908abf72",
+   "title": "VisCo: Leveraging Large Language Models as Intrinsic Encoders for Visual Token Compression",
+   "url": "https://huggingface.co/papers/2607.12756",
+   "summary": "Vision-language models (VLMs) process large numbers of visual tokens, resulting in substantial inference latency and memory overhead. This has motivated extensive research on visual token compression. While training-free strategies rely on heuristic metrics and suffer significant performance degradation under high compression ratios, many training-based methods introduce external compression modules that force the VLM backbone to adapt, incurring substantial retraining cost and compromising VLMs' priors. Effective visual token compression hinges on strong information encoding, a capability already present in pretrained VLMs but underutilized by existing approaches. Motivated by this, we propose VisCo, a training-efficient self-compression framework that reuses the pretrained VLM itself as an intrinsic compressor. VisCo is a parameter-sharing autoencoder that compresses visual information using a small set of memory tokens and transfers hierarchical information from encoding to decoding. Experiments show that VisCo surpasses prior methods across all evaluated compression ratios, with larger gains under more aggressive compression, and remains stable even in the extreme single-token setting. Moreover, when combined with the original visual tokens, the learned memory tokens can even improve the base model, suggesting that VisCo captures complementary representations beyond compression.",
+   "published": "2026-07-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.12756"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Méthode *VisCo* pour compresser les tokens visuels dans les VLMs en réutilisant le backbone pré-entraîné comme encodeur intrinsèque, surpassant les approches existantes même avec une compression extrême (1 token).",
+   "score": 7.3
+  },
+  {
+   "id": "7c213e5a7519af56",
+   "title": "makecindy/cindy",
+   "url": "https://github.com/makecindy/cindy",
+   "summary": "Consider it done. The open-source AI agent that works out of the box · 想到，就能做到。开源、开箱即用的 AI Agent。",
+   "published": "2026-07-22T17:49:34Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 752,
+    "language": "TypeScript"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Agent IA open-source ",
+   "score": 7.1
+  },
+  {
+   "id": "04b37240946f24fd",
+   "title": "IDEAgent: Agentic Quality-Diversity Search for Research Idea Generation",
+   "url": "https://huggingface.co/papers/2607.22375",
+   "summary": "Large Language Models (LLMs) have significantly automated the process of scientific discovery over the past few years. However, existing systems share one core limitation: they generate and optimize ideas independently for either Quality or Diversity. This often leads to the generation of ideas in close proximity to one another or to a large set of trivial, unsound, or unclear concepts. In this work, we instead argue that research ideation should be treated as a conjunction of both objectives and framed as a Quality-Diversity (QD) search. In line with this perspective, we introduce IDEAgent, a multi-agent framework that manages the evolution of ideas through lineages. We jointly drive Quality using multi-objective feedback for dedicated repair and refinement, while Diversity is achieved through lightweight sequential memory and explicit comparison against completed ideas, their historical ancestors, and rejected proposals. To systematically evaluate this QD conjunction, we develop Yield, a joint metric that computes the largest set of mutually diverse ideas that satisfy a predetermined quality threshold. Finally, through evaluations across 32 topics spanning 8 domains of Computer Science, we show that IDEAgent outperforms the best baseline by 3.89x on Yield, while achieving non-zero Yield on 8x more topics. We further corroborate these findings through an analysis of quality improvements, showing that repair and refinement are crucial for building logical rigor and clarity while preserving non-obviousness. To encourage future research on QD-search-based ideation, we open-source IDEAgent at https://github.com/declare-lab/IDEAgent.",
+   "published": "2026-07-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.22375"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "autre"
+   ],
+   "tldr": "Framework *IDEAgent* utilisant une recherche *Quality-Diversity* pour générer des idées de recherche via un système multi-agents, évalué avec une métrique *Yield* combinant qualité et diversité sur 32 sujets.",
+   "score": 7.0
+  },
+  {
+   "id": "0e94b3aa5ffc4dd9",
+   "title": "Multimodal Speaker Verification as a Threat to Speaker Anonymization",
+   "url": "https://huggingface.co/papers/2607.19636",
+   "summary": "Most automatic speaker verification (ASV) systems operate on individual utterances, despite real-world interactions typically consisting of multiple utterances. As speech accumulates, increasingly rich speaker information becomes available through acoustic, prosodic, and linguistic cues, potentially challenging speaker anonymization methods that primarily target vocal characteristics. We investigate ASV in a multi-utterance, multimodal setting and examine whether aggregating information across anonymized speech impacts privacy. We first study audio-only aggregation across multiple anonymized utterances and observe consistent performance improvements as more speech becomes available. We then incorporate prosodic and linguistic information, showing that multimodal systems outperform unimodal approaches. Finally, we compare aggregation strategies and find that frame-level aggregation yields the lowest EERs. Even with only five anonymized utterances, combining audio and text reduces EER by over 15% relative to audio-only aggregation, demonstrating that substantial speaker-discriminative information remains accessible despite anonymization.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.19636"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "interpretabilite"
+   ],
+   "tldr": "Étude sur l'impact de l'agrégation multimodale (audio + prosodie + linguistique) dans la vérification automatique du locuteur (ASV) pour contourner les méthodes d'anonymisation vocale, montrant une réduction de 15% de l'EER avec seulement 5 énoncés anonymisés.",
+   "score": 6.7
+  },
+  {
+   "id": "c332299209e28ff5",
+   "title": "uzairansaruzi/hermex",
+   "url": "https://github.com/uzairansaruzi/hermex",
+   "summary": "Native iPhone app for your Hermes agent",
+   "published": "2026-07-02T12:47:31Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 928,
+    "language": "Swift"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "Application native iOS pour interagir avec un agent Hermes, illustrant l'intégration d'agents IA dans des écosystèmes mobiles, mais sans apport théorique ou technique innovant.",
+   "score": 6.5
+  },
+  {
+   "id": "e2fd3d80ed7c3bcf",
+   "title": "TencentCloud/Octop",
+   "url": "https://github.com/TencentCloud/Octop",
+   "summary": "A smarter, self-hosted AI assistant — multi-user, multi-agent.",
+   "published": "2026-07-08T12:54:20Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 352,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Octop est un assistant IA auto-hébergé et multi-utilisateurs intégrant des agents autonomes, conçu pour des déploiements pratiques. Il est pertinent pour l'écosystème LLM et agents, mais sa fiabilité dépend de la maturité du projet (GitHub récent avec peu de documentation technique approfondie).",
+   "score": 6.5
+  },
+  {
+   "id": "3eba090cc963af6d",
+   "title": "simonlin1212/Vibe-Research",
+   "url": "https://github.com/simonlin1212/Vibe-Research",
+   "summary": "Vibe-Research: Your Personal Trading Research Agent · A股/美股/港股 的个人投研 Agent：每日复盘、资讯雷达、个股数据、板块中心、我的持仓、研究记录。Vibe-Research 把数据和功能配齐，由你自己的 AI 驱动投资研究。",
+   "published": "2026-07-05T06:30:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1030,
+    "language": "TypeScript"
+   },
+   "relevance": 6,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Agent de recherche personnelle pour les marchés boursiers (A股/美股/港股) intégrant des fonctionnalités de suivi et d'analyse, mais limité par son domaine spécifique et son manque de profondeur technique.",
+   "score": 5.9
+  },
+  {
+   "id": "36897628a741c638",
+   "title": "Three-Body Scattering for Generative Modeling",
+   "url": "https://huggingface.co/papers/2607.18198",
+   "summary": "Modern generative models typically rely on an adversarial critic, a prescribed noise-to-data path, or an autoregressive factorization. Instead, we show that a proper distributional energy can induce sample-level motion and provide direct regression supervision for a one-step generator. Three-Body Scattering Modeling (TBSM) for generation turns the energy distance into a constant-size per-projectile interaction: each projectile is attracted toward one real source and repelled from one independently generated source. Conditioned on the projectile and its condition, its expectation equals the 2-Wasserstein gradient-flow velocity of frac12D_E^2(P_θ,Q). A batch of B frozen-target events yields O(B) sample-level losses, each using one reference for its condition instead of the minibatch-wide all-pairs field used by methods such as Drifting Models. Tracking this conditional expectation online can reduce field noise. Using scattering in frozen image features, TBSM trains one-step generators on ImageNet-256, achieving FID{}=2.23 with pixel-space PixelDiT-XL and FID{}=1.63 with latent-space DiT-XL at NFE{}=1. We provide a design map relating diffusion-related supervision, Drift-like dynamics, and GAN-like objectives. These results establish tracked scattering as a route to high-dimensional one-step generation. Code: https://github.com/sp12138/TBSM.",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.18198"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "architecture",
+    "autre"
+   ],
+   "tldr": "Approche *Three-Body Scattering Modeling (TBSM)* pour l'entraînement de générateurs en une étape via une énergie de distance et une dynamique de gradient de Wasserstein, atteignant un FID de 1.63 sur ImageNet-256 avec NFE=1.",
+   "score": 5.8
+  },
+  {
+   "id": "b1146c9b661e6538",
+   "title": "Aliu-AiRobot/ESEILANE",
+   "url": "https://github.com/Aliu-AiRobot/ESEILANE",
+   "summary": "High-performance Knowledge Graph engine for AI, LLMs, and GraphRAG — built for the next generation of intelligent applications.",
+   "published": "2026-06-28T19:14:42Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 137,
+    "language": "HTML"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "rag"
+   ],
+   "tldr": "Moteur de graphe de connaissances optimisé pour GraphRAG et les LLM, avec une approche technique crédible mais peu documentée. Potentiellement utile pour les systèmes RAG avancés.",
+   "score": 5.6
+  },
+  {
+   "id": "3ad306b404969d53",
+   "title": "mereyabdenbekuly-ctrl/clodex-ide",
+   "url": "https://github.com/mereyabdenbekuly-ctrl/clodex-ide",
+   "summary": "Local-first, zero-trust agentic IDE for verifiable autonomous software development.",
+   "published": "2026-07-12T10:35:44Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 858,
+    "language": "TypeScript"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "IDE agentique local-first pour le développement autonome de logiciels, avec une approche zero-trust. Projet ambitieux mais encore expérimental, avec un potentiel pour l'automatisation du code.",
+   "score": 5.3
+  },
+  {
+   "id": "9d3ab2335d7a27a1",
+   "title": "Terence Tao: Mathematics in the Age of AI [pdf]",
+   "url": "https://teorth.github.io/tao-web/slides/age-of-ai-icm-2026.pdf",
+   "summary": "",
+   "published": "2026-07-26T10:32:35Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 124,
+    "comments": 49
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "autre"
+   ],
+   "tldr": "Conférence de Terence Tao sur les mathématiques à l'ère de l'IA, potentiellement intéressante pour la recherche fondamentale, mais sans lien direct avec les centres d'intérêt de l'utilisateur (pas de focus technique ou IA moderne).",
+   "score": 4.7
+  },
+  {
+   "id": "9a5a8b69256d373a",
+   "title": "reunios2024/cortex-sentinel-trading-nexus",
+   "url": "https://github.com/reunios2024/cortex-sentinel-trading-nexus",
+   "summary": "Self-Tuning Multi-Agent AI Trading System 2026: 8-Source Signal Fusion & Kronos Model",
+   "published": "2026-06-28T20:34:53Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 154,
+    "language": "HTML"
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Système multi-agents auto-réglé pour le trading avec fusion de 8 sources de signaux, mais manque de transparence sur les méthodes, les données ou les résultats concrets.",
+   "score": 4.7
+  },
+  {
+   "id": "76fa2431ded3a4b6",
+   "title": "jaimasih05-commits/swarm-foraging-qlearn",
+   "url": "https://github.com/jaimasih05-commits/swarm-foraging-qlearn",
+   "summary": "Q-Learning Swarm Foraging 2026: Multi-Agent RL in Dynamic Grid Environments",
+   "published": "2026-06-28T20:24:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 151,
+    "language": "HTML"
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Implémentation basique de Q-learning pour un essaim de robots en environnement dynamique. Approche intéressante pour la robotique multi-agents, mais manque de profondeur théorique ou de résultats concrets.",
+   "score": 4.7
+  }
+ ]
+}
