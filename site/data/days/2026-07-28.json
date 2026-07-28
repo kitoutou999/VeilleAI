@@ -1,0 +1,721 @@
+{
+ "date": "2026-07-28",
+ "digest": {
+  "headline": "Kimi K3 marque une avancée majeure en efficacité de scaling pour les LLM avec une architecture MoE de 2,8T paramètres et des capacités agentiques multi-domaines",
+  "overview": "La journée du 28 juillet 2026 est dominée par des innovations en architectures de modèles, optimisations pour l'inférence et frameworks pour agents autonomes. Les travaux sur les LLM et les systèmes multi-agents révèlent une maturation des approches, avec des gains concrets en efficacité et en généralisation. Les applications en robotique, santé et recherche scientifique illustrent l'élargissement des cas d'usage.",
+  "highlights": [
+   {
+    "title": "Kimi K3 : MoE et scaling efficace",
+    "text": "Kimi K3 introduit un modèle Mixture-of-Experts (MoE) de 2,8T paramètres avec seulement 104B activés par token, une fenêtre contextuelle d'1M tokens et des capacités natives en vision et RL. L'architecture combine attention KDA et résidus d'attention pour améliorer l'efficacité de scaling (2,5x vs Kimi K2), tout en atteignant des performances de pointe en codage, raisonnement et tâches agentiques. Ce modèle illustre une voie prometteuse pour concilier taille, coût et généralisation."
+   },
+   {
+    "title": "Optimisations pour l'inférence et la mémoire des LLM",
+    "text": "Plusieurs travaux ciblent l'efficacité des LLM en inférence : Sol-Attn accélère la génération vidéo via une attention sparse dynamique, LOCKS réduit la latence de décodage en contexte long avec des résumés spectraux locaux, et PIVOT optimise l'attention sparse au niveau token. Parallèlement, *fixed-lag smoothing* propose une gestion intelligente de la mémoire en inférence, mesurant l'utilité future des tokens pour réduire les besoins sans perte de performance. Ces approches répondent aux défis croissants des modèles en contexte étendu."
+   },
+   {
+    "title": "Agents autonomes : planification, outils et évaluation",
+    "text": "Les avancées en agents se structurent autour de trois axes : (1) *StateAct* améliore les agents d'utilisation d'ordinateur en accédant directement à l'état des programmes (+6% de succès sur OSWorld 2.0), (2) *Data Pyramid* formalise une taxonomie des données pour les agents incarnés, et (3) *JarvisHub* propose une plateforme open-source pour agents créatifs multimodaux à long terme. Ces travaux comblent des lacunes en cohérence, généralisation et évaluation des systèmes autonomes."
+   },
+   {
+    "title": "Applications concrètes : santé, recherche et robotique",
+    "text": "ClinFusion unifie l'analyse 2D/3D pour les MLLMs médicaux avec un benchmark (MedIF-Bench) évaluant la factualité des rapports. En recherche, *Agentic GraphRAG* combine retrieval dense/sparse/graph et une boucle corrective pour un centre scientifique (APS), avec un gain de +6,5% en recall strict. Enfin, un survey sur le *progress reward modeling* clarifie les méthodes de récompense en robotique, essentiel pour l'apprentissage autonome."
+   },
+   {
+    "title": "Interprétabilité et évaluation des modèles",
+    "text": "Les autoencodeurs clairsemés (SAE) révèlent une dualité dans les features encodées (concepts statiques vs opérations contextuelles), avec des implications pour l'interprétabilité. Par ailleurs, HG-CRC propose une méthode post-hoc pour des garanties de risque conformes dans les prédictions sélectives des LLM, corrigeant les biais de sous-groupes sans réentraînement. Ces travaux renforcent la transparence et la fiabilité des systèmes."
+   }
+  ],
+  "trend": "Les innovations convergent vers une optimisation conjointe de l'efficacité computationnelle et de la généralisation des modèles, avec une attention croissante portée aux architectures hybrides (MoE, attention sparse) et aux systèmes multi-agents. Les applications verticales (santé, robotique) gagnent en maturité, tandis que les outils d'évaluation et d'interprétabilité deviennent des leviers critiques pour le déploiement."
+ },
+ "items": [
+  {
+   "id": "4af4d423b94b24da",
+   "title": "Kimi K3: Open Frontier Intelligence",
+   "url": "https://huggingface.co/papers/2607.24653",
+   "summary": "We introduce Kimi K3, a 2.8T parameter Mixture-of-Experts model with 104 billion activated parameters, native vision capabilities, and a 1-million-token context window. Kimi K3 is built on Kimi Delta Attention and Attention Residuals, which improve information flow across sequence length and model depth. Together with Stable LatentMoE, which effectively activates 16 of 896 routed experts per token, and refined training and data recipes, these advances yield an approximately 2.5x improvement in overall scaling efficiency over Kimi K2. Post-training highlights reinforcement learning across general, agentic, and coding domains and multiple reasoning-effort levels, enabling compositional generalization and robust long-horizon execution. At 2.8T scale, Kimi K3 is supported by infrastructure advances in multiple areas: algorithm-system co-design for KDA, perfectly balanced expert-parallel training with efficient memory management, million-token agentic RL with persistent rollout and sandbox states, and deployment innovations. Extensive evaluations show that Kimi K3 achieves frontier-level performance across long-horizon coding, agentic, knowledge, reasoning, and vision tasks. While its overall performance still trails the most powerful proprietary models, namely Claude Fable 5 and GPT-5.6 Sol, Kimi K3 consistently outperforms other open and proprietary models evaluated in our suite. We release the full Kimi K3 model weights to facilitate future research and accelerate the broader deployment and adoption of frontier intelligence.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 169,
+    "arxiv_id": "2607.24653"
+   },
+   "relevance": 10,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "agents"
+   ],
+   "tldr": "Modèle Mixture-of-Experts de 2.8T paramètres (104B activés) avec fenêtre de contexte d'1M tokens, capacités natives vision et RL multi-domaines. Améliore l'efficacité de scaling de 2.5x vs Kimi K2 et atteint des performances de pointe en codage, raisonnement et tâches agentiques.",
+   "score": 9.7,
+   "deep_analysis": {
+    "probleme": "Kimi K3 vise à résoudre les défis liés à l'efficacité des modèles de langage à très grande échelle, notamment en améliorant la gestion des contextes longs (jusqu'à 1 million de tokens), l'intégration native des capacités visuelles, et l'optimisation des performances pour des tâches complexes comme le raisonnement agentique, le codage et la généralisation compositionnelle. Il cherche également à réduire l'écart entre les modèles open-source et les modèles propriétaires de pointe en termes de performance et d'efficacité.",
+    "methode": "Kimi K3 repose sur plusieurs innovations techniques : (1) **Kimi Delta Attention et Attention Residuals**, qui optimisent le flux d'information sur de longues séquences et à travers la profondeur du modèle ; (2) **Stable LatentMoE**, un mécanisme de *Mixture-of-Experts* (MoE) activant 16 experts parmi 896 par token pour une allocation dynamique des ressources ; (3) une infrastructure co-conçue avec des algorithmes pour le *Knowledge-Distillation-Aware* (KDA) training, permettant un parallélisme équilibré des experts et une gestion mémoire efficace ; (4) un post-entraînement incluant du *reinforcement learning* (RL) multi-domaines (général, agentique, codage) et multi-niveaux de raisonnement, avec des *rollouts* persistants et des états sandbox pour les tâches longues. Le modèle utilise aussi une fenêtre de contexte étendue à 1 million de tokens et des recettes de données raffinées pour améliorer l'efficacité globale.",
+    "resultats": "Kimi K3 affiche une amélioration d'environ **2,5x en efficacité de scaling** par rapport à son prédécesseur, Kimi K2. Les évaluations montrent des performances de niveau *frontier* (état de l'art) dans des domaines comme le codage longue durée, les tâches agentiques, la connaissance, le raisonnement et la vision. Bien qu'il reste derrière les modèles propriétaires les plus avancés (Claude Fable 5 et GPT-5.6 Sol), il surpasse systématiquement les autres modèles open-source et propriétaires testés. Les poids du modèle sont entièrement publiés pour favoriser la recherche et l'adoption.",
+    "limites": "Les détails techniques sur les jeux de données utilisés, les protocoles d'évaluation précis, ou les métriques de performance spécifiques (ex. scores exacts par tâche) ne sont pas explicitement fournis dans le résumé disponible. De plus, l'écart persistant avec les modèles propriétaires comme Claude ou GPT suggère que des optimisations supplémentaires (ex. qualité des données, techniques de RL) pourraient être nécessaires. Enfin, la robustesse du modèle face à des cas limites ou des biais potentiels n'est pas abordée.",
+    "verdict": "Kimi K3 mérite une attention particulière pour ses avancées en efficacité de scaling, son architecture MoE innovante et son ouverture, mais son adoption dépendra de validations indépendantes et de son déploiement pratique à grande échelle."
+   }
+  },
+  {
+   "id": "086141f88be36119",
+   "title": "Sol-Attn: Accelerating Video Generation Inference via On-the-Fly Attention Sparsification",
+   "url": "https://huggingface.co/papers/2607.24027",
+   "summary": "Diffusion transformers are essential for high-fidelity video generation, but long token sequences make attention a dominant inference bottleneck. Training-free dynamic sparse attention alleviates this bottleneck by computing only selected key-value blocks, yet existing methods struggle to sparsify attention both efficiently and accurately for two reasons: (1) Rigid, unpredictable, and costly routing: selecting a fixed fraction of top-ranked blocks by proxy score imposes fixed budgets, whereas retaining blocks to reach a target cumulative proxy probability mass yields dynamic but potentially imbalanced budgets; both incur non-negligible overhead from computing and materializing proxy scores. (2) Lossy keep-or-drop sparsification: unselected blocks are discarded entirely, degrading accuracy under aggressive sparsity. These limitations motivate cheaper dynamic-budget routing while limiting accuracy degradation. In this paper, we introduce training-free Sol-Attn (Sparsifying online attention), which unifies dynamic routing, sparse computation, and approximation correction in a single online-softmax pass, achieving a better accuracy-efficiency trade-off in sparse attention. The core of Sol-Attn is on-the-fly block thresholding with proxy-score reuse, which selects critical blocks by comparing block proxy scores against a threshold during online softmax. This design enables dynamic yet controllable block budgets without materializing the proxy map, while directly reusing the proxy scores of unselected blocks to approximate their contribution. Experiments across image and video generation tasks show that Sol-Attn advances the quality-efficiency frontier of training-free sparse attention, delivering 2.1 times and 2.3 times end-to-end speedups for video generation and editing, respectively, while preserving visual quality.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2607.24027"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Sol-Attn propose une attention dynamique et peu coûteuse pour les transformers de génération vidéo, unifiant routage, calcul parcimonieux et correction d'approximation en une seule passe softmax, optimisant le compromis précision/efficacité.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles de diffusion basés sur des transformers, essentiels pour la génération vidéo haute fidélité, souffrent d'un goulot d'étranglement majeur lors de l'inférence en raison des longues séquences de tokens. Le mécanisme d'attention, bien que crucial, devient extrêmement coûteux en calcul, limitant les performances et l'efficacité des systèmes de génération vidéo en temps réel ou à grande échelle.",
+    "methode": "Sol-Attn propose une approche *training-free* (sans réentraînement) pour accélérer l'inférence en introduisant une sparsification dynamique de l'attention. La méthode repose sur un seuillage en ligne des blocs d'attention (*on-the-fly block thresholding*) pendant le calcul du softmax, évitant ainsi de matérialiser une carte de scores intermédiaires coûteuse. Les scores proxy des blocs non sélectionnés sont réutilisés pour approximer leur contribution, combinant ainsi routage dynamique, calcul sparse et correction d'approximation en une seule passe. Cette technique permet un budget de blocs variable mais contrôlé, sans les rigidités ou déséquilibres des méthodes existantes.",
+    "resultats": "Les expériences menées sur des tâches de génération et d'édition vidéo montrent que Sol-Attn améliore significativement le compromis qualité-efficacité. Le papier rapporte des accélérations de 2,1× pour la génération vidéo et de 2,3× pour l'édition vidéo, tout en maintenant une qualité visuelle comparable aux méthodes denses. Ces gains sont obtenus sans réentraînement, ce qui en fait une solution pratique pour les modèles existants.",
+    "limites": "Le contenu disponible ne précise pas les critères exacts de qualité visuelle utilisés pour évaluer la préservation de la fidélité, ni les scénarios où l'approximation pourrait échouer (ex. : séquences très dynamiques ou textures complexes). De plus, l'absence de détails sur la robustesse face à des variations de seuil ou de taille de blocs laisse des zones d'ombre sur la généralisabilité de la méthode.",
+    "verdict": "Sol-Attn mérite une attention particulière pour son approche innovante et ses gains concrets en efficacité, surtout dans un domaine où les coûts d'inférence restent un défi majeur, mais une validation indépendante sur des benchmarks variés serait nécessaire pour confirmer sa supériorité."
+   }
+  },
+  {
+   "id": "15b37b8fcf264446",
+   "title": "The Physics of Multi-Turn Long-Horizon Planning: From Pre-training to Post-training via Single- and Multi-Teacher On-Policy Agentic Distillation",
+   "url": "https://huggingface.co/papers/2607.24720",
+   "summary": "Multi-turn long-horizon planning is critical for foundation model agents, yet how to fundamentally improve it remains unclear. Existing models are trained on uncontrollable and opaque Internet data, making it difficult to identify how planning ability is acquired, shaped, and integrated. To address this challenge, we introduce a unified and controlled multi-turn environment that enables precise control. It allows systematically study long-horizon planning across three stages. (1) Planning ability acquisition during pre-training. We study data format, distribution, and quality. Explicit world model construction through CoT state transition modeling yields stronger long-horizon generalization. Atomic skills alone are insufficient for compositional generalization, whereas a litte long-horizon data works. Moreover, suboptimal trajectories severely impair performance because errors amplify over long horizons. (2) Planning ability shaping via GRPO and OPD post-training. Through mutual information, we distinguish general planning patterns from task-specific planning knowledge. For planning patterns, we identify three application regions of post-training: unnecessary, effective, and unsupported. OPD has a broader effective region than GRPO under low-quality and long-horizon settings, as it provides more consistent update directions. For planning knowledge, distilling unseen procedures from a teacher with different knowledge may impair student's prior world modeling without fully establishing new knowledge. (3) Planning ability integration through MOPD post-training. We show that multi-teacher on-policy distillation (MOPD) integrates capabilities by converging to shared planning-pattern across environments. Compatible patterns enable cross-environment generalization, partially shared patterns support continual learning, while completely conflicting patterns cause severe interference.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2607.24720"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Étude contrôlée sur la planification multi-tours à long terme chez les agents IA, montrant que la modélisation explicite des transitions d'état (CoT) améliore la généralisation, tandis que les trajectoires sous-optimales dégradent les performances en amplifiant les erreurs.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "La publication aborde le défi fondamental de l'amélioration de la planification multi-tours et à long horizon pour les agents basés sur des modèles de fondation. Actuellement, ces modèles sont entraînés sur des données Internet non contrôlées et opaques, ce qui rend difficile l'identification des mécanismes par lesquels les capacités de planification sont acquises, façonnées et intégrées.",
+    "methode": "Les auteurs introduisent un environnement multi-tours contrôlé et unifié pour étudier systématiquement la planification à long horizon en trois étapes. (1) **Pré-entraînement** : Analyse des formats, distributions et qualités des données, avec un accent sur la modélisation explicite des transitions d'état via des chaînes de pensée (CoT) et l'impact des trajectoires sous-optimales. (2) **Post-entraînement** : Utilisation de méthodes comme GRPO (Generalized Reinforcement Learning from Policy Optimization) et OPD (On-Policy Distillation) pour façonner les capacités de planification, en distinguant les *patterns* généraux des connaissances spécifiques via l'information mutuelle. (3) **Intégration** : Proposition de MOPD (Multi-Teacher On-Policy Distillation) pour fusionner les capacités de plusieurs enseignants, en analysant la compatibilité des *patterns* de planification entre environnements.",
+    "resultats": "Les résultats montrent que la modélisation explicite des transitions d'état via CoT améliore la généralisation à long horizon, tandis que les compétences atomiques seules sont insuffisantes. L'ajout de données à long horizon, même en petite quantité, est bénéfique. OPD surpasse GRPO dans des contextes de faible qualité ou à long horizon grâce à des directions de mise à jour plus cohérentes. MOPD permet une intégration efficace des capacités si les *patterns* de planification sont compatibles, mais des conflits complets entraînent des interférences sévères. Aucun chiffre clé précis n'est mentionné dans le résumé disponible.",
+    "limites": "Le résumé ne détaille pas les architectures spécifiques des modèles ni les métriques quantitatives utilisées pour évaluer les performances. L'environnement contrôlé, bien que utile pour l'analyse, pourrait ne pas capturer la complexité des données réelles. Enfin, la généralisation des résultats à des tâches ou domaines non étudiés reste une zone d'ombre.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche systématique et ses insights techniques sur la planification à long horizon, bien que des détails expérimentaux supplémentaires soient nécessaires pour une évaluation complète."
+   }
+  },
+  {
+   "id": "71f67016ba1d322b",
+   "title": "JarvisHub: An Open Harness for Canvas-Native Multimodal Creative Agents",
+   "url": "https://huggingface.co/papers/2607.23588",
+   "summary": "Creative AI is moving from single-step asset generation toward long-horizon multimodal production. Although recent generative models can synthesize high-quality images, videos, audio clips, UI elements, storyboards, slides, and other creative assets, real-world creative work requires more than isolated prompt-output interactions. It involves references, drafts, alternatives, edits, failed attempts, version relations, tool actions, evaluation signals, and human feedback, which together form an evolving project state. Existing prompt-based, chat-based, and node-based generation systems only partially support this state, as they often discard intermediate context, rely on linear conversations, or require manually specified workflows. Recent commercial systems indicate a shift toward agent-assisted creative production, but their closed architectures make it difficult to study how agents represent context, choose tools, revise artifacts, recover from failures, and maintain consistency over time. To address this gap, we introduce JarvisHub, a canvas-native creative agent harness for long-horizon multimodal creation. JarvisHub treats an editable canvas as the user workspace, the agent's external memory, action space, and shared project state, representing multimodal artifacts, dependencies, versions, and feedback as typed canvas nodes and links. Through a three-layer architecture of canvas state, protocol bridge, and agent runtime, JarvisHub enables agents to act within an inspectable and editable creative state. This design moves creative agents beyond isolated tool use toward sustained, human-steerable creative automation, where agents can progressively plan, generate, revise, and organize multimodal projects while users remain able to inspect, guide, and intervene throughout the process.",
+   "published": "2026-07-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 84,
+    "arxiv_id": "2607.23588"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "Plateforme open-source (JarvisHub) pour agents créatifs multimodaux à long terme, intégrant un espace de travail canvas évolutif. Permet de gérer versions, outils, feedback humain et cohérence sur des projets complexes, comblant un vide dans l'écosystème actuel.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "La création multimodale assistée par IA évolue vers des processus longs et complexes, mais les systèmes actuels (basés sur des prompts, des chats ou des nœuds) ne gèrent pas efficacement l'état dynamique d'un projet créatif. Ils perdent le contexte intermédiaire, imposent des interactions linéaires ou nécessitent des workflows manuels, limitant ainsi l'automatisation et la collaboration homme-IA sur des tâches créatives étendues dans le temps.",
+    "methode": "JarvisHub propose une architecture en trois couches : 1) Un *canvas* éditable servant de mémoire externe, d'espace d'action et d'état partagé du projet, où les artefacts multimodaux (images, vidéos, etc.), leurs dépendances, versions et retours sont représentés sous forme de nœuds typés et de liens. 2) Un *protocol bridge* faisant le lien entre l'état du canvas et le runtime de l'agent. 3) Un *agent runtime* permettant à l'agent d'interagir avec le canvas pour planifier, générer, réviser et organiser des projets multimodaux de manière progressive. Cette approche déplace les agents créatifs vers une automatisation durable et pilotable par l'humain, tout en maintenant la transparence et la possibilité d'intervention utilisateur.",
+    "resultats": "Le contenu disponible ne fournit pas de résultats quantitatifs ou de benchmarks précis. L'accent est mis sur la conception architecturale et la démonstration conceptuelle d'un système ouvert pour l'étude des agents créatifs multimodaux, plutôt que sur des performances mesurées.",
+    "limites": "1) L'absence de données empiriques ou d'évaluations comparatives rend difficile l'appréciation de l'efficacité réelle du système. 2) La complexité de la gestion d'un canvas comme mémoire externe pourrait introduire des défis en termes de scalabilité ou d'interprétabilité pour des projets très volumineux. 3) Le document ne détaille pas les mécanismes concrets de récupération d'erreurs ou de maintien de la cohérence sémantique sur des horizons temporels longs.",
+    "verdict": "JarvisHub mérite l'attention pour son approche innovante et ouverte de la création multimodale assistée par IA, mais son utilité pratique reste à démontrer par des évaluations rigoureuses et des cas d'usage concrets."
+   }
+  },
+  {
+   "id": "bcb2c4bcaf22e592",
+   "title": "From Proprietary to Open-Source: Bridging the Distribution Gap via Multi-Agent Protocol Distillation in Agentic Search",
+   "url": "https://huggingface.co/papers/2607.24280",
+   "summary": "Agentic search enables large language models to solve knowledge-intensive tasks by interleaving multi-step reasoning with retrieval, yet optimizing this with outcome-based reinforcement learning (RL) provides only sparse supervision. Knowledge distillation can supply denser guidance, and advanced proprietary models with their strong reasoning capabilities are promising teachers. While distilling from proprietary models can densify this supervisory signal, conventional logit-matching is precluded by hidden logits and mismatched tokenizers, whereas raw natural language trajectory imitation transfers superficial stylistic artifacts rather than core reasoning competence. To address the heterogeneous distillation problem and bridge the distribution gap, we propose Multi-Agent Protocol Distillation (MAPD), a joint distillation and RL framework uses a structured, style-normalized protocol as an intermediate representation. An offline multi-agent system (MAS) decomposes each query, retrieves supporting evidence, repairs failed searches, and converts the resulting exploration trace into a JSON protocol containing the task type, reasoning plan, and extractive grounding facts. During training, the protocol is provided only to a privileged branch of the student policy, whose token distributions furnish a dense distillation signal alongside the sparse RL objective. Extensive evaluations across seven QA benchmarks demonstrate that MAPD consistently outperforms competitive distillation and RL, achieving average success rates of 39.4\\% on Qwen3-1.7B and 44.4\\% on Qwen3-4B. Crucially, the framework generalizes robustly across diverse proprietary teachers while effectively mitigating the student policy from style drift and verbosity degeneration.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 53,
+    "arxiv_id": "2607.24280"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "rag"
+   ],
+   "tldr": "Framework (MAPD) pour distiller des protocoles multi-agents depuis des modèles propriétaires vers des modèles open-source, résolvant les problèmes de distribution et d'alignement des tokens. Améliore la supervision dense dans les tâches de recherche agentique.",
+   "score": 8.8
+  },
+  {
+   "id": "01574de2839f8d09",
+   "title": "Data Pyramid for Embodied Manipulation",
+   "url": "https://huggingface.co/papers/2607.24744",
+   "summary": "Multimodal foundation models learned to see and to speak by consuming the whole internet. Embodied agents admit no such shortcut, since they require data that couple observations with physical states and actions. These signals can be provided, to varying degrees, by multiple data sources. In this work, we organize the embodied data ecosystem as a \"pyramid\" spanning five complementary sources: real-robot data, UMI-style data, egocentric and exocentric data, simulation data, and general vision-language data. We organize the pyramid around the tension between scalability and robot alignment, and further characterize each source in terms of data quality, diversity, reusability, and physical fidelity. We then analyze recent embodied foundation models through the lens of their data recipes, examining how different sources are selected, aligned, and mixed during pretraining. For embodied brain models, vision-language-action models, and world-action models alike, we relate data composition to capabilities in perception, reasoning, planning, action generation, and world prediction. We close by discussing six open challenges: building large-scale tactile datasets, collecting failure and recovery data, developing scalable data-collection pipelines, aligning actions across embodiments, leveraging egocentric data for dexterous manipulation, and designing principled data recipes for robot learning. We hope this work paves the foundation for the design of next-generation embodied systems.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 29,
+    "arxiv_id": "2607.24744"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Data Pyramid formalise l'écosystème de données pour les agents incarnés en 5 niveaux, analysant leur impact sur les capacités de perception, planification et action. Une taxonomie essentielle pour les modèles de fondation robotiques.",
+   "score": 8.8
+  },
+  {
+   "id": "c1ae9c47957ebf90",
+   "title": "StateAct: Program State, before Pixels, for Long-Horizon Computer-Use Agents",
+   "url": "https://huggingface.co/papers/2607.22798",
+   "summary": "Computer-use agents are usually improved by strengthening perception: better models for reading a screenshot and choosing where to click. Yet a screenshot is only a lossy rendering of the underlying program state, e.g., the files, application backends, and DOM that hold the task data. Different states can produce the same pixels, while code can inspect and modify that state directly. StateAct is a code-first, multi-agent harness built around this distinction. Its main agent works directly with program state by using code, while a dedicated GUI subagent handles screenshot-and-click interaction on the few subgoals that need it, just 28 of 108 tasks and 1.1% of main-agent steps. The same direct access to program state also supports verification: an independent finish gate double-checks the saved result for structural failures, e.g., output that is missing, unsaved, or written to the wrong path. To stay on track over hundreds of steps, the main agent hands subgoals to fresh subagents, keeping its own context focused. On OSWorld 2.0, StateAct lifts Claude Opus 4.8 from 20.6% to 26.9% on binary success, and from 54.8% to 61.6% on partial success, at ~ 9x lower cost per task than the same model driven by screenshots alone; a code-only variant with no GUI subagent reaches only 45.9% partial, below that screenshot-based baseline's 54.8%. In general, grounding action, verification, and memory in state, what we call state-grounding, shifts the main bottleneck from perception toward reasoning: failures depend more on what the agent thinks than on what it sees.",
+   "published": "2026-07-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 42,
+    "arxiv_id": "2607.22798"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "StateAct améliore les agents d'utilisation d'ordinateur en accédant directement à l'état du programme (fichiers, DOM) plutôt qu'aux pixels, avec un gain de 6% en succès sur OSWorld 2.0. Une approche révolutionnaire pour l'efficacité des agents.",
+   "score": 8.8
+  },
+  {
+   "id": "40d9acea8f078a10",
+   "title": "A corrective agentic hybrid RAG and an operations-grounded evaluation for a scientific facility",
+   "url": "https://arxiv.org/abs/2607.24663v1",
+   "summary": "Scientific user facilities accumulate decades of operational knowledge that no single search index covers: electronic logbooks, technical documents, internal wikis, operations chat messages, maintenance records, and live control-system data. We present APS-RAG, Advanced Photon Source Retrieval Augmented Generation, a deployed platform that makes the institutional knowledge at the Advanced Photon Source (APS) accessible to staff through natural-language queries, along with an operations-grounded evaluation. The retrieval engine fuses dense, sparse, and knowledge-graph (KG) channels with query-type-adaptive reciprocal-rank fusion, adds a corrective agentic loop, and runs a native-tool ReAct executor over a Model Context Protocol (MCP) tooling layer. We construct APS-Bench, a 50-question, question-answering (QA) dataset with auditable gold answers. Every retrieval-augmented variant numerically improves strict vital-nugget recall over a naive BM25 baseline (63.8%), with the full corrective Agentic GraphRAG scoring (70.3%). The cross-encoder reranker contributes significantly to answer quality: removing it and allowing the LLM to score relevance drastically reduces strict vital recall by 32.8%. The graph channel and corrective loop contribute positively as expected, but the performance gains are marginal. Additionally, we also compare the performance of open-source and closed-source LLMs in final answer synthesis. We release the APS-Bench construction methodology, the six-layer evaluation harness, and the underlying codebase, along with the '/aps-rag' retrieval agent skill framework, to support reproduction and adoption at other facilities. Together, the deployed platform and its operations-grounded evaluation present a promising workflow for trustworthy, statistically grounded AI assistance in facility operations, transferable to other large scientific instruments.",
+   "published": "2026-07-27T17:01:30+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Rajat Sainju, Dariusz Jarosz, Hairong Shang, Michael Prince, Ryan M. Aydelott, Mathew J. Cherukara"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "rag",
+    "produit"
+   ],
+   "tldr": "Plateforme *Agentic GraphRAG* déployée pour un centre de recherche scientifique (APS), combinant retrieval dense/sparse/graph + boucle corrective agentique. Évaluation *operations-grounded* sur 50 questions avec gains significatifs (+6.5% de recall strict vs BM25), démontrant l'efficacité en contexte réel.",
+   "score": 8.6
+  },
+  {
+   "id": "2225a36fc39c6c42",
+   "title": "ClinFusion: A Vision-Centric Multimodal LLM System for Holistic Medical Understanding",
+   "url": "https://huggingface.co/papers/2607.24743",
+   "summary": "Multimodal large language models (MLLMs) hold immense potential to revolutionize clinical practice, yet deploying them in the medical domain is fundamentally a vision-centric challenge: models must absorb knowledge from heterogeneous 2D and 3D medical images, and evaluation protocols must align with radiologists' clinical practice and provide an accurate, fine-grained and factualness-driven assessment. In this paper, we introduce ClinFusion, a vision-centric MLLM designed for holistic medical understanding that systematically addresses these limitations. We propose a compositional and cascaded vision encoder architecture featuring a Cascade Spatial-Aware Locality Fusion operator that unifies diverse 2D and native 3D medical image understanding within a fused encoder. We further introduce a vision-grounded evaluation framework, including MedIF-Bench for instruction-following assessment and a region-of-interest-grounded method for clinically aligned and factualness-driven report generation evaluation. We show that ClinFusion sets a new state-of-the-art across a comprehensive suite of 2D and 3D multimodal medical benchmarks---spanning visual question answering, report generation, and instruction following---as well as textual medical tasks, outperforming leading open-source medical MLLMs (e.g., Hulu-Med, Lingshu) on 20 out of 24 benchmarks and demonstrating multimodal capabilities better than powerful proprietary models such as GPT-5.2 and Gemini-3-Flash on 13 out of 16 benchmarks, and can be further augmented with agentic tool use for retrieval-augmented and tool-assisted clinical workflows. A blinded evaluation by board-certified radiologists confirms that ClinFusion produces the highest-ranked reports, and validates our RoI-grounded metric as achieving the strongest correlation with expert judgment among all automatic evaluation metrics examined.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.24743"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "ClinFusion propose une architecture d'encodeur visuel en cascade pour les MLLMs médicaux, unifiant l'analyse 2D/3D et introduisant MedIF-Bench pour évaluer la factualité des rapports cliniques. Une avancée majeure pour les modèles multimodaux en santé.",
+   "score": 8.5
+  },
+  {
+   "id": "454c81ac750250b4",
+   "title": "Progress Reward Modeling for Robotic Learning: A Comprehensive Survey",
+   "url": "https://huggingface.co/papers/2607.21655",
+   "summary": "Robotic learning takes place in dynamic environments with large behavior spaces. A terminal success signal only tells the robot whether the task is completed. It does not explain whether the current behavior is making progress, remaining unchanged, or undoing earlier progress. For this reason, recent studies have increasingly explored progress rewards that provide feedback during task execution. However, the current literature lacks a shared framework. Existing methods use different observations, goal specifications, output signals, supervision sources, and evaluation protocols. This makes it difficult to compare them and understand what their results actually validate. In this survey, we provide a unified view of progress reward modeling for robotic learning. We organize the field in three connected steps. We first study the interface of a progress model. This defines the problem from the outside by asking what information the model receives and what form of progress signal it produces. We then move inside the model and study the methods used to construct this signal. This reveals the different assumptions and mechanisms behind progress estimation and reward generation. Finally, we examine the data and benchmarks that support these methods. This shows how progress supervision is obtained and what different evaluations actually measure. Together, these three perspectives connect what a progress model is, how it is built, and how its quality is validated. We further summarize the main limitations of current approaches and discuss future research directions.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 53,
+    "arxiv_id": "2607.21655"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Ce survey unifie les méthodes de *progress reward modeling* pour l'apprentissage robotique, clarifiant les interfaces, mécanismes et évaluations des signaux de progression. Une référence pour les systèmes de récompense en robotique.",
+   "score": 8.5
+  },
+  {
+   "id": "15b6bba97b8e1ee0",
+   "title": "Eviction as Estimation: A Fixed-Lag Smoothing View of Test-Time Memory, and When Measuring Beats Accumulating",
+   "url": "https://arxiv.org/abs/2607.24667v1",
+   "summary": "A language model with a bounded working memory must repeatedly decide which stored items to keep. Every deployed method decides the moment an item arrives, from the past (StreamingLLM, H2O) or from a guess about the future (SnapKV). We recast the choice as an estimation problem on a hidden signal, whether an item will be reused, placing existing methods on one axis, the commit lag $H$: online filters and learned predictors commit at $H=0$, while Belady's offline optimum sits where the whole future is known. The missing regime in between, fixed-lag smoothing, waits a bounded number of steps, observes which items a correct near-future prediction attended to, and only then commits. This measurement, demonstrated utility, turns Belady's unobservable future request into something we read off the model itself. We instantiate it as a training-free policy, RMM, a strict generalization of H2O that reduces to it exactly when the measurement is uniform. In controlled settings where reuse is endogenous and separated in time, demonstrated utility identifies used memory far better than accumulated attention, and a small bounded memory behaves like a much larger one. But on independent third-party benchmarks, run inside NVIDIA's KVPress harness against its own SnapKV, H2O, and StreamingLLM implementations, the advantage mostly disappears: RMM is on par with H2O for single-turn question answering and loses to both H2O and SnapKV in a streaming multi-turn setting. The cause is simple: on natural text the model is correct about most tokens, so weighting attention by correctness barely changes it, and demonstrated utility collapses onto accumulated attention unless reuse is sharp and endogenous, which standard benchmarks do not exercise. Our contribution is the framework and an honest map of when measuring beats accumulating, not a new state of the art.",
+   "published": "2026-07-27T17:08:27+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Maruthi Vemula, Neeraj Praneeth Gajula"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Nouvelle approche (*fixed-lag smoothing*) pour la gestion de la mémoire des LLM en inférence, mesurant l'utilité future des tokens avant de les conserver. Généralise H2O et réduit les besoins en mémoire tout en maintenant la performance, avec une évaluation rigoureuse.",
+   "score": 8.3
+  },
+  {
+   "id": "fd1f9b8972934caa",
+   "title": "Kimi K3: Open Frontier Intelligence",
+   "url": "https://arxiv.org/abs/2607.24653v1",
+   "summary": "We introduce Kimi K3, a 2.8T parameter Mixture-of-Experts model with 104 billion activated parameters, native vision capabilities, and a 1-million-token context window. Kimi K3 is built on Kimi Delta Attention and Attention Residuals, which improve information flow across sequence length and model depth. Together with Stable LatentMoE, which effectively activates 16 of 896 routed experts per token, and refined training and data recipes, these advances yield an approximately 2.5x improvement in overall scaling efficiency over Kimi K2. Post-training highlights reinforcement learning across general, agentic, and coding domains and multiple reasoning-effort levels, enabling compositional generalization and robust long-horizon execution. At 2.8T scale, Kimi K3 is supported by infrastructure advances in multiple areas: algorithm-system co-design for KDA, perfectly balanced expert-parallel training with efficient memory management, million-token agentic RL with persistent rollout and sandbox states, and deployment innovations. Extensive evaluations show that Kimi K3 achieves frontier-level performance across long-horizon coding, agentic, knowledge, reasoning, and vision tasks. While its overall performance still trails the most powerful proprietary models, namely Claude Fable 5 and GPT-5.6 Sol, Kimi K3 consistently outperforms other open and proprietary models evaluated in our suite. We release the full Kimi K3 model weights to facilitate future research and accelerate the broader deployment and adoption of frontier intelligence.",
+   "published": "2026-07-27T16:49:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kimi Team, Tongtong Bai, Yifan Bai, Yiping Bao, M. C., Jianfeng Cai"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Kimi K3 est un modèle MoE de 2,8T de paramètres avec 104B de paramètres activés, doté de capacités visuelles natives et d'une fenêtre contextuelle d'1M de tokens. Il introduit des innovations comme l'attention KDA et les résidus d'attention pour améliorer l'efficacité de scaling (2,5x vs Kimi K2), avec des avancées en RL agentique et en généralisation compositionnelle.",
+   "score": 8.3
+  },
+  {
+   "id": "b5ab632b19b156d0",
+   "title": "Sparse Autoencoders Encode Both Concepts and Functions: The Downstream Geometry of Feature Effects",
+   "url": "https://arxiv.org/abs/2607.24645v1",
+   "summary": "The wide-scale use of sparse autoencoders (SAEs) as interpretability tools is limited by inconsistent links between SAE features and model behavior. Features with clear activation descriptions may have weak or unexpected causal effects; steering can vary across prompts or oppose the intended direction; and activation-based feature selection can miss features that produce the desired output change. Prior work has studied feature geometry inside the model, where features are computed. We instead study the geometry of changes in model logits caused by feature interventions. We introduce Feature-Effect Geometry Analysis (FEGA), an unsupervised framework that removes the same active SAE feature across contexts and analyzes the resulting cloud of logit changes. Across SAE variants, consistent one-dimensional effects are rare: few features behave like reusable directions. To interpret this variation, we distinguish value-like features, tied to static information such as factual attributes, from pointer-like features, associated with context-dependent operations. Value-like features more often exhibit structured, low-dimensional effects, although these effects typically span several directions. Pointer-like features, by contrast, predominantly exhibit diffuse effects. Our results show that a feature can be interpretable and causally relevant without providing a stable direction for steering.",
+   "published": "2026-07-27T16:45:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Phu Gia Hoang, Anwoy Chatterjee, Tanmoy Chakraborty, Iryna Gurevych, Subhabrata Dutta"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "architecture",
+    "llm"
+   ],
+   "tldr": "Les autoencodeurs clairsemés (SAE) encodent à la fois des concepts statiques (valeur-like) et des opérations contextuelles (pointer-like), mais leurs effets sur les logits sont rarement unidimensionnels. FEGA révèle cette diversité et propose une taxonomie pour interpréter les interventions.",
+   "score": 8.3
+  },
+  {
+   "id": "8f9cc7a0f2676407",
+   "title": "PIVOT: Efficient Query-Group Indexing for Token-Level Sparse Attention",
+   "url": "https://arxiv.org/abs/2607.24593v1",
+   "summary": "Token-level sparse attention, as implemented by DeepSeek Sparse Attention (DSA) in production systems, makes the downstream attention efficient but shifts the bottleneck to the indexer that feeds it. To select the top-k tokens for each query, the indexer must still score every preceding token, incurring a cost of O(L^2) per layer for a sequence of length L. We observe that this per-query scan is largely redundant: nearby queries select highly overlapping top-k tokens, and the indexer scores are long-tailed along the key axis. We exploit these properties in PIVOT, Proxy Indexing Via One full-prefix Traversal, a training-free, drop-in replacement for the DSA indexer that shares one prefix scan across a group of nearby queries. PIVOT aggregates a group into a single proxy query, performs one shared full-prefix scan to obtain a candidate set, and then selects a top-k for each query from that set. Two variants trade speed for fidelity: PIVOT-Reuse shares the proxy top-k across the group for maximum speed, whereas PIVOT-Refine re-scores the candidate set with the indexer of each query and then selects an individual top-k, matching the dense indexer at a small additional cost. A single algorithm covers both inference phases, differing only in how groups are formed: fixed-size groups of consecutive queries in prefill, and the queries decoded together in one multi-token prediction (MTP) step in decode. On DeepSeek-V3.2 and GLM-5.1 across LongBench and RULER, PIVOT matches the accuracy of the dense DSA indexer while accelerating it by up to 4x and reducing end-to-end latency by up to 1.6x at long context.",
+   "published": "2026-07-27T15:58:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hong Liu, Yuan Cheng, Lin Niu, Yi Su, Yufei Xue, Anmin Liu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "PIVOT propose une optimisation de l'attention sparse au niveau des tokens (comme DSA) en réduisant le coût O(L²) par couche via un indexeur groupé (proxy query) partageant un scan de préfixe unique pour plusieurs requêtes voisines, avec deux variantes (Reuse/Refine) pour un compromis vitesse/fidélité. Intéressant pour l'inférence efficace des LLM.",
+   "score": 8.3
+  },
+  {
+   "id": "ab2a4dce35b7e80d",
+   "title": "Hierarchical Group-Conditional Conformal Risk Control for Selective Prediction in Language Models",
+   "url": "https://arxiv.org/abs/2607.24562v1",
+   "summary": "Large language models serve heterogeneous populations structured by domain, topic difficulty, and linguistic style. Conformal risk control (CRC) gives rigorous marginal risk guarantees for selective prediction with abstention, but marginal guarantees do not imply per-group ones: a model can meet the population budget while systematically over-exposing subgroups to errors. Under mild shift in group composition, standard CRC violates the budget in up to 47% of trials. We propose HG-CRC (Hierarchical Group-Conditional CRC), a post-hoc calibration framework enforcing simultaneous risk guarantees across all nodes of a user-defined group hierarchy. It applies a Bonferroni correction over nodes and a leaf-first policy that uses the most specific applicable threshold, falling back to coarser nodes when a finer one is uncertified or rejects the example. It needs only a held-out calibration set, with no retraining. We evaluate on three models (Qwen3-4B, Llama-3.1-8B-Instruct, Gemma-3-4B) and two benchmarks (ARC Challenge, MMLU-Pro) across eight configurations probing IID generalization, heterogeneity, mixture/domain/prompt/difficulty shift, label noise, and quantization. Main result: HG-CRC reaches an empirical 0% violation rate and WGER=0 on ARC Challenge for high-accuracy models (Qwen3-4B, Llama-3.1-8B). At 500 bootstrap trials these zeros are empirical upper bounds (true rate up to 0.6%), not certified. Results are benchmark-specific: on MMLU-Pro these models abstain entirely or (Llama) retain WGER=0.014. Gemma-3-4B, poorly calibrated here, degrades gracefully by abstaining. Participation cost vs. global CRC is 22 to 37 points. Ablations show hierarchical depth clears the budget: removing difficulty level returns violations to about 11%. Bonferroni is needed for the theoretical guarantee, though its empirical effect matters only with many nodes.",
+   "published": "2026-07-27T15:31:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Murilo Salem, Luísa Böhm, Daniel Pontes, Anderson Ferrugem"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Méthode HG-CRC pour des garanties de risque conformes hiérarchiques dans la prédiction sélective des LLM, corrigeant les biais de sous-groupes avec une approche post-hoc sans réentraînement, évaluée sur Qwen3-4B, Llama-3.1-8B et Gemma-3-4B.",
+   "score": 8.3
+  },
+  {
+   "id": "a0371d71e6197999",
+   "title": "LOCKS: Page-Local Compact Key Summaries for Efficient Long-Context Decoding",
+   "url": "https://arxiv.org/abs/2607.24555v1",
+   "summary": "Serving large language models at long context is bottlenecked by the key-value (KV) cache, which is read in full at every decode step. Attention keys are locally low-rank though globally high-rank: shared low-rank bases discard page-specific directions that a page's own compact basis retains. LOCKS gives every page its own spectral summary (resident, about a tenth the cache's size), reconstructs within-page logits, estimates each page's attention mass by log-sum-exp, and attends only the top pages; selection itself reads no candidate keys or values. Selecting on this summary alone stays within about a point of the full cache on long-document QA (LongBench-v1), tracks the read-every-key oracle on retrieval-dense RULER down to the smallest budgets, and shows its largest margins on long-form reasoning (AIME26, MATH-500), where baseline selectors collapse. At its shipped $2048$-token budget LOCKS matches FullKV aggregate quality at $100$K$+$ context while attending about $2\\%$ of the tokens, and halves per-token decode latency ($2.0\\times$ at $1$M tokens) against dense attention. LOCKS ships as a drop-in plugin for unmodified vLLM, with batched decode running in full CUDA graphs.",
+   "published": "2026-07-27T15:28:52+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Junsung Hwang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "LOCKS propose un résumé spectral local (10% de la taille du cache KV) pour accélérer le décodage des LLM en contexte long, réduisant la latence de 2x à 1M tokens tout en maintenant une qualité proche du cache complet (LongBench-v1, RULER, AIME26).",
+   "score": 8.3
+  },
+  {
+   "id": "a3a77ef3a0379cd0",
+   "title": "Kimi-K3 Technical Report [pdf]",
+   "url": "https://github.com/MoonshotAI/Kimi-K3/blob/main/k3_tech_report.pdf",
+   "summary": "",
+   "published": "2026-07-27T15:23:45Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 383,
+    "comments": 169
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Rapport technique détaillé du modèle Kimi K3 (architecture, performances, benchmarks), essentiel pour analyser les avancées en LLM et leur efficacité.",
+   "score": 8.3
+  },
+  {
+   "id": "05a82b5a7868a780",
+   "title": "Codifying the Judge: Scalable Evaluation via Program Distillation",
+   "url": "https://huggingface.co/papers/2607.22561",
+   "summary": "LLM-as-a-judge has become the standard for automated evaluation, but it suffers from high cost, significant latency, and opaque decisions -- limitations that undermine its scalability and reliability. We address these with a simple, efficient alternative: program distillation. Instead of prompting an LLM at the evaluation time, we distill its decision logic into a committee of programs that score candidates directly. These programmatic judges offer transparency, are easily inspected or edited, and eliminate per-sample API costs. Building on this notion, we introduce PAJAMA, a system that synthesizes programs as judges, aggregates their decisions into a joint verdict, and incorporates a fallback mechanism to selectively escalate low-confidence cases to an LLM. Across five datasets and four model families, we show that programmatic judges can match the performance of a 13B-size LLM judge. When using program outputs as routing signals, PAJAMA improves both accuracy and throughput and advances the Pareto frontier. Beyond evaluation, programmatic judges produce cheap and effective reward signals: on RewardBench, a reward model distilled from programs' verdicts outperforms one trained on a proprietary LLM's labels at two orders of magnitude lower API cost.",
+   "published": "2026-05-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.22561"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "PAJAMA distille la logique de jugement d'un LLM en programmes exécutables pour évaluer des candidats, réduisant les coûts et la latence tout en maintenant une précision comparable à un juge LLM de 13B, avec un mécanisme de relance pour les cas incertains.",
+   "score": 8.2
+  },
+  {
+   "id": "a595a922b783360e",
+   "title": "Rethinking Classifier-Free Guidance in On-Policy Diffusion Distillation",
+   "url": "https://huggingface.co/papers/2607.24731",
+   "summary": "On-policy distillation (OPD) adapts diffusion models by querying a teacher along trajectories generated by the current student, but how it should behave under classifier-free guidance (CFG), a default component of modern diffusion systems, remains poorly understood. Existing OPD methods naturally extend velocity matching to the CFG-composed prediction, directly matching teacher and student guided velocities. We show that this objective is under-identified at the branch level: positive- and negative-branch errors can compensate in the guided prediction. Through two contrasting cases, we find that naive matching remains effective under shared negative conditioning, where both branch errors decrease jointly. When the model's native CFG schema retains privileged information in the teacher's negative branch that is unavailable to the student, however, this joint reduction breaks down and the composed objective induces antagonistic branch-error dynamics, reducing the positive-branch error while increasing the negative-branch error. We term this failure mode Negative Branch Asymmetry (NBA). To address NBA, we introduce Positive--Direction Matching (PDM), a branch-aware OPD objective that separately constrains the positive prediction and the CFG conditional direction. We apply PDM to dense-to-sparse video control, where naive guided matching is highly sensitive to inference guidance scales, while branch-aware supervision enables more robust and effective knowledge transfer.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2607.24731"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Révision de l'objectif de distillation par diffusion (OPD) sous guidance sans classificateur (CFG), identifiant un déséquilibre entre branches positives/négatives (NBA) et proposant PDM pour corriger les dynamiques antagonistes des erreurs.",
+   "score": 8.2
+  },
+  {
+   "id": "59cd4fecb495d428",
+   "title": "dRAE: Representation Autoencoder with Hyper-Spherical Codes",
+   "url": "https://huggingface.co/papers/2607.22148",
+   "summary": "In this work, we aim to discretize the high-dimensional visual representations to bridge the gap with language models - a non-trivial challenge, as existing quantization methods suffer from codebook collapse, failing to scale while preserving semantic coherence. We identify the root cause as metric mismatch: standard Euclidean codebook objectives are fundamentally misaligned with the anisotropic geometry of representation space, leading to codebook embeddings with high-variance magnitude scales and uneven angular distributions that hinder scalability. To address this, we propose Hyper-Spherical Quantization (HSQ), which decouples semantic content from feature magnitude via angular routing, preventing code assignment from being dominated by scale rather than meaning. The resulting discrete Representation Autoencoder (dRAE) achieves high-fidelity reconstruction while preserving semantic integrity and supporting scalable codebook budget. Extensive experiments demonstrate consistent performance gains as the vocabulary size scales to 131{,}072, along with 100\\% codebook utilization, simplified training pipeline, and strong performance across understanding and generation tasks.",
+   "published": "2026-07-24T05:47:32.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.22148"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Proposition d'une méthode de quantification (HSQ) pour les autoencodeurs de représentations visuelles, résolvant le problème de collapse des codebooks en alignant les objectifs de quantification avec la géométrie anisotrope des espaces de représentation. Permet une reconstruction haute fidélité et une intégrité sémantique à grande échelle (vocabulaire jusqu'à 131k).",
+   "score": 8.2
+  },
+  {
+   "id": "3e3de8cc9d8defc6",
+   "title": "A Frozen 12B Beats Frontier Models on Verified Work: 100% Accuracy, 0 Tokens, Bit-Exact, Forever",
+   "url": "https://huggingface.co/papers/2607.23806",
+   "summary": "Improving a language model today means retraining it: enormous compute, a new opaque model each cycle, non-deterministic output. We take the opposite path: the model stays frozen, and a persistent memory of verified solutions grows beside it. Once a problem family is solved and has passed an independent verification step that never consults the answer key, every new instance of that family is answered at zero generation tokens, bit-exact, deterministically. Across 180 fresh instances spanning nine problem families, four architectures from four vendors - dense and mixture-of-experts - each score 180/180 at zero generation tokens per answer: execution-bound capability decoupled from parameter scaling. A negative control attributes the capability fully to the memory: emptied, it solves nothing. The same verify-before-store contract holds for open-ended reasoning: 88/88 consistency-gated acceptances across all four models, machine-checked formal proof, and reasoning-method transfer at 77/80. Memory selection takes 1.4 microseconds; a full reuse completes in 6-23 ms at 36 mWh. Approximate similarity retrieval selects the wrong item 94.3% of the time on a 4,500-item verified store where exact addressing makes zero errors. The store also serves as working context at a scale no shipped engine matches: a 6,000,000-token movable window on a single 46 GB GPU at flat memory, where vLLM stops at 30,399 tokens and SGLang silently truncates past 32,000. On published benchmarks, frontier models remain far ahead of any 12B at raw from-scratch reasoning; on everything this system has solved and verified, the comparison inverts: a frontier API call pays a fresh generation pass on every query, forever, while verified reuse costs zero tokens and returns the identical bits every time. A public testbench with free, rate-limited access accompanies this report: https://corbenic-galahad-bench.hf.space",
+   "published": "2026-07-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.23806"
+   },
+   "relevance": 9,
+   "reliability": 6,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Approche innovante de résolution de problèmes par mémoire persistante de solutions vérifiées, permettant une précision de 100% à coût nul en tokens générés. Démontre une séparation entre capacité d'exécution et taille du modèle, avec des résultats reproductibles sur 4 architectures différentes.",
+   "score": 8.2
+  },
+  {
+   "id": "6bb10f749c4b6972",
+   "title": "O-VAD: Industrial Video Anomaly Detection through Object-Centric Tracking and Reasoning",
+   "url": "https://huggingface.co/papers/2607.18142",
+   "summary": "Industrial Video Anomaly Detection (IVAD) aims to identify anomalous objects and events in an industrial process, which is crucial for modern manufacturing and quality control systems. Existing VLM-based anomaly reasoning methods are capable of detecting open-ended anomalies in general domains. However, their performance declines in industrial settings characterized by intricate object transformations, strict physics, and procedural constraints. To tackle the complexity of such interaction-intensive detection, we introduce a training-free agentic framework for anomaly detection free of domain-specific knowledge, emphasizing object state evolution like humans inspectors. It is designed to track spatial-temporal dynamics and underlying transformations of detected objects over time, and then reason over the object-wise temporal state trajectories to identify abnormal objects in grounded frames. Our method overcomes limitations of prior approaches that rely on retraining on normal clips or injecting domain knowledge as context for test-time inference. Extensive experiments on three IVAD datasets demonstrate that our method outperforms frontier VLMs, agentic frameworks, and traditional VAD methods fine-tuned on the respective datasets, while providing interpretable reports over anomaly processes and types.",
+   "published": "2026-07-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2607.18142"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique",
+    "autre"
+   ],
+   "tldr": "O-VAD introduit un cadre agentique sans entraînement pour la détection d'anomalies industrielles, se basant sur le suivi d'objets et leur état temporel. Une solution robuste aux contraintes physiques des environnements industriels.",
+   "score": 8.2
+  },
+  {
+   "id": "307f53e8701825e8",
+   "title": "Beyond Scale and Generation: Understanding Language Model-based Entity Matching",
+   "url": "https://arxiv.org/abs/2607.24688v1",
+   "summary": "Entity matching identifies records that refer to the same real-world entity. Language models can be adapted to this task through bi-encoder, cross-encoder, and generative matcher architectures. However, prior studies often conflate matcher architecture with differences in model backbone, model variant(reflecting different pretraining objectives), and model size, making it difficult to isolate the sources of performance gains. We address this issue through a controlled factorial study spanning three matcher architectures, three model variants and three model sizes from the Qwen3 family, and nine datasets, totaling 1,215 fine-tuning runs. We also evaluate cross-dataset transferability and computational cost. Our results show that model variant is critical for bi-encoders: embedding-oriented variants provide stronger initialization and more favorable representation geometry predictive of downstream matching performance. Cross-encoders retain a consistent advantage over bi-encoders because they jointly encode record pairs rather than representing each record independently, although larger models partially narrow this gap. Generative matchers do not universally outperform cross-encoders. Instead, their advantages concentrate under distribution shift, including subtle unseen differences in record schemas and cross-dataset transfer. We further find that larger models rely more heavily on shortcut learning and therefore do not necessarily perform better. These findings clarify the factors underlying performance differences across matcher architectures and motivate future research and benchmark designs that better disentangle architectural choices from model-level factors while explicitly evaluating distribution shift and cross-dataset transferability. We release our experimental results, code, training scripts, and evaluation data at https://github.com/Jantory/llm-trained-matcher.",
+   "published": "2026-07-27T17:29:18+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zeyu Zhang, Xue Li, Iacer Calixto, Paul Groth, Sebastian Schelter"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Étude contrôlée sur l'appariement d'entités avec LLM (Qwen3) comparant architectures (bi-encoder, cross-encoder, génératif) et variantes de modèles : les variantes orientées *embedding* améliorent significativement les performances des bi-encoders, tandis que les cross-encoders restent supérieurs malgré des modèles plus grands.",
+   "score": 8.0
+  },
+  {
+   "id": "222462e5028db02c",
+   "title": "FlowCTS: On-policy Continuous Trajectory Supervision of Flow Models",
+   "url": "https://arxiv.org/abs/2607.24522v1",
+   "summary": "While on-policy distillation (OPD) effectively addresses sparse rewards and exposure bias in large language model post-training, its extension to flow models remains underexplored. To this end, we propose Flow Continuous Trajectory Supervision (FlowCTS), which matches subsequent student and reference trajectories initialized from the same student-visited state. Using the integral relation between trajectories and velocity fields, we derive a temporally weighted velocity-matching upper bound and discretize it into practical objectives parameterized by the number of supervision steps. Under a multi-reference setup, single-state FlowCTS-OPD outperforms vanilla KL-based OPD with faster convergence. FlowCTS-OPD improves GenEval from 0.90 to 0.93, OCR from 0.90 to 0.92, and PickScore from 22.75 to 23.06, while outperforming a mixed-reward RL baseline across all target metrics. Further analysis reveals a clear temporal supervision mismatch in vanilla KL-based OPD arising from its auxiliary SDE transition kernels. Beyond on-policy setting,FlowCTS also consistently outperforms vanilla SFT , particularly on OCR, while increasing supervision steps exhibit a trade-off between richer trajectory information and greater optimization difficulty.",
+   "published": "2026-07-27T15:03:22+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kaiyang Ye, Yuan Ge, Junxiang Zhang, Bei Li, Ziming Zhu, Haishu Zhao"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode FlowCTS pour la distillation en politique continue (OPD) des modèles de flux, améliorant la convergence et les performances sur des benchmarks comme GenEval et OCR en corrigeant les biais temporels des approches classiques.",
+   "score": 8.0
+  },
+  {
+   "id": "fee31e393cd009e0",
+   "title": "Reasoning Denoiser: Denoising Reasoning Traces for Hallucination Detection in Large Reasoning Models",
+   "url": "https://huggingface.co/papers/2607.22098",
+   "summary": "Large reasoning models (LRMs) generate long reasoning traces before producing final answers. While these traces may contain useful signals for hallucination detection, harnessing them is non-trivial because long trajectories often include noisy steps that obscure the cues relevant to truthfulness assessment. In this paper, we identify two prevalent forms of reasoning noises, i.e., irrelevant steps and repetitive steps, and show that both substantially degrade hallucination detection performance. Existing confidence-based scores and naive embedding-based filtering fail to reliably separate noisy from informative steps. To address this challenge, we propose REDE, a novel learning framework for denoising reasoning traces for hallucination detection. Specifically, REDE leverages final-answer attention as an automatic supervision signal to shape the step-level representation space, yielding refined embeddings in which noisy steps can be reliably identified and filtered. REDE can be readily plugged into diverse hallucination detectors by operating on the filtered reasoning trajectory after removing noisy steps. Extensive experiments on multiple reasoning benchmarks show that REDE consistently improves detection performance over competitive baselines.",
+   "published": "2026-07-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.22098"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Méthode REDE pour détecter les hallucinations dans les modèles de raisonnement (LRMs) en filtrant les étapes bruyantes (irrélevantes ou répétitives) via une supervision par attention sur la réponse finale, améliorant la détection sans entraînement supplémentaire.",
+   "score": 7.9
+  },
+  {
+   "id": "8886f5ef6af139bf",
+   "title": "Agentic Permissions Policy Algebra for Taint Confinement in LLM Agents",
+   "url": "https://arxiv.org/abs/2607.24625v1",
+   "summary": "Autonomous LLM agents processing mixed-confidentiality data face severe security risks from prompt injection attacks and reasoning errors. While dynamic Information Flow Control (IFC) provides structural security guarantees, traditional taint tracking permanently taints an agent's context upon reading unvetted data, severely restricting downstream utility. We present APPA (Agentic Permissions Policy Algebra), an IFC framework that resolves this usability bottleneck through engine-managed context branching and prospective acquisition enforcement. Before data acquisition occurs, APPA prospectively evaluates label descents and missing prerequisites, generating actionable remedy plans (Authorize, Accept). To inspect unvetted data without polluting the primary context, a label-seeded child trajectory is spawned, absorbing label descent locally and allowing a trusted sanitizer to return a bounded derivative to the unchanged parent. Governed by a two-monoid model over security labels and shared event logs, we formally prove parent label preservation and merge confinement. Finally, we evaluate APPA on a multi-turn tool-chaining benchmark across four models: it suppresses exfiltration (31%-50% down to 0%-7% attack success), and on three of the four, branching recovers a substantial share of the utility that taint tracking alone forfeits.",
+   "published": "2026-07-27T16:19:45+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Arseny Kravchenko, Vadim Liventsev, Innokentii Konstantinov, Ildar Iskhakov, Matvey Kukuy"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "regulation",
+    "outils"
+   ],
+   "tldr": "APPA propose un cadre de contrôle d'accès dynamique pour les agents LLM, utilisant des branches de contexte étiquetées pour isoler les risques d'injection de prompts tout en préservant l'utilité, avec des preuves formelles de confinement et des gains de 31% en suppression d'exfiltration.",
+   "score": 7.7
+  },
+  {
+   "id": "ce32819d6115313b",
+   "title": "From transcription to semantic corpus analysis: unsupervised learning of sentence representations for ancient languages",
+   "url": "https://arxiv.org/abs/2607.24542v1",
+   "summary": "Automatic Text Recognition (ATR) now supplies digital humanities with large volumes of unstructured, heterogeneous, and often noisy text in ancient languages. Downstream semantic analysestext reuse identification, alignment, and semantic search-rely on sentence embeddings, yet existing methods transfer poorly to ancient languages: generic multilingual encoders underperform, specialized language models yield anisotropic representation spaces, and labeled similarity data is unavailable. We study two fully unsupervised strategies - TSDAE and contrastive sentence embedding (CSE) - that adapt a specialized token-level language model into a corpus-specific sentence encoder using only raw sentences. On the philologically central case of biblical reuse in patristic literature (2,935 expert-verified parallels in Latin and Ancient Greek, from Augustine, Jerome, and Athanasius), we decompose reuse identification into two separately evaluated tasks-binary detection and correspondence retrieval-and benchmark the adapted encoders against multilingual, specialized, distilled, and supervised fine-tuned baselines, as well as on artificially noised data simulating HTR artifacts and scribal abbreviations. The adapted encoders outperform all baselines on both tasks, with complementary profiles: TSDAE leads detection given a large in-domain corpus, while CSE leads retrieval, reaches its optimum with as few as 4-8k raw in-domain sentences-a few tens of seconds of training on a laptop GPU-and transfers across works and authors, including to noisy post-ATR text when retrained directly on it. UMAP atlases relate the geometric effect of each strategy to the measured gains, and the full pipeline-segmentation, fine-tuning, cross-corpus semantic search-is made available to non-specialists through the online tool Paraphrasis.",
+   "published": "2026-07-27T15:20:13+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Th{é}otime de la Selle"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Ce papier propose deux méthodes non supervisées (TSDAE et CSE) pour adapter des modèles de langage spécialisés en encodeurs de phrases pour des langues anciennes, améliorant la détection de réutilisation textuelle et la recherche sémantique malgré l'absence de données étiquetées et la présence de bruit dans les textes numérisés.",
+   "score": 7.7
+  },
+  {
+   "id": "3bfb58594da064ef",
+   "title": "Evidence Attribution in Visual Document Understanding without Coordinates or Region Labels",
+   "url": "https://huggingface.co/papers/2607.24651",
+   "summary": "Reliable visual document understanding requires a model to attribute each answer to the evidence regions that support it. Recent benchmarks and systems express this step through a coordinate interface: the model outputs the coordinates of bounding boxes that mark the evidence regions in the document. Under this interface, vision-language models often fail to identify the right regions even when the answer is correct, a failure known as Attribution Hallucination. We present a study that investigates whether this failure is partially limited by what the model can express through coordinates. On a verified bilingual CiteVQA subset, we compare the coordinate interface with a language interface in which the model outputs only text, quoting its evidence verbatim, and a multimodal retriever returns the location of each quote as a page region proposed by a layout parser (tables and figures are quoted through their captions or notes); the comparison is repeated over six open vision-language models. Compared with the coordinate interface, evidence recall rises from at most 8 points to between 26 and 47 and the hallucination rate roughly halves, with little change in answer quality. Building on this comparison, we use the same quote-and-retrieve pipeline as a training scaffold: because region-level evidence labels are expensive to collect for long documents, we introduce a GRPO recipe whose reward is a judge's reading of the gold answer and crops of the retrieved regions, training the model to quote better evidence without any region labels and raising an 8B backbone's strict attributed accuracy from 22.4 to 33.8. These findings indicate a practical path to improve attribution\"without a coordinate interface and without costly region-level supervision.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2607.24651"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "Comparaison des interfaces de preuve (coordonnées vs langage) pour l'attribution d'évidence en compréhension de documents visuels, démontrant que les modèles échouent moins à identifier les régions pertinentes avec une interface textuelle (citation verbatim).",
+   "score": 7.6
+  },
+  {
+   "id": "b604aa3c94b00471",
+   "title": "GNM Head: A Generative aNthropometric Model of the human head",
+   "url": "https://huggingface.co/papers/2607.23687",
+   "summary": "Parametric models of the human head are essential tools traditionally used in computer vision and graphics for animation, rendering, and reconstruction. More recently, they serve as crucial conditioning signals within generative large vision models, allowing for tight spatial control of generated imagery. However, existing publicly available models are typically limited in anatomical scope, modeling only outer geometry while ignoring intra-oral and ocular structures, and frequently suffer from reduced geometric quality stemming from low-fidelity input datasets. In this report we introduce a new parametric model dubbed Generative aNthropometric Model (GNM), named as a homophone of the human genome. GNM encompasses the head, face, neck, eyeballs, teeth, and tongue, and it is built on an extensive database of high-resolution 3D scans combined with high-quality anatomy specific artist-made samples. This report details the data provenance, the model architecture including the specialized sub-models for the ocular and intra-oral structures, and shows its SotA performance on fitting target 3D face scans. To foster community innovation, the complete GNM framework is made publicly available.",
+   "published": "2026-07-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.23687"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Nouveau modèle paramétrique 3D (GNM) couvrant l'ensemble de la tête humaine (yeux, dents, langue) avec une base de données haute résolution. Permet un contrôle spatial précis pour la génération d'images et améliore la qualité géométrique par rapport aux modèles existants.",
+   "score": 7.6
+  },
+  {
+   "id": "1cf699c0a708ba66",
+   "title": "OmniVAE: An Audio-Video VAE with Cross-Modal Alignment for Joint Generation",
+   "url": "https://huggingface.co/papers/2607.23855",
+   "summary": "Recent generative models are moving beyond silent video or standalone audio synthesis toward the joint generation of synchronized audio and video. Despite this progress, jointly generating audio and video with fine-grained cross-modal correspondence remains challenging due to their fundamental structural differences. Most existing methods use audio and video VAEs trained separately. As a result, the two latent spaces lack cross-modal alignment, leaving the downstream generative model to learn cross-modal synchronization from scratch. We present OmniVAE, a jointly trained audio-video VAE that learns fine-grained semantic alignment between audio and video latent representations. Beyond reconstruction, OmniVAE uses a segment-level audio-video contrastive objective to capture temporal-semantic correspondence and align the two latent spaces. In parallel, it distills features from pretrained modality-specific semantic encoders into each modality, improving the downstream learnability of both latent spaces. Extensive experiments show that both objectives consistently improve the learnability of the latent spaces, translating into higher generation quality and more accurate cross-modal synchronization in downstream text-to-audio-video generation. These findings underscore the importance of learning unified representations as a foundation for omnimodal modeling.1",
+   "published": "2026-07-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2607.23855"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "vision"
+   ],
+   "tldr": "Autoencodeur joint (OmniVAE) pour la génération synchronisée audio-vidéo, alignant les espaces latents via des objectifs contrastifs et une distillation de caractéristiques sémantiques. Améliore la qualité de génération et la correspondance inter-modale par rapport aux méthodes séparées.",
+   "score": 7.6
+  }
+ ]
+}
