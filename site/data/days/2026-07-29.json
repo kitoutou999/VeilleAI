@@ -1,0 +1,717 @@
+{
+ "date": "2026-07-29",
+ "digest": {
+  "headline": "Les benchmarks révèlent des lacunes critiques en perception visuelle et mémoire des agents, tout en proposant des solutions pour optimiser les LLM et systèmes multi-agents",
+  "overview": "Ce 29 juillet 2026 marque une journée riche en avancées techniques, avec des contributions majeures sur l'optimisation des modèles (distillation, compression de tokens), l'évaluation rigoureuse des capacités des MLLMs et agents, et des innovations en robotique et systèmes multi-agents. Les travaux soulignent des défis persistants en perception atomique, raisonnement diagnostique et gestion de la mémoire, tout en proposant des cadres méthodologiques pour y répondre.",
+  "highlights": [
+   {
+    "title": "Relay-OPD : Distillation en ligne avec relais dynamique pour les LLM",
+    "text": "Relay-OPD améliore la distillation en ligne (OPD) en permettant au modèle enseignant de reprendre temporairement la génération lors de déviations de l'étudiant, réduisant ainsi l'accumulation d'erreurs. Cette méthode booste les performances en raisonnement mathématique (+5.73% vs OPD standard) et ouvre des perspectives pour un fine-tuning plus robuste des LLM, notamment dans les tâches nécessitant une cohérence longue portée."
+   },
+   {
+    "title": "PerceptionBench et ClinMM-Bench : Évaluer les limites des MLLMs",
+    "text": "PerceptionBench isole les capacités de perception visuelle atomique des MLLMs, révélant des scores inférieurs à 60% pour tous les modèles testés, indépendamment de leurs biais de raisonnement. ClinMM-Bench, quant à lui, évalue le diagnostic clinique multi-tours et multimodal sur 1 089 cas réels, montrant que les modèles propriétaires dominent en précision mais restent limités en raisonnement. Ces benchmarks mettent en lumière des lacunes critiques dans les évaluations actuelles des MLLMs."
+   },
+   {
+    "title": "Optimisation des LLM et agents : Compression, RL et mémoire",
+    "text": "OmniDelta introduit un cadre *skill-driven* pour optimiser l'allocation de tokens dans les OmniLLMs, améliorant l'efficacité sans perte de performance. Parallèlement, une méthode de RL pour l'optimisation de code via exécution et mesure de temps résout les défis de bruit et de sparsité de récompense, avec des gains significatifs (+125% pour CWM 32B). MemLens propose un système de gestion de mémoire pour agents basé sur l'évaluation de valeur (Shapley), offrant une solution concrète pour la mémoire à long terme."
+   },
+   {
+    "title": "HiFi-UMI et SAM3D-Guided : Avancées en robotique et manipulation",
+    "text": "HiFi-UMI génère des données UMI haute fidélité (3mm de précision) sans robot réel, permettant un entraînement *zero-robot* de politiques de manipulation déployables. SAM3D-Guided aligne les représentations 3D centrées objet avec les modèles VLA pour améliorer la manipulation robotique, notamment sous occlusion, avec des résultats validés en simulation (99.1% sur LIBERO) et en réel. Ces travaux réduisent les coûts de collecte de données et améliorent la robustesse des politiques de manipulation."
+   },
+   {
+    "title": "InMind et Messier : Benchmarks pour agents et systèmes multi-agents",
+    "text": "InMind identifie un biais critique dans les systèmes de mémoire d'agents : l'incapacité à relier des informations implicites à des requêtes indirectes, avec un taux de récupération chutant à 14.4%. Messier introduit un corpus unifié de 957 253 enregistrements standardisés pour évaluer comparativement 714 agents sur 30 benchmarks, permettant une analyse robuste des progrès hétérogènes. Ces contributions sont essentielles pour améliorer la fiabilité et l'évaluation des agents IA."
+   },
+   {
+    "title": "HiSkill et Pictura : Architectures pour agents et conduite autonome",
+    "text": "HiSkill organise les compétences des agents LLM en graphe hiérarchique pour les tâches interactives longues, améliorant la réutilisation et l'exécution symbolique. Pictura propose un simulateur de conduite multi-agents en vue égocentrique (500K étapes/s) pour entraîner des politiques par auto-apprentissage direct depuis des images, comblant l'écart entre données privilégiées et réalité. Ces frameworks adressent des défis clés en efficacité et généralisation pour les agents autonomes."
+   }
+  ],
+  "trend": "Les travaux récents confirment une tendance vers l'optimisation ciblée des architectures (compression, distillation, RL) et l'évaluation rigoureuse des capacités atomiques des modèles, tout en soulignant la nécessité de cadres unifiés pour comparer les progrès hétérogènes des agents et systèmes multi-agents. La robotique et les applications critiques (santé, diagnostic) bénéficient particulièrement de ces avancées méthodologiques."
+ },
+ "items": [
+  {
+   "id": "e8db0b5e791cd421",
+   "title": "Pass the Baton: Trajectory-Relayed On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2607.26057",
+   "summary": "On-policy distillation (OPD) grounds token-level supervision in the student's own trajectory, yet suffers from prefix failure: once the student commits to a wrong reasoning direction, all subsequent generation builds on this deviation, producing misdirected continuations that elicit unreliable supervision and waste compute. We identify a teacher-student continuation asymmetry on failed prefixes, where the teacher tends to redirect while the student continues along the original direction, and convert it into a label-free handoff trigger in Relay On-Policy Distillation (Relay-OPD). During training, Relay-OPD constructs relay trajectories by letting the teacher briefly take over at detected trigger points to produce a teacher leg, after which the student resumes and is optimized on the resulting trajectory. A limited relay budget concentrates intervention on critical early positions while limiting departure from the student policy. With a Qwen3-4B-Instruct-2507 teacher and Qwen3-0.6B/1.7B-Non-Thinking students on eight mathematical reasoning benchmarks, Relay-OPD achieves the best or second-best results on every benchmark, outperforming standard OPD by +5.73% and the strongest baseline FastOPD by +1.49% on average for 1.7B, with consistent gains at 0.6B. Training trajectory length is reduced by over 50%.",
+   "published": "2026-07-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2607.26057"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Relay-OPD améliore l'apprentissage par distillation en permettant au modèle enseignant de reprendre temporairement la génération lors de déviations, réduisant les erreurs d'accumulation et boostant les performances en raisonnement mathématique. Méthode prometteuse pour le fine-tuning efficace des LLM.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La distillation sur politique (On-Policy Distillation, OPD) vise à améliorer un modèle étudiant en utilisant des retours basés sur sa propre trajectoire de génération. Cependant, elle souffre du problème de *prefix failure* : une erreur initiale dans le raisonnement du modèle étudiant entraîne une déviation cumulative, rendant les générations suivantes inutiles pour l'apprentissage et gaspillant des ressources computationnelles.",
+    "methode": "Les auteurs identifient une asymétrie entre le professeur et l'étudiant lors des échecs de préfixes : le professeur tend à corriger la trajectoire, tandis que l'étudiant persiste dans sa direction erronée. Pour exploiter cela, ils proposent *Relay On-Policy Distillation (Relay-OPD)*, une méthode où le professeur prend temporairement le relais aux points de déclenchement détectés (sans étiquettes explicites) pour générer une portion de trajectoire (*teacher leg*). L'étudiant reprend ensuite le contrôle et est optimisé sur cette trajectoire hybride. Un budget limité de relais permet de cibler les interventions critiques en début de séquence tout en minimisant l'écart avec la politique de l'étudiant.",
+    "resultats": "Testée avec un professeur *Qwen3-4B-Instruct-2507* et des étudiants *Qwen3-0.6B/1.7B-Non-Thinking* sur huit benchmarks de raisonnement mathématique, Relay-OPD obtient les meilleurs ou deuxièmes meilleurs résultats sur tous les benchmarks. Elle surpasse l'OPD standard de +5,73 % et la baseline la plus forte (*FastOPD*) de +1,49 % en moyenne pour le modèle 1,7B, avec des gains similaires pour le 0,6B. La longueur des trajectoires d'entraînement est réduite de plus de 50 %.",
+    "limites": "Les détails sur la détection des *trigger points* (points de déclenchement du relais) restent flous, notamment la manière dont l'asymétrie professeur-étudiant est quantifiée sans étiquettes. De plus, l'efficacité de la méthode dépend fortement de la qualité du professeur et pourrait ne pas généraliser à d'autres domaines que le raisonnement mathématique.",
+    "verdict": "Cette approche mérite une attention particulière pour son innovation dans la gestion des erreurs cumulatives en distillation, avec des gains significatifs et une réduction des coûts computationnels, mais sa robustesse hors du contexte mathématique reste à prouver."
+   }
+  },
+  {
+   "id": "69deea1cf528e728",
+   "title": "PerceptionBench: Evaluating Atomic Visual Perception in Multimodal Large Language Models",
+   "url": "https://huggingface.co/papers/2607.24957",
+   "summary": "We introduce PerceptionBench, a benchmark specifically designed to evaluate the atomic visual perception capabilities of Multimodal Large Language Models (MLLMs). Existing benchmarks often fail to isolate perception: holistic evaluations conflate perceptual errors with failures in reasoning or domain knowledge, while application-driven benchmarks only cover narrow, fragmented domains shaped by heuristic designs. To address these limitations, PerceptionBench adopts a bottom-up approach: by diagnosing the earliest failure points in the responses of frontier MLLMs across 42 existing benchmarks, we construct an error taxonomy whose perception branch defines ten atomic perceptual capabilities. Guided by this taxonomy, we construct 3,000 verified questions with short, unambiguous answers, each isolating a single capability, with difficulty stemming from perception rather than reasoning or knowledge. Benchmark results across sixteen frontier MLLMs reveal that atomic perception remains largely unsolved---no model reaches 60\\% accuracy, perception-related hallucination is the weakest capability on average, and similar overall scores conceal sharply divergent capability profiles. PerceptionBench thus provides a capability-level standard for measuring and diagnosing the visual perception boundaries of MLLMs.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.24957"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "PerceptionBench est un benchmark innovant évaluant spécifiquement les capacités atomiques de perception visuelle des MLLMs, isolant les erreurs de perception des biais de raisonnement ou de connaissances. Les résultats révèlent que la perception atomique reste un défi majeur, avec des scores <60% pour tous les modèles testés.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "PerceptionBench vise à résoudre l'absence d'évaluation précise des capacités de perception visuelle atomique des Modèles Multimodaux de Langage (MLLMs). Les benchmarks existants mélangent souvent des erreurs de perception avec des échecs de raisonnement ou de connaissances, ou se limitent à des domaines étroits, ce qui empêche une analyse fine des limites perceptives des modèles.",
+    "methode": "L'approche adoptée est bottom-up : en analysant les points de défaillance initiaux des MLLMs sur 42 benchmarks existants, les auteurs construisent une taxonomie des erreurs, dont une branche dédiée à la perception. Cette taxonomie identifie dix capacités perceptives atomiques (ex. : reconnaissance d'objets, détection de relations spatiales). À partir de cette classification, 3 000 questions vérifiées sont créées, chacune ciblant une seule capacité avec des réponses courtes et non ambiguës. La difficulté des questions provient exclusivement de la perception, excluant le raisonnement ou les connaissances externes. Les questions sont conçues pour isoler strictement les compétences perceptives.",
+    "resultats": "Les résultats sur seize MLLMs de pointe révèlent que la perception atomique reste un défi non résolu : aucun modèle n'atteint 60 % de précision. La capacité la plus faible en moyenne est la gestion des hallucinations liées à la perception. De plus, des scores globaux similaires masquent des profils de compétences très divergents selon les modèles. Ces résultats soulignent l'importance d'une évaluation granulaire pour diagnostiquer les limites perceptives.",
+    "limites": "Le contenu disponible ne précise pas les critères exacts de sélection des 42 benchmarks initiaux ni la méthodologie détaillée de vérification des 3 000 questions. De plus, la généralisation des résultats pourrait être limitée par le choix des capacités atomiques, qui pourraient ne pas couvrir tous les aspects de la perception visuelle. Enfin, l'absence de détails sur les modèles testés (architecture, taille, etc.) rend difficile une analyse comparative approfondie.",
+    "verdict": "PerceptionBench mérite une attention particulière pour son approche systématique et granulaire, offrant un outil précieux pour diagnostiquer les faiblesses perceptives des MLLMs, bien que certaines limites méthodologiques restent à éclaircir."
+   }
+  },
+  {
+   "id": "be4195b53c8c36cb",
+   "title": "OmniDelta: Skill-Driven Budget Allocation for Token Compression in OmniLLMs",
+   "url": "https://huggingface.co/papers/2607.25669",
+   "summary": "Emerging Omni-modal Large Language Models (OmniLLMs) enable unified understanding of text, audio, and video, but their long audio-video token sequences introduce substantial memory and inference costs. Existing compression methods mainly focus on selecting important tokens under fixed budgets, leaving the preceding budget-allocation problem underexplored. We show that direct query-to-audio/video similarity is unreliable for inter-modal budget allocation, and that uniform intra-modal budgets can miss key evidence while retaining redundant content. To address these limitations, we propose OmniDelta, a training-free, skill-driven framework that couples intent-aware inter-modal allocation with content-aware intra-modal allocation. OmniDelta first constructs audio and video skill pools to shift the fixed retained-token budget according to query demand, then reallocates modality budgets over audio segments and video frames using local complexity and temporal redundancy. The resulting local budgets can be combined with existing pruning strategies, preserving the total retained-token ratio while changing where the budget is spent. Experiments on four audio-video benchmarks with two Qwen2.5-Omni models show that OmniDelta establishes a new accuracy-efficiency Pareto frontier across pruning ratios. At 25% token retention on Qwen2.5-Omni-7B, OmniDelta reduces GPU memory by 22.0% and achieves a 1.64x end-to-end speedup over full-token inference.",
+   "published": "2026-07-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.25669"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "OmniDelta introduit un cadre *skill-driven* pour optimiser l'allocation de tokens dans les OmniLLMs, en ajustant dynamiquement les budgets inter/intra-modalité selon la complexité locale et les besoins de la requête. Améliore l'efficacité sans perte de performance sur 4 benchmarks audio-vidéo.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles Omni-modaux de grande taille (OmniLLMs) permettent une compréhension unifiée du texte, de l'audio et de la vidéo, mais les longues séquences de tokens audio-vidéo engendrent des coûts mémoire et de calcul prohibitifs. Les méthodes de compression existantes se concentrent principalement sur la sélection de tokens importants sous des budgets fixes, sans aborder de manière optimale la question de l'allocation préalable de ce budget entre les modalités et au sein de celles-ci.",
+    "methode": "OmniDelta est un cadre sans entraînement qui couple une allocation inter-modale basée sur l'intention (requête) et une allocation intra-modale basée sur le contenu. Il construit d'abord des *pools de compétences* pour l'audio et la vidéo afin d'ajuster dynamiquement le budget de tokens retenus en fonction des besoins de la requête. Ensuite, il réalloue les budgets au sein des modalités en utilisant la complexité locale et la redondance temporelle (segments audio, frames vidéo). Les budgets locaux obtenus peuvent être combinés avec des stratégies de pruning existantes, préservant le ratio total de tokens retenus tout en optimisant leur répartition.",
+    "resultats": "Les expériences menées sur quatre benchmarks audio-vidéo avec deux modèles Qwen2.5-Omni (7B et 3B) montrent qu'OmniDelta établit une nouvelle frontière de Pareto précision-efficacité pour différents ratios de pruning. À 25 % de rétention de tokens sur Qwen2.5-Omni-7B, OmniDelta réduit la mémoire GPU de 22,0 % et accélère l'inférence de bout en bout par un facteur de 1,64 par rapport à une inférence avec tous les tokens.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques des *pools de compétences* (comment ils sont construits ou évalués). De plus, l'absence de comparaison avec des méthodes de compression plus avancées (comme celles basées sur l'apprentissage) limite l'évaluation de la robustesse d'OmniDelta. Enfin, les benchmarks utilisés pourraient ne pas couvrir tous les cas d'usage réels.",
+    "verdict": "OmniDelta mérite une attention particulière pour son approche innovante et ses gains significatifs en efficacité, mais son adoption nécessitera des validations supplémentaires sur des scénarios plus variés et des comparaisons approfondies avec d'autres méthodes."
+   }
+  },
+  {
+   "id": "be99c37e2066435a",
+   "title": "Reinforcement Learning for Code Optimization",
+   "url": "https://arxiv.org/abs/2607.25970v1",
+   "summary": "RL for code correctness is now established: have the model generate a program, run it against hidden test cases, and reward solutions that pass. Extending this to code optimization seems straightforward: just add execution time to the reward. But in practice, once timing drives the reward, small problems in measurement noise, reward sparsity, or GRPO instability overwhelm the signal and make RL fail: generated solutions are barely faster, and more of them can fail. We make execution time learnable through three stages: (1) how code is tested, by building DMC-Optim with large optimization tests and a calibrated sandbox; (2) how speed is turned into reward, by composing correctness and speed in the RL environment and using an offline simulator to predict the most promising configurations; and (3) how the model learns from that reward, by adapting GRPO and evaluation to the sparser, noisier timed-execution setting. On DMC-Optim, the strongest optimization-aware configurations improve strict top-50% pass@1 from 18.0% to 31.3% on Qwen 2.5 7B and from 30.7% to 50.4% on CWM 32B. These gains further increase at stricter percentiles such as top-30%, with 125% relative improvement for CWM 32B, while preserving pure-correctness scores. When the timing sandbox is degraded, robust optimization RL reaches 100% to 200% improvement over standard RLVR, depending on the evaluation criterion. On LCB, CWM 32B wins up to 83% of median-sample speed comparisons against standard RLVR. Relative to the fastest correct human submissions per problem, it reaches about half the human rate of complexity-class improvements (14% vs. 28%).",
+   "published": "2026-07-28T16:52:31+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Pierre Chambon, Kunhao Zheng, Juliette Decugis, Benoit Sagot, Gabriel Synnaeve"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode RL pour optimiser du code via exécution et mesure de temps, résolvant les défis de bruit de mesure et de sparsité de récompense. Améliore significativement les performances (ex: +125% pour CWM 32B) en optimisation de code.",
+   "score": 8.6,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi de l'optimisation automatique de code via l'apprentissage par renforcement (RL). Bien que le RL soit déjà utilisé pour générer du code correct (via des tests cachés), son extension à l'optimisation des performances (exécution plus rapide) se heurte à des obstacles majeurs : bruit de mesure, rareté des récompenses, et instabilité des algorithmes comme GRPO, rendant les gains marginaux et peu fiables.",
+    "methode": "Les auteurs proposent une approche en trois étapes pour rendre l'exécution temporelle 'apprenable' : (1) **Tests robustes** via *DMC-Optim*, un benchmark avec des tests d'optimisation larges et un environnement sandbox calibré pour réduire le bruit. (2) **Récompenses composites** combinant correction et vitesse dans l'environnement RL, avec un simulateur hors ligne pour prédire les configurations prometteuses. (3) **Adaptation de GRPO** pour gérer la rareté et le bruit des récompenses liées au temps, en ajustant l'évaluation et l'entraînement. Des modèles comme Qwen 2.5 7B et CWM 32B sont utilisés comme base.",
+    "resultats": "Les configurations optimisées améliorent significativement les performances : le *top-50% pass@1* (solutions correctes et parmi les 50% plus rapides) passe de 18.0% à 31.3% pour Qwen 2.5 7B, et de 30.7% à 50.4% pour CWM 32B. À des percentiles plus stricts (top-30%), les gains relatifs atteignent 125% pour CWM 32B. En dégradant le sandbox, le RL robuste surpasse le *RLVR standard* de 100% à 200%. Sur le benchmark *LCB*, CWM 32B gagne jusqu'à 83% des comparaisons de vitesse médiane face au RLVR standard, et atteint 50% du taux d'amélioration de complexité des solutions humaines (14% vs 28%).",
+    "limites": "Les résultats dépendent fortement de la qualité du sandbox et des tests d'optimisation, dont la généralisation à d'autres langages ou problèmes n'est pas démontrée. La robustesse face à des environnements bruités ou des tâches complexes reste à valider. Enfin, l'écart avec les performances humaines (50% du taux d'amélioration) suggère que l'approche est encore loin d'égaler l'expertise humaine en optimisation.",
+    "verdict": "Cette publication mérite une attention sérieuse pour son approche systématique et ses gains quantifiables, mais son applicabilité industrielle reste à prouver au-delà des benchmarks contrôlés."
+   }
+  },
+  {
+   "id": "272d33cc39a6b8ab",
+   "title": "Temporal-Distance JEPA: Plan-Aware Representation Learning for Latent World Model Predictive Control",
+   "url": "https://huggingface.co/papers/2607.25337",
+   "summary": "Joint-Embedding Predictive Architectures (JEPAs) learn world models by predicting in representation space rather than reconstructing pixels, making them a natural backbone for latent model predictive control from offline demonstration logs. JEPA-style training optimizes short-horizon latent prediction, whereas planning requires a multi-step ranking of imagined futures by goal progress. Prior JEPA planners often inherit that ranking from embedding geometry, typically latent Euclidean distance, which arises as a byproduct of representation learning rather than as a progress cost mined from the logs. We propose temporal-distance JEPA (TD-JEPA), which retains the LeWM encoder--predictor backbone and mines a directed temporal cost from reward-free trajectories: same-trajectory step order supplies positive targets, cross-trajectory pairs act as heuristic negatives, and a rollout-consistency term matches the planner horizon. The mined supervision serves two roles: as the deployed planning cost when progress is topological, and as a representation signal that improves Euclidean planning when contact geometry dominates. Under locked evaluation, deploying the mined cost raises Two-Room success to 100.0% versus LeWM's 97.4%, while shared Euclidean planning on the same temporally trained checkpoint raises OGB-Cube by 14.2 points over LeWM and improves Push-T. Against LeWM and the concurrent RC-aux baseline under locked evaluation, TD-JEPA matches or exceeds both methods on every environment. Ablations show that the directed head, cross-trajectory negatives, and rollout consistency each contribute. TD-JEPA narrows the train--plan gap for JEPA world-model planners by discovering temporal progress structure in offline logs and co-designing cost form with plan-time deployment. Code is available at https://github.com/HKBU-KnowComp/TD-JEPA.",
+   "published": "2026-07-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2607.25337"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "TD-JEPA propose une méthode pour améliorer les modèles de contrôle prédictif basé sur des représentations (JEPA) en intégrant une supervision temporelle extraite de trajectoires, optimisant ainsi la planification multi-étapes dans l'espace latent. Intéressant pour les architectures de modèles du monde et leur application en robotique.",
+   "score": 8.5
+  },
+  {
+   "id": "658e3af9131f1c7f",
+   "title": "HiFi-UMI: Learning Deployable Manipulation Policies from High-Fidelity UMI Data Alone",
+   "url": "https://huggingface.co/papers/2607.25895",
+   "summary": "Learning deployable manipulation policies is bottlenecked by the scarcity of data that is both high-fidelity and scalable. Real-robot teleoperation is accurate but costly to scale; robot-free UMI capture scales readily, and current practice uses the resulting data mainly for pre-training, adding a small real-robot \"anchor\" at post-training. We ask whether raising the fidelity of robot-free UMI data, rather than shrinking the real-robot fraction, can remove that anchor. We present HiFi-UMI, a portable UMI data-production system co-designed for trajectory accuracy, inter-gripper relative pose, synchronization, and field of view: head-mounted offline stereo-inertial SLAM, native rather than reconstructed relative pose, a shared microsecond GPIO trigger, and two wide-angle cameras per hand covering ~200 degrees. It reaches 3 mm workspace-local end-effector accuracy without external tracking infrastructure. Using this corpus, we demonstrate zero-robot post-training: a policy post-trained solely on HiFi-UMI demonstrations deploys directly on a real robot and matches in-domain teleoperation across three backbones spanning the vision-language-action and world-action-model families, with success-rate differences of -2.5, +3.1, and -0.6 percentage points on StarVLA-QwenPI, OpenPI-pi_0.5, and LingBot-VA; the strongest policy reaches 85% on a precision insertion task, even though the teleoperation baseline is collected in the evaluation scene and no HiFi-UMI trajectory is. Pre-training on 4,000 hours from the same corpus lowers action error on ten unseen tasks by 41% and, on StarVLA-QwenPI, raises real-robot success by a further 18.1 percentage points. We open-source HiFi-UMI-2K, 2,000 hours of microsecond-synchronized, ultra-wide-FoV demonstrations, each automatically reconstructed and validated through simulation replay, as a large-scale, high-fidelity resource for the robot-learning community.",
+   "published": "2026-07-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 70,
+    "arxiv_id": "2607.25895"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "outils"
+   ],
+   "tldr": "HiFi-UMI produit des données UMI haute fidélité (3mm de précision) sans robot réel, permettant un entraînement *zero-robot* de politiques de manipulation déployables directement. Avancée majeure pour réduire les coûts de collecte de données en robotique.",
+   "score": 8.5
+  },
+  {
+   "id": "8faadb3d9c0fdbb0",
+   "title": "Keep It InMind: Benchmarking the Implicit-Association Blind Spot in Agent Memory",
+   "url": "https://huggingface.co/papers/2607.24368",
+   "summary": "Long-term memory systems store what a user says in an external store and retrieve it when a related query arrives. This interface rests on an assumption so natural that it is rarely stated: a memory that is needed will resemble the query that needs it. World knowledge breaks the assumption. A tree-nut allergy should change the answer to a macaron request through their almond-flour ingredient, yet the two texts share no cue a retriever can see. We call this failure mode the implicit-association blind spot and introduce InMind, a 125-task, expert-verified benchmark spanning ten life domains, with 113 tasks grounded in citable public sources. Its paired controls separate three explanations that existing evaluations conflate: the fact was never stored, the model lacks the bridging knowledge, or the fact was stored and never surfaced. The verdict is clean. With the decisive memory placed in context, the backbone answers 84.0 percent of indirect queries; when the same memory must be retrieved, six vector, graph, and agentic memory systems reach at most 14.4 percent, even though they recall the same facts on demand at up to 100 percent. An embedding with eight times the dimensionality raises answer-blind target recall for every system yet leaves the gap essentially intact. A minimal diagnostic probe that keeps memory visible before the query arrives recovers most of the gap, locating the failure in the query-conditioned interface itself and pointing to routing, deciding which facts must stay visible, as the open problem InMind is built to score.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2607.24368"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "InMind identifie un biais critique dans les systèmes de mémoire d'agents : l'incapacité à relier des informations implicites (ex. allergie aux noix) à des requêtes indirectes (ex. demande de macarons). Le benchmark montre que même avec des faits stockés, le taux de récupération chute à 14.4% contre 84% en contexte direct.",
+   "score": 8.5
+  },
+  {
+   "id": "4cd5fbe49fbeb40f",
+   "title": "Towards Robust Reinforcement Learning for Small-Scale Language Model Agents",
+   "url": "https://huggingface.co/papers/2607.25091",
+   "summary": "The alignment of Small Language Models (SLMs) in the 70--500M parameter range using reinforcement learning is often considered unstable, though the underlying failure mechanisms have not been systematically investigated. In the State-of-the-Art (SOTA) research, fifteen (model, corpus) configurations were trained using Proximal Policy Optimization (PPO). The experiments included Pythia-70M, 160M, 410M and SmolLM2-135M, 360M on the TinyStories, CNN/DailyMail, and Wikitext-103 corpora. Three reproducible failure modes were identified in small-scale language models: silent LoRA parameter freezing in standard PEFT/TRL pipelines, numerical overflow in importance ratios when using bfloat16, and catastrophic policy collapse due to reward-model error. These issues were addressed using a merge-and-reinitialize adapter technique, float32 precision during PPO updates, and a three-layer safety mechanism comprising reward whitening, importance-ratio guarding, and weight rollback. In this paper, a capacity-headroom hypothesis is proposed, which states that PPO performance at the SLM scale depends on both a fluent supervised model (PPL<20) and a discriminative reward signal, rather than on the number of model parameters. The proposed system converged stably in all experiments and improved preference win rate over the SFT baseline in configurations with a fluent prior and an informative reward signal. Furthermore, it outperformed instruction-tuned baselines while requiring significantly less training data. All checkpoints, preference datasets, and training scripts are publicly released^§.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.25091"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Étude systématique des échecs de l'alignement RL pour les SLMs (70M–500M paramètres), identifiant trois modes de défaillance (freezing LoRA, overflow numérique, collapse de politique) et proposant des solutions (précision float32, mécanismes de sécurité). Valide l'hypothèse de *capacity-headroom*.",
+   "score": 8.5
+  },
+  {
+   "id": "74a086799d61ec46",
+   "title": "A Vocabulary for Multi-Agent Automated Research Systems",
+   "url": "https://huggingface.co/papers/2607.22682",
+   "summary": "We introduce a vocabulary for automated research systems built from one or more agents to make their design choices easier to describe and compare. The vocabulary specifies 1) who the agents are, 2) what operations are available in the system, 3) who may invoke them, 4) how agents communicate, 5) what information is visible within and across runs, 6) how the next action is chosen, 7) how a run begins, and 8) how outputs are evaluated. A trajectory records one run from the input task to the returned artifact. Because agents, operations, and initialization may be stochastic, repeated runs on the same task induce a distribution over trajectories rather than a single behavior. Our vocabulary turns structural design questions, such as when agents should communicate, gain or lose a capability, or carry information across runs, into testable choices. It also makes the evaluator a component of the system, since reported gains depend on how closely the proxy score matches true quality. That separation also splits the vague complaint that these systems lack taste into two failures with different solutions. Generative taste is the rate at which a system proposes novel trajectories before any score is observed, and evaluative taste is the gap between the proxy score and the quality it should match. We instantiate the vocabulary on recent autoresearch systems to illustrate that it covers designs that differ widely in structure.",
+   "published": "2026-07-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2607.22682"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils",
+    "autre"
+   ],
+   "tldr": "Ce travail formalise un vocabulaire pour décrire et comparer les systèmes multi-agents automatisés, en structurant leurs composants (agents, opérations, communication, évaluation) et en soulignant l'importance des trajectoires stochastiques et de l'évaluateur comme partie intégrante du système.",
+   "score": 8.5
+  },
+  {
+   "id": "d3d3959cb5cfc5ea",
+   "title": "Pass the Baton: Trajectory-Relayed On-Policy Distillation",
+   "url": "https://arxiv.org/abs/2607.26057v1",
+   "summary": "On-policy distillation (OPD) grounds token-level supervision in the student's own trajectory, yet suffers from prefix failure: once the student commits to a wrong reasoning direction, all subsequent generation builds on this deviation, producing misdirected continuations that elicit unreliable supervision and waste compute. We identify a teacher-student continuation asymmetry on failed prefixes, where the teacher tends to redirect while the student continues along the original direction, and convert it into a label-free handoff trigger in Relay On-Policy Distillation (Relay-OPD). During training, Relay-OPD constructs relay trajectories by letting the teacher briefly take over at detected trigger points to produce a teacher leg, after which the student resumes and is optimized on the resulting trajectory. A limited relay budget concentrates intervention on critical early positions while limiting departure from the student policy. With a Qwen3-4B-Instruct-2507 teacher and Qwen3-0.6B/1.7B-Non-Thinking students on eight mathematical reasoning benchmarks, Relay-OPD achieves the best or second-best results on every benchmark, outperforming standard OPD by +5.73% and the strongest baseline FastOPD by +1.49% on average for 1.7B, with consistent gains at 0.6B. Training trajectory length is reduced by over 50%.",
+   "published": "2026-07-28T17:59:46+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Haolei Xu, Xiaowen Xu, Haiwen Hong, Zixuan Ni, Hongxing Li, Yiwen Qiu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Relay-OPD améliore la distillation en ligne (OPD) en introduisant des relais dynamiques où le professeur reprend brièvement la génération pour corriger les erreurs de l'étudiant, évitant ainsi la propagation des déviations et boostant les performances en raisonnement mathématique (+5.73% vs OPD standard).",
+   "score": 8.3
+  },
+  {
+   "id": "cbca33f2865600f7",
+   "title": "Pictura: Perspective-View Self-Play at Scale for Driving",
+   "url": "https://arxiv.org/abs/2607.26005v1",
+   "summary": "Self-play in simulation produces robust driving policies at scale. Demonstrations of such behavior have been made using privileged vectorized observations such as exact poses and velocities, even for occluded agents. This assumes that perception is solved and introduces a representation gap with the partial observation of a deployed agent driving from the perspective view of egocentric cameras. A common fix, distilling the privileged policy into a camera-input student, leaves the student imitating decisions its own view cannot justify. Instead, we establish perspective-view self-play as a practical training regime. We introduce Pictura, a GPU-accelerated multi-agent driving simulator that renders each agent's egocentric view at every step, mitigating the representation gap at its source. Pictura sustains up to 500K agent-steps/s (2M images/s) on a single H100. Using Pictura, we train Alberti by self-play with plain PPO. It is the first large-scale driving self-play policy trained directly from perspective images, without privileged observations. Training spans 50B agent steps for ~35M km of driving. It approaches the driving performance of its privileged vectorized counterpart, and transfers zero-shot to Waymo Open Motion Dataset layouts re-rendered in Pictura, where it outperforms privileged vectorized agents. Project page: https://valeoai.github.io/Pictura/",
+   "published": "2026-07-28T17:20:39+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yuan Yin, Elias Ramzi, Marc Lafon, Valentin Charraut, Victor Bares, Yihong Xu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "Pictura introduit un simulateur de conduite multi-agents en vue égocentrique (500K étapes/s) pour entraîner des politiques par auto-apprentissage direct depuis des images, comblant l'écart de représentation entre données privilégiées et réalité. Avancée majeure pour la robotique autonome et les agents visuels.",
+   "score": 8.3
+  },
+  {
+   "id": "f6bd977e16fa6e30",
+   "title": "MemLens: A Value-Aware Memory Management System with Interactive Analytics for LLM-based Agents",
+   "url": "https://arxiv.org/abs/2607.25992v1",
+   "summary": "Recently, memory management has become a key infrastructure for LLM-based agents, as it directly affects long-horizon reasoning, personalized responses, and knowledge reuse. However, existing LLM memory systems typically adopt a coarse-grained (utility-agnostic) manner that treats heterogeneous user-LLM interaction records uniformly, leading to redundant and low-impact records persisting in the memory repository. To address this challenge, we present MemLens, a value-aware memory management system that takes memory records as first-class data objects. MemLens provides an end-to-end interactive analytics dashboard that exposes the complete memory lifecycle, including Shapley-style memory evaluation, value-aware storage, and memory-assisted response. Through a study-copilot application, the system enables users to inspect memory values, visualize hierarchical memory structures, and compare various memory management strategies in terms of response quality, retrieval latency, and token consumption. Therefore, our MemLens can serve as an efficient, interpretable, and personalized long-term memory management system for LLM-based agents.",
+   "published": "2026-07-28T17:08:56+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shuyue Wei, Chang Liu, Zimu Zhou, Yongxin Tong, Lizhen Cui"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "MemLens introduit un système de gestion de mémoire pour agents LLM basé sur l'évaluation de valeur (Shapley), avec un tableau de bord interactif pour analyser l'impact des souvenirs. Solution innovante pour la mémoire à long terme des agents, avec une implémentation concrète.",
+   "score": 8.3
+  },
+  {
+   "id": "9f9555701fac5af4",
+   "title": "Evaluating Multi-Turn Multimodal Diagnostic Reasoning on Challenging Real-World Clinical Cases",
+   "url": "https://arxiv.org/abs/2607.25933v1",
+   "summary": "Clinical diagnostic evaluation should not only assess whether models can provide correct diagnoses, but also reflect the realities of clinical practice, including progressive disclosure of multimodal information, dynamic updating of diagnostic hypotheses, and continuous refinement of clinical reasoning. However, existing evaluations of multimodal large language models (MLLMs) typically rely on single-turn or isolated tasks, making it difficult to fully capture the complexity of real-world clinical diagnosis. To bridge this gap, we developed ClinMM-Bench, the largest multi-turn multimodal clinical diagnostic evaluation benchmark to date. ClinMM-Bench contains 1,089 challenging real-world clinical cases and 3,760 medical images across eight specialties. We systematically evaluated 15 representative MLLMs using a two-level evaluation framework that assessed both diagnostic accuracy and diagnostic reasoning quality. Results showed that proprietary models achieved the highest overall diagnostic accuracy, but the proportion of completely correct diagnoses remained limited across all models. In terms of diagnostic reasoning quality, current models can identify plausible diagnostic directions but still have considerable limitations in generating reliable diagnostic reasoning. Error analysis further identified five representative failure modes: information synthesis failure, knowledge mapping error, perception error, premature closure, and visual hallucination.",
+   "published": "2026-07-28T16:19:03+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Rui Yang, Weihao Xuan, Yi Lin, Zhuhan Bao, Jonathan Chong Kai Liew, Matthew Yu Heng Wong"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "ClinMM-Bench est un benchmark d'évaluation multi-tours et multimodal pour le diagnostic clinique, testant 15 MLLMs sur 1 089 cas réels avec 3 760 images. Il révèle que les modèles propriétaires dominent en précision mais restent limités en raisonnement diagnostique, soulignant les lacunes des évaluations existantes en conditions réelles.",
+   "score": 8.3
+  },
+  {
+   "id": "87590703bda14286",
+   "title": "Interactive Reward Agent: GUI Task Evaluation via Environment-State Verification",
+   "url": "https://arxiv.org/abs/2607.25904v1",
+   "summary": "Graphical user interface task evaluation aims to determine whether a GUI agent has successfully completed a user instruction. Automated GUI task evaluation has received increasing attention because the evaluation results can serve as reward signals for both test-time scaling and post-training. However, reliable GUI task evaluation remains challenging because the judgments often require access to environment states, such as system configurations, file data, and application settings, beyond the screenshots of execution trajectories. In this paper, we propose an interactive reward agent (IRA) based on a propose-then-verify framework to acquire and verify evidence from the post-execution environment. Given a task instruction and a GUI environment after the GUI agent execution, IRA first proposes the task completion conditions and then verifies them by invoking system tools, application tools, and GUI tools. This design combines evidence from both visible interfaces and the environment state in an interactive process. We further introduce GUI-RewardBench, a benchmark of 321 GUI task trajectories spanning 10 Ubuntu desktop application categories. Experiments show that IRA achieves 86.9% accuracy on GUI-RewardBench, outperforming existing evaluator baselines. We further apply IRA to reinforcement learning of GUI agents, achieving a 34.0% OSWorld success rate, which demonstrates that IRA can provide effective reward signals for training GUI agents.",
+   "published": "2026-07-28T16:01:38+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chenrui Shi, Yuwei Wu, Yang Liu, Ruining Feng, Zirui Shang, Zhi Gao"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Propose une méthode d'évaluation interactive (IRA) pour les agents GUI combinant vérification d'états environnementaux et interfaces visuelles, avec un benchmark (GUI-RewardBench) de 321 trajectoires couvrant 10 applications Ubuntu. Pertinent pour l'évaluation automatisée des agents dans des environnements graphiques complexes.",
+   "score": 8.3
+  },
+  {
+   "id": "6fd85b9f9c79e49d",
+   "title": "Messier: A High-Resolution Corpus for Cross-Benchmark Agent Evaluation",
+   "url": "https://arxiv.org/abs/2607.25891v1",
+   "summary": "Evaluating AI agents in interactive environments is hindered by fragmented tasks, scaffolds, verifiers, and scoring rules. Existing efforts focus on narrow settings, remain limited in scale, or require costly reruns, leaving much of the empirical record incomparable. We introduce Messier, a unified corpus of 957,253 records that span 30 benchmarks, 714 agents, 11,891 tasks, and 74,205 verifiers. Messier consolidates public benchmark scores and supplements them with five-agent runs across six underrepresented professional and scientific domains, including a recent legal benchmark. Each record is standardized by model, scaffold, environment, task, verifier, and aggregation rule, with SOC/NAICS classifications for occupational and industry analysis. Using this corpus, we show frontier progress is uneven across benchmark types, with \"function calling\" saturated, \"programming\" improving the fastest, and \"enterprise workflows\" remaining the most challenging. Furthermore, counterfactual rescoring shows that strict all-pass aggregation in multi-verifier tasks can obscure progress and artificially alter agent rankings. From these standardized records, we derive capability scales that align with Epoch's Evaluation Capability Index rankings at Spearman \\r{ho} = 0.81 and can be specialized by domain, occupation, action space, or verifier type. Messier provides a foundational, reusable infrastructure for agent capability scaling, benchmark auditing, and fine-grained analysis of evaluation failures.",
+   "published": "2026-07-28T15:50:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Stefan Krsteski, Charlotte Meyer, Guillaume Allegre, Tony O'Halloran, Alexandre Sallinen"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Introduit Messier, un corpus unifié de 957 253 enregistrements standardisés couvrant 30 benchmarks et 714 agents, permettant une évaluation comparative robuste des agents dans des domaines variés. Essentiel pour analyser les progrès hétérogènes des agents IA.",
+   "score": 8.3
+  },
+  {
+   "id": "312ce3d0c08339c9",
+   "title": "HiSkill: Empowering LLM Agents with Hierarchical Skill Graphs",
+   "url": "https://arxiv.org/abs/2607.25853v1",
+   "summary": "Skills have become an important abstraction for enabling large language model (LLM) agents to reuse past experience in long-horizon interactive tasks. However, existing trajectory-to-skill methods often produce flat collections of high-level textual skills that are stored and retrieved independently, leaving skill relations underutilized and maintaining a gap between high-level skills and executable actions. In this paper, we propose HiSkill, a hierarchical skill graph framework that organizes interaction trajectories into a directed graph with skill nodes, AtomicOp nodes, and typed edges. Specifically, the graph connects reusable high-level skills with executable action templates, while also capturing decomposition, temporal transition, compatibility, support, and recovery relations among them. At inference time, HiSkill retrieves a compact task-relevant subgraph and performs subgraph-guided task execution, where a symbolic task state, an active skill, and the retrieved subgraph guide the LLM agent to switch skills, select AtomicOps, and ground executable actions iteratively. Experiments on three interactive environments show that HiSkill outperforms state-of-the-art baselines while reducing inference token consumption, demonstrating the effectiveness of bridging high-level skills and executable action grounding through a hierarchical skill graph. Our data and code is available at https://github.com/BUPT-GAMMA/HiSkill.",
+   "published": "2026-07-28T15:25:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yu Hao, Jinxuan Cai, Qi Zhang, Yawen Li, Zhiqiang Zhang, Chuan Shi"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Framework HiSkill organisant les compétences des agents LLM en graphe hiérarchique pour les tâches interactives longues, améliorant la réutilisation et l'exécution symbolique. Contribution majeure pour l'efficacité des agents autonomes.",
+   "score": 8.3
+  },
+  {
+   "id": "4b2e381cdd967d79",
+   "title": "A New Role for Relevance: Guiding Corpus Interaction in Agentic Search",
+   "url": "https://huggingface.co/papers/2607.24223",
+   "summary": "Relevance is a query-dependent estimate of whether a document or excerpt contains useful evidence. Existing retrieval agents use relevance to select top-k content, but document relevance alone cannot localize, compose, or verify the evidence required by complex questions. Direct Corpus Interaction (DCI) enables such fine-grained operations through grep-style exploration, but its relevance-agnostic search can expose useful clues late and delay convergence. Recent advances use relevance to narrow the corpus into a working space for interaction. Once interaction begins, however, relevance still does not directly guide which documents grep searches first or distinguish informative excerpts from a broad set of matches to let LLMs see them first. We introduce the Relevance-Aware RipGrep Search Agent (RARG), which turns relevance into an execution prior for corpus interaction. RARG provides coarse-to-fine relevance guidance: it orders documents for sequential 'ripgrep' traversal to expose globally relevant clues earlier, initializes promising entry points with query-relevant paragraphs, and reranks grep matches to surface informative excerpts that document-level ranking may otherwise obscure. Across challenging browse question answering and reasoning-intensive retrieval, RARG improves the accuracy--efficiency frontier over retrieval-based and direct-interaction agents. These results demonstrate that relevance-aware interaction enables faster and more reliable search convergence.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 70,
+    "arxiv_id": "2607.24223"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "rag"
+   ],
+   "tldr": "RARG guide les agents de recherche dans les corpus via une pertinence fine (excerpts) pour accélérer la convergence et améliorer la précision des réponses. Méthode innovante pour les systèmes de recherche agentiques, avec des gains significatifs sur des benchmarks.",
+   "score": 8.2
+  },
+  {
+   "id": "44f3e46aaaa495a4",
+   "title": "WorldDiT: A Unified Diffusion Architecture for World and Action Modeling",
+   "url": "https://huggingface.co/papers/2607.23909",
+   "summary": "Many recent robot policies pursue stronger control by using large pretrained vision-language models (VLMs) as the action backbone. We introduce WorldDiT, a unified diffusion transformer architecture that couples action generation with visual world modeling and achieves strong performance without a large pretrained VLM action backbone. During training, a single diffusion transformer generates continuous action chunks and predicts normalized RGB patch targets from future camera frames. Across four LIBERO simulation suites, WorldDiT lies on the reported Pareto frontier for total model parameters and mean success among methods reporting all four suites. These results provide a strong sub-billion-parameter baseline for future scaling studies.",
+   "published": "2026-07-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2607.23909"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "WorldDiT propose une architecture unifiée (diffusion transformer) combinant modélisation du monde visuel et génération d'actions pour la robotique, atteignant des performances compétitives sans recourir à de grands modèles pré-entraînés. C'est un benchmark sous-milliard de paramètres pour des études de scaling futures.",
+   "score": 8.2
+  },
+  {
+   "id": "313444f5f10b7325",
+   "title": "VetClaw: An Edge-Cloud Multimodal Agentic System for Veterinary Disease Screening",
+   "url": "https://arxiv.org/abs/2607.26042v1",
+   "summary": "We present VetClaw, an edge-cloud multimodal agentic system for early veterinary disease screening. VetClaw uses a camera module as an edge sensing device and sends captured images, together with optional symptom descriptions, to a server-hosted vision-language model for zero-shot disease classification. The system separates agent interaction from workflow orchestration: OpenClaw provides scheduling, tool access, user interaction, and notification services on the edge device, while LangGraph manages the stateful screening workflow, including input validation, image transmission, model invocation, safety checks, conditional routing, failure handling, and structured logging. This design moves beyond static image classification by enabling the system to collect visual evidence, invoke external models, apply deterministic safety rules, and generate diagnostic-support alerts. Results show that image-only VLM prediction remains limited, whereas symptom-guided and multimodal inputs improve zero-shot classification performance. Thus, VetClaw transforms a static prediction model into a coordinated, safety-aware system that can use tools, manage workflows, handle failures, and escalate uncertain cases.",
+   "published": "2026-07-28T17:50:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Syed Mhamudul Hasan, Anas AlSobeh, Hussein Zangoti, Abdur R. Shahid"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "vision"
+   ],
+   "tldr": "VetClaw est un système agentique multimodal (edge-cloud) pour le dépistage vétérinaire, combinant des outils de workflow (OpenClaw/LangGraph) et des VLMs, démontrant que les entrées multimodales (images + symptômes) surpassent les prédictions VLM statiques pour la classification zéro-shot.",
+   "score": 8.0
+  },
+  {
+   "id": "d03bf2c0e65f49a2",
+   "title": "SAM3D-Guided Object-Centric Representation Alignment for Vision-Language-Action Models",
+   "url": "https://arxiv.org/abs/2607.25912v1",
+   "summary": "Vision-Language-Action (VLA) models have shown strong potential for general robot manipulation, but most existing models rely on 2D visual-language backbones and lack fine-grained 3D understanding of target objects, especially under occlusion, pose variation, scale changes, and precise spatial interaction. We propose an object-centric 3D representation alignment framework built upon $π_0$, using SAM3D as a frozen 3D teacher to provide target-object 3D priors during training. Specifically, we localize task-relevant objects with object recognition models, generate corresponding object masks, and use SAM3D to extract dense object-level 3D representations, which are aligned with intermediate visual features of $π_0$. This enables the policy to internalize target-object 3D information while preserving the original RGB-language-to-action inference pipeline without requiring depth, point clouds, masks, SAM3D, or additional 3D modules at test time. Simulation experiments show consistent improvements, achieving 99.1\\% on LIBERO and an average length of 4.11 on CALVIN. Real-world experiments further demonstrate that our method is particularly effective in long-horizon manipulation scenarios where the robot must focus on different target objects across multiple subtasks.",
+   "published": "2026-07-28T16:05:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zonghe Liu, Shanyuan Jie, Xiaoquan Sun, Chen Cao, Zetian Xu, Zongsheng Liu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "vision",
+    "llm"
+   ],
+   "tldr": "SAM3D-Guided aligne les représentations 3D centrées objet avec les modèles VLA (ex. π₀) pour améliorer la manipulation robotique, notamment sous occlusion ou variations de pose. Les résultats en simulation (99.1% sur LIBERO) et en réel valident son efficacité pour les tâches long-horizon.",
+   "score": 8.0
+  },
+  {
+   "id": "a47caeb266664ac4",
+   "title": "Show HN: Formally verified 3D CSG: Trust 93 lines spec, not 1000 lines AI code",
+   "url": "https://github.com/schildep/verified-3d-mesh-intersection",
+   "summary": "",
+   "published": "2026-07-28T13:07:14Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 109,
+    "comments": 48
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Une approche formellement vérifiée pour la modélisation 3D par CSG (Constructive Solid Geometry), réduisant la dépendance à des modèles IA opaques au profit de spécifications rigoureuses.",
+   "score": 8.0
+  },
+  {
+   "id": "dd6007cb67f00df1",
+   "title": "Running Kimi K3 on a M1 Max",
+   "url": "https://github.com/gavamedia/deltafin",
+   "summary": "",
+   "published": "2026-07-28T21:35:19Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 126,
+    "comments": 85
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Exécution du modèle Kimi K3 (Moonshot AI) sur un Mac M1 Max, démontrant des gains d'efficacité pour les LLMs sur matériel grand public.",
+   "score": 8.0
+  },
+  {
+   "id": "3000c2579b517d67",
+   "title": "ReDesign: Recovering Editable Design Structures from Images via Agentic Decomposition",
+   "url": "https://huggingface.co/papers/2607.25565",
+   "summary": "Recovering an editable design file from a raster image is a common and costly bottleneck in modern design workflows, yet remains challenging since editability depends on recovering multi-modal attributes, such as typography, vector geometry, colors, grouping, and layer ordering. We present ReDesign, an agentic framework that grows an editable layer hierarchy by selecting and composing specialized tools across modalities. To keep this long decision process reliable despite imperfect tool outputs, we introduce graceful verification at each expansion, which provides local accept, prune, or retry feedback that prevents error accumulation and avoids large scale reruns. To evaluate editability at scale, we introduce the Figma Edit Replay Benchmark, consisting of 909 raw Figma files and 14,796 controlled edit instructions that replay edits on reconstructed outputs. Across this benchmark and standard reconstruction metrics, ReDesign achieves strong visual fidelity while delivering the highest editability across layout, color, and text edits, outperforming layered decomposition baselines and serial tool use pipelines.",
+   "published": "2026-07-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 36,
+    "arxiv_id": "2607.25565"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "outils"
+   ],
+   "tldr": "ReDesign utilise un agent multi-outils pour reconstruire des fichiers éditables à partir d'images, avec une vérification locale pour éviter l'accumulation d'erreurs. Démontre une supériorité en éditabilité sur des benchmarks Figma, pertinent pour les workflows de design assisté par IA.",
+   "score": 7.9
+  },
+  {
+   "id": "7982643b785eb94f",
+   "title": "Desktop-Delta Bench: Do Computer-Use Models Understand Desktop GUI Transitions?",
+   "url": "https://arxiv.org/abs/2607.26041v1",
+   "summary": "Computer-use agents (CUAs) increasingly act through desktop GUIs to complete long-horizon tasks. Current benchmarks primarily measure end-task success or single-frame grounding. Neither isolates whether a model can reconstruct the causal, task-relevant transition produced by an action- crucial for rejecting stale observations, verifying progress, and recovering from failure. This is difficult because inference, remote input, app rendering, and screenshot capture are asynchronous: the next observation may be delayed, occluded, transient, or unrelated, then misread as progress and carried into subsequent planning. We introduce Desktop-Delta Bench (DDB), an offline step-level benchmark with 2,013 human-verified instances from novel, multi-app Linux trajectories across ~15 applications and 50 task domains. DDB trajectories targets 3 failure dimensions- state verification, source tracking, and context-aware control- through 2 complementary tasks: 463 3-frame temporal-ordering instances, including 105 with a cross-trajectory decoy, and 1,550 before-after pairs labeled from 5 actions + its payload. We evaluate 8 closed and open-source model families across 32 ordering and 16 single-action settings, observing consistent gaps. Ordering remains unsaturated: best non-decoy and decoy exact-match rates are 65.1% and 65.7%. Task context improves decoy identification by 6.9 percentage points but reduces non-decoy exact match by 2.2 points; error analysis reveals systematic copying of the presented A-B-C order. Single-action results show that inferring the action family is harder than locating it: click F1 is 0.96 vs, 0.76 for drag, while recognized drags are generally localized well. DDB, thus, complements end-to-end benchmarks by filling the missing diagnostic layer between GUI grounding and final task success, enabling targeted improvements to desktop CUA verification, reliability, and recovery.",
+   "published": "2026-07-28T17:49:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Abhishek Pillai, Samir Kumar Nayak, Yuan Chen"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Desktop-Delta Bench évalue la capacité des modèles d'agents informatiques à comprendre les transitions d'état des interfaces graphiques (GUI), identifiant des lacunes critiques en vérification d'état et en suivi de contexte via des tâches de réordonnancement et de comparaison avant/après.",
+   "score": 7.7
+  },
+  {
+   "id": "cc5e39aba9c50d11",
+   "title": "Instruction-Tuned Models Locally Reuse Human Syntax More Than Humans Do",
+   "url": "https://arxiv.org/abs/2607.26015v1",
+   "summary": "Syntactic convergence (the tendency of speakers to adapt in language towards the grammatical profiles of their interlocutors) is a well-documented feature of human dialogue widely considered to operate below conscious awareness. Whether large language models exhibit analogous syntactic convergence toward human users relative to human baselines and across a broad range of syntactic constructions remains an open question. Using substitution-paradigm data in which model generations replace one speaker's turns in pre-existing human dialogues, this study measures turn-adjacent reuse of context-free grammar (CFG) rules across sixteen open-weight Llama and Gemma models (1B-70B, pretrained and instruction-tuned) at 1,901 matched positions per model. Every model showed greater CFG-rule overlap with the preceding human turn than with a sampled unrelated human prime, and in every model this actual-versus-random difference was larger for lower-frequency rules. Each instruction-tuned model also showed greater natural-output overlap with the actual prime than the human response it replaced, and all eight matched architecture pairs exhibited greater actual-prime overlap after instruction tuning. However, relative to pretrained variants, instruction-tuned outputs overlapped more with unrelated primes, showed a smaller actual-versus-random increment, and had lower conditional rule-reuse odds once target rule-set size was held constant. In exploratory analyses, each model exhibited greater mean lexical and semantic similarity to the preceding turn than the matched human responses did. Instruction-tuned models additionally produced responses with greater mean semantic similarity than their pretrained counterparts in all eight architecture pairs, whereas the lexical similarity results were more heterogeneous.",
+   "published": "2026-07-28T17:27:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zandi Eberstadt"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étude montrant que les LLM instruction-tunés réutilisent syntaxiquement plus les structures humaines que les humains eux-mêmes, avec une convergence accrue après fine-tuning. Pertinent pour comprendre les mécanismes d'alignement et les biais des LLM, avec une méthodologie rigoureuse sur 16 modèles.",
+   "score": 7.7
+  },
+  {
+   "id": "00ef8d7c43d0099c",
+   "title": "Detecting Knowledge Inconsistencies Across Text, Tables, and Knowledge Graphs",
+   "url": "https://arxiv.org/abs/2607.25959v1",
+   "summary": "Wikipedia and Wikidata are widely used for information access, LLM pre-training, and retrieval-augmented generation. Their knowledge is deeply connected but scattered across text, tables, and knowledge graphs. This raises a practical question: when these modalities disagree, how can we detect and explain the conflict? We study this problem as \\emph{modality-level inconsistency detection}. We first introduce a taxonomy of cross-modal knowledge inconsistencies, covering information granularity differences, direct conflicts, temporal changes, and KG incompleteness. We then present \\textsc{Kontrast}, an automatic framework that uses Text-to-SPARQL and LLM reasoning to compare table-based answers with KG evidence and categorize the resulting inconsistencies. Experiments on various Table-QA datasets show that cross-modal inconsistencies are common and informative. They reveal not only true knowledge conflicts, but also missing KG structure and temporal mismatches while being limited by Text-to-SPARQL errors and noise. Our analysis shows that text, tables, and KGs can complement and correct one another through systematic comparison. \\textsc{Kontrast} provides a practical tool for large-scale knowledge auditing and establishes a benchmark for future work on cross-modal knowledge consistency. Code and data are available at https://github.com/ECLADATTA/KONTRAST.",
+   "published": "2026-07-28T16:43:56+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Fanfu Wei, Thibault Ehrhart, Raphaël Troncy"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "rag",
+    "outils"
+   ],
+   "tldr": "Framework Kontrast pour détecter et expliquer les incohérences de connaissances entre texte, tables et graphes de connaissances (ex: Wikipedia/Wikidata). Utilise Text-to-SPARQL et raisonnement LLM pour catégoriser les conflits.",
+   "score": 7.7
+  },
+  {
+   "id": "e09b2315e13c6fe3",
+   "title": "Polistemics: Evaluating LLMs as Information Mediators in Politics & Elections",
+   "url": "https://arxiv.org/abs/2607.25953v1",
+   "summary": "As LLMs increasingly mediate the political information citizens rely on, there is still no standardized way to assess whether they do so responsibly. We introduce Polistemics, a theory-grounded benchmark for evaluating LLMs as mediators of political information in elections. Prior work has treated this task as reproduction rather than mediation, leaving its epistemic dimensions and interaction with imperfect information unaddressed. We ground the evaluation in Epistemic Modesty, a normative standard derived from citizens' epistemic agency, and test it across controlled settings that vary informational properties such as clarity, noise, and consistency. Applying the benchmark to three state-of-the-art LLMs on the 2025 German and Dutch elections, we find that high aggregate scores mask systematic failures. Models mediate reliably under clear evidence but break down under absent, vague, or contradictory information, while flattening the intensity of political language. These failures are likely driven by party priors, influenced by party labels and output language. Reliable mediation appears achievable, but no model delivers it consistently.",
+   "published": "2026-07-28T16:40:18+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Baran Peters"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "regulation"
+   ],
+   "tldr": "Benchmark Polistemics évaluant la capacité des LLMs à médier des informations politiques (ex: élections) selon des critères d'épistémologie (ex: modestie épistémique). Met en lumière des failles systémiques sous informations ambiguës ou contradictoires.",
+   "score": 7.7
+  },
+  {
+   "id": "e76bba1f3bc571f6",
+   "title": "A Cost-Effective Multimodal LLM Reasoning Framework for Question Answering over Irregular Clinical Time Series",
+   "url": "https://arxiv.org/abs/2607.25947v1",
+   "summary": "Question answering (QA) over irregular clinical time series (ICTS) plays a pivotal role in a wide range of healthcare applications. Although recent multimodal time-series large language models (LLMs) have shown considerable promise in general-purpose time-series QA, they remain poorly equipped to model the sparsity, asynchrony, and irregular sampling patterns of clinical observations. To fill this gap, we propose ClinPRISM, a cost-effective multimodal LLM reasoning framework for question answering over ICTS data. First, we devise an irregularity-aware multi-scale encoder to capture sparse clinical evidence at diverse temporal scales. Then, we propose a temporal evidence distiller to integrate representations across these scales and compress them into a small number of LLM-compatible tokens. Moreover, we introduce a progressive alignment strategy that sequentially aligns the irregular trajectories with the LLM's textual embedding space. To facilitate training, we construct 30,000 clinical time series paired with multi-scale descriptions, together with 41,000 instruction-tuning instances spanning 11 tasks. Using a 4-billion-parameter LLM backbone, ClinPRISM achieves state-of-the-art performance on the held-out evaluation benchmark while using only 16 time-series tokens and achieving an average inference latency of 0.15 seconds per question.",
+   "published": "2026-07-28T16:33:41+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Frank Nie, Ethan B Liu, Yuan Zhu, Wei Fan, Jindong Han"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "vision",
+    "audio"
+   ],
+   "tldr": "Framework ClinPRISM pour le QA sur séries temporelles cliniques irrégulières, combinant encodage multi-échelle et alignement progressif avec un LLM. Atteint l'état de l'art avec un modèle de 4B de paramètres sur 11 tâches.",
+   "score": 7.7
+  },
+  {
+   "id": "2d963de392181578",
+   "title": "Penelope: Localized Latent Recurrence for Efficient Structured Reasoning",
+   "url": "https://arxiv.org/abs/2607.25915v1",
+   "summary": "Complex structured reasoning tasks often require additional computation, yet current language models obtain it mainly by increasing parameter scale or by serializing intermediate steps as chain-of-thought (CoT) tokens. The former raises training and deployment costs, while the latter ties reasoning computation to autoregressive output length. We introduce Penelope, an efficient latent-reasoning framework for pretrained decoder-only Transformers that localizes recurrent computation to a selected decoder interval. The lower decoder prefix is evaluated once to construct a problem-conditioned boundary memory, which is then iteratively refined through time-modulated GRU dynamics and recurrent readout states before answer generation. A progressive CoT-to-latent curriculum transfers visible reasoning into this internal recurrent path, allowing additional computation to be allocated in latent space without repeatedly executing the complete decoder or generating a long intermediate trace. Experiments on open-source structured-reasoning benchmarks show that, at validation-selected latent budgets, Penelope attains competitive accuracy relative to established latent-reasoning models while reducing measured inference latency. These results show that latent refinement can be localized to a narrow decoder interval, reducing repeated full-decoder execution without generating a long visible reasoning trace and providing a practical accuracy-efficiency tradeoff for decoder-only Transformer models.",
+   "published": "2026-07-28T16:06:46+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yutong Chen, Shouqian Shi, Xinran Liu, Haochen Wang, Jiaying Wang, Tianxing Xu"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture",
+    "llm"
+   ],
+   "tldr": "Penelope introduit un cadre de raisonnement latent localisé pour les Transformers, allouant des calculs récurrents dans un intervalle spécifique du décodeur. Cela améliore l'efficacité computationnelle sans sacrifier la précision sur des benchmarks de raisonnement structuré.",
+   "score": 7.7
+  },
+  {
+   "id": "4064b6faad7e8c9c",
+   "title": "RSIBench-Data: Benchmarking Data-Centric Research for Recursive Self-Improvement",
+   "url": "https://arxiv.org/abs/2607.25886v1",
+   "summary": "Recursive self-improvement requires turning evidence of model failures into better models. Data-centric post-training research entails diagnosing capability gaps, designing and validating training-data strategies, and learning from checkpoint feedback. Can LLM agents automate this loop? Existing benchmarks entangle research decisions with optimization, serving, evaluation, and systems implementation, obscuring agents' research capability. We introduce RSIBench-Data, a controlled benchmark of LLM agents as data-centric researchers with a fixed post-training stack. Agents iteratively revise training-data strategies for a fixed target model; training and serving use Tinker-backed services, official evaluation runs through Harbor and E2B sandboxes, and budgets are fixed across agents. We evaluate four frontier agents on six benchmarks across software engineering, terminal use, scientific question answering, and mathematics. Agents demonstrate core data-centric research capabilities: in 58.33\\% of settings, they improve upon the first valid attempt by refining strategies from feedback. However, improvement is inconsistent. Among searches continuing after the best observed score, 78.26\\% end with a lower-scoring final attempt, while the rest only recover the same peak. A strong candidate may therefore appear early or midway through a run even as later revisions fail. Trajectory analysis identifies four patterns in stronger runs: accurate hypotheses, validation-grounded supervision, behavior-aligned data, and preservation of strong checkpoints. These findings suggest that current agents can make useful data-centric discoveries but cannot yet translate feedback into consistent improvements. RSIBench-Data provides a measurable, auditable testbed for the research capabilities required for recursive self-improvement. We open-source our code at https://github.com/evolvent-ai/RSIBench-Data.",
+   "published": "2026-07-28T15:46:41+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Fanqing Meng, Lingxiao Du, Qiguang Chen, Ziqi Zhao, Haocheng Lu, Mengkang Hu"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "Propose RSIBench-Data, un benchmark contrôlé pour évaluer les capacités de recherche autonome des agents LLM dans l'amélioration itérative de données d'entraînement. Montre que les agents améliorent leurs stratégies dans 58% des cas, mais de manière inégale.",
+   "score": 7.7
+  }
+ ]
+}
