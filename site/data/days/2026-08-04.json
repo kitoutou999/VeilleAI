@@ -1,0 +1,749 @@
+{
+ "date": "2026-08-04",
+ "digest": {
+  "headline": "DiffusionGemma et AURORA-LM redéfinissent les compromis vitesse/qualité en génération de texte via la diffusion discrète et les espaces latents continus",
+  "overview": "La journée du 2026-08-04 marque des avancées significatives en optimisation des LLM et en architectures agentiques, avec des méthodes réduisant la latence ou améliorant l'efficacité computationnelle. Les travaux sur la distillation, la quantification et la modélisation du monde pour les agents dominent, tandis que des biais critiques dans l'évaluation des raisonnements scientifiques sont mis en lumière.",
+  "highlights": [
+   {
+    "title": "Diffusion discrète et génération parallèle pour les LLM",
+    "text": "DiffusionGemma exploite la diffusion discrète pour générer du texte en blocs de 256 tokens en parallèle, atteignant 1500 tokens/seconde sur H100. Cette approche, combinée à un fine-tuning compute-efficient de Gemma 4, repousse les limites du compromis latence/capacité, offrant une alternative aux architectures autoregressives classiques. AURORA-LM complète cette tendance en proposant un espace latent continu pour la génération textuelle, évitant les compromis compression/qualité via un encodeur-décodeur et du *flow matching*."
+   },
+   {
+    "title": "Amélioration des agents via modélisation du monde et données synthétiques",
+    "text": "WCM (World Critic Model) introduit une architecture LeJEPA pour améliorer l'apprentissage par renforcement des agents VLA en robotique, en intégrant un objectif explicite de modélisation du monde. SKT propose un pipeline scalable de génération de données synthétiques vérifiées (27k trajectoires) pour entraîner les agents à utiliser des compétences, avec un benchmark (SkillEval) démontrant des gains systématiques. LongHorizon-Harness reformule l'exécution des agents via une gestion explicite d'état (MEA loop), réduisant les erreurs de propagation sur des tâches longues (+28.9% sur WeaveBench)."
+   },
+   {
+    "title": "Optimisation de l'inférence et de la distillation",
+    "text": "xPress optimise le *speculative decoding* en restaurant la causalité dans les drafters par diffusion, augmentant la longueur d'acceptation de ~30% sur Qwen3-8B. GPTQ-2D réduit la complexité de la quantification matricielle à un temps cubique via une structure de Kronecker, sans perte de précision. W2S-OPD améliore les modèles forts en distillant depuis plusieurs modèles faibles via un professeur proxy basé sur une différence de logits, réduisant les coûts au-delà du front de performance."
+   },
+   {
+    "title": "Biais et fiabilité des benchmarks de raisonnement",
+    "text": "Une étude révèle que les LLM atteignent souvent la bonne réponse sur des benchmarks scientifiques via des raccourcis (*solution hacking*), sans raisonnement valide. Ce biais remet en question la fiabilité des évaluations actuelles et propose des stratégies anti-hacking pour des benchmarks plus robustes. Parallèlement, GradCuit améliore l'interprétabilité des LLM en optimisant des états latents intermédiaires via un *credit assignment* différentiable, sans modifier les paramètres du modèle."
+   },
+   {
+    "title": "Agents spécialisés et détection de vulnérabilités",
+    "text": "Antares propose des modèles compacts (350M à 3B) pour la localisation de vulnérabilités logicielles via un pipeline agentique (fine-tuning + RL), rivalisant avec GPT-5.5 à un coût d'inférence <0,002$ par tâche. Un système de détection en temps réel des échecs d'agents, basé sur des moniteurs légers, offre des garanties théoriques et des performances empiriques solides pour des exécutions fiables."
+   }
+  ],
+  "trend": "Les architectures hybrides (diffusion, espaces latents continus) et les méthodes d'optimisation ciblant la latence ou l'efficacité computationnelle dominent, tandis que les agents gagnent en robustesse via des mécanismes explicites de modélisation du monde et de gestion d'état. La fiabilité des benchmarks et l'interprétabilité des modèles restent des enjeux critiques, avec des solutions émergentes pour des évaluations plus rigoureuses."
+ },
+ "items": [
+  {
+   "id": "bbf4d4a1261c6af2",
+   "title": "DiffusionGemma Technical Report",
+   "url": "https://huggingface.co/papers/2608.00146",
+   "summary": "We introduce DiffusionGemma, an experimental open-weight language model that uses discrete diffusion to generate text at exceptionally high speed. Rather than decoding one token at a time, DiffusionGemma iteratively refines blocks of 256 tokens in parallel, avoiding the sequential decoding bottleneck of conventional autoregressive (AR) large language models. Instead of training from scratch, we obtain DiffusionGemma by fine-tuning the mixture-of-experts Gemma 4 model with 3.8B activated and 25.2B total parameters. Our compute-efficient two-stage training pipeline uses fewer than 10% of the starting AR model's total training token budget. The first stage uses supervised fine-tuning to teach bidirectional denoising, while the second stage combines reinforcement learning with sampler distillation to jointly improve generation quality and inference efficiency. DiffusionGemma establishes a new Pareto frontier for the trade-off between generation speed and model capability. Averaged across our full evaluation suite, it generates around 20 tokens per forward pass and achieves roughly 1,500 output tokens per second on a single NVIDIA H100 GPU, which is substantially faster than AR models even with state-of-the-art speculative decoding. DiffusionGemma also retains the starting model's support for thinking mode, multimodal inputs, and long contexts. Despite diffusion fine-tuning, it remains capable of AR generation with only minor performance degradation, suggesting a path toward hybrid diffusion-AR decoding.",
+   "published": "2026-07-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.00146"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "DiffusionGemma est un modèle de langage expérimental utilisant la diffusion discrète pour générer du texte en parallèle par blocs de 256 tokens, réduisant drastiquement la latence (1500 tokens/seconde sur H100) tout en améliorant l'efficacité de calcul via un fine-tuning compute-efficient du modèle Gemma 4. Il repousse les limites du compromis vitesse/capacité pour les LLM.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "DiffusionGemma vise à résoudre le goulot d'étranglement de la génération séquentielle de texte dans les modèles de langage autoregressifs (AR) traditionnels. Ces modèles génèrent un token à la fois, ce qui limite leur vitesse de génération malgré des avancées comme le *speculative decoding*. Le but est d'accélérer significativement la production de texte tout en conservant, voire en améliorant, la qualité et les capacités multimodales des modèles existants.",
+    "methode": {
+     "approche_generale": "DiffusionGemma repose sur un mécanisme de diffusion discrète pour générer des blocs de 256 tokens en parallèle, évitant ainsi la dépendance séquentielle des modèles AR. Le modèle est dérivé d'une version fine-tunée de Gemma 4 (un *mixture-of-experts* avec 3,8B de paramètres activés et 25,2B au total), plutôt que d'être entraîné *from scratch*.",
+     "pipeline_entrainement": "Le processus d'entraînement est divisé en deux étapes optimisées pour l'efficacité computationnelle, utilisant moins de 10% du budget de tokens du modèle AR initial. La première étape utilise un *supervised fine-tuning* pour enseigner un *denoising* bidirectionnel, tandis que la seconde combine l'apprentissage par renforcement (*reinforcement learning*) et la distillation de *samplers* pour améliorer simultanément la qualité de génération et l'efficacité d'inférence.",
+     "hybridation": "Le modèle conserve la capacité de fonctionner en mode AR avec une dégradation mineure des performances, ouvrant la voie à des stratégies de décodage hybrides (diffusion-AR). Il supporte également des fonctionnalités avancées comme le *thinking mode*, les entrées multimodales et les longs contextes."
+    },
+    "resultats": {
+     "performance": "DiffusionGemma établit un nouveau compromis (*Pareto frontier*) entre vitesse de génération et qualité. En moyenne, il produit environ 20 tokens par passage avant (*forward pass*) et atteint ~1 500 tokens par seconde sur un GPU NVIDIA H100, surpassant les modèles AR même avec des techniques de *speculative decoding* optimisées.",
+     "evaluation": "Les résultats sont mesurés sur une suite complète d'évaluations, bien que les détails précis des benchmarks et des métriques utilisées ne soient pas fournis dans le résumé disponible. La rétention des capacités multimodales et du *thinking mode* est soulignée comme un atout majeur."
+    },
+    "limites": {
+     "manque_details": "Le rapport technique manque de précisions sur les jeux de données utilisés pour le fine-tuning, les métriques exactes de qualité (ex. perplexité, scores humains), ou les comparaisons détaillées avec d'autres approches de diffusion discrète (ex. modèles comme *D3PM*).",
+     "risques_methodologiques": "L'efficacité de la distillation de *samplers* et son impact sur la généralisation restent à valider. De plus, la dégradation mineure en mode AR pourrait cacher des compromis non quantifiés sur des tâches spécifiques.",
+     "scepticisme": "La promesse d'une accélération drastique doit être tempérée par l'absence de preuves sur la robustesse du modèle face à des cas d'usage réels ou des distributions de données hors domaine."
+    },
+    "verdict": "DiffusionGemma mérite une attention particulière pour son innovation architecturale et son potentiel à redéfinir les compromis vitesse-qualité en génération de texte, mais ses résultats doivent être confirmés par des évaluations indépendantes et des détails techniques supplémentaires."
+   }
+  },
+  {
+   "id": "105105cdfd6aa629",
+   "title": "SKT: Skill-Use Training at Scale via Verified Synthetic Data Generation",
+   "url": "https://huggingface.co/papers/2608.02287",
+   "summary": "Agent skills have become an important mechanism for equipping language-model agents with reusable procedural knowledge. However, providing skills alone does not guarantee that current models can effectively identify, apply, and coordinate them. To improve skill-use capabilities, we introduce SKT, a verified data synthesis pipeline that constructs skill-grounded tasks and executable trajectories from large collections of agent skills. SKT selects suitable single-skill and multi-skill configurations, synthesizes tasks through rule-based and agent-based verification with feedback-guided repair, and retains only successful trajectories that substantially use every required skill. Using 2,000 public skills, SKT produces 4,000 task packages and 27,164 verified trajectories. Based on the same pipeline and a disjoint test pool, we further construct SkillEval, a held-out executable benchmark for evaluating skill use. Experiments across diverse models, benchmarks, and agent harnesses show that supervised fine-tuning on SKT-generated trajectories consistently improves skill-use performance. Verification ablations, cross-harness evaluation, and scaling experiments further demonstrate that these gains depend on high-quality supervision, extend beyond a single agent interface, and increase with broader skill coverage. Together, these results establish verified data synthesis as an effective and scalable approach for skill-use training.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2608.02287"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "SKT propose un pipeline de génération de données synthétiques vérifiées pour entraîner les agents à utiliser des compétences, produisant 27k trajectoires validées et un benchmark (SkillEval). Le fine-tuning sur ces données améliore systématiquement les performances des modèles sur l'utilisation de compétences, avec une approche scalable et reproductible.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage équipés de compétences (skills) pour agents peinent à identifier, appliquer et coordonner ces compétences de manière efficace, malgré leur disponibilité. Le défi consiste à améliorer leur capacité à utiliser ces compétences de façon fiable et scalable, notamment dans des contextes multi-compétences.",
+    "methode": "SKT (Skill-Use Training) est une pipeline de génération de données synthétiques vérifiées. Elle sélectionne des configurations de compétences (simples ou multiples), génère des tâches ancrées dans ces compétences via des règles et des agents, puis vérifie et répare les trajectoires exécutables. Seules les trajectoires réussies, utilisant substantiellement toutes les compétences requises, sont conservées. La méthode inclut une vérification basée sur des règles et des agents, avec un mécanisme de réparation guidé par feedback. Un benchmark distinct, SkillEval, est construit pour évaluer l'utilisation des compétences sur des données non vues.",
+    "resultats": "Avec 2 000 compétences publiques, SKT produit 4 000 ensembles de tâches et 27 164 trajectoires vérifiées. Les expériences montrent que le fine-tuning supervisé sur ces trajectoires améliore systématiquement les performances d'utilisation des compétences, sur divers modèles, benchmarks et interfaces d'agents. Les gains persistent même lors d'évaluations croisées entre différentes interfaces d'agents et augmentent avec une couverture plus large des compétences.",
+    "limites": "Le contenu disponible ne précise pas les biais potentiels introduits par la génération synthétique ou les limites des mécanismes de vérification. Il manque aussi des détails sur la généralisation à des compétences non couvertes par les 2 000 compétences initiales ou sur la robustesse face à des tâches complexes non anticipées.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à améliorer l'utilisation scalable des compétences par les agents, mais son efficacité à long terme dépendra de la qualité et de la diversité des données synthétiques générées."
+   }
+  },
+  {
+   "id": "e365f495a5fc3b27",
+   "title": "WCM: A World Critic Model for Vision-Language-Action Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2607.29613",
+   "summary": "Reinforcement learning (RL) post-training of Vision-Language-Action (VLA) models has shown strong promise for robotic manipulation. Among RL methods, critic-based approaches rely on a value estimator that predominantly operates on single-frame observations or single-frame VLM backbone latents, which is a fundamental mismatch with the partially observable nature of robot control. A naive approach to incorporate observation history into the critic incurs exponential complexity with high-dimensional visual space, and still fails because pure scalar-return regression provides insufficient supervision for learning cross-temporal dynamics. We identify the root cause as a state approximation problem: without an explicit world modeling objective, the critic's representation cannot capture the temporal structure needed for accurate value estimation. To address this, we propose the World Critic Model (WCM), built on a lightweight LeJEPA architecture; WCM jointly predicts future latent state and estimates values, such that the critic's representation is explicitly trained to capture temporal dynamics rather than merely regress scalar returns. WCM integrates seamlessly into both on-policy and off-policy training pipelines and is compatible with state-of-the-art VLA backbones including Pi0, Pi0.5, and OpenVLA-OFT. Extensive experiments on 149 tasks across four benchmarks demonstrate that WCM consistently achieves state-of-the-art performance in both in-distribution and out-of-distribution settings, with particularly strong generalization gains. We further validate WCM on seven real-world manipulation tasks using OpenVLA-OFT and Pi0.5 with off-policy RL, confirming stable deployment across diverse settings.",
+   "published": "2026-07-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2607.29613"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Propose le modèle WCM (World Critic Model) pour améliorer l'apprentissage par renforcement (RL) des agents VLA en robotique en intégrant un objectif explicite de modélisation du monde (world modeling) via une architecture légère LeJEPA, résolvant ainsi les limites des critiques basés sur des observations statiques ou des latents VLM.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le document aborde un défi central en apprentissage par renforcement (RL) pour la manipulation robotique utilisant des modèles Vision-Language-Action (VLA) : les méthodes basées sur un critique (critic-based) échouent à capturer la nature partiellement observable des environnements robotiques. En se limitant à des observations ou latents monocadres, elles ne parviennent pas à modéliser les dynamiques temporelles, ce qui entraîne une estimation imprécise des valeurs et une supervision insuffisante pour les tâches complexes.",
+    "methode": "Les auteurs proposent le *World Critic Model* (WCM), une architecture légère inspirée de LeJEPA (Latent Energy-based Joint Embedding Predictive Architecture). Le WCM combine deux objectifs : (1) prédire les états latents futurs pour modéliser explicitement les dynamiques temporelles, et (2) estimer les valeurs pour guider l'apprentissage par renforcement. Cette approche évite la complexité exponentielle des méthodes naïves intégrant l'historique des observations en travaillant dans l'espace latent du VLA. Le WCM est conçu pour s'intégrer aussi bien dans des pipelines *on-policy* qu'*off-policy* et est compatible avec des backbones VLA avancés comme Pi0, Pi0.5 et OpenVLA-OFT.",
+    "resultats": "Les expériences couvrent 149 tâches réparties sur quatre benchmarks, démontrant que le WCM surpasse systématiquement les méthodes existantes en performance, tant en distribution qu'en généralisation hors distribution. Les gains sont particulièrement marqués pour la généralisation. Sur sept tâches réelles de manipulation, le WCM, couplé à OpenVLA-OFT ou Pi0.5 avec du RL *off-policy*, confirme une déploiement stable et robuste dans des environnements variés. Les chiffres précis de performance ne sont pas détaillés dans le résumé fourni.",
+    "limites": "Le résumé ne mentionne pas les coûts computationnels ou la latence introduits par l'ajout d'un module de prédiction d'états futurs, ce qui pourrait limiter son applicabilité en temps réel. De plus, la dépendance à la qualité des latents du VLA sous-jacent n'est pas discutée : une représentation latente pauvre pourrait compromettre les performances du WCM. Enfin, l'absence de détails sur les hyperparamètres ou les protocoles d'entraînement laisse des zones d'ombre sur la reproductibilité.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante combinant modélisation du monde et estimation de valeur, avec des résultats prometteurs en généralisation et en déploiement réel, bien que des vérifications supplémentaires sur les contraintes pratiques soient nécessaires."
+   }
+  },
+  {
+   "id": "29dbf7e9e5b127a3",
+   "title": "Weak-to-Strong On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2607.26246",
+   "summary": "On-policy distillation (OPD), which aligns a student with the teacher's token-level distribution on the student's own rollouts, is an effective paradigm for transferring capabilities across LLMs. Prevailing approaches assume a teacher at least as capable as the student: they either distill a larger model into a smaller one, which fails at the frontier where no larger teacher exists, or consolidate multiple domain experts trained from a shared base, which requires costly training at the student's scale. We introduce Weak-to-Strong On-Policy Distillation (W2S-OPD), a simple yet effective OPD framework that improves the strong student by distilling from multiple weak models. W2S-OPD constructs a proxy teacher in logit space from a contrast pair of a positive and a negative model, both smaller than the student and cheap to obtain. Their logit difference isolates the capability direction, which is added to the student's own base model, yielding a proxy teacher that couples this direction while staying distributionally adjacent to the student. The student then distills it by minimizing the per-token reverse KL on its own rollouts. We instantiate the contrast pair as i) a post-RL expert against its pre-RL initialization, isolating the skill RL instills, ii) a larger against a smaller base model, isolating the capability from scale, and iii) a small base model with correct versus wrong hints, isolating the instance-level direction toward the solution. Across four math and three code benchmarks, W2S-OPD outperforms OPD, enables the student to surpass the domain teacher, and keeps improving the student even when every supervision source is weaker. Analysis shows different contrasts yield distinct signals: the post-RL and hint contrasts emphasize reasoning frameworks, while the scale contrast emphasizes the solving procedure. Our code will be available at https://github.com/Yu-Fangxu/W2S-OPD.",
+   "published": "2026-07-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 47,
+    "arxiv_id": "2607.26246"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "W2S-OPD (Weak-to-Strong On-Policy Distillation) permet d'améliorer un modèle fort en distillant depuis plusieurs modèles faibles, en construisant un professeur proxy via une différence de logits entre un modèle positif et négatif, réduisant les coûts de distillation au-delà du front de performance.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé par cette publication est l'amélioration des modèles de langage (LLMs) par distillation de connaissances, notamment dans des scénarios où aucun modèle enseignant plus performant n'existe (frontière des capacités actuelles). Les méthodes traditionnelles de distillation supposent un enseignant au moins aussi compétent que l'étudiant, ce qui limite leur applicabilité lorsque l'étudiant est déjà un modèle de pointe ou que l'entraînement d'un enseignant plus grand est prohibitif en coût.",
+    "methode": {
+     "approche_generale": "La méthode proposée, Weak-to-Strong On-Policy Distillation (W2S-OPD), utilise une distillation *on-policy* où l'étudiant (modèle fort) apprend à partir de plusieurs modèles faibles. L'idée centrale est de construire un *proxy teacher* en espace de logits en combinant les sorties d'une paire contrastive de modèles faibles (positif et négatif), tous deux plus petits que l'étudiant.",
+     "details_techniques": [
+      "La paire contrastive isole une *direction de capacité* dans l'espace des logits (ex. : différence entre un modèle post-RL et sa version pré-RL pour capturer les compétences acquises par le RL).",
+      "Cette direction est ajoutée aux logits du modèle de base de l'étudiant pour créer un *proxy teacher* qui reste proche de la distribution de l'étudiant tout en incorporant la capacité ciblée.",
+      "L'étudiant se distille ensuite à partir de ce *proxy teacher* en minimisant la divergence KL inverse (*reverse KL*) sur ses propres trajectoires (*rollouts*).",
+      "Trois types de paires contrastives sont explorés : (1) expert post-RL vs. initialisation pré-RL, (2) modèle de base plus grand vs. plus petit, (3) modèle de base avec indices corrects vs. incorrects."
+     ]
+    },
+    "resultats": {
+     "performances": "Sur quatre benchmarks mathématiques (ex. GSM8K, MATH) et trois benchmarks de code (ex. HumanEval, MBPP), W2S-OPD surpasse les méthodes de distillation *on-policy* (OPD) classiques. L'étudiant dépasse même le *domain teacher* dans certains cas, malgré la faiblesse des modèles enseignants.",
+     "robustesse": "La méthode continue d'améliorer l'étudiant même lorsque toutes les sources de supervision (modèles faibles) sont individuellement moins performantes que lui. Les analyses montrent que les contrastes post-RL et basés sur des indices renforcent les *cadres de raisonnement*, tandis que le contraste d'échelle améliore les *procédures de résolution*."
+    },
+    "limites": {
+     "hypotheses": "La méthode repose sur l'hypothèse que la différence de logits entre modèles faibles capture effectivement une *direction de capacité* généralisable, ce qui pourrait ne pas tenir pour des tâches complexes ou des architectures très différentes.",
+     "couts_indirects": "Bien que les modèles faibles soient moins coûteux à obtenir, la nécessité de générer des paires contrastives (ex. entraînement RL pour le contraste post-RL) introduit des coûts supplémentaires non négligeables.",
+     "generalisation": "Les résultats sont limités à des benchmarks mathématiques et de code ; la performance sur d'autres domaines (ex. compréhension du langage naturel) reste à valider."
+    },
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante de distillation *weak-to-strong*, offrant une voie prometteuse pour repousser les limites des LLMs sans dépendre de modèles enseignants plus grands, mais son applicabilité à grande échelle et sa robustesse hors des domaines techniques restent à explorer."
+   }
+  },
+  {
+   "id": "4674d3be7c39d398",
+   "title": "GradCuit: Credit-Assigned Gradient Flow Enables Robust and Interpretable Test-Time Latent Reasoning",
+   "url": "https://huggingface.co/papers/2608.02585",
+   "summary": "Optimization-based latent reasoning improves large language model outputs by optimizing instance-specific continuous states at test time while keeping model parameters frozen. Existing methods, however, typically connect these states to the reasoning trajectory through decoded tokens, making sequence-level credit assignment indirect and obscuring how latent updates shape subsequent reasoning. We introduce GradCuit (gradient through circuit), which inserts optimizable latent states at a selected Transformer layer between the hidden representations of the prompt and the generated continuation. Causal self-attention provides every continuation-token log-probability with a differentiable path to every preceding latent state through the remaining Transformer blocks, enabling reward-weighted gradients from the entire continuation to be assigned directly to the latents. Across five instruction-tuned backbones, three reasoning benchmarks, and two answer formats, GradCuit achieves an average accuracy of 64.5%, outperforming chain-of-thought prompting by 6.6 percentage points and the strongest competing method by 2.4 points. GradCuit also demonstrates greater robustness: across seven learning-rate settings, it consistently outperforms LatentSeek while reducing the standard deviation of accuracy from 1.53 to 0.82, and even its random-walk variant remains competitive with LatentSeek. For interpretability, token-level gradient attribution reveals that latent influence concentrates on reasoning-connector tokens, while layer analysis identifies early-to-middle Transformer layers as the most effective optimization space. By directly optimizing internal reasoning from outcome feedback, GradCuit opens a new axis of robust and interpretable test-time scaling, where LLMs adapt how they reason rather than merely regenerate, sample, or rerank outputs.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2608.02585"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "GradCuit améliore les performances des LLM en optimisant des états latents intermédiaires via un mécanisme de credit assignment différentiable, permettant une raisonnement plus robuste et interprétable en test-time sans modifier les paramètres du modèle.",
+   "score": 8.8
+  },
+  {
+   "id": "d419ab4e04762a5a",
+   "title": "LongHorizon-Harness: Advancing Long-Horizon Agents for Real-World Tasks",
+   "url": "https://huggingface.co/papers/2608.01964",
+   "summary": "Large language model (LLM) agents increasingly undertake long-horizon tasks that require sustained reasoning, tool use, and revision across many interdependent steps. However, existing agent harnesses maintain task execution, task state, and completion assessment within a growing context, making the state difficult to track and allowing incorrect self-assessments to propagate into later decisions. We reformulate long-horizon execution as a task-state management problem and propose LongHorizon-Harness, which maintains the task state explicitly outside execution and updates it only with facts independently verified from the environment. Its Manage-Execute-Audit(MEA) loop uses a manager to maintain the task state and determine the next subtask, a fresh-context executor to perform it, and a read-only auditor to verify the resulting environment state before the next round. A lightweight AgentAdapter supports interchangeable model and harness backends without modifying their native agent loops. LongHorizon-Harness improves Qwen~3.7-Plus from 51.8% to 80.7% on WeaveBench, from 69.7% to 77.2% on Terminal-Bench~2.1, and from 2.8% to 8.3% on OSWorld~2.0. It also raises Claude Opus~4.7 from 20.0% to 34.3% on an OSWorld2.0 subset, demonstrating consistent gains across models, harnesses, and interaction domains.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 85,
+    "arxiv_id": "2608.01964"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "LongHorizon-Harness reformule l'exécution d'agents en gestion explicite d'état de tâche (MEA loop) pour éviter les erreurs de propagation, améliorant drastiquement les performances sur des benchmarks de tâches longues (ex: +28.9% sur WeaveBench).",
+   "score": 8.8
+  },
+  {
+   "id": "996c5e275d8fb381",
+   "title": "Deferred Exposure of Future Trajectories for Verifiable Reasoning in Autonomous Driving VLMs",
+   "url": "https://huggingface.co/papers/2608.01755",
+   "summary": "Recent Vision-Language-Action (VLA) models for autonomous driving (AD) increasingly utilize chain-of-thought (CoT) supervision to enhance the reasoning capabilities of their Vision-Language Model (VLM) components, yet existing annotation pipelines commonly expose the teacher model to the logged ground-truth (GT) future trajectory. We empirically show that this induces trajectory anchoring bias: teacher models rationalize the revealed outcome rather than infer a decision from scene evidence, producing less causally faithful CoTs and substantially more severe hallucinations, especially in causally challenging scenes. Removing the GT trajectory eliminates this shortcut, but open-ended trajectory generation entangles high-level decision-making with precise geometric synthesis and low-level dynamics. To make trajectory-level driving decisions verifiable without requiring open-ended trajectory synthesis, we introduce Autonomous-Driving Multiple-Choice Question (AD-MCQ), which casts planning as selection among explicit trajectory candidates. Taking this a step further, we propose Deferred Exposure of Future Trajectories for RLVR (DEFT-RLVR) to transform future trajectories from pre-decision anchors into post-decision verification targets. Experimental results show that DEFT-RLVR improves AD reasoning while preserving or even enhancing general visual capabilities. With VLM-only inference and controllable difficulty through candidate construction, AD-MCQ provides a flexible, scalable, and extensible foundation for future research on verifiable AD reasoning.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.01755"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "DEFT-RLVR et AD-MCQ visent à améliorer la planification autonome en VLA pour la conduite en évitant les biais d'ancrage des trajectoires (trajectory anchoring) via une exposition différée des futures trajectoires et une évaluation par questions à choix multiples.",
+   "score": 8.8
+  },
+  {
+   "id": "7151f2549c8a52f0",
+   "title": "Right Answer, Wrong Method: Shortcut Hacking Misleads the Evaluation of LLM Reasoning on Frontier Science Benchmarks",
+   "url": "https://arxiv.org/abs/2608.02442v1",
+   "summary": "Scientific reasoning benchmarks typically evaluate large language models (LLMs) using final-answer accuracy. However, a correct answer does not necessarily demonstrate the reasoning capability targeted by the problem. We identify Solution Hacking, a failure mode in which an LLM reaches the correct answer through invalid shortcuts, such as numerical search, enumeration, guessing, or answer-first verification, without providing a valid task-targeted derivation. We systematically analyze this phenomenon across difficulty levels, scientific domains, and frontier models. Solution hacking increases sharply with benchmark difficulty, from 2.2\\% on common problems to 28.3\\% on Olympiad-level problems and 37.4\\% on HLE. Moreover, 8.2\\%-44.1\\% of answers credited as correct across frontier models are identified as hacked solutions. We further develop expert-inspired anti-hacking strategies, including an automatic judge and a test-time instruction. The results show that suppressing shortcut behavior substantially reduces reported accuracy while having a smaller effect on correct and non-hacked accuracy. These findings reveal that answer-only evaluation can overestimate the scientific reasoning capabilities of frontier LLMs.",
+   "published": "2026-08-03T16:21:56+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xuan Ren, Weiqi Zhai, Tianle Pu, Yihua Zhu, Yihua Zhu, Hu Wei"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "benchmark"
+   ],
+   "tldr": "Ce travail révèle un biais majeur dans l'évaluation des LLM en raisonnement scientifique : les modèles atteignent souvent la bonne réponse via des raccourcis (solution hacking) sans raisonnement valide. Analyse approfondie avec des stratégies anti-hacking, crucial pour des benchmarks plus fiables en raisonnement complexe.",
+   "score": 8.6
+  },
+  {
+   "id": "1743fe0292affa08",
+   "title": "GPTQ-2D: Cubic-Time Two-Sided Adaptive Rounding",
+   "url": "https://huggingface.co/papers/2607.27042",
+   "summary": "Adaptive rounding methods such as GPTQ, or equivalently Babai's nearest plane algorithm, round a real matrix to integers under a quadratic metric. They process the entries in a fixed order, one at a time, propagating each rounding error to the entries not yet processed through a triangular feedback matrix. We study the two-sided version of this task, in which fixed nonsingular basis matrices act on both the left and the right of the residual; the familiar one-sided case is the special case of an identity right basis. Vectorizing the matrix turns the two-sided objective into a quadratic metric whose Gram matrix is a Kronecker product, so the one-dimensional algorithm applies verbatim, but takes quartic time in the matrix dimension. We present GPTQ-2D, which produces the identical rounded matrix in cubic time. It rounds the entries anti-diagonal by anti-diagonal; entries on the same anti-diagonal are independent and are rounded in parallel.",
+   "published": "2026-07-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2607.27042"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation"
+   ],
+   "tldr": "GPTQ-2D optimise l'arrondi adaptatif (quantization) pour les matrices en temps cubique (vs quartique pour les méthodes existantes) en exploitant la structure de Kronecker des métriques quadratiques, sans perte de précision par rapport à GPTQ.",
+   "score": 8.5
+  },
+  {
+   "id": "860c8c311c0dbc1a",
+   "title": "DeepVoyager-VL: Incentivizing Vision-in-the-Loop Search for Long-Horizon Multimodal Agents",
+   "url": "https://huggingface.co/papers/2608.01827",
+   "summary": "Multimodal large language models (MLLMs) have advanced visual understanding and reasoning, yet their static parametric knowledge limits their ability to address knowledge-intensive and dynamically evolving open-world problems. To move beyond this limitation, multimodal deep search has emerged as a key direction for open-world information access, evolving from single-turn factual retrieval toward long-horizon, multi-turn search guided by visual evidence. However, existing methods typically confine vision to the input or answer stage, overlooking its role in intermediate reasoning, and lack designs tailored to long-horizon interaction. Consequently, visual evidence rarely drives continued retrieval, constraining both interaction depth and reasoning span. To address these limitations, we propose DeepVoyager-VL, a long-horizon multimodal deep-search framework for vision-in-the-loop search. Specifically, we construct a multimodal event graph to drive data synthesis, yielding problems with intermediate visual dependencies and long reasoning chains. We then design an agent framework for active visual acquisition and on-demand image loading. Finally, we fine-tune models on the synthesized data without reinforcement learning. Extensive experiments across ten multimodal search benchmarks demonstrate the effectiveness of our method.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.01827"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "vision"
+   ],
+   "tldr": "DeepVoyager-VL introduit un cadre d'agents multimodaux pour des recherches longues et complexes, intégrant la vision dans les étapes intermédiaires via un graphe d'événements multimodaux et un mécanisme d'acquisition active d'images.",
+   "score": 8.5
+  },
+  {
+   "id": "6ff01afc44de47cb",
+   "title": "VAD: Attributing Visual Evidence for Target Reconstruction in Multimodal On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2607.28590",
+   "summary": "Multimodal on-policy distillation (OPD) transfers fine-grained visual knowledge by supervising student-generated trajectories with a privileged-view teacher. Yet its next-token corrections are source-mixed, combining visual signals with linguistic priors and teacher-specific effects. The key challenge is to estimate which corrections are supported by visual evidence, not merely where or how strongly to distill. We introduce Visual Attribution Distillation (VAD), a counterfactual target-reconstruction algorithm that estimates the visually attributable part of a teacher correction. At each student-generated prefix, VAD evaluates the same fixed teacher with the relevant evidence present and removed. The corresponding change in centered log-probabilities defines ut, a signed proxy for the visual evidence direction that estimates how revealing the evidence supports or refutes candidate tokens. VAD projects the original correction onto this proxy to obtain an intervention-aligned component and a proxy-unexplained residual, then reconstructs a student-anchored target from the former. During training, this reconstructed target supplies the primary supervision signal, while the privileged teacher contributes a weak regularizer. Across six fine-grained visual benchmarks at 4B and 9B scales, VAD outperforms direct privileged-view distillation and visual-advantage weighting. Token- level and controlled-target analyses show that the proxy-aligned component is enriched in task-relevant visual corrections and yields stronger target shifts, especially when evidence refutes a mistaken answer. These results support counterfactual target reconstruction as an effective alternative to source-mixed supervision.",
+   "published": "2026-07-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 26,
+    "arxiv_id": "2607.28590"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "VAD (Visual Attribution Distillation) affine la distillation on-policy multimodale en isolant la partie des corrections du professeur attribuable aux preuves visuelles, via une approche contrefactuelle qui reconstruit une cible alignée sur l'étudiant à partir de cette composante.",
+   "score": 8.5
+  },
+  {
+   "id": "aad593556db8565c",
+   "title": "SAF-OPD: Stable Advantage Fusion for On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2607.29209",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) broadcasts a single response-level reward to every token, while on-policy distillation (OPD) scores each token against a stronger teacher for a dense advantage but caps performance at teacher quality and discourages exploration beyond it. Their complementarity makes combining RLVR and OPD promising, but we find that fusing the two advantages with a fixed coefficient triggers entropy collapse from two miscalibrations: a magnitude mismatch, where token-level OPD advantages can spike far beyond the bounded RLVR advantage and erase its signal, and a temporal mismatch, where sustained full-strength OPD keeps pulling the student toward the teacher and limits exploration needed to surpass it. We propose SAF, a Stable Advantage Fusion framework that resolves both issues via a lightweight, four-stage pipeline applied only to the OPD advantage: a sparsify-then-compress mechanism for magnitude control paired with a warm-up-then-anneal mechanism for temporal control, with each stage independently switchable and adding negligible overhead. Instantiating RLVR with GRPO, we evaluate SAF across seven mathematical reasoning and code generation benchmarks with Qwen3-1.7B/4B/8B: SAF avoids entropy collapse and consistently outperforms fixed-coefficient GRPO+OPD fusion, improving the aggregate score by 0.51-2.70% across all six model-domain settings while achieving more stable training.",
+   "published": "2026-07-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 28,
+    "arxiv_id": "2607.29209"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "SAF-OPD propose une méthode de distillation en ligne (OPD) combinée à des récompenses vérifiables (RLVR) pour améliorer l'efficacité des LLM, en résolvant les problèmes de déséquilibre des avantages (magnitude/temporel) via un pipeline léger de contrôle. Intéressant pour l'optimisation des modèles de raisonnement mathématique et de génération de code.",
+   "score": 8.5
+  },
+  {
+   "id": "f1218d476e20779f",
+   "title": "AURORA-LM: Autoencoding Unified Representation for Continuous-Latent Diffusion Language Modeling",
+   "url": "https://arxiv.org/abs/2608.02602v1",
+   "summary": "Language remains an outlier in generative modeling: while images, video, and audio are increasingly modeled in continuous latent spaces, text generation still relies predominantly on discrete tokens. Existing continuous language models either inherit embedding spaces not designed for joint generation and decoding, or compress autoencoded latents to ease diffusion, sacrificing token-level fidelity. Instead of simplifying the representation to suit the generative model, we preserve a high-capacity, decodable text latent and design the diffusion model to learn its distribution directly. We introduce AURORA-LM, a continuous-latent diffusion language model that separates the construction of a decodable text representation from the modeling of its distribution. A Query-based Encoder-Decoder organizes text into a high-capacity, prefix-aligned latent sequence, and a Block-causal Diffusion Transformer learns its distribution through flow matching, generating blocks left to right while denoising positions within each block in parallel. Because such a latent is harder for diffusion to model, AURORA-LM restricts only the noisy-input pathway while retaining the full clean-latent prediction target, accommodating full-width latents without reducing decoder-facing capacity. We further calibrate the noise-level distribution to the latent width, and introduce self-trajectory consistency to bridge independently sampled training noise and iterative denoising at inference. AURORA-LM achieves the strongest performance among evaluated continuous and diffusion-based language models on OpenWebText free generation and XSum summarization. Scaling to 1B parameters with about 1500 EFLOPs of total compute yields further gains, surpassing a larger publicly released latent-diffusion language model under a matched evaluation protocol. All experiments are conducted on Ascend NPUs.",
+   "published": "2026-08-03T17:59:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiajun Liang, Yucheng Liao, Yukang Cao, Jiazhe Wei, Ken Li, Wende Tan"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "AURORA-LM propose une approche innovante pour la modélisation du langage en espace latent continu, combinant un encodeur-décodeur basé sur des requêtes et un Transformer à diffusion pour générer des séquences textuelles de haute fidélité. Cette méthode évite les compromis classiques entre compression et qualité, en préservant un espace latent décodable et en optimisant la distribution via *flow matching*, ce qui ouvre des perspectives pour des modèles plus efficaces et interprétables.",
+   "score": 8.3
+  },
+  {
+   "id": "74573a4546002cb7",
+   "title": "Structured Memory for Edge Language Models: Persistent Context and Corpus Retrieval via O(1) SSM State Injection",
+   "url": "https://arxiv.org/abs/2608.02560v1",
+   "summary": "Retrieval-augmented generation (RAG) imposes a prefill cost proportional to retrieved context length, and -- with Transformer backbones -- a KV-cache that grows with each generated token. State-Space Models (SSMs) avoid the second cost by construction; we eliminate the first, collapsing prefill from $O(L_{context})$ to $O(1)$ per query. We introduce PRECOG (Pre-Computed Context Injection), a retrieval mechanism that exploits a property unique to SSMs: the fixed-size, position-agnostic recurrent hidden state is a complete summary of everything the model has read. PRECOG pre-encodes document corpora offline as SSM hidden states and injects the best-matching state directly at query time, bypassing in-context re-ingestion entirely. The same state-injection mechanism enables SMC (Structured Memory Consolidation): a hierarchical persistent memory with cognitive-domain clustering, an adjustable fidelity-vs-storage dial, and $O(1)$ session initialization, which consolidates short-term episodic states into long-term semantic memory and fuses both with retrieved corpus states at query time. We demonstrate the system on TENNs-LLM, a 1.2B-parameter gated-SSM language model with a 192 KB hidden state. PRECOG matches in-context RAG answer quality, reducing prefill latency from $\\sim$27 s to $<$6 ms on edge hardware -- a $\\sim$4500$\\times$ speedup that crosses the threshold from unusable to interactive. The mechanism is architecturally impossible for Transformer KV-caches, which are position-entangled and grow linearly with context length.",
+   "published": "2026-08-03T17:43:36+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Anusha Madan Gopal, Aras Pirbadian, Kristofor D. Carlson, M Anthony Lewis, Jonathan Tapson"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "rag",
+    "architecture"
+   ],
+   "tldr": "Présentation de PRECOG, une méthode de RAG optimisée pour les State-Space Models (SSM) qui réduit le coût de pré-remplissage à O(1) par requête en injectant des états cachés pré-calculés, et introduit SMC pour une mémoire persistante hiérarchique avec consolidation automatique des états. Démontrable sur un modèle SSM de 1.2B de paramètres.",
+   "score": 8.3
+  },
+  {
+   "id": "640543ca607ba766",
+   "title": "Real-Time Detection and Repair of LLM Agent Failures",
+   "url": "https://arxiv.org/abs/2608.02464v1",
+   "summary": "LLM agents fail mid-episode -- they loop, cascade tool errors, drift off goal, fabricate results, or silently absorb corrupted content -- and the standard remedy, judging every step with a second LLM, costs more than the agent itself. We ask how much detection is achievable from observable step telemetry alone, using monitors costing microseconds per step and trained only on healthy runs. On 2,823 committed agent episodes across three frameworks, three local models (qwen2.5 7b/3b, llama3.1 8b) and a commercial API (gemini-2.5-flash), a one-class echo-state-network ensemble with CUSUM alarms detects 0.71 of failures at a 5% false-alarm budget (AUROC 0.872). Its advantage over a memoryless baseline is a monotone function of post-onset horizon (+0.09 at =9), predicting its own failure region out of sample on AFTraj-2K. Ranking transfers with no retraining to two corpora from other groups (AFTraj-2K 0.745, ATBench 0.779). Monitors carry two burdens: a per-deployment healthy null (they do not transfer -- AUROC 0.527 cold against 0.885 recalibrated) and a residual false-alarm rate. We add a layer carrying neither: deterministic verification, which recomputes a run's stated total from the tool results it actually received and confirms every required call was made. Head-to-head it catches 60% of failures (96% with the coverage check) at 0 of 63 false positives against the monitor's 54% at 17%, transfers unchanged to llama3.1:8b (110 of 110 at 0 of 10), and trips on 0 of 1825 healthy episodes. Detection is then closed into repair: each flagged run is rolled back and re-run live, recovering 45% of failures against a 16% resampling control (p=0.0005) and lifting task success from 52% to 73% for about one extra model call per run. The system runs at ~200 microseconds per step, three orders of magnitude below a judge call. Code, traces and results are released.",
+   "published": "2026-08-03T16:34:46+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sunny Dubey"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Développe un système de détection en temps réel des échecs d'agents LLM via des moniteurs légers (microsecondes par étape) entraînés sur des exécutions saines, avec des garanties théoriques et des résultats empiriques solides.",
+   "score": 8.3
+  },
+  {
+   "id": "1cecab72f172940b",
+   "title": "xPress: Parallel Refinement for Diffusion Drafters in Speculative Decoding",
+   "url": "https://arxiv.org/abs/2608.02438v1",
+   "summary": "Block-diffusion drafters like dFlash generate an entire block of draft tokens in a single forward pass, drastically reducing the overhead of multiple-token drafting in speculative decoding. The crucial final step of the single-pass discrete denoising process involves using the logit distribution at each position to sample conditionally independent tokens. The resulting draft is thus a set of per-position marginals, rather than a joint distribution: no draft token is guaranteed to depend on its predecessors. Such independently sampled marginals tend to produce sequences with tokens that are individually likely, but jointly improbable under the target model's distribution, which verifies each token conditionally. This can cause early rejection and limits acceptance length. To address this, we propose xPress as a means to restore the missing causality in diffusion drafters. xPress is a lightweight causal refiner that reconciles the whole diffusion block at once through parallel refinement, restoring and propagating causal dependencies across the draft without a token-by-token loop. On Qwen3-8B, across seven math, code, and chat benchmarks, xPress raises acceptance length by about 30% on average (up to +56%) and its end-to-end decoding throughput by about 1.3 on average (up to 1.7) compared to the original dFlash diffusion drafter.",
+   "published": "2026-08-03T16:18:22+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zheng Wang, Davis Wertheimer, Yu Chin Fabian Lim, Mudhakar Srivatsa, Raghu K. Ganti, Minjia Zhang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "xPress améliore la génération de tokens de draft dans le speculative decoding en restaurant la causalité manquante dans les drafters par diffusion, augmentant la longueur d'acceptation de ~30% sur Qwen3-8B. Approche technique innovante pour optimiser l'inférence des LLM.",
+   "score": 8.3
+  },
+  {
+   "id": "41bc2ffc3e462288",
+   "title": "Antares: Foundation Models for Agentic Vulnerability Localization",
+   "url": "https://arxiv.org/abs/2608.02407v1",
+   "summary": "Vulnerability localization is a fundamental step in software security, requiring models to reason over large codebases and iteratively identify vulnerable implementations. We present Antares, a family of compact language models (350M, 1B, and 3B parameters) for agentic vulnerability localization. Based on IBM Granite base models, Antares is trained through a two-stage pipeline that combines supervised fine-tuning on cybersecurity reasoning and repository exploration data with reinforcement learning from verifiable rewards over vulnerable repositories. Across extensive evaluations, Antares-3B approaches GPT-5.5 while outperforming open-weight models over 200x larger in size. The Antares family further enables fast, low-cost local inference, completing a full 500-task evaluation sweep in approximately 15 minutes on a single H100 GPU, corresponding to an amortized evaluation time of under 2 seconds and less than $0.002 per task.",
+   "published": "2026-08-03T15:49:14+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Supriti Vijay, Aman Priyanshu, Didier Chapoteau, Arthur Goldblatt, Jianliang He, Kimia Majd"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Modèles compacts (350M à 3B) spécialisés dans la localisation de vulnérabilités logicielles via un pipeline agentique (fine-tuning + RL). Antares-3B rivalise avec GPT-5.5 tout en étant 200x plus léger, avec un coût d'inférence <0,002$ par tâche et un temps d'évaluation de 2s par tâche.",
+   "score": 8.3
+  },
+  {
+   "id": "7300509e47673696",
+   "title": "DAPD: Dual-Anchored Policy Distillation",
+   "url": "https://huggingface.co/papers/2608.01735",
+   "summary": "On-policy (self) distillation (OPSD) is increasingly adopted for language-model post-training. It strengthens the teacher with privileged information but can induce a privilege illusion: the student learns privilege-dependent behavior it cannot reproduce from its inference-time context, yet behaves as if the training-time privileged information remained available, ultimately degrading performance. In this paper, we identify information asymmetry between the privileged teacher and the student at inference as the root cause of this failure in OPSD. To resolve this asymmetry, we propose Dual-Anchored Policy Distillation (DAPD), a unified framework with two levels of anchoring. Dual-Path Anchoring (DPA) introduces a self-conditioned bridge and aligns reference and rollout behavior along two matched-information paths, preventing privilege-dependent behavior from being transferred to the inference-time student. Dual-Source Anchoring (DSA) applies these paths in both reference-to-rollout and rollout-to-reference directions, reducing reliance on privileged reference guidance while preserving correctness supervision. Extensive experiments show that DAPD significantly alleviates privilege illusion, outperforming OPSD on Qwen3-4B by +2.00 points on average across tasks. Notably, its gains persist across scales, reaching +2.69 at 4B and +2.78 at 32B.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2608.01735"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "DAPD résout le problème de *privilege illusion* en distillation de politiques (OPSD) en introduisant deux niveaux d'ancrage (DPA et DSA) pour aligner les comportements de référence et de rollout, améliorant significativement les performances.",
+   "score": 8.2
+  },
+  {
+   "id": "1cbf2f0de9585e7e",
+   "title": "Progressive Agent Skill Generation via Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2608.01678",
+   "summary": "Existing skill generation methods largely rely on heuristics or pipeline-style consolidation, which must be specially designed for different evidence sources. In contrast, learning-based approaches offer a more unified way to model skill generation across heterogeneous sources. However, learning-based skill generation remains challenging because skills lack a natural supervision signal based on relevance or correctness; their value can largely be determined only by whether they improve the behavior of the agent on downstream tasks. To address this challenge, we propose Skill-α, a reinforcement learning method for progressively generating high-quality agent skills. Specifically, we formulate skill generation as a sequential editing process that decomposes skill construction into individually evaluable edits, and introduce a novel rollback reward that evaluates each edit by comparing downstream execution under the original and edited skills on an anchored query. Extensive experiments show that Skill-α generates more effective skills than methods based on heuristics or pipelines in both document-to-skill and experience-to-skill settings. Under the main GPT-4o worker, Skill-α improves average downstream success rates over the strongest skill-generation baseline by 3.3 points on CL-Bench and 6.7 points on tau2-bench. Further ablations validate the importance of rollback reward and progressive generation.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2608.01678"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Skill-α introduit une méthode RL pour générer des compétences d'agents de manière progressive et évaluable, via des éditions séquentielles et une récompense de rollback. Elle améliore significativement les performances des agents sur des tâches documentaires et expérientielles, avec une approche unifiée et scalable.",
+   "score": 8.2
+  },
+  {
+   "id": "cf302648e05ea63c",
+   "title": "ScrambleToolBench: Agents Search Exhaustively Even When Their Own Map Points to the Next Step",
+   "url": "https://huggingface.co/papers/2608.02358",
+   "summary": "To operate robustly in open-world environments, autonomous agents should be able to infer the behavior of unfamiliar systems through interaction alone, even in the absence of documentation. However, existing tool-use benchmarks expose semantic tool schemas in static environments, allowing agents to rely on prior knowledge rather than autonomous discovery. To address this limitation, we introduce ScrambleToolBench, an interactive terminal benchmark designed to isolate behavioral reasoning. By removing semantic cues and enforcing a continuous task curriculum, the benchmark requires agents to uncover hidden tool behaviors entirely through trial-and-error interaction. The benchmark further introduces dynamic challenges, including mapping drift, stochastic action failures, and temporal execution windows, to evaluate whether agents can revise and adapt their hypotheses as the environment changes. Our evaluation of state-of-the-art language models reveals that successful initial discovery does not translate into robust adaptation. When faced with structural changes such as mapping drift, agents fail to use deductive strategies such as cycle tracing, and instead exhibit belief inertia or fall back to exhaustive search. Increasing test-time reasoning only amplifies this expensive brute-force search rather than enabling deductive recovery. While equipping agents with persistent memory reduces compounding errors, they remain unable to efficiently infer structural changes, highlighting a gap in current agent reasoning.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.02358"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "ScrambleToolBench évalue la capacité des agents à découvrir et adapter des outils sans documentation, via un environnement interactif de terminal avec des défis dynamiques (dérive de mapping, échecs stochastiques), révélant des lacunes en raisonnement déductif et adaptation.",
+   "score": 8.2
+  },
+  {
+   "id": "cd148305243fa75d",
+   "title": "LiveMem: Maintaining Memory State Continuity in Long-Running LLM Inference",
+   "url": "https://arxiv.org/abs/2608.02515v1",
+   "summary": "Long-running assistants and agents consume interaction streams that eventually outgrow the context. Existing context retention, summarization, and retrieval preserve access to selected history, but do not provide a persistent state over the full lifecycle when working context changes. We formulate this missing inference capability as \\emph{state continuity under context turnover}: carrying computation forward through a fixed-capacity memory state whose lifetime is independent of the active context. We introduce an intrinsic memory method, \\textbf{LiveMem}, which augments a pretrained full-attention LLM with a memory state that preserves the historical information over the whole lifecycle while the main attention path retains a bounded KV window. Context turnover and memory state maintaining, memory-oriented post-training, and state-aware serving jointly make this memory state load bearing after its originating tokens are released. Our experiments show that LiveMem achieves leading overall performance among evaluated systems and other intrinsic memory methods. Experiments on LongMemEval show that LiveMem is able to answer the question based on the memory state, even when the supporting evidence has been removed from the current context, and evidence-distance analysis shows that useful information persists beyond the active window. LiveMem thus establishes state continuity as a distinct and complementary abstraction for continual LLM inference.",
+   "published": "2026-08-03T17:12:05+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhichen Liu, Ruihan Sun, Hengjie Yang, Zipeng Wu, Zhaohan Chen, Xiaofan Zhang"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Introduction de *LiveMem*, une méthode de mémoire intrinsèque pour les LLMs en inférence longue durée, maintenant un état de mémoire fixe indépendant du contexte actif. Permet de répondre à des questions basées sur l'historique même après libération des tokens originaux, avec des performances supérieures sur *LongMemEval*.",
+   "score": 8.0
+  },
+  {
+   "id": "8062ed82b81db2bf",
+   "title": "Long-term Measurements: Towards a Longitudinal Understanding of Human-AI Interactions",
+   "url": "https://arxiv.org/abs/2608.02491v1",
+   "summary": "Language models have taken on the role of a very new type of technology, by virtue of their \"human-ness\" and rapid integration into users' daily lives. This combination of features can introduce longitudinal risks---cognitive, developmental and socio-affective changes in humans---that might not surface in short-term interactions, but can have lasting long-term effects on users. This forms the basis of a critical new mission for NLP: to pivot from static, short-term evaluations of text generations to long-term measurements of behavioral changes, towards a diachronic understanding of human-model interactions. In this work, we draw from measurements used in social science fields that are crucial to understand emergent phenomena in longitudinal data. We discuss how computational methods in the field of NLP need to be combined with such measurements, not only to understand long-term safety risks of human-model interactions, but to help steer model development towards positive rather than negative outcomes for users. This ability to model human behavioral shifts as a function of model interactions can facilitate online rather than post-hoc detection of problematic behaviors, and should be leveraged in alignment frameworks to mitigate long-term risks in users.",
+   "published": "2026-08-03T16:55:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Nicole Mitchell, Dhruv Agarwal, Maty Bohacek, Remi Denton, Roma Patel"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Propose une méthodologie pour évaluer les impacts longitudinaux des interactions humain-LLM, soulignant la nécessité de passer des benchmarks statiques à des mesures comportementales diachroniques pour anticiper les risques cognitifs et socio-affectifs à long terme.",
+   "score": 8.0
+  },
+  {
+   "id": "63187ec6f2925d25",
+   "title": "Infinite Trace Objectives with Finite Trace Techniques: Translating LTL to LTLf+",
+   "url": "https://arxiv.org/abs/2608.02454v1",
+   "summary": "Linear Temporal Logic (LTL) is one of the most widely adopted languages for specifying temporal extended objectives in AI, with applications ranging from reactive synthesis to stochastic planning in Markov decision processes and reinforcement learning. Traditionally, solving any of these problems requires translating the LTL specification to a nondeterministic automata on infinite words and then determinizing it, a step that is notoriously difficult in theory and in practice. Recent work has introduced LTLf+, which lifts the finite-trace logic LTLf to infinite traces. LTLf+ has the same expressive power as LTL, yet it retains most of the crucial advantages of its base logic LTLf. Most reasoning in LTLf+ rests on finite automata on finite words, for which we have not only a canonical minimal representation but also an efficient determinization procedure. In this work we present the first translation from LTL to LTLf+. We first normalize an LTL formula into the syntactic reactivity fragment of the Manna-Pnueli hierarchy, to create the general fragment-based shape of LTLf+. We then present linear translations for each individual component of that fragment. As a consequence of this translation, the expanding body of techniques developed for LTLf+ now becomes available to many AI problems currently formulated in LTL. We further show that this comes at no asymptotic cost, as the pipeline from LTL to automaton via LTLf+ remains doubly exponential.",
+   "published": "2026-08-03T16:30:26+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Christoph Weinhuber, Maximilian Prokop, Giuseppe De Giacomo, Moshe Y. Vardi"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Ce papier propose une traduction de LTL (Linear Temporal Logic) vers LTLf+ (LTL on finite traces étendu aux traces infinies), permettant une représentation plus simple et déterminisable via des automates finis, tout en conservant l'expressivité de LTL. Intéressant pour l'interprétabilité des spécifications temporelles et les applications en synthèse réactive ou planification stochastique.",
+   "score": 8.0
+  },
+  {
+   "id": "82d2ded3b3006584",
+   "title": "Training-Free versus Training-Based Intent Classification in LLMs: Accuracy, Robustness, and Failure Modes",
+   "url": "https://arxiv.org/abs/2608.02415v1",
+   "summary": "Intent classification in Large Language Models (LLMs) involves categorizing user prompts into predefined classes. For instance, given a user prompt, the system must determine whether it primarily concerns mathematics, coding, or general text processing. Such classification enables routing prompts to specialized models optimized for specific domains, improving both accuracy and computational efficiency. In this work, we conduct a systematic study comparing training-free vs training-based approaches for intent classification. For this purpose, we consider two lightweight, training-free methods based on statistics of internal representations and compare them against MLP classifiers and linear probes. Our comprehensive empirical evaluation reveals that 1) Both training-free and training-based methods saturate easy benchmarks (mathematics vs. coding vs. natural language), 2) Training-based classifiers have an advantage on harder classification tasks (e.g. Java vs Python), and 3) Training-free methods are generally more robust to mixed-intent and adversarial prompts.",
+   "published": "2026-08-03T15:53:49+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Nan Chen, Zhouhao Yang, Soufiane Hayou"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Étude comparative systématique entre méthodes d'intent classification sans entraînement (basées sur les représentations internes des LLM) et méthodes supervisées (MLP, probes linéaires) sur des tâches de catégorisation de prompts (maths, code, etc.). Les approches sans entraînement sont plus robustes aux prompts adversariaux et aux intentions mixtes, mais moins performantes sur des tâches complexes (ex: différenciation Java/Python).",
+   "score": 8.0
+  },
+  {
+   "id": "3262845370a977b7",
+   "title": "DreamTraj: Generating 6-DoF Object Trajectories by Reading Unrendered Video Diffusion Latents",
+   "url": "https://huggingface.co/papers/2608.00486",
+   "summary": "Accurate prediction of object trajectories during manipulation is essential for closing the perception-action loop. Progress is limited on two fronts: available datasets lack fine-grained language-to-motion annotations, and existing predictors either rely on privileged inputs such as video, depth, or CAD models, or recover motion from fully generated videos through costly, error-prone perception pipelines. We close the supervision gap with the MOVE dataset, 5,038 object-centric egocentric trajectories, each paired with a fine-grained natural-language instruction rather than a coarse verb-noun label. We further propose DreamTraj, which predicts a 6-DoF object trajectory from a single RGB image and a task instruction, requiring no video, depth, or CAD model at inference: rather than generating a video, it reads motion from the internal representations of a frozen image-to-video diffusion model at an early denoising step. A lightweight flow-matching Reader decodes query-key attention tracks and pooled hidden states into relative 6-DoF poses. To our knowledge, this is the first approach to directly decode object 6-DoF trajectories from intermediate video diffusion representations rather than generated pixels. DreamTraj sets a new state of the art on both translation and rotation against forecasters that consume multi-frame or privileged inputs, and runs 4.6x faster than generate-then-extract pipelines.",
+   "published": "2026-07-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.00486"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "DreamTraj prédit des trajectoires 6-DoF d'objets à partir d'une image RGB et d'une instruction textuelle, en exploitant les latents d'un modèle de diffusion vidéo gelé, sans nécessiter de vidéo, profondeur ou CAD en inférence, avec un nouveau jeu de données MOVE pour l'entraînement.",
+   "score": 7.9
+  },
+  {
+   "id": "49e40e11c942fec7",
+   "title": "GradCuit: Credit-Assigned Gradient Flow Enables Robust and Interpretable Test-Time Latent Reasoning",
+   "url": "https://arxiv.org/abs/2608.02585v1",
+   "summary": "Optimization-based latent reasoning improves large language model outputs by optimizing instance-specific continuous states at test time while keeping model parameters frozen. Existing methods, however, typically connect these states to the reasoning trajectory through decoded tokens, making sequence-level credit assignment indirect and obscuring how latent updates shape subsequent reasoning. We introduce GradCuit (gradient through circuit), which inserts optimizable latent states at a selected Transformer layer between the hidden representations of the prompt and the generated continuation. Causal self-attention provides every continuation-token log-probability with a differentiable path to every preceding latent state through the remaining Transformer blocks, enabling reward-weighted gradients from the entire continuation to be assigned directly to the latents. Across five instruction-tuned backbones, three reasoning benchmarks, and two answer formats, GradCuit achieves an average accuracy of 64.5%, outperforming chain-of-thought prompting by 6.6 percentage points and the strongest competing method by 2.4 points. GradCuit also demonstrates greater robustness: across seven learning-rate settings, it consistently outperforms LatentSeek while reducing the standard deviation of accuracy from 1.53 to 0.82, and even its random-walk variant remains competitive with LatentSeek. For interpretability, token-level gradient attribution reveals that latent influence concentrates on reasoning-connector tokens, while layer analysis identifies early-to-middle Transformer layers as the most effective optimization space. By directly optimizing internal reasoning from outcome feedback, GradCuit opens a new axis of robust and interpretable test-time scaling, where LLMs adapt how they reason rather than merely regenerate, sample, or rerank outputs.",
+   "published": "2026-08-03T17:55:24+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhaoxin Yu, Qi Shen, Hengli Li, Zhaowei Zhang, Song-Chun Zhu, Chi Zhang"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "GradCuit améliore les capacités de raisonnement des LLMs en test-time via un mécanisme de *credit assignment* différentiable sur des états latents optimisables, permettant une attribution directe des gradients aux latents. Les résultats montrent des gains significatifs en précision (+6.6 points vs CoT) et en robustesse, tout en restant interprétable.",
+   "score": 7.7
+  },
+  {
+   "id": "257bf11625805404",
+   "title": "Agentic Commerce World: An Auditable and Verifiable Environment for Vibe Commerce",
+   "url": "https://arxiv.org/abs/2608.02441v1",
+   "summary": "In vibe coding, people describe software in natural language and delegate implementation to AI agents. By analogy, vibe commerce allows people to express buying or selling goals in natural language and delegate the corresponding tasks to agents. Commerce, however, requires independently controlled Buyer and Merchant agents to interact in a shared market while preserving their private objectives and distinct authority. We introduce Agentic Commerce World (ACWorld), an environment for evaluating such agents across ongoing transactions. Through its Vibe Commerce Protocol (VCP), ACWorld validates agent actions before updating shared transaction state and records the resulting interactions, making agent behavior auditable and evaluation reproducible. The ACWorld Benchmark contains a 200-task capability-coverage track and a 60-task large-catalog track that searches 785,022 transactable listings. Across ten models, mean scores range from 65.9% to 85.6% and from 56.1% to 91.4%, respectively. Our analysis shows that process-level evidence is necessary: final state alone can miss evaluated errors, incomplete trajectories still retain useful process signals, and large-catalog tasks expose bottlenecks across stages.",
+   "published": "2026-08-03T16:20:17+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shicheng Fan, Mingdai Yang, Duohao Wang, Canyu Chen, Yongfeng Zhang, Hua Wei"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "ACWorld propose un environnement auditable pour évaluer des agents commerciaux (acheteurs/vendeurs) dans des transactions dynamiques, avec un protocole (VCP) garantissant la reproductibilité. Benchmark couvrant 785k listings, révélant l'importance des signaux de processus vs. résultats finaux pour évaluer les agents.",
+   "score": 7.7
+  },
+  {
+   "id": "e9961f62e5220151",
+   "title": "Motion Beyond Morphology: Bootstrapping Cross-Category Motion Transfer from Abstract Motion Representations",
+   "url": "https://huggingface.co/papers/2608.01628",
+   "summary": "Video motion transfer aims to animate a target object using dynamics from a reference video. Existing formulations largely rely on fixed structural correspondence, which becomes ill-defined when reference and target objects differ substantially in morphology, articulation, or deformation mechanisms. We introduce Motion Beyond Morphology, a perspective that seeks to transfer motion beyond fixed structural correspondence, by preserving dynamics that remain meaningful across different target morphologies. To realize this, we propose a two-stage framework. Stage~I learns complementary multi-granularity abstract motion views and uses them to bootstrap cross-category video pairs that preserve transferable dynamics across diverse morphologies. Stage~II internalizes this supervision into direct reference-video-conditioned generation, removing the need for explicit motion extraction at inference. We further introduce OpenVMT-Dataset and OpenVMT-Bench for training and evaluating image- and text-conditioned motion transfer across Same, Near, and Far category gaps, and plan to release both upon acceptance. Extensive experiments demonstrate state-of-the-art motion fidelity and target preservation. Project page: https://miniz233.github.io/MotionBeyondMorphology/",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2608.01628"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "autre"
+   ],
+   "tldr": "Motion Beyond Morphology propose un cadre pour le transfert de mouvement entre objets de catégories différentes en apprenant des représentations abstraites multi-granularité, avec un nouveau jeu de données OpenVMT pour évaluer la transférabilité.",
+   "score": 7.6
+  },
+  {
+   "id": "7ca5f59d0d5945a0",
+   "title": "SWE-Touch: Benchmarking Coding Agents When Users Touch the Code",
+   "url": "https://huggingface.co/papers/2608.02499",
+   "summary": "Real-world software development requires coding agents to operate in shared workspaces where users may inspect and modify code during an ongoing task, yet existing repository-level benchmarks typically evaluate agents working alone or restrict user participation to messages. This leads us to ask: how do coding agents understand and respond to code changes in a shared workspace? We introduce SWE-Touch, a framework that stress-tests this setting through validated Counter-Edits: plausible edits to task-relevant code that conflict with task completion. SWE-Touch mines task-critical regions from multiple repair trajectories, uses a separate User Patch Generator to construct the edits, and injects them with contextual user messages when agents reach the relevant code. We evaluate nine coding models on SWE-bench Verified, with additional experiments on longer-horizon tasks from SWE-Bench Pro and DeepSWE. Counter-Edit lowers average resolve rate by 7.7 percentage points on SWE-bench Verified, with degradation also persisting on both longer-horizon benchmarks. Trajectory analysis links these failures to limited awareness of the evolving workspace: agents may retain conflicting code or replace it without sufficiently re-inspecting the repository and validating the revised code with targeted tests. These findings show that strong autonomous performance does not yet ensure the state awareness and adaptive behavior needed for shared-workspace collaboration, and point to detecting workspace changes, reconciling conflicting edits with the task, and verifying the affected behavior as key capabilities for future optimization.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2608.02499"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "SWE-Touch teste les agents de codage dans des environnements partagés où l'utilisateur modifie le code en temps réel, via des contre-édits validés. Les résultats montrent une baisse de performance de 7,7 points sur SWE-bench Verified, soulignant les limites des agents face à des espaces de travail dynamiques.",
+   "score": 7.6
+  },
+  {
+   "id": "2216a58b456facc7",
+   "title": "Roomer: Reflective Object-Grounded Model Editing and Repair for 3D Indoor Layout Synthesis",
+   "url": "https://huggingface.co/papers/2608.01973",
+   "summary": "Existing indoor layout generators produce globally plausible layouts yet may retain local violations such as collisions, out-of-bounds placements, obstructed openings, and blocked circulation. Most prior work focuses on full-scene synthesis or scene-level optimization, with limited support for identifying responsible objects and locally repairing affected regions. We present Roomer, a reflective repair framework that casts these violations as sparse, object-grounded repair problems. Roomer encodes layouts as ``RoState'' and uses ``RoReview'' to bind measured violations to implicated objects. A geometry-conditioned vision-language model planner proposes a structured local edit, while a deterministic solver validates it and generates a finite set of candidate edits when needed. Each candidate is committed only if full-scene verification confirms that it resolves the target violation without new hard violations or broken protected constraints. We train the planner on Roomer-CC, a controlled-corruption dataset that pairs faulty layouts with object-grounded violation evidence and known-feasible inverse StatePatches. Since existing benchmarks rarely assess whether physically valid layouts are usable, we introduce Roomer-Eval to assess distributional quality, physical validity, and practical usability. Experiments show that Roomer repairs residual violations while preserving valid regions, improves physical validity and usability, and transfers across external generators.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2608.01973"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "autre"
+   ],
+   "tldr": "Roomer introduit un cadre de réparation réflexive pour corriger les violations locales dans la synthèse de layouts 3D intérieurs, en liant les problèmes à des objets spécifiques et en validant les edits via un solveur déterministe et un modèle VLM conditionné par la géométrie.",
+   "score": 7.6
+  }
+ ]
+}
