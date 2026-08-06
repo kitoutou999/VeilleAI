@@ -1,0 +1,728 @@
+{
+ "date": "2026-08-06",
+ "digest": {
+  "headline": "RestoreKV et ARCHead redéfinissent l'optimisation des caches et des têtes de sortie des LLMs pour des gains significatifs sans perte de performance.",
+  "overview": "La veille du 2026-08-06 met en lumière des avancées majeures en optimisation des architectures de LLMs et en frameworks pour agents autonomes. Les travaux sur la compression, la mémoire contextuelle et l'amélioration des modèles multimodaux dominent, avec des implications concrètes pour la scalabilité et l'efficacité des systèmes. Les approches auto-supervisées et collaboratives gagnent en maturité, notamment dans les domaines de la robotique et du raisonnement long terme.",
+  "highlights": [
+   {
+    "title": "Optimisation des caches KV et des têtes de sortie",
+    "text": "RestoreKV propose une méthode de restauration des caches KV évincés via des tokens appris par distillation auto-supervisée, réduisant la dégradation des performances sous compression agressive. ARCHead compresse la tête de sortie des LLMs quantifiés en utilisant des résidus groupés INT4 et une correction basse-rang dérivée des activations, offrant un gain de stockage de 3.7-3.9x sans perte significative. Ces travaux sont cruciaux pour améliorer l'efficacité des modèles en production, notamment dans des environnements contraints."
+   },
+   {
+    "title": "Agents auto-évolutifs et frameworks long terme",
+    "text": "Self-Evolving Coding Agents et OneDayAgent introduisent des taxonomies et frameworks pour des agents capables de s'auto-améliorer et de gérer des tâches à long horizon. EvolveNet propose une méthode collaborative pour optimiser dynamiquement les *harness* des agents sans retraining centralisé. Ces approches adressent des défis clés en généralisation, mémoire contextuelle et coordination multi-étapes, essentiels pour les systèmes autonomes complexes."
+   },
+   {
+    "title": "Amélioration des modèles VLA et multimodaux pour la robotique",
+    "text": "BridgeVLA++ et Ego2Robot améliorent les modèles Vision-Language-Action (VLA) en intégrant une mémoire spatio-temporelle et en convertissant des données humaines égocentriques en données robotiques. Ces travaux réduisent la dépendance aux données annotées et améliorent la généralisation des modèles face aux variations de distribution, un enjeu critique pour la robotique autonome et les systèmes multi-modaux."
+   },
+   {
+    "title": "Raisonnement et logique modale dans les LLMs",
+    "text": "L'étude sur la logique modale révèle que les LLMs peinent à respecter les spécifications modales en prompting direct, mais s'améliorent significativement avec des méthodes de raisonnement structuré. ReflectRL exploite les trajectoires négatives pour améliorer le raisonnement via une phase de réflexion suivie de distillation. Ces résultats soulignent l'importance des méthodes de raisonnement explicite pour surmonter les limites des modèles actuels."
+   },
+   {
+    "title": "Optimisation et sparsité dans les architectures",
+    "text": "MALT introduit des préconditionneurs diagonaux pour capturer la géométrie de la courbure du paysage de perte, améliorant la convergence des optimiseurs. SparseDitto utilise des LLM pour générer des noyaux GPU optimisés pour des motifs de sparsité spécifiques, offrant un gain moyen de 2.68x. Ces avancées sont essentielles pour réduire les coûts computationnels et améliorer l'efficacité des modèles."
+   }
+  ],
+  "trend": "Les recherches actuelles convergent vers une optimisation fine des architectures existantes (caches, têtes de sortie, sparsité) et une intégration accrue de mécanismes auto-supervisés ou collaboratifs pour améliorer la généralisation et l'efficacité. Les frameworks pour agents autonomes évoluent vers des systèmes plus modulaires et adaptatifs, tandis que les modèles multimodaux et robotiques bénéficient de méthodes de prétraitement et de mémoire contextuelle pour réduire leur dépendance aux données."
+ },
+ "items": [
+  {
+   "id": "da41d0250eb001e1",
+   "title": "RestoreKV: Recovering Full-Cache Behavior Under Aggressive Query-Agnostic KV Cache Eviction",
+   "url": "https://huggingface.co/papers/2608.01247",
+   "summary": "Query-agnostic KV cache eviction compresses a context once and reuses the resulting cache for arbitrary future queries, but performance can collapse under tight budgets. Existing methods primarily improve which original KV pairs are retained. We introduce RestoreKV, which complements this selection-based formulation with learned restoration under the same total KV budget. Our key insight is that, although the information lost through eviction is context-specific, the mechanism for generating its compact complement can be shared across contexts. After context prefill, a few restore tokens attend to the full KV cache in a single LoRA-adapted pass, generating a compact, context-conditioned restore cache. The base importance scorer and eviction rule remain unchanged, and the adapters are disabled for all subsequent queries and decoding. RestoreKV is trained through parameter-efficient self-distillation from the frozen full-cache model, optimizing only 0.4% of the parameters and requiring no task-specific tuning. Across four backbones and four long-context benchmarks, RestoreKV substantially reduces compression-induced degradation. On Qwen3-4B, it improves 59 of 60 paired, budget-matched settings across five base eviction methods; at a 5% budget, it raises KVzip from 38.2 to 73.2 on RULER-4K. Applied to KVzip+, RestoreKV reaches 86.4 RULER accuracy at 16times compression on the KVPress Benchmark, while adding less than 0.5% one-time cache-construction overhead in a 32K-context evaluation. Our project page is available at https://paper.pnu-cvsp.com/RestoreKV/",
+   "published": "2026-08-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2608.01247"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Restoration des caches KV évités (RestoreKV) via des tokens de restauration appris par distillation auto-supervisée, réduisant la dégradation des performances sous compression agressive. Efficace sur 4 backbones et 4 benchmarks long-context avec seulement 0.4% de paramètres ajustés.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé par RestoreKV concerne la compression agressive et *query-agnostic* du cache KV (Key-Value) dans les modèles de langage. Cette approche, qui compresse une fois le contexte pour le réutiliser avec des requêtes arbitraires, entraîne une dégradation significative des performances lorsque le budget de compression est trop strict. Les méthodes existantes se concentrent principalement sur l'amélioration de la sélection des paires KV à conserver, sans restaurer l'information perdue lors de l'éviction.",
+    "methode": "RestoreKV introduit une approche complémentaire en combinant une sélection optimisée des paires KV avec une *restauration apprise* sous le même budget total. Après la phase de préremplissage (*prefill*), quelques *restore tokens* (jetons de restauration) effectuent une passe unique adaptée via LoRA (*Low-Rank Adaptation*) pour générer un cache de restauration compact et conditionné par le contexte. Ce mécanisme repose sur l'idée que, bien que l'information perdue soit spécifique au contexte, la méthode pour générer sa représentation compacte peut être partagée. Le modèle est entraîné via une *auto-distillation* efficace en paramètres (seulement 0,4 % des paramètres sont optimisés), sans nécessiter d'ajustement spécifique à la tâche. Les adaptateurs LoRA sont désactivés pour les requêtes et le décodage ultérieurs, préservant ainsi l'efficacité.",
+    "resultats": "RestoreKV améliore significativement les performances sous compression agressive. Sur le modèle Qwen3-4B, il surpasse 59 des 60 configurations appariées et équilibrées en budget sur cinq méthodes d'éviction de base. Par exemple, à un budget de 5 %, il fait passer la précision de KVzip de 38,2 à 73,2 sur le benchmark RULER-4K. Appliqué à KVzip+, RestoreKV atteint une précision de 86,4 sur RULER avec un taux de compression de 16×, tout en ajoutant moins de 0,5 % de surcoût ponctuel pour la construction du cache dans un contexte de 32K tokens.",
+    "limites": "Les détails sur la généralisation à des architectures ou tâches non évaluées restent flous. De plus, l'efficacité de la restauration dépend fortement de la qualité des *restore tokens* et de leur capacité à capturer l'information contextuelle perdue, ce qui pourrait limiter son applicabilité dans des scénarios très dynamiques ou bruités. Enfin, l'évaluation se concentre sur des benchmarks spécifiques, et l'impact sur des cas d'usage réels (ex. : dialogues longs) n'est pas explicitement démontré.",
+    "verdict": "RestoreKV mérite une attention particulière pour son approche innovante et ses résultats convaincants en compression de cache KV, surtout pour les applications nécessitant un équilibre entre efficacité et performance sous contraintes strictes."
+   }
+  },
+  {
+   "id": "4f30a2c951218bb3",
+   "title": "Self-Evolving Coding Agents",
+   "url": "https://huggingface.co/papers/2608.03392",
+   "summary": "Large language models are increasingly embedded in software engineering workflows as coding agents that can inspect repositories, invoke tools, execute tests, debug failures, and generate patches. Yet most existing agents remain largely static after deployment, even though software development is a dynamic, feedback-rich process in which repositories evolve, dependencies change, tests fail, and repair attempts leave reusable experience. This tension has motivated a growing body of work on self-evolving coding agents, where the agent improves its future behavior by updating its framework, memory, skills, tools, models, or collaboration structures from prior coding interactions. In this survey, we provide a systematic synthesis of this emerging area. We first define self-evolving coding agents and distinguish them from conventional coding agents and general self-evolving agents. We then develop an object-centered taxonomy that characterizes what evolves in these systems, and complement it with two orthogonal perspectives: when evolution occurs and what software-specific evidence drives it. Across the literature, we find that executable feedback, repository-level context, and coding trajectories give software engineering a distinctive role as a natural domain for agent self-evolution, but also introduce new challenges in feedback reliability, benchmark overfitting, safety, maintainability, cost, and generalization. By organizing existing work around these dimensions, this survey aims to clarify the conceptual boundaries of self-evolving coding agents and provide a foundation for designing more adaptive, reliable, and software-aware agentic systems. The papers we collect can be found at https://github.com/zhouhao1024/Awesome-Self-Evolving-Coding-Agents.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2608.03392"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Synthèse systématique des *self-evolving coding agents* (agents auto-améliorants pour le développement logiciel) : taxonomie des mécanismes d'évolution (mémoire, outils, modèles), distinction avec les agents statiques, et analyse des preuves empiriques dans la littérature.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents de codage basés sur les grands modèles de langage (LLM) sont de plus en plus intégrés dans les workflows de génie logiciel pour des tâches comme l'inspection de dépôts, l'exécution de tests ou le débogage. Cependant, ces agents restent généralement statiques après leur déploiement, alors que le développement logiciel est un processus dynamique et riche en retours (évolution des dépôts, changements de dépendances, échecs de tests, etc.). Cela crée un décalage entre la rigidité des agents et la nature évolutive des environnements logiciels.",
+    "methode": "Cette étude propose une synthèse systématique des travaux sur les *self-evolving coding agents*, des agents capables d'améliorer leur comportement futur en mettant à jour leur cadre de travail, leur mémoire, leurs compétences, leurs outils, leurs modèles ou leurs structures de collaboration à partir des interactions passées. Une taxonomie centrée sur *ce qui évolue* (ex. : mémoire, outils, modèles) est développée, complétée par deux perspectives orthogonales : *quand* l'évolution se produit (ex. : en temps réel, après une phase d'apprentissage) et *quelles preuves spécifiques au logiciel* la déclenchent (ex. : retours exécutables, contexte au niveau du dépôt, trajectoires de codage). L'analyse met en lumière le rôle unique du génie logiciel comme domaine propice à l'auto-évolution des agents, grâce à des feedbacks structurés et exploitables.",
+    "resultats": "Le contenu disponible ne fournit pas de résultats quantitatifs ou de chiffres clés précis (ex. : amélioration de la précision, réduction des erreurs). Cependant, l'étude identifie des tendances dans la littérature, comme l'utilisation de feedbacks exécutables (ex. : résultats de tests) pour guider l'évolution, ou l'importance du contexte à l'échelle du dépôt pour éviter les solutions sur-optimisées. Les défis techniques et conceptuels sont également cartographiés, mais sans métriques comparatives.",
+    "limites": "Plusieurs défis majeurs sont soulignés : la fiabilité des feedbacks (ex. : faux positifs dans les tests), le risque de surapprentissage sur des benchmarks spécifiques, les questions de sécurité (ex. : modifications non contrôlées du code), la maintenabilité des agents auto-évolutifs, et leur généralisation à des environnements logiciels variés. De plus, le coût computationnel et la complexité de mise en œuvre restent des obstacles pratiques non résolus.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique et sa taxonomie innovante, mais son utilité pratique dépendra de la capacité à surmonter les limites identifiées, notamment en matière de fiabilité et de généralisation."
+   }
+  },
+  {
+   "id": "2672e839d690bd83",
+   "title": "Ego2Robot: Scalable Robot Data Synthesis from Egocentric Human Data",
+   "url": "https://huggingface.co/papers/2608.02580",
+   "summary": "Learning generalizable robot manipulation policies requires large-scale and diverse demonstration data. Egocentric human manipulation videos offer rich scene and task diversity, and prior work has shown that retargeting and rendering such videos into robot-format data can yield effective per-task policies at small scale. However, whether this approach can provide pretraining benefits for vision-language-action models at scale remains unexplored. We present Ego2Robot, a scalable pipeline that converts egocentric human manipulation videos into robot training data through action retargeting, robot-arm visual synthesis, and multi-level quality curation. Ego2Robot supports both curated datasets and in-the-wild videos, producing 18,561 hours of robot training data spanning 15 robot morphologies, making it the largest ego-to-robot dataset to date. To evaluate generalization, we extend RoboTwin2.0 with disentangled perturbation axes covering visual appearance, scene layout, embodiment morphology, and task semantics. Experiments show that joint pretraining on Ego2Robot-synthesized and robot data consistently improves out-of-distribution generalization across multiple perturbation types, with benefits validated on real-robot deployment. Project page: https://www-ye.github.io/ego2robot_blog/",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2608.02580"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "vision"
+   ],
+   "tldr": "Pipeline *Ego2Robot* convertit des vidéos humaines égocentriques en données robotiques à grande échelle (18 561 heures, 15 morphologies) : améliore la généralisation des modèles *vision-language-action* en prétraitement.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le développement de politiques de manipulation robotique généralisables nécessite des volumes massifs de données de démonstration variées et de haute qualité. Les vidéos égocentriques de manipulation humaine offrent une diversité de scènes et de tâches, mais leur exploitation pour l'entraînement de robots à grande échelle reste un défi non résolu, notamment pour les modèles vision-langage-action (VLA).",
+    "methode": "Ego2Robot propose un pipeline scalable pour convertir des vidéos égocentriques humaines en données d'entraînement robotiques. La méthode repose sur trois piliers : (1) le *retargeting* des actions humaines vers des morphologies robotiques, (2) la synthèse visuelle du bras robotique dans les scènes, et (3) une curation multi-niveaux de la qualité des données (filtrage des artefacts, cohérence temporelle, etc.). Le pipeline gère à la fois des datasets curatés et des vidéos *in-the-wild*, couvrant 15 morphologies robotiques différentes. Pour évaluer la généralisation, les auteurs étendent RoboTwin2.0 avec des axes de perturbation désentrelacés (apparence visuelle, agencement de scène, morphologie, sémantique des tâches).",
+    "resultats": "Ego2Robot génère 18 561 heures de données d'entraînement robotique, soit le plus grand dataset de conversion égocentrique-robot à ce jour. Les expériences montrent que le pré-entraînement conjoint sur ces données synthétiques et des données robotiques réelles améliore systématiquement la généralisation *out-of-distribution* (OOD) face à divers types de perturbations. Ces bénéfices sont validés en déploiement sur robot réel, sans détails quantitatifs précis fournis dans le résumé.",
+    "limites": "Le résumé ne précise pas les métriques exactes d'amélioration (ex. gains en précision, taux de succès), ni les biais potentiels introduits par la synthèse (ex. artefacts visuels, erreurs de retargeting). La robustesse face à des scènes ou tâches très éloignées du domaine d'entraînement reste une zone d'ombre. Enfin, la scalabilité du pipeline en termes de coût computationnel n'est pas discutée.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique de la synthèse de données robotiques à grande échelle, mais nécessite une analyse critique des artefacts et des limites de généralisation avant adoption."
+   }
+  },
+  {
+   "id": "02d7acd4692b400d",
+   "title": "BridgeVLA++: A Data-Efficient, Generalizable, and Memory-Augmented Vision-Language-Action Framework for 3D Manipulation",
+   "url": "https://huggingface.co/papers/2608.05042",
+   "summary": "Leveraging pre-trained vision-language models (VLMs) to construct vision-language-action (VLA) models has emerged as a promising paradigm for 3D robot manipulation. However, existing 3D VLA methods remain data-hungry, exhibit limited generalization under distribution shifts, and lack explicit memory of past observations. These limitations hinder their application to data-scarce, open-world, and memory-dependent manipulation scenarios. Our previous work, BridgeVLA, improves data efficiency and generalization by preserving the input--output alignment of a pre-trained VLM during 3D action learning: raw point clouds are projected into multi-view images, and intermediate heatmaps are predicted before generating robot actions. In this work, we develop BridgeVLA++ by equipping BridgeVLA with a unified spatio-temporal memory architecture that models persistent spatial context and temporal interaction history. The resulting memory-augmented framework can reason over observation histories while preserving BridgeVLA's data efficiency and generalization capabilities. Extensive experiments show that our framework achieves strong performance on spatial manipulation tasks while exhibiting robust generalization. BridgeVLA++ further achieves state-of-the-art performance on two challenging memory-dependent manipulation benchmarks without sacrificing the data efficiency and generalization of the original BridgeVLA. In addition, BridgeVLA++ performs effectively in bimanual manipulation settings and is validated on an additional real-world robotic platform, demonstrating its scalability across tasks, environments, and robotic platforms. These results establish BridgeVLA++ as a unified 3D vision-language-action framework that simultaneously supports data-efficient learning, robust generalization, and effective memory-aware robot manipulation. Project website: https://bridgevla-plus.github.io/.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.05042"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "BridgeVLA++ améliore les modèles VLA (Vision-Language-Action) pour la manipulation robotique 3D en intégrant une mémoire spatio-temporelle unifiée, réduisant la dépendance aux données et améliorant la généralisation face aux variations de distribution. Intéressant pour les architectures multi-modales et la mémoire contextuelle en robotique.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le cadre BridgeVLA++ vise à résoudre trois limitations majeures des modèles Vision-Language-Action (VLA) existants pour la manipulation robotique 3D : leur besoin excessif en données d'entraînement, leur faible généralisation face à des distributions de données inconnues, et leur absence de mémoire explicite des observations passées. Ces contraintes freinent leur déploiement dans des scénarios réels où les données sont rares, les environnements dynamiques, et où la mémoire des interactions précédentes est cruciale.",
+    "methode": "BridgeVLA++ s'appuie sur une architecture unifiée de mémoire spatio-temporelle intégrée à BridgeVLA, un modèle antérieur préservant l'alignement entrée-sortie d'un VLM pré-entraîné. Les nuages de points 3D sont projetés en images multi-vues, puis des cartes thermiques intermédiaires sont prédites avant de générer les actions du robot. La mémoire spatio-temporelle modélise à la fois le contexte spatial persistant et l'historique des interactions temporelles, permettant un raisonnement sur les séquences d'observations. Cette approche combine ainsi l'efficacité en données et la généralisation de BridgeVLA avec une capacité de mémoire explicite pour des tâches complexes.",
+    "resultats": "Les expériences montrent que BridgeVLA++ atteint des performances de pointe sur deux benchmarks exigeant une mémoire des manipulations passées, sans compromettre l'efficacité en données ni la généralisation du modèle original. Le cadre démontre également une robustesse face aux variations de tâches et d'environnements, ainsi qu'une scalabilité à des configurations bimanuelles et à une plateforme robotique réelle supplémentaire. Les détails quantitatifs précis (scores, métriques) ne sont pas fournis dans le résumé disponible.",
+    "limites": "Le résumé ne mentionne pas les limites spécifiques de l'approche, mais des questions subsistent : la complexité computationnelle de la mémoire spatio-temporelle, la dépendance aux VLM pré-entraînés (biais potentiels), et la robustesse face à des environnements non structurés ou bruités. De plus, l'absence de détails sur les jeux de données utilisés ou les protocoles d'évaluation limite une analyse critique approfondie.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche unifiée combinant efficacité en données, généralisation et mémoire, mais une lecture critique des résultats détaillés et des limitations pratiques est nécessaire avant adoption."
+   }
+  },
+  {
+   "id": "d1724cd30183a42b",
+   "title": "OneDayAgent: Towards a Long-Horizon Harness for Autonomous Agents",
+   "url": "https://huggingface.co/papers/2608.05013",
+   "summary": "LLM agents are increasingly applied to open-ended everyday requests that span work, study, and life. These tasks are long-horizon, cross-environment, and multimodal, forcing the agent to preserve goals and constraints across many steps while navigating heterogeneous tools and attachments. While prior work has addressed individual failure modes such as goals drift, states loss, and context overflow, whether a single harness can manage them jointly and remain effective across backends has received less study. We present OneDayAgent, a long-horizon harness for autonomous agents. OneDayAgent turns an open-ended request into a managed execution process that decomposes tasks into bounded subtasks, maintains execution memory under context pressure, and verifies and repairs the final deliverable. We evaluate OneDayAgent on AgentIF-OneDay across 104 tasks. With the GLM-5.2 backend, OneDayAgent sets a new state of the art with an overall score of 0.821. The same harness runs across five backend LLMs from three model families, indicating the harness generalizes across backends without tuning, even as different models induce distinct execution styles under the same workflow.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2608.05013"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "OneDayAgent introduit un framework générique pour les agents autonomes à long terme, gérant la décomposition de tâches, la mémoire contextuelle et la vérification des résultats, avec une généralisation inter-modèles. Clé pour les architectures d'agents multi-étapes et la gestion de la mémoire.",
+   "score": 8.8
+  },
+  {
+   "id": "efcb864cf8a68419",
+   "title": "ToolArtist: Tool-Using Unified Multimodal Models for Agentic Image Generation",
+   "url": "https://huggingface.co/papers/2608.04436",
+   "summary": "Text-to-image (T2I) models can produce visually compelling images, yet they remain limited on open-world tasks that require complex semantic understanding, multi-step reasoning, and the integration of external world knowledge. Existing efforts introduce agent capabilities into image generation, but they either prescribe a fixed workflow or place only a subset of the open-world image generation process under agent control. Consequently, reasoning, tool invocation, and image generation are not coordinated by a single policy. We propose ToolArtist, a fully agentic image generation model obtained by post-training a Unified Multimodal Model (UMM). ToolArtist dynamically orchestrates reasoning, external tool use, and native image generation within one unified policy. During Supervised Fine-Tuning (SFT), we equip a teacher agent with search tools alongside an image-generation tool. We then convert the collected trajectories into a UMM compatible format, where the image-generation tool is concealed while the resulting generated images are retained. During Reinforcement Learning (RL), we develop an agentic RL infrastructure for UMMs and introduce Reason-Act-Draw GRPO (RAD-GRPO), which uses complementary intent and quality rewards to jointly optimize the model. Experiments show that placing the entire open-world image-generation process under an agent policy consistently outperforms approaches with fixed pipelines or only partially agent-controlled components. We release the training data and the complete post-training infrastructure.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 43,
+    "arxiv_id": "2608.04436"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "ToolArtist propose un modèle multimodal unifié (UMM) capable d'orchestrer dynamiquement raisonnement, utilisation d'outils externes et génération d'images via une politique unifiée, améliorant la complexité sémantique et la coordination des tâches open-world par rapport aux approches agentiques existantes.",
+   "score": 8.8
+  },
+  {
+   "id": "1c6fcdd5d8ff5bdc",
+   "title": "ARCHead: Activation-Metric Residual Correction for Large Language Model Output Heads",
+   "url": "https://huggingface.co/papers/2608.02703",
+   "summary": "Weight-only quantization substantially reduces the storage of large language model (LLM) transformer blocks, but practical backends often retain the final language-modeling head (LM-head) in BF16 or FP16. Quantizing this projection naively can strongly perturb the vocabulary-logit distribution. We present ARCHead, a packed LM-head compressor that combines a quantized low-rank core, group-wise INT4 residuals, and a low-rank correction fitted in an activation-derived metric. ARCHead stores no dense BF16 head and reduces persistent LM-head storage by 3.7-3.9x. On Qwen3-8B-Base, it uses 25.6% of BF16 head storage while attaining 1.007 relative perplexity; storage-matched naive INT4 yields 1.14-1.16. Replacing the BF16 head left by AWQ or bitsandbytes adds only 0.006-0.007 cross-entropy, with less than 2% throughput change in our measurements. ARCHead therefore complements block quantizers by compressing the large output projection they can leave untouched. Code is available at https://github.com/suayptalha/archead.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.02703"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "produit"
+   ],
+   "tldr": "ARCHead compresse la tête de sortie (LM-head) des LLMs quantifiés via un noyau basse-rang quantisé, des résidus groupés INT4 et une correction basse-rang dérivée des activations, réduisant le stockage de 3.7-3.9x sans perte de performance significative.",
+   "score": 8.8
+  },
+  {
+   "id": "fc319dd5ef22a515",
+   "title": "ReflectRL: Learning from Golden Negative Trajectories via Reflective-to-Direct Reasoning",
+   "url": "https://huggingface.co/papers/2608.03972",
+   "summary": "On-policy training has emerged as a powerful post-training paradigm for improving the reasoning capabilities of large language models, and is often enhanced by golden trajectories from stronger expert models. However, when the expert fails on harder problems, existing trajectory-guided methods lose their main source of supervision, and these failed trajectories are typically discarded as negative samples. We argue that such failures, which we call Golden Negative Trajectories, can still provide valuable reasoning signals when treated not as demonstrations to imitate, but as flawed trajectories to reflect upon. We identify a Reflection Advantage: for hard problems, reflecting on a flawed trajectory can be easier and more effective than solving the problem directly from scratch. Motivated by this, we propose ReflectRL, a lightweight plug-and-play framework that learns from Golden Negative Trajectories during on-policy training. ReflectRL first uses these trajectories to elicit Reflective Reasoning, then applies Reflective-to-Direct Policy Transition to transfer the acquired reasoning behavior back to Direct Reasoning. Experiments across 9 benchmarks, 4 LLM backbones, and 4 on-policy training methods show that ReflectRL consistently improves reasoning performance with minimal overhead.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.03972"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Méthode ReflectRL exploitant les trajectoires négatives (échecs d'experts) comme signaux d'apprentissage pour améliorer le raisonnement des LLM via une phase de réflexion suivie d'une distillation vers un raisonnement direct. Résultats solides sur 9 benchmarks et 4 backbones, avec une approche légère et plug-and-play.",
+   "score": 8.8
+  },
+  {
+   "id": "b51d7e6a9a6b7651",
+   "title": "Same Formulas, Different Semantics: Do Language Models Follow Modal Logic Specifications?",
+   "url": "https://arxiv.org/abs/2608.05097v1",
+   "summary": "Reasoning about necessity and possibility depends on assumptions about accessibility between worlds and about which objects exist at each one. The same inference may therefore hold under one modal system and fail under another. Evaluating language models on such problems requires testing whether their judgments follow the stated semantics rather than a familiar logic. We construct paired modal problems with identical premises and conjecture but different frame or domain conditions; automated reasoning verifies opposite labels. A balanced core prevents the semantic condition alone from revealing the answer. On this core, four of five recent models perform below the condition-only baseline under direct prompting. Yet enabling reasoning mode raises DeepSeek V4 Flash from 4.4% to 88.1% on unchanged prompts. Following stipulated modal semantics thus depends strongly on inference mode as well as model identity. When frame conditions are omitted, models often agree but fit different familiar logics best. We release the formulas, oracle artifacts, countermodels, and responses.",
+   "published": "2026-08-05T17:33:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Réemi Andrieu, Damien Sileo"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude évalue si les LLM respectent les spécifications de la logique modale (nécessité/possibilité) en testant leur capacité à distinguer des problèmes aux prémisses identiques mais aux sémantiques modales opposées. Les résultats montrent une dépendance forte au mode d'inférence, avec des performances médiocres en prompting direct mais une amélioration spectaculaire (ex. DeepSeek V4 Flash passant de 4,4% à 88,1%) en mode raisonnement.",
+   "score": 8.6
+  },
+  {
+   "id": "941c2d8fbd1612f3",
+   "title": "When Attention Goes Blind: Numerical Failure in ALiBi Positional Encodings",
+   "url": "https://huggingface.co/papers/2608.03994",
+   "summary": "We identify a previously overlooked failure mode of ALiBi positional encoding: its linear bias scaling underflows floating-point precision, which zeroes out a large fraction of attention weights and renders the affected attention heads partially blind. We analyze this failure mode, characterize its impact, and examine four mitigation strategies. We further demonstrate its occurrence in state-of-the-art pretrained models based on ALiBi. Comprehensive pretraining experiments with 148M-parameter decoder models help us to disentangle its effects from out-of-context degradation. We find that ALiBi's failure mode can substantially impair token retrieval while having only a minor effect on standard decoder benchmarks. We propose four training-time mitigation strategies and evaluate them individually and in combinations, finding that log-scaled distances yield the most consistent improvements in passkey retrieval. Despite this problem, default ALiBi slopes remain a surprisingly strong baseline, particularly for needle-in-a-haystack retrieval. Based on these findings we provide concrete recommendations on how to train models with ALiBi.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.03994"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Découverte d'un bug critique dans ALiBi (sous-écoulement des biais linéaires) causant une cécité partielle des heads d'attention, avec des solutions de mitigation (échelles logarithmiques). Analyse approfondie sur des modèles pré-entraînés et recommandations pratiques.",
+   "score": 8.5
+  },
+  {
+   "id": "dfcceb4e3e4ab0be",
+   "title": "Reasoning Core: Designing Broad Procedural Data for Completion-Supervised Reasoning Training",
+   "url": "https://arxiv.org/abs/2608.05148v1",
+   "summary": "Procedural generators produce useful verifiable reasoning problems at scale, but have received less attention as data for completion-supervised fine-tuning. We introduce Reasoning Core, a collection of 50 generators spanning mathematics, logic, planning, state tracking, formal languages, structured data, games, causality, and code, with semantic scorers, difficulty controls, and task evaluators. Under a matched completion-supervised protocol, we compare Reasoning Core with Procedural Warmup, Reasoning Gym, and SynLogic across four base-model settings and multiple training durations. In the primary 3B comparison, Reasoning Core achieves the highest mean scores on DROP, LogiQA, and ARC-Challenge, exceeding both the baseline without procedural data and all three alternative procedural collections. Task-level analyses show that semantic validity alone does not ensure training utility, highlighting compact targets and calibrated difficulty as important design factors. We ran audits combining model-assisted review, human adjudication, and regression testing. Applied throughout Reasoning Core development and to the other collections, they reveal subtle mismatches among generation, rendering, targets, and scoring, a reminder that procedural generation alone does not guarantee correctness. The library, generated datasets, and audit material are publicly available.",
+   "published": "2026-08-05T17:59:44+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Damien Sileo, Valentin Lacombe, Dimitri Kachler"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "optimisation"
+   ],
+   "tldr": "Reasoning Core propose 50 générateurs de données procédurales pour l'entraînement supervisé par complétion des LLM, couvrant mathématiques, logique et code. Les résultats montrent une amélioration significative sur DROP, LogiQA et ARC-Challenge par rapport à des approches existantes, soulignant l'importance de la validité sémantique et de la calibration de la difficulté.",
+   "score": 8.3
+  },
+  {
+   "id": "b778a50d9817efed",
+   "title": "MALT: Lightweight Curvature-Aware Muon via Diagonal Preconditioning",
+   "url": "https://arxiv.org/abs/2608.05088v1",
+   "summary": "Muon has recently emerged as a promising alternative to AdamW for language model pretraining by orthogonalizing momentum matrices using Newton-Schulz iterations. Although Muon mitigates gradient anisotropy, it does not explicitly account for the curvature geometry of the loss landscape and may therefore remain sensitive to curvature anisotropy. We bridge this gap by proposing MALT (Muon Augmented by Lightweight Two-sided Preconditioning), which uses lightweight diagonal preconditioners to reduce the sensitivity of Muon to curvature anisotropy. Specifically, MALT uses two-sided diagonal preconditioners with low memory and computational overhead to approximately capture the curvature geometry of the loss landscape. It orthogonalizes the preconditioned momentum using Newton-Schulz iterations and maps the result back to define the update direction, while norm grafting controls the update magnitude. To improve the robustness of MALT to stochastic gradient noise, we further propose MALTER (MALT with Adaptive stEpsize Rescaling). Convergence guarantees are provided for MALT in the stochastic non-convex setting. Experiments on GPT-2 Small, Medium, and Large pretraining show that the proposed methods outperform Muon while maintaining nearly the same memory footprint and wall-clock time.",
+   "published": "2026-08-05T17:26:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Tongle Wu, Huanyu Dong, Ying Sun, Ziye Ma"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "MALT améliore l'optimiseur Muon en intégrant des préconditionneurs diagonaux légers pour capturer la géométrie de la courbure du paysage de perte, réduisant ainsi la sensibilité à l'anisotropie. Les expériences sur GPT-2 montrent des gains de convergence et de performance par rapport à AdamW et Muon.",
+   "score": 8.3
+  },
+  {
+   "id": "990698fca5916fdb",
+   "title": "Provable Limits and Certified Deferral for Verbalized Uncertainty in Small Language Models",
+   "url": "https://arxiv.org/abs/2608.05064v1",
+   "summary": "Small open-weight language models increasingly run in private, offline, and cost-sensitive settings, where the key deployment question is not only what a model answers but when it should defer to a human. We study whether verbalized confidence can support risk-controlled deferral, evaluating eleven instruction-tuned models from three families, 0.5B to 14B parameters, on ARC-Challenge and TruthfulQA with 25,168 local predictions. Three theoretical results delimit what calibration can provide: strictly monotone calibration preserves the risk-coverage frontier and error-detection AUROC; temperature scaling cannot calibrate models whose confidence stays above one half while accuracy falls below it; and a Clopper-Pearson procedure converts a 200-question calibration set into a finite-sample risk certificate under an i.i.d. deployment assumption. Empirically, eight of 22 model-task pairs hit the temperature-scaling infeasibility floor within one percentage point of the predicted bound. Platt scaling reduces ECE to as low as 0.02, yet certified autonomy at a 20% risk budget is granted to only three model-task pairs and to none at 10%. We also identify and repair an answer-ordering artifact in the multiple-choice form of TruthfulQA. Calibration gives confidence semantics; certified deferral determines when small models are safe to use.",
+   "published": "2026-08-05T17:11:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jianru Shen"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "outils"
+   ],
+   "tldr": "Étude théorique et empirique sur l'utilisation de la confiance verbalisée des petits modèles de langage pour un report contrôlé vers l'humain, avec des limites prouvées sur la calibration et des résultats concrets sur des modèles de 0.5B à 14B paramètres.",
+   "score": 8.3
+  },
+  {
+   "id": "f11c2e3384c72e19",
+   "title": "SparseDitto: Customizing GPU Kernels for Different Sparsity Patterns with LLM-Based Agentic System",
+   "url": "https://arxiv.org/abs/2608.05033v1",
+   "summary": "Sparse matrix kernels are fundamental to scientific computing, graph analytics, and machine learning. Their GPU performance depends strongly on the input sparsity pattern and execution strategy. For the same SpMM on the same matrix, cuSPARSE exhibits a 350x performance gap between CSR and Blocked-ELL. Our study of multiple data formats, specialized systems, and sparse compilers shows that no single implementation consistently dominates across sparsity patterns and operators. This motivates a system that can adapt its representation, execution strategy, and hardware mapping to each workload and target GPU. We present SparseDitto, an LLM-based system that constructs a GPU kernel for each matrix, operator, and target GPU. SparseDitto supports SpMV, SpMM, and SpGEMM within a unified design framework. A lightweight additive model ranks established strategies using structural features of the input matrix. An architecture-aware planner then proposes several candidate designs. Coding and verification agents implement and refine them using measurements from the target GPU. Across three sparse operators and a diverse set of matrices, SparseDitto achieves a geometric-mean speedup of 2.68x over cuSPARSE on an NVIDIA RTX PRO 6000 GPU, with a maximum of 146.61x. On an NVIDIA H200 GPU, it achieves 2.79x, with a maximum of 78.5x. Its generated SpMM kernels also accelerate full-batch GCN training by up to 3.39x.",
+   "published": "2026-08-05T16:41:03+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shiyang Li, Guangyan Sun, Jinwei Tang, Yanzhi Wang, Mingyi Hong, Caiwen Ding"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "agents"
+   ],
+   "tldr": "Système agentique (SparseDitto) utilisant des LLM pour générer des noyaux GPU optimisés pour des motifs de sparsité spécifiques, avec un gain moyen géométrique de 2.68x sur des opérateurs sparses.",
+   "score": 8.3
+  },
+  {
+   "id": "1ab7dbd643978ef2",
+   "title": "EvolveNet: Collaborative Harness Evolution for Agent Self-Improvement",
+   "url": "https://arxiv.org/abs/2608.04968v1",
+   "summary": "The capabilities of an LLM agent depend not only on its model but on the harness: the executable program that constructs context, invokes tools, verifies results, and recovers from failure. Recent work shows that evolving the harness yields persistent improvements without updating model weights. Existing approaches, however, assume that all execution experience can be routed to a single optimizer, which evolves one harness along a sequential trajectory. Real agent ecosystems violate that assumption: users, organizations, and environments generate isolated streams of experience that cannot be pooled, so the experience most worth learning from is exactly the experience that cannot be directly centralized. We introduce EvolveNet, a paradigm of collaborative harness evolution that moves experience extraction to the data. A shared harness is broadcast to data-local agent deployments, each of which evolves it on its own workload. Only the resulting program adaptations are composed into an updated shared harness and redistributed, so that every participating agent inherits operational experience discovered by the others. By shifting the aggregation boundary from raw workloads to learned adaptations, EvolveNet keeps workloads local and allows multiple evolutionary searches to proceed concurrently with reduced serial depth. Because independently modified programs cannot be averaged like model parameters and may conflict when composed, EvolveNet introduces scope-typed, evidence-guided program aggregation. Across five settings spanning text-to-SQL, data-science coding, competitive programming, software engineering, and agentic workflows, EvolveNet improves the shared harness in all five, with the largest gains under heterogeneous workloads, and ablations attribute the improvement to composition of adaptations from different agents rather than to selecting among them.",
+   "published": "2026-08-05T15:37:18+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jun Nie, Yonggang Zhang, Qianshu Cai, Yiu-ming Cheung, Xinmei Tian, Bo Han"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "EvolveNet propose une méthode collaborative pour améliorer dynamiquement le *harness* (programme exécutable) des agents LLM en agrégeant des adaptations locales sans centraliser les données brutes. Intéressant pour l'optimisation des workflows d'agents sans retraining des modèles, avec des implications fortes sur l'efficacité des écosystèmes multi-agents.",
+   "score": 8.3
+  },
+  {
+   "id": "d31c68c3f3d04a1a",
+   "title": "K-EXAONE 2.0 Technical Report",
+   "url": "https://huggingface.co/papers/2608.04505",
+   "summary": "This technical report presents K-EXAONE 2.0, an open-weight multilingual foundation model developed by LG AI Research as a step in our effort toward global frontier-scale foundation models. Rather than training from scratch, we upcycle K-EXAONE and expand its architecture, yielding a Mixture-of-Experts (MoE) model with 750B total parameters and approximately 37B activated per token---more than three times the capacity of its predecessor. K-EXAONE 2.0 supports context lengths of up to 256K tokens and expands multilingual coverage from six to ten languages. Its training pipeline combines continual pre-training, difficulty-focused mid-training, and post-training to strengthen reasoning, agentic coding, multilingual capability, and safety grounded in Korean sociocultural contexts. Across nine evaluation categories selected to reflect the conditions of practical use, K-EXAONE 2.0 improves over K-EXAONE and remains competitive with open-weight models, showing its largest gains in agentic coding and long-context understanding and its clearest strengths in long-context retrieval and safety. Released under the Apache 2.0 license, K-EXAONE 2.0 enables the wider AI ecosystem to evaluate, deploy, adapt, and build upon it, while marking the beginning---rather than the endpoint---of our challenge toward the global frontier.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.04505"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Rapport technique de *K-EXAONE 2.0* : modèle MoE multilingue de 750B paramètres (37B activés) avec contexte étendu à 256K tokens, améliorant le codage agentique et la compréhension longue durée, et couvrant 10 langues.",
+   "score": 8.2
+  },
+  {
+   "id": "28c41d9878791f87",
+   "title": "When Teachers Mislead: Spurious-Signal-Aware On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2608.03632",
+   "summary": "On-Policy distillation (OPD) transfers teacher capabilities by supervising student-sampled trajectories with dense token-level teacher signals. Recent selective OPD methods improve this process by prioritizing signals that are confident, informative, or learnable. However, the assumptions overlook a fundamental failure mode of language models: their token-level judgments can be driven by input-agnostic language priors, formatting conventions, or stereotyped reasoning templates rather than task-specific evidence. We refer to such optimization-relevant but weakly input-grounded supervision as spurious signals in OPD, which may produce large gradients while contributing little task-improving direction. To mitigate this issue, we propose SA-OPD, a Spurious-Signal-Aware On-Policy Distillation framework that identifies and filters misleading token-level supervision based on input-groundedness and optimization impact. SA-OPD introduces a lightweight input-groundedness proxy estimating whether a token-level distillation signal truly depends on the input. It then filters only tokens that simultaneously exhibit low input-groundedness and extreme distillation divergence, thereby removing high-impact spurious updates and achieving fine-grained OPD optimization. Extensive experiments on both large language model (LLM) and vision-language model (VLM) settings demonstrate that SA-OPD consistently outperforms Vanilla OPD and competitive selective methods. These results establish input-groundedness as a key dimension for OPD supervision selection and offer a simple, effective strategy for mitigating spurious updates.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2608.03632"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "SA-OPD (Spurious-Signal-Aware On-Policy Distillation) filtre les signaux de distillation trompeurs dans les modèles de langage, basés sur leur dépendance réelle à l'entrée, améliorant l'efficacité du fine-tuning. Essentiel pour l'optimisation des modèles et la réduction des biais.",
+   "score": 8.2
+  },
+  {
+   "id": "a6c2c3c0a3835ed8",
+   "title": "Toward Skill-Native LLMs: Skill Entropy for Benchmarking and Training Long-Horizon Reasoning",
+   "url": "https://huggingface.co/papers/2608.05139",
+   "summary": "Long-horizon reasoning in recent LLMs demands that the model switch between distinct skills inside a reasoning chain, such as first doing a math derivation, then using the result to plan a schedule. We call such problems cross-skill long-horizon tasks: multi-step tasks whose steps require different reasoning skills and depend on earlier outputs. Existing benchmarks often evaluate individual skills, lacking a principled way to measure how well a model switches between skills. We address this gap from both the evaluation and training sides. We introduce Skill Entropy, a measure of the difficulty of switching from one skill to another. We then propose Skill^2-Bench, a benchmark of cross-skill long-horizon tasks built over 558 skills across 9 verifiable and open-ended domains. Each task is assigned a task-level skill-entropy score and grouped into three difficulty levels. Evaluating 8 frontier and 4 open-source models on Skill^2-Bench reveals a skill-switching gap: accuracy decreases on higher-entropy tasks. We then turn skill entropy from a benchmark scale into a training signal. We propose Skill-Entropy RL, an RL framework where the model predicts not only the answer at each step but also the skill used to produce it. The reward combines step-level correctness with a skill-entropy reward that measures the alignment between the model-predicted skill sequence and the gold skill sequence. On Qwen3-4B-Instruct and Qwen3-1.7B, Skill-Entropy RL improves the Skill^2-Bench score from 34.4% to 68.4% and from 14.6% to 40.1%, respectively, outperforming competitive baselines. The same pipeline can be applied to off-the-shelf training data such as OpenR1-Math, indicating that skill entropy is a reusable training signal. Code available at: https://github.com/Gen-Verse/Skill-Entropy-RL",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2608.05139"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "interpretabilite"
+   ],
+   "tldr": "Skill Entropy mesure la difficulté de transition entre compétences dans les tâches de raisonnement long terme, et Skill²-Bench évalue cette métrique sur 558 compétences. Permet de diagnostiquer les lacunes des modèles en cross-skill reasoning et d'orienter l'entraînement.",
+   "score": 8.2
+  },
+  {
+   "id": "5c8ab1b5b4d75fab",
+   "title": "Poly-OPD: Heterogeneous Multi-Teacher On-Policy Distillation for Capability-Selectable Flow Models",
+   "url": "https://huggingface.co/papers/2608.04349",
+   "summary": "Leading open text-to-image models often carry complementary strengths: one may lead on preference-aligned aesthetics while another follows compositional instructions more faithfully. However, differences in their autoencoders and noise schedules make it difficult to transfer these strengths across models. In this paper, we present Poly-OPD, a framework that can consolidate complementary strengths of heterogeneous teachers into a single compact flow-matching student. To bridge the incompatible latent spaces of different teachers, Poly-OPD performs on-policy distillation through a pixel bridge. Each student-generated image is re-encoded by a selected teacher's encoder and refined from a noise level matched by magnitude under the teacher's noise schedule. The resulting target is further matched to the student in frozen DINOv2 space, enabling supervision across incompatible latent spaces. To retain complementary capabilities without cross-teacher interference, Poly-OPD uses a gradient compatibility diagnostic to organize its adapters: attention LoRA modules are shared across teachers, whereas feed-forward adapters remain teacher-specific. During distillation, a gap-aware curriculum devotes more training to compositional categories where the student still falls short of the teacher. As each gap narrows, training shifts toward categories with larger remaining gaps. By distilling FLUX.1-dev and Z-Image into a 2.5B SD3.5-Medium student, Poly-OPD improves GenEval from 67.3 to 73.3, surpassing both larger teachers, and raises DrawBench HPSv3 from 9.34 to 11.35, consolidating both strengths within a switchable model.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.04349"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Poly-OPD introduit un cadre de distillation sur politique pour consolider les forces complémentaires de modèles de génération d'images hétérogènes en un seul étudiant compact, en surmontant les incompatibilités de latents via un pont pixel et des adapteurs spécifiques aux enseignants.",
+   "score": 8.2
+  },
+  {
+   "id": "4d7ea38164f8bdd0",
+   "title": "Search, Inspect, Fetch: Exploiting Boolean Retrieval for Deep-Research Agents",
+   "url": "https://huggingface.co/papers/2608.02751",
+   "summary": "Existing deep-research agents use a search-visit workflow that retrieves and reads whole pages, without considering the addressable structure that web sources expose through titles, headings, sections, and metadata. This prevents agents from directly constraining retrieval to document fields and often carries irrelevant page content into their context. We introduce SIEVE, a search-inspect-fetch interface driven by fielded Boolean retrieval (BQL). SIEVE filters candidates over document fields, ranks the admitted set, presents structure-rich result cards for inspection, and fetches only selected sections. Across three QA collections, SIEVE achieves higher accuracy than the most accurate conventional Search-Visit configuration on each collection while using 20.7-50.6% fewer tokens. Further analyses show that BQL filtering improves all tested rankers and that the accuracy-context advantage persists across retriever choices and agent backbones. Code and data are available at https://github.com/ielab/skim-search-agent.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.02751"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "rag",
+    "outils"
+   ],
+   "tldr": "SIEVE exploite la recherche booléenne par champs (BQL) pour optimiser les agents de recherche profonde, réduisant l'utilisation de tokens de 20.7-50.6% tout en améliorant la précision via une récupération ciblée et une inspection structurée des résultats.",
+   "score": 8.2
+  },
+  {
+   "id": "f1a59ade25d547f6",
+   "title": "Are the Financial Reasoning from LLMs Credible? A Real World Test over Long-Horizon Statements",
+   "url": "https://huggingface.co/papers/2607.28661",
+   "summary": "Do Large Language Models (LLMs) possess genuine structural reasoning, or merely rely on surface-level pattern matching? The financial domain, demanding numerical precision and multi-step logic over long contexts, is an ideal testbed. Existing benchmarks fail to capture real-world industrial complexity, predominantly relying on multiple-choice questions or single-hop QA over cropped tables while ignoring intricate cross-statement dynamics and temporal de-cumulation. To bridge this gap, we introduce FinIndices, a large-scale benchmark evaluating data-processing fidelity over uncropped financial statements (up to 32K tokens). Utilizing an automated synthesis pipeline with adversarial traps, FinIndices encompasses Single-Index computation and Table-Index tabulation to test complex domain, temporal, and caliber reasoning. Our evaluation reveals two severe LLM vulnerabilities. First, a \"Knowledge Bottleneck\": despite memorizing formulas during pre-training, models demonstrate fragile pattern matching. Removing explicit formula hints causes performance to collapse (e.g., Gemini-3.1-Pro drops from 70.70% to 38.22% on table tasks), exposing fatal flaws in temporal de-cumulation and stock-flow caliber mismatch. Second, a \"Structural Bottleneck\": the intense cognitive load of generating multi-metric, multi-period tables actively drains reasoning capacity. Under structural pressure, LLMs that flawlessly execute isolated derivations regress to shallow heuristics, such as fetching incorrect adjacent columns or substituting deep accounting adjustments with lazy literal arithmetic. Finally, Supervised Fine-Tuning (SFT) yields substantial zero-hint gains (+8.54% Single, +3.82% Table), validating that structured logic can be partially restored via data-centric alignment.",
+   "published": "2026-07-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2607.28661"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Benchmark FinIndices évalue le raisonnement financier des LLM sur des états financiers réels (jusqu'à 32K tokens), révélant des failles critiques (effondrement de performance sans indices explicites) et un ",
+   "score": 8.2
+  },
+  {
+   "id": "2b4a8fbd8f761438",
+   "title": "Argus: A General-Purpose Agentic Runtime for Long-Horizon Reasoning",
+   "url": "https://arxiv.org/abs/2608.05144v1",
+   "summary": "Long-horizon reasoning requires an agentic runtime that can persist when evidence supports its current approach and pivot when measurements reveal failure, hidden constraints, or a misspecified objective. We present Argus, a persistent, self-evolving runtime in which Manager, Planner, Engineer, and Reviewer execute bounded missions over durable project state. Argus separates stable user intent from operational objectives, constraints, and verification criteria, and admits memories, skills, procedures, verifiers, routing decisions, and rejected routes only after role-owned review and, when available, task-native verification. Model weights remain fixed; self-evolution occurs through persistent runtime state and control policy, with autonomous execution between operator-owned escalation points. Across seven GPT-5.5 benchmark arenas, Argus achieves about 78% on SWE-Bench Pro versus 59% for Direct Copilot while using 1.41 times the aggregate tokens. After verification-gated self-evolution, mature SWE-Bench waves use 21% fewer solve-input tokens and 15% less active workflow time per task than startup waves, while recording 34 verifier recoveries and 22 strict review-loop rescues. Argus also reaches 76.8% on AARRI-Bench and a 28.0-point gap on mathematical data synthesis, with competitive GPU-kernel and language-model-training results. Beyond benchmarks, an optimized RWKV6 kernel was merged upstream; a multi-day mathematics campaign retained falsified routes and proof-backed frontier updates; and six paper pipelines completed 254 missions with 16 stage rollbacks. These results show that a fixed-weight, self-evolving harness can revise, recover, and accumulate verified approaches while producing structured trajectories for future supervised and reinforcement learning.",
+   "published": "2026-08-05T17:58:58+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Boxiu Li, Zimo Wen, Yijia Fan, Junxiang Lei, Sufeng Guo, Jiaao Wu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Argus est un runtime agentique persistant pour le raisonnement à long terme, séparant l'intention utilisateur des objectifs opérationnels. Il atteint 78% sur SWE-Bench Pro contre 59% pour Direct Copilot, avec une réduction de 21% des tokens d'entrée après auto-évolution vérifiée.",
+   "score": 8.0
+  },
+  {
+   "id": "0264b8163ffa8e7f",
+   "title": "Chained Recursive Language Models for Multi-Iteration Reasoning",
+   "url": "https://arxiv.org/abs/2608.05124v1",
+   "summary": "Long context reasoning in large language models (LLMs) is usually constrained by the fact that a single inference trajectory has to simultaneously explore the context, store intermediate state, verify evidence, and produce the final answer. This becomes particularly difficult in tasks that require extraction, counting, ordering, or multi-hop reasoning, where an early mistake can propagate until the final response. In this work, we propose Chained Recursive Language Models (Chained RLM), an inference-time architecture, in which the same underlying model is called repeatedly as a sequence of fresh reasoning roots. Each root receives the original problem and context, but does not inherit the full conversational history. Instead, it receives a compact plain-text summary, a plain-text blackboard, and some durable task-specific artifacts written by predecessor roots. The motivation is to manage the context by chopping into partial tasks rather than one large inference response; in each staged computation, intermediate artifacts can be inspected, corrected, and extended by a later fresh inference by the same model. We describe the system model, handoff mechanism, artifact workspace, and evaluation protocol for this system. We study when fresh-context artifact continuation gives a measurable gain in accuracy over direct LLM answering even with recursive tool-calling.",
+   "published": "2026-08-05T17:50:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Purbesh Mitra, Sennur Ulukus"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Propose une architecture d'inférence itérative (Chained RLM) pour les LLM, décomposant les tâches complexes en étapes séquentielles via des 'racines de raisonnement' indépendantes. Intéressant pour améliorer la robustesse et la traçabilité des réponses multi-étapes, mais nécessite une évaluation empirique approfondie.",
+   "score": 8.0
+  },
+  {
+   "id": "d18785167f99ed01",
+   "title": "Revealed Rationality: Label-Free Evaluation and Regularization from Representation Theorems",
+   "url": "https://arxiv.org/abs/2608.05015v1",
+   "summary": "Representation theorems in decision theory establish that behavior satisfies certain axioms if and only if it can be rationalized by a well-defined objective. I argue that this ``if and only if'' structure provides a potentially useful foundation for label-free evaluation and regularization of LLMs and other AI systems. Axiom compliance can be checked from the model's own responses to synthetic choice problems, with no external labels or human feedback, and the penalties are readily computable. Because the axioms are necessary and sufficient, the resulting checks exhaust the implications of the relevant rationality standard for the elicited data: a model that passes cannot be rejected on rationality grounds by any further test of the same data. I discuss three instantiations: probabilistic coherence via a theorem of de Finetti, preference rationality via Afriat's theorem, and subjective expected utility via a theorem of Echenique and Saito (2015), each yielding a continuous penalty that is zero whenever behavior can be rationalized. Since coherence does not restrict which objective rationalizes behavior, these penalties complement rather than replace other evaluation and training signals.",
+   "published": "2026-08-05T16:21:18+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Isaiah Andrews"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Méthode d'évaluation et de régularisation des LLM sans labels, basée sur des théorèmes de représentation en théorie de la décision (cohérence probabiliste, rationalité des préférences, utilité subjective). Permet une analyse théorique rigoureuse des comportements des modèles.",
+   "score": 8.0
+  },
+  {
+   "id": "29a349df09066513",
+   "title": "ABSeeker: Training Long-Horizon Search Agents via Answer-Backtracked Credit Assignment",
+   "url": "https://huggingface.co/papers/2608.05102",
+   "summary": "Long-horizon search agents must make multiple sequential actions (steps) to search, retrieve, verify, and integrate evidence to reach a final answer. However, existing methods for training these agents typically treat all steps within a trajectory uniformly during both supervised fine-tuning (SFT) and reinforcement learning (RL), failing to distinguish useful actions from erroneous or redundant ones. In this paper, we propose Answer-Backtracked Credit Assignment (ABC), a fine-grained credit assignment framework for training long-horizon search agents by converting sparse trajectory-level outcomes into dense step-level supervision that rewards useful actions (even in failed trajectories) while suppressing erroneous or redundant actions. Specifically, given a potentially obscure query and its corresponding ground-truth answer, ABC first performs Answer-Backtracked Clue Recovery, which traces back from the answer to recover intermediate clues required to solve the question. It then applies Clue-Anchored Step Scoring to evaluate each search step against these clues, converting sparse binary outcome supervision into dense step-level rewards. Based on these rewards, we develop ABC-SFT, which reweights the loss of each turn, and ABC-GRPO, which uses the step-level scores as rewards in GRPO. Building on this framework, we train ABSeeker based on Qwen3.5-4B with only 8.5k examples. ABSeeker achieves 37.3% on BrowseComp and 39.1% on BrowseComp-ZH. With context management, the scores further improve to 55.3% and 52.9%, respectively, significantly outperforming same-scale (4B) agents and even matching the performance of larger ones (approximately 30B). These results demonstrate the effectiveness of answer-backtracked step-level credit assignment for training long-horizon search agents.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 37,
+    "arxiv_id": "2608.05102"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Méthode *ABC* pour l'entraînement d'agents de recherche longue durée : attribution fine des récompenses via *Answer-Backtracked Credit Assignment*, améliorant la distinction entre actions utiles et redondantes dans les trajectoires.",
+   "score": 7.9
+  },
+  {
+   "id": "0cfe1e90ac429be1",
+   "title": "GDPevo: Evaluating Agent Self-Evolution on Real Business Tasks",
+   "url": "https://huggingface.co/papers/2608.03764",
+   "summary": "Agent self-evolution updates an agent's persistent state from prior experience and reuses it to solve related tasks more effectively. Evaluating self-evolution is difficult: existing benchmarks provide limited coverage of economically valuable task domains, do not always design training and test tasks such that test-time gains can be attributed to training experience, and remain vulnerable to data contamination. We present GDPevo, an evolution-native benchmark grounded in GDP-related enterprise workflows, together with the fully automated data pipeline that generates it. Its core mechanism, rule hybridization, decomposes each enterprise workflow into atomic business rules, distributes subsets of these rules across training tasks, and recombines them in held-out test tasks so that test-time gains are attributable. GDPevo spans CRM, ERP, finance, healthcare, legal, and data-centric workflows. Its V1 release contains 120 tasks in 12 groups, with five training and five held-out test tasks per group. Full automation enables the pipeline to expand the suite to 240 tasks in 24 groups (V2) within two days, providing a practical response to contamination. Using GDPevo, we evaluate four agents, each comprising a harness and a model, under four supervision types. Self-evolution consistently improves held-out accuracy by up to 16.44 percentage points. But the best evolved agents remain far below the fully informed oracle ceiling of 91.6%, indicating that the self-evolution ability of current agents remains far from fully realized. We publicly release the pipeline, benchmark, and full evaluation results at https://github.com/Prism-Shadow/GDPevo.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2608.03764"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark *GDPevo* pour évaluer l'auto-évolution des agents sur des tâches business réelles (CRM, ERP, finance) : mécanisme de *rule hybridization* pour éviter la contamination des données et mesurer l'apprentissage transférable.",
+   "score": 7.9
+  },
+  {
+   "id": "7cc962b075706e88",
+   "title": "WorldCycle: Self-Verifiable Reinforcement Learning for Long-Horizon Video World Models",
+   "url": "https://huggingface.co/papers/2608.04964",
+   "summary": "Interactive video world models are essential for long-horizon planning and exploration, yet they suffer from compounding errors. Post-training methods such as reinforcement learning (RL) can improve these models, but they hit a verification bottleneck: for arbitrary action sequences, no ground-truth future state exists to measure long-term drift. Our key insight is that reversible action cycles make this verification possible: a sequence composed with its inverse must analytically return to the initial state, yielding annotation-free supervision on long-horizon correctness. Building on this, we introduce WorldCycle, a self-verifiable RL framework that constructs closed action cycles and their repeated executions from ordinary action sequences, and optimizes two complementary rewards: a spatial closure reward enforcing symmetry between mirrored forward and reverse segments, and a temporal consistency reward aligning states across repeated cycle executions. These rewards force the model to learn actions as consistent state operators rather than memorized temporal patterns, and extend naturally to out-of-distribution composite action cycles that the base model handles poorly. We further release CycleBench, a diagnostic benchmark for state-returning ability under complex action structures. WorldCycle reduces state returning drift by up to 44% and lifts composite-action accuracy nearly 4x over the base model, providing a vital foundation for physically grounded world models.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.04964"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "WorldCycle propose une méthode de RL auto-vérifiable pour les modèles de monde vidéo, utilisant des cycles d'actions réversibles pour corriger les erreurs à long terme sans supervision externe. Pertinent pour l'apprentissage de modèles de planification robustes et l'interprétabilité des actions.",
+   "score": 7.9
+  },
+  {
+   "id": "bfcfa44d9d08fed9",
+   "title": "The Personalization Mirage: How LLMs Fabricate User Profiles, and Why Self-Monitoring Misleads",
+   "url": "https://huggingface.co/papers/2608.04570",
+   "summary": "Personalized LLMs with persistent memory are increasingly deployed, yet the faithfulness of their user models remains unexamined. We study over-inference (OI): the phenomenon where LLMs fabricate user attributes beyond what evidence supports. We introduce MirageBench, comprising 150 personas balanced across stereotypical, counter-stereotypical, and neutral profiles, 6 personalization tasks spanning an ``imagination gradient'', a four-way faithfulness taxonomy operationalized by an independent judge (validated against a blind human annotator on 400 claims: Cohen's kappa = 0.863 four-class, kappa = 0.900 binary), and a leaderboard of 12 models across 7 families on 143616 judged claims. We find that over-inference is pervasive: every one of the 12 models over-infers 35%--49% of its claims (cross-model mean 41.6%; claim-weighted 41.8%), with no model in this evaluation escaping it. Most strikingly, we surface a Self-Monitoring Inversion: at the model-selection level, models' self-assessed OI is negatively rank-correlated with their judge-measured OI (rho = -0.60, p = 0.044; exploratory, wide bootstrap CI [-0.90, +0.06], n = 12). The models that report the least over-inference tend to be flagged as fabricating the most, so self-reported confidence is a misleading signal for comparing models, even though within a single model self-audit still ranks that model's own claims moderately well (AUROC 0.58--0.83). We further show that OI is task-dependent (27%--59%) and that, in a multi-turn pilot, inferred attributes accumulate approximately linearly with little revision. MirageBench positions external verification, rather than model self-report, as a more reliable foundation for trustworthy personalization.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 35,
+    "arxiv_id": "2608.04570"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "regulation"
+   ],
+   "tldr": "MirageBench révèle que les LLM sur-infèrent massivement les profils utilisateurs (41.6% en moyenne), avec une inversion des auto-évaluations (modèles se croyant moins biaisés sont plus biaisés). Critique pour la fiabilité des systèmes de personnalisation et la régulation de l'IA.",
+   "score": 7.9
+  },
+  {
+   "id": "eca69b0868b2f50d",
+   "title": "Towards Physics of Multimodal Pretraining: Knowledge Flow, Modality Synergy, Early Unification, and Recipes",
+   "url": "https://huggingface.co/papers/2608.05000",
+   "summary": "Vision offers a critical axis for advancing foundation models, driving a shift towards natively unified multimodal pretraining. Despite this momentum, the design space and the fundamental mechanisms of how modalities interact during unified training remain underexplored. We provide empirical clarity through a systematic exploration of multimodal pretraining. Our controlled experiments on both synthetic and large-scale real-world datasets yield four key insights into the physics of multimodal pretraining: (i) Knowledge Flow: We disentangle how language, visual understanding, and visual generation transfer knowledge across modalities, revealing distinct patterns of influence and asymmetry; (ii) Synergy vs. Competition: We show that data \"complexity\" largely determines whether modalities are synergistic, identify architectural choices that promote synergy: such as shared attention and normalization with modality-specific feed-forward layers, and find that these behaviors generalize across different visual tokenizer designs; (iii) Early Unification: Unifying modalities from the very early stages and training them jointly is shown to be more effective than late alignment or sequential training. This process uncovers a vision laziness phenomenon, where delayed integration leads models to rely on language priors; (iv) Recipes: We derive efficient pretraining recipes that achieve strong generative performance using only 5% of the compute budget. These core findings are subsequently validated at scale by training multiple 13.5B MoE models on 2T tokens. We hope this study provides a principled foundation for understanding and scaling multimodal pretraining.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2608.05000"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite",
+    "autre"
+   ],
+   "tldr": "Ce papier explore les mécanismes fondamentaux du pré-entraînement multimodal unifié, identifiant des insights clés sur le flux de connaissances entre modalités, la synergie vs compétition, et l'importance de l'unification précoce, avec des recettes pratiques pour optimiser les architectures.",
+   "score": 7.9
+  },
+  {
+   "id": "27db309aaef1c276",
+   "title": "When Many Answers Are Valid, Voting Fails: Symbolic Verification for Best-of-K Causal Reasoning in LLMs",
+   "url": "https://huggingface.co/papers/2608.03506",
+   "summary": "Self-consistency assumes the most frequent answer among sampled reasoning traces is the most reliable, but this can fail in causal reasoning: samples often repeat the same confounding error, and votes fragment across multiple valid answers, letting an invalid answer win despite a valid minority trace. We introduce CALVER (Causal Axiom-Level VERification), a training-free symbolic verifier that scores structured traces against Pearl's causal criteria, including -separation, backdoor adjustment, and intervention, and selects the highest-scoring candidate without consulting a reference answer. On CLEAR find-one-valid queries that admit multiple graph-valid answers, CALVER reaches 42.1% where plurality, a reward model, an LLM judge, and model confidence remain near 30% on identical frozen pools. Scaling the judge to 72B does not close the gap. In an audited clean-core subset, 11 of 21 graph-valid CALVER selections differ from the benchmark's listed answer while still satisfying the requested predicate. The advantage widens with the sampling budget and reproduces across ten published Bayesian networks, a second model family, and settings where the model must build the graph from text. CALVER also improves thresholded average-treatment-effect decisions against exact ground truth, generalizes to logic under a truth-table checker, and scores each candidate in milliseconds on CPU. CALVER needs only a causal structure, supplied outright or built from the text; wherever that holds, selection can aggregate via causal validity.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.03506"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "benchmark"
+   ],
+   "tldr": "CALVER introduit un vérificateur symbolique sans entraînement pour évaluer les traces de raisonnement causal selon les critères de Pearl, surpassant les méthodes de vote standard (pluralité) sur des requêtes à réponses multiples valides, avec une robustesse confirmée sur plusieurs réseaux bayésiens.",
+   "score": 7.9
+  }
+ ]
+}
