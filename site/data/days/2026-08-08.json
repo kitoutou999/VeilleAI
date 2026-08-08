@@ -1,0 +1,759 @@
+{
+ "date": "2026-08-08",
+ "digest": {
+  "headline": "DataSpace et HERA établissent de nouveaux benchmarks pour les agents data et l'adaptation multilingue des LLM, marquant une avancée dans l'évaluation et la spécialisation des systèmes IA.",
+  "overview": "La veille du 2026-08-08 met en lumière des travaux structurants sur l'évaluation des agents (DataSpace, HarnessOpt-Bench) et l'adaptation des modèles à des langues ou domaines spécifiques (HERA, OPD²). Les contributions en robotique et multimodalité soulignent aussi une recherche active sur la généralisation et la robustesse des architectures.",
+  "highlights": [
+   {
+    "title": "Benchmarking des agents data et optimisation des systèmes agentiques",
+    "text": "DataSpace introduit un benchmark de 410 tâches pour évaluer des agents capables de produire des résultats tabulaires vérifiables à partir de données hétérogènes (CSV, JSON, PDF, vidéo), utilisé pour le KDD Cup 2026. En parallèle, HarnessOpt-Bench propose un protocole pour optimiser automatiquement l'orchestration des systèmes agentiques, révélant des écarts de performance significatifs entre modèles frontier. Ces travaux adressent un besoin critique d'évaluation reproductible et d'optimisation systématique des architectures agentiques."
+   },
+   {
+    "title": "Adaptation multilingue et domaine-spécifique des LLM",
+    "text": "Le benchmark HERA et l'adaptation de Nemotron pour le grec moderne démontrent des gains majeurs (nDCG@10 passant de 0.362 à 0.835) après fine-tuning sur 65 773 paires grecques, soulignant l'importance de l'adaptation domaine-spécifique (juridique, finance). OPD², une méthode de distillation sur politique pour le raisonnement mathématique multilingue, réduit l'écart de performance entre l'anglais et des langues comme le coréen ou le japonais, confirmant que les techniques d'optimisation ciblées améliorent la généralisation."
+   },
+   {
+    "title": "Robotique : généralisation cross-embodiment et vulnérabilités des VLA",
+    "text": "DyPES-VLA combine des dynamiques partagées et un contrôle spécifique à l'embodiment pour entraîner des politiques de manipulation robotique sans alignement manuel des actions, améliorant la généralisation. À l'inverse, DRIFT révèle une vulnérabilité critique des modèles VLA basés sur flow-matching, où une attaque par patch adversarial peut compromettre près de 100% des tâches résolubles, exposant des risques de sécurité dans les politiques visuo-motrices."
+   },
+   {
+    "title": "Raisonnement temporel et multimodalité",
+    "text": "ChronoVision améliore le raisonnement temporel visuel des LLM via une architecture multimodale utilisant la reconstruction d'états latents et une attention sémantique, atteignant 74.8% de précision sur le benchmark Vbvr-VQA. Activity Frames propose un pipeline déterministe pour compiler l'activité écran en mémoire structurée pour agents, réduisant la taille des données de 86x tout en améliorant la précision des réponses (98.4%). Ces travaux illustrent des progrès dans l'alignement entre modalités et la gestion efficace des données."
+   },
+   {
+    "title": "Outils et frameworks pour agents et workflows",
+    "text": "Pinvou-agent et deer-workflow offrent des solutions open-source pour l'automatisation de tâches et l'orchestration d'agents, avec des architectures modulaires et des intégrations d'outils. RESUME CONTRACT formalise les propriétés de conformité pour la persistance et la reprise d'exécution dans les systèmes agentiques, avec une vérification formelle via TLA+, adressant un besoin de robustesse dans les workflows critiques."
+   }
+  ],
+  "trend": "Les avancées récentes confirment une tendance vers des systèmes IA plus spécialisés, évaluables et robustes, avec une attention accrue portée aux benchmarks reproductibles, à l'adaptation multilingue/domaine-spécifique, et à la sécurisation des architectures. La robotique et la multimodalité restent des champs actifs pour la généralisation et l'interprétabilité."
+ },
+ "items": [
+  {
+   "id": "2822ea2907063a83",
+   "title": "DataSpace: Benchmarking Data Agents for Verifiable Analytics over Heterogeneous Workspaces",
+   "url": "https://huggingface.co/papers/2608.03451",
+   "summary": "Data agents enable natural-language analytics over organizational workspaces, where relevant evidence may be scattered across databases, structured files, long documents, and multimedia. Existing benchmarks largely isolate structured querying, retrieval, or open-ended analysis, leaving heterogeneous evidence discovery, complete tabular outputs, and deterministic evaluation insufficiently unified. We introduce DataSpace, a benchmark in which data agents produce verifiable tabular results from task-local heterogeneous workspaces. It contains 410 cross-language tasks and 7,439 artifacts totaling 15.01 GB across CSV, JSON, SQLite, Markdown, PDF, and video. DataSpace also served as the official evaluation benchmark for the KDD Cup 2026 Data Agents for Complex Data Analysis competition. Each agent receives only a question and workspace and returns the complete requested tabular result. We construct DataSpace with DataSpace-Builder, an execution-grounded framework comprising cross-language transformation, constraint-aware relational sampling, modality routing and artifact rendering, and human review and task repair by 11 domain experts. A deterministic evaluator performs header-invariant column alignment, type- and precision-aware normalization, and order-aware row comparison. Across six recently released frontier multimodal models and five widely used agent harnesses, the best accuracy reaches 66.34%, while harness choice creates a 15.36-point spread with the backbone fixed. Multimodal evidence integration and joins consistently reduce accuracy across all six backbones. These results show that DataSpace remains unsaturated and identify key challenges for improving data-agent reliability.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2608.03451"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark *DataSpace* pour évaluer des agents capables de produire des résultats tabulaires vérifiables à partir de données hétérogènes (CSV, JSON, PDF, vidéo), avec 410 tâches et 7 439 artefacts, utilisé comme base du KDD Cup 2026.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le benchmark DataSpace vise à résoudre le défi de l'analyse verifiable et unifiée de données hétérogènes au sein d'espaces de travail organisationnels. Actuellement, les outils d'analyse en langage naturel peinent à agréger et traiter des preuves dispersées dans des bases de données, fichiers structurés, documents longs ou contenus multimédias, tout en garantissant des résultats tabulaires complets et évaluables de manière déterministe.",
+    "methode": {
+     "approche_generale": "DataSpace propose un benchmark où des agents de données génèrent des résultats tabulaires vérifiables à partir de tâches locales impliquant des espaces de travail hétérogènes. Les tâches couvrent 410 scénarios multilingues et 7 439 artefacts (15,01 Go) incluant CSV, JSON, SQLite, Markdown, PDF et vidéos.",
+     "cadre_technique": "Le benchmark est construit via DataSpace-Builder, un framework ancré dans l'exécution, combinant : (1) transformation cross-language pour uniformiser les données, (2) échantillonnage relationnel contraint pour préserver la cohérence, (3) routage modal et rendu d'artefacts pour gérer les différentes sources, et (4) révision humaine par 11 experts pour valider et corriger les tâches.",
+     "evaluation": "Un évaluateur déterministe assure l'alignement des colonnes (indépendamment des en-têtes), la normalisation des types et précisions, et une comparaison des lignes sensible à l'ordre. Cela permet une mesure objective des performances des agents."
+    },
+    "resultats": {
+     "performances": "Le meilleur modèle atteint une précision de 66,34 % sur DataSpace, mais le choix du *harness* (cadre d'agent) introduit une variabilité de 15,36 points pour un même modèle de base. L'intégration de preuves multimodales et les opérations de jointure réduisent systématiquement la précision, quel que soit le modèle utilisé.",
+     "contexte": "DataSpace a servi de benchmark officiel pour la compétition KDD Cup 2026, soulignant son utilité pour évaluer des agents dans des scénarios réalistes. Les résultats montrent que le benchmark reste non saturé, avec des marges d'amélioration significatives."
+    },
+    "limites": {
+     "heterogeneite": "Bien que le benchmark couvre plusieurs modalités, la représentativité des artefacts (ex. : vidéos) et leur poids relatif dans les tâches réelles pourraient être discutés. Les performances chutent particulièrement sur les données multimodales, suggérant un biais vers les formats structurés.",
+     "evaluation": "L'évaluateur déterministe, bien que rigoureux, pourrait ne pas capturer certaines nuances (ex. : approximations acceptables dans des contextes métiers). La réparation manuelle des tâches par des experts introduit aussi un risque de subjectivité."
+    },
+    "verdict": "DataSpace mérite une attention particulière pour son approche systématique et réaliste de l'analyse de données hétérogènes, mais ses limites en termes de diversité modale et de généralisation invitent à une adoption critique et à des travaux complémentaires."
+   }
+  },
+  {
+   "id": "a7461c97c0490b2f",
+   "title": "Teaching Nemotron Greek: Mining a Corpus, Adapting Retrieval, and Grounding Generation for Modern Greek across Specialist Domains",
+   "url": "https://huggingface.co/papers/2608.05138",
+   "summary": "Modern Greek is absent from NVIDIA's Nemotron retrieval models and from major multilingual retrieval benchmarks, despite being important for retrieval-augmented generation (RAG) in legal, energy, financial, and medical applications. We present an end-to-end adaptation of the Nemotron retrieval stack for Modern Greek, including corpus mining, synthetic supervision, retrieval model training, reranker adaptation, reader fine-tuning, and a new benchmark called HERA. Our study shows that a parameter-free BM25 baseline outperforms several off-the-shelf multilingual dense retrieval models on specialist Greek corpora. After fine-tuning on 65,773 Greek retrieval pairs, a Nemotron 1B embedder improves nDCG@10 from 0.362 to 0.835 and substantially outperforms its unadapted counterpart. The learned language competence transfers to general-domain Greek, although the advantage over BM25 remains domain-dependent. We further adapt a cross-encoder reranker and demonstrate consistent improvements across specialist domains. Finally, we LoRA-tune a Nemotron 30B-A3B mixture-of-experts reader for grounded generation, increasing judged answer correctness from 29.4% to 66.9% while significantly improving faithfulness and citation quality. We also introduce HERA, the first large-scale Greek benchmark for retrieval-augmented generation, and release our adapted models and benchmark to support future research on Greek-language RAG systems.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2608.05138"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "rag",
+    "benchmark"
+   ],
+   "tldr": "Adaptation d'un modèle de retrieval Nemotron pour le grec moderne, incluant un nouveau benchmark (HERA) et des gains significatifs (nDCG@10 passant de 0.362 à 0.835) après fine-tuning sur 65 773 paires grecques. Montre l'importance de l'adaptation domaine-spécifique pour les LLM dans des secteurs comme le juridique ou la finance.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde l'absence du grec moderne dans les modèles de récupération (retrieval) de NVIDIA Nemotron et dans les principaux benchmarks multilingues, malgré son importance pour des applications critiques comme le juridique, l'énergie, la finance et la médecine. Le défi consiste à adapter des systèmes de *Retrieval-Augmented Generation* (RAG) pour cette langue, en comblant un vide dans les outils existants.",
+    "methode": {
+     "etapes": [
+      "1. **Mining de corpus** : Collecte et préparation d'un corpus spécialisé en grec moderne pour l'entraînement.",
+      "2. **Supervision synthétique** : Génération de paires de requêtes-réponses pour entraîner les modèles de récupération.",
+      "3. **Adaptation du modèle de récupération** : Fine-tuning d'un *embedder* Nemotron 1B sur 65 773 paires grecques, en partant d'une base multilingue.",
+      "4. **Reranker cross-encoder** : Adaptation d'un reranker pour améliorer la pertinence des résultats récupérés.",
+      "5. **Fine-tuning du lecteur** : Utilisation de *LoRA* pour ajuster un modèle Nemotron 30B-A3B (mixture-of-experts) afin d'améliorer la génération ancrée dans les documents récupérés.",
+      "6. **Benchmark HERA** : Création du premier benchmark à grande échelle pour évaluer les systèmes RAG en grec moderne."
+     ],
+     "details_techniques": {
+      "baseline": "Un modèle BM25 (sans paramètres) a servi de référence, surpassant plusieurs modèles denses multilingues prêts à l'emploi.",
+      "architecture": "Nemotron 1B pour l'*embedding* et Nemotron 30B-A3B (MoE) pour la génération, avec des techniques comme LoRA pour l'efficacité.",
+      "données": "65 773 paires de récupération grecques utilisées pour le fine-tuning, couvrant des domaines spécialisés."
+     }
+    },
+    "resultats": {
+     "recuperation": "Le fine-tuning du modèle Nemotron 1B a amélioré le *nDCG@10* de 0,362 à 0,835, surpassant largement sa version non adaptée.",
+     "generation": "Le modèle lecteur fine-tuné a augmenté le taux de réponses jugées correctes de 29,4 % à 66,9 %, avec des gains significatifs en fidélité et qualité des citations.",
+     "transfert": "Les compétences acquises en domaine spécialisé se transfèrent partiellement au grec général, mais l'avantage sur BM25 reste dépendant du domaine.",
+     "benchmark": "HERA fournit une référence pour évaluer les systèmes RAG en grec, comblant un manque dans les évaluations multilingues."
+    },
+    "limites": {
+     "dependance_domaine": "Les performances restent variables selon les domaines, suggérant que l'adaptation n'est pas uniformément efficace.",
+     "generalisation": "L'avantage du modèle dense sur BM25 n'est pas systématique, ce qui soulève des questions sur la robustesse de l'approche.",
+     "evaluation": "Les métriques comme le *nDCG* ou la *correctness* jugée sont subjectives et pourraient masquer des biais dans les données ou les évaluations."
+    },
+    "verdict": "Cette publication mérite une attention particulière pour son approche systématique et ses résultats concrets, mais son applicabilité en production dépendra de la validation sur des cas d'usage réels et variés."
+   }
+  },
+  {
+   "id": "f607c0f3bd13009c",
+   "title": "Weights or Skills? A Survey of Robot-Learning Techniques: from Action-Predicting Weights to Robots that Write their Own Skills",
+   "url": "https://huggingface.co/papers/2608.01851",
+   "summary": "Robot learning is splitting into two bets: policies that bake competence into frozen weights (vision-language-action, or VLA, models), and agents that write and refine their own executable skills as code. This survey organises the field around that axis of weights versus skills. Its central analytical contribution is a deep-dive that arranges code-as-policy methods by their degree of self-improvement, from zero-shot program synthesis, through closed-loop self-repair and persistent skill memory, to the sparsely populated cell in which execution feedback, skill memory, and evolutionary search combine into one open-ended loop; only a few very recent systems (for example ASPIRE, ENPIRE, and RoboClaw) occupy that cell. We map the complementary \"skills\" pole, from unsupervised reinforcement-learning skill discovery to large-language-model skill libraries, and show that the word \"skill\" is used in at least five distinct senses, of which only the code sense self-improves without gradient updates. We then connect the taxonomy to the emerging skill economy: commercial robot-skill marketplaces now distribute one-tap skills across robots but ship only static playback, which surfaces open problems of adaptation, cross-embodiment portability, provenance, safety verification, composition, and standardisation. This is a deliberately focused survey. Rather than cataloguing the field exhaustively, it examines 77 representative systems across six technique families through one taxonomy and a set of contrast tables, and it supplies operational definitions of the self-improvement mechanisms together with a statement of what each family cannot do.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.01851"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "Enquête structurante sur les approches de *robot-learning* opposant modèles à poids figés (VLA) et agents générant leurs propres compétences en code, avec une taxonomie des méthodes auto-améliorantes et une analyse des limites des marchés de compétences robotiques actuels.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde la fragmentation actuelle des approches en apprentissage robotique, où deux paradigmes s'opposent : d'une part, les modèles à poids figés (comme les VLA, *Vision-Language-Action*) qui intègrent des compétences pré-entraînées, et d'autre part, les agents capables de générer et d'affiner dynamiquement leurs propres compétences sous forme de code exécutable. Le problème central est de clarifier les avantages, limites et complémentarités de ces approches pour guider les recherches futures vers des systèmes robotiques plus autonomes et adaptables.",
+    "methode": "L'étude propose une taxonomie binaire (*weights* vs *skills*) pour classer 77 systèmes représentatifs en six familles techniques. Pour les *skills*, elle analyse les méthodes selon leur degré d'auto-amélioration : de la synthèse de programmes *zero-shot* (sans rétroaction) à des boucles ouvertes combinant rétroaction d'exécution, mémoire de compétences et recherche évolutionnaire (ex. : ASPIRE, ENPIRE, RoboClaw). Les *weights* sont examinés via les VLA, où les compétences sont encodées dans des paramètres figés. La publication définit aussi cinq sens distincts du terme *skill*, dont seul le sens *code* permet une auto-amélioration sans mises à jour de gradients. Des tableaux comparatifs et des définitions opérationnelles des mécanismes d'auto-amélioration structurent l'analyse.",
+    "resultats": "Les résultats mettent en lumière des lacunes critiques : peu de systèmes atteignent une auto-amélioration en boucle ouverte (seuls quelques travaux récents y parviennent), et les *skill marketplaces* commerciales se limitent à des compétences statiques, sans adaptation ni portabilité inter-robots. Aucune métrique quantitative (ex. : taux de succès, efficacité) n'est fournie dans le résumé disponible, mais la taxonomie révèle des défis techniques non résolus, comme la vérification de sécurité ou la composition de compétences.",
+    "limites": "Le contenu disponible ne permet pas d'évaluer la robustesse empirique des systèmes cités (ex. : performances réelles, généralisation). La taxonomie, bien que structurante, pourrait occulter des hybridations prometteuses entre *weights* et *skills*. Enfin, l'absence de benchmarks standardisés limite la comparabilité des approches, et le focus sur 77 systèmes (non exhaustifs) introduit un biais de sélection.",
+    "verdict": "Cette publication mérite une attention critique pour son cadre analytique original, mais son utilité dépendra de la validation empirique des hypothèses et de l'évolution des systèmes auto-améliorants en conditions réelles."
+   }
+  },
+  {
+   "id": "68cce4f7f2bafe9b",
+   "title": "HarnessOpt-Bench: Evaluating LLMs at Harness Optimization",
+   "url": "https://huggingface.co/papers/2608.06301",
+   "summary": "As LLMs are increasingly deployed within agentic systems, their capabilities depend not only on the model weights but also on the harness: the prompts, tools, control flow, memory, and orchestration code surrounding them. This makes automated harness optimization -- the iterative and evaluation-guided improvement of a harness by an AI system -- both an important route to improving AI systems and a demanding capability for AI systems themselves. Yet the community lacks a common protocol for measuring how well frontier LLMs perform at this task. We introduce HarnessOpt-Bench, a benchmark for end-to-end harness optimization under expensive and stochastic evaluation. An optimizer, an LLM paired with a coding harness, receives a target agent's seed harness, graded evaluation feedback, and a fixed target-evaluation budget. It edits the harness and nominates a final candidate, which is scored by its normalized gain over the seed on a held-out test partition that remains inaccessible throughout search. A trusted execution environment enforces the evaluation boundary, meters target-agent resource use, and preserves candidate versions for audit. We evaluate 5 frontier LLMs as optimizers both under a shared coding harness and under their native harnesses across 4 downstream tasks, over 111 scored runs. Experiment results show that optimizer models separate more than the coding harnesses they act through, native harnesses are not consistently superior, and gains vary substantially across tasks and seed regimes. These results establish harness optimization as a measurable and discriminative capability with large space for improvement.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2608.06301"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "HarnessOpt-Bench introduit un protocole pour évaluer la capacité des LLM à optimiser automatiquement des 'harness' (orchestration, prompts, outils) dans des systèmes agentiques, avec un budget d'évaluation fixe et des métriques de gain normalisé. Une évaluation de 5 LLM frontier montre des résultats contrastés, soulignant un angle critique pour l'optimisation des systèmes IA.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les systèmes d'agents basés sur les LLMs (Large Language Models) dépendent non seulement des poids du modèle, mais aussi de l'infrastructure environnante appelée 'harness' (prompts, outils, flux de contrôle, mémoire et code d'orchestration). Le problème réside dans l'absence de protocole standardisé pour évaluer la capacité des LLMs à optimiser automatiquement ces 'harness', une tâche cruciale pour améliorer les performances des systèmes d'IA tout en étant elle-même complexe à réaliser pour les modèles actuels.",
+    "methode": "HarnessOpt-Bench propose un benchmark pour évaluer l'optimisation de bout en bout des 'harness' dans des conditions d'évaluation coûteuses et stochastiques. Un optimiseur (un LLM couplé à un 'harness' de codage) reçoit un 'harness' initial d'un agent cible, des retours d'évaluation notés, et un budget fixe pour les évaluations cibles. Il modifie le 'harness' et soumet un candidat final, évalué par son gain normalisé par rapport à la version initiale sur un ensemble de test caché. Un environnement d'exécution de confiance (trusted execution environment) garantit l'intégrité des évaluations, mesure l'utilisation des ressources de l'agent cible et conserve les versions des candidats pour audit. Cinq LLMs de pointe ont été testés en tant qu'optimiseurs, à la fois avec un 'harness' de codage partagé et avec leurs 'harness' natifs, sur quatre tâches en aval, totalisant 111 exécutions notées.",
+    "resultats": "Les résultats montrent que les modèles optimiseurs se différencient davantage que les 'harness' de codage qu'ils utilisent. Les 'harness' natifs ne sont pas systématiquement supérieurs, et les gains varient considérablement selon les tâches et les configurations initiales. Ces observations confirment que l'optimisation de 'harness' est une capacité mesurable et discriminante, mais avec un potentiel d'amélioration significatif.",
+    "limites": "Le contenu disponible ne permet pas d'identifier clairement les limites spécifiques du benchmark ou des modèles testés. On peut cependant questionner la généralisabilité des résultats à d'autres tâches ou environnements, ainsi que la robustesse des évaluations face à des biais potentiels dans les retours d'évaluation ou les configurations initiales.",
+    "verdict": "HarnessOpt-Bench mérite une attention particulière pour son approche systématique et technique de l'optimisation des 'harness', un enjeu critique pour l'évolution des systèmes d'agents basés sur les LLMs."
+   }
+  },
+  {
+   "id": "6dc07cb4d3ce58aa",
+   "title": "DyPES-VLA: Learning Shared Dynamics Priors and Embodiment-Specific Control for Cross-Embodiment Manipulation",
+   "url": "https://huggingface.co/papers/2608.06374",
+   "summary": "Vision-Language-Action (VLA) models have become a powerful paradigm for robot manipulation, but training a single generalist policy for heterogeneous robot embodiments remains an open problem. Existing methods have two main limitations. First, they underuse dynamics priors shared across diverse visual and interaction data, limiting cross-embodiment transfer. Second, they require extensive manual preprocessing to convert embodiment-specific actions into a common format. To overcome these limitations, we propose DyPES-VLA, a cross-embodiment VLA that learns shared Dynamics Priors and Embodiment-Specific control. First, we learn shared dynamics priors by training the vision-language model (VLM) with a future-prediction objective on cross-embodiment data, driving the shared query representation to capture object motion, contact, and interaction-induced scene changes. Second, an embodiment-specific Mixture-of-Experts (MoE) action head translates these shared dynamics priors into executable controls directly in each embodiment's native action space, without manually pre-aligning heterogeneous actions into a common format. This head shares attention layers to capture common temporal action structures, while its embodiment-specific feed-forward experts resolve the unique kinematic constraints and control semantics of distinct embodiments. As a generalist policy, our \\ourmethod achieves state-of-the-art performance across simulation and real-world evaluations, reaching 98.0% success on LIBERO, 59.25% on RoboCasa-GR1, and 89.02% on RoboTwin~2.0.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2608.06374"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "DyPES-VLA combine des dynamiques partagées et un contrôle spécifique à l'embodiment pour entraîner des politiques de manipulation robotique cross-embodiment sans alignement manuel des actions. Le modèle utilise un MoE pour traduire les dynamiques latentes en actions natives, améliorant la généralisation sans données supplémentaires.",
+   "score": 8.8
+  },
+  {
+   "id": "0cf2b339d8c94572",
+   "title": "On-Policy Delta Distillation for Multilingual Math Reasoning",
+   "url": "https://huggingface.co/papers/2608.05802",
+   "summary": "On-Policy Distillation (OPD) is emerging as a promising alternative to reinforcement learning for LLM post-training, yet its effectiveness in multilingual settings remains underexplored. We study OPD and its advanced variant, On-Policy Delta Distillation (OPD^2), for mathematical reasoning in English, Korean, and Japanese. OPD^2 improves OPD by using the probability gap between a post-trained teacher and its base model as the learning signal. Experiments with Qwen3 show that OPD^2 consistently outperforms the original OPD, with particularly strong improvements in Korean and Japanese, and generally narrows the English-Korean performance gap. We further find that English-only OPD can also increase performance for Korean and Japanese, but often shifts the responses toward English, highlighting the importance of multilingual data to preserving target-language responses.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2608.05802"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "OPD², une variante de distillation sur politique pour le raisonnement mathématique multilingue (anglais, coréen, japonais). Montre des gains significatifs, notamment en coréen/japonais, et réduit l'écart de performance avec l'anglais. Aligné avec les axes LLM et optimisation.",
+   "score": 8.5
+  },
+  {
+   "id": "6496d097f3098450",
+   "title": "ChronoVision: Temporal Reasoning via Latent State Reconstruction",
+   "url": "https://huggingface.co/papers/2608.05631",
+   "summary": "Multimodal large language models excel at passive perception but struggle with complex visual cognitive tasks requiring multi-step temporal reasoning. This degradation largely stems from the inherent ambiguity of language-based reasoning, which often fails to accurately articulate continuous visual transformations. To address this, we propose ChronoVision, a multimodal framework designed to align visual logic with latent imagery. During supervised fine-tuning, a Reconstructive Visual Head predicts the latent representation of the final transformed state, while an ROI Attention Locating module focuses the model on key visual evidence via semantic span queries. In post-training, we apply reinforcement learning with an implicit process grounding mechanism, guided by a composite reward function that evaluates outcome correctness, latent process alignment, and unsupervised visual focus. Furthermore, we introduce Vbvr-VQA, a novel dataset that evaluates temporal tracking by reformulating video reasoning into a strict image-ordering task. Experiments demonstrate that ChronoVision achieves state-of-the-art performance on Vbvr-VQA with 74.8% in-domain and 71.6% out-of-domain accuracy, alongside a strong 55.0% accuracy on IntPhys2, a highly challenging cross-domain benchmark.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 30,
+    "arxiv_id": "2608.05631"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "ChronoVision propose une architecture multimodale pour améliorer le raisonnement temporel visuel des LLM via la reconstruction d'états latents et un mécanisme d'attention basé sur des requêtes sémantiques. Le modèle atteint 74.8% de précision in-domain et 71.6% out-of-domain sur le nouveau benchmark Vbvr-VQA, démontrant une avancée dans l'alignement entre logique visuelle et langage.",
+   "score": 8.5
+  },
+  {
+   "id": "2c644658dd54d84d",
+   "title": "Activity Frames: Deterministic Screen-Activity Compilation for Agent Memory and Replay",
+   "url": "https://huggingface.co/papers/2608.05784",
+   "summary": "Computer-use agents pay full frontier inference to re-derive routines their user has already performed, because an agent's memory today records what the user said, not what the user did. We compile passively captured screen activity into agent memory with a deterministic, zero-model pipeline: it segments a local capture stream into typed activity frames, bounded episodes carrying application, site, timing, input volume, and evidence pointers back to the raw rows, with no model in the loop, so the output is byte-identical, cacheable, and mechanically auditable. On one professional's single-user corpus of 128,756 frames over 51 active days, the compiler reduces a day of raw capture to a prompt-ready context block 86x smaller in 68 ms, and an agent reading that block answers questions about the day at 98.4% accuracy (Wilson 95% CI 91.7-99.7%) against an independent oracle, versus 66-80% for an LLM summary of the same capture, a mid-tier model reading the block matching a frontier one. The same compiler doubles as a demand-side cost instrument. Read off passive, pre-delegation human activity rather than agent rollouts, it supplies two parameters that agent-cost models assume but, to our knowledge, have not measured: the Routine Overhead Ratio R and the routine recurrence h. We report first values of R, a modeled upper bound, at 60-343x, and a delegable recurrence of 9.0% in-sample and 7.7% out-of-sample, for a realistic all-fleet token ceiling near 8%; a compiled routine replays deterministically with the model out of the loop, demonstrated live at zero model tokens on a guard-matched hit. Schema, compiler, and evaluation harness are open.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.05784"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Pipeline *déterministe et sans modèle* pour compiler l'activité écran en mémoire structurée pour agents, réduisant 86x la taille des données tout en améliorant la précision des réponses (98.4% vs 66-80% pour des résumés LLM) et offrant un outil de mesure des coûts computationnels.",
+   "score": 8.2
+  },
+  {
+   "id": "eab60724457f4185",
+   "title": "DRIFT: Derailing Denoising Trajectories of Flow-Matching VLAs with Adversarial Patch Attack",
+   "url": "https://huggingface.co/papers/2608.03207",
+   "summary": "Flow-matching vision-language-action (VLA) models such as pi0 generate robot actions by integrating a learned denoising velocity field, and have been reported to resist adversarial perturbations that readily fool autoregressive VLAs. We show that this robustness is largely illusory: it stems from prior attacks ignoring the multi-step denoising ODE. We introduce DRIFT (Denoising Redirection via Input perturbation of the Flow-matching Trajectory), a test-time universal adversarial patch placed on the robot's gripper that attacks the denoising velocity field of an off-the-shelf policy. Our central finding is counterintuitive: attacking only the first denoising step is both stronger and cheaper than attacking a wider window of steps, which we explain through a gradient conflict unique to input-space optimization and which is exactly opposite to the training-time backdoor regime. On pi0 and pi0.5 across four LIBERO suites, DRIFT breaks essentially all originally-solvable tasks with a small single patch, far exceeding action- and embedding-space attack baselines.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.03207"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "DRIFT démontre qu'une attaque par patch adversarial ciblant uniquement la première étape de débruitage d'un modèle VLA basé sur flow-matching (pi0) peut compromettre près de 100% des tâches résolubles, révélant une vulnérabilité critique dans les politiques de contrôle visuo-moteur.",
+   "score": 8.2
+  },
+  {
+   "id": "2ec1eb64594bea5b",
+   "title": "Invisible Shortcuts: Why Vision Encoders Know Your Camera",
+   "url": "https://huggingface.co/papers/2608.05424",
+   "summary": "Deep vision models exploit shortcuts, relying on cues that correlate with supervision signals. Prior work has focused on visible biases, such as object-background or texture correlations. We identify a different source of shortcut learning: invisible metadata traces embedded at the pixel level, for metadata such as image processing and photo acquisition. We hypothesize that large-scale semantic supervision, whether through categorical labels (ImageNet) or billion-scale captions (LAION), naturally induces metadata-semantics correlations during pretraining, leading models to convert low-level signals into predictive features. By introducing controlled metadata-semantics correlations, we show that stronger ones produce systematically higher sensitivity to metadata traces and larger performance degradation under metadata distribution shifts. We further explore mitigation strategies applied during and after pretraining that reduce sensitivity not only to targeted metadata but also to unseen ones, without sacrificing performance on downstream tasks. Metadata sensitivity also has a positive side: it partly explains the strong generated-image detection ability of some encoders, while its mitigation can improve out-of-distribution generalization. Code: https://github.com/ryan-caesar-ramos/visual-encoder-traces",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.05424"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "vision"
+   ],
+   "tldr": "Étude sur les 'invisible shortcuts' dans les encodeurs visuels, révélant que les métadonnées d'acquisition (ex: EXIF) sont exploitées comme biais prédictifs. Propose des stratégies de mitigation sans perte de performance, avec des implications pour la robustesse des modèles.",
+   "score": 7.9
+  },
+  {
+   "id": "8a6aa92bb07f51be",
+   "title": "KVAE: Family of Tokenizers for Multimodal Generative Models",
+   "url": "https://huggingface.co/papers/2608.05798",
+   "summary": "Latent diffusion modeling (LDM), a prominent paradigm, utilizes tokenizers to map input signal to compressed representation. This dependency positions tokenizer as an integral part of generation process itself, since it affects learning speed, quality of synthesized samples and lay foundation for later applications. This report presents series of KVAE tokenizers for audio, image and video, all designed for subsequent text-conditioned generation: KVAE-Audio, a continuous full-band 48 kHz tokenizer with a 50 Hz latent of 64 channels; KVAE-3D -- two causal video tokenizers for 4x16x16 and 4x8x8 compression; KVAE-2D, an image model, compressing input by factor of 8 with 32 channels. We demonstrate that reconstruction (PSNR, LPIPS, PESQ, etc.) and generation results on objective (Frechet Distance, CLIP score, CLAP score, etc.) and subjective (side-by-side evaluation) metrics matches or surpasses frontier opensource tokenizers, such as VAEs from Wan-2.2, HunyuanVideo-1.5, FLUX.2, MovieGen, StableAudio and MMAudio. Considering difficulty of development, we share with community training details, model selection method and ablation on design choices. The code is publicly available at https://github.com/kandinskylab/kvae and https://github.com/kandinskylab/kvae-audio.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.05798"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "Famille de *tokenizers* multimodaux (audio, image, vidéo) pour modèles génératifs latents, optimisés pour la génération conditionnée par du texte, avec des performances comparables ou supérieures aux modèles de pointe (VAE, FLUX.2, etc.) et des détails de conception partagés pour la reproductibilité.",
+   "score": 7.3
+  },
+  {
+   "id": "bf97c2baf955b7f1",
+   "title": "Interpretable MEG Decoding of Perceived Speech: Cortical Sources and the Stimulus Features That Drive Retrieval",
+   "url": "https://huggingface.co/papers/2608.01481",
+   "summary": "Short segments of perceived speech can be retrieved from non-invasive magnetoencephalographic (MEG) recordings by deep networks trained with a CLIP-style objective against wav2vec 2.0 audio embeddings. Yet their weights do not map onto electrophysiological quantities, and it remains unclear which speech properties drive retrieval. We build on a high-performing MEG-to-audio retrieval architecture but redesign both its front end and decoder. Its spatial attention operates on a flattened sensor layout; we replace it with spherical harmonics defined on the three-dimensional MEG helmet geometry. We reduce the subject-specific representation from 270 to 25 branches, add a temporal filter to each branch to match it to a neuronal source in space and time, and make the convolutional decoder shallower. Ocular and cardiac components are removed before training to reduce the risk of stimulus-locked shortcuts. On MEG-MASC, the model reaches 39.75 +/- 0.34% Top-1 accuracy among 1005 candidates across six trained solutions, with about 20 times fewer decoder parameters. Its weights map to source space, recovering generators consistent with the speech-perception network, while left-lateralized branches carry higher-frequency rhythmic components not evident on the right. Paired MEG occlusion shows that 15 of 19 stimulus features contribute, with the largest effects for silence, sound intensity, vowels, and acoustic onsets. Random word lists behave oppositely: substituting narrative MEG into them improves retrieval, indicating that activity without narrative structure carries less recoverable information than activity during coherent speech. The wav2vec target can be reduced to about twelve learned feature dimensions without loss of accuracy, whereas strong temporal compression causes a clear loss. Together, source mapping and input interventions reveal what drives retrieval.",
+   "published": "2026-08-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 54,
+    "arxiv_id": "2608.01481"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "audio"
+   ],
+   "tldr": "Modèle de décodage *interprétable* de parole perçue à partir de signaux MEG, utilisant des harmoniques sphériques et des filtres temporels pour mapper les poids sur des sources corticales, avec une précision Top-1 de 39.75% et une réduction de 20x des paramètres du décodeur.",
+   "score": 7.3
+  },
+  {
+   "id": "7db7470beb95de46",
+   "title": "Continual Learning in Transition",
+   "url": "https://huggingface.co/papers/2608.06216",
+   "summary": "Classical continual learning (CL) has primarily focused on enabling models to update and retain knowledge through parameter-centric mechanisms, e.g., training strategies, architectural designs, and weight adaptation. However, emerging paradigms are reshaping the scope of CL beyond this traditional model adaptation view. For instance, on-policy learning broadens the space of update mechanisms; test-time training extends CL from the training phase to inference; and external harness components such as memory, skill libraries, and interaction protocols extend the evolutionary boundaries of model capabilities far beyond the static parameter space. Collectively, these developments indicate a transition from parameter-centric learning toward system-level adaptation. To characterize this transition, we examine the evolution of continual learning through three dimensions: When, How, and Where learning occurs. The How dimension encompasses off-policy, on-policy, and beyond-gradient optimization mechanics. The When dimension captures evolution across pre-training, post-training, and inference-time stages. The Where dimension delineates updates occurring within internal parameters versus external structural constraints. Anchored by this tri-axial framework, we systematically survey representative methods, trace the ongoing transition of continual learning, and discuss the key challenges, broader implications, and future directions arising from this paradigm shift.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.06216"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "autre"
+   ],
+   "tldr": "Synthèse des évolutions du *continual learning* vers des mécanismes systémiques (apprentissage *on-policy*, *test-time training*, composants externes), avec une taxonomie en trois dimensions (Quand, Comment, Où) pour caractériser cette transition.",
+   "score": 7.3
+  },
+  {
+   "id": "9fac37ef3ebd8788",
+   "title": "Helping Music Co-Creation Agents 'Listen' Well: Hierarchical Self-Supervised World Models for Understanding and Generation",
+   "url": "https://huggingface.co/papers/2608.04378",
+   "summary": "Collaborative music agents need internal representations rich enough to support both understanding and generation, yet flexible enough for a workflow where the human retains agency. We present a hierarchical self-supervised ``world model'' for symbolic music: a 2.55M-parameter Swin V2 encoder trained on MIDI piano-roll images with JEPA-style objectives (pitch- and time-shift equivariance, masked embedding prediction, and a distributional regularizer), using no labels and no music-theory vocabulary. Probing the frozen embeddings shows that the level at which a musical property becomes decodable tracks its musical time scale: phrase boundaries are read off the coarsest levels, note density and harmonic detail off the finest. Temporal and phrase structure emerge from the self-supervised objectives alone, while harmonic content must be asked for; a small chord-supervision head raises joint chord recovery from .18 to .54, and key detection, which is never supervised, from .16 to .70. Following the Representation AutoEncoder paradigm, a conditional flow-matching model stands in for a trained decoder, flowing in pixel space from PCA-reduced conditioning: it reproduces a target window at pixel F1 0.996, and the same per-level conditioning dropout that controls how far variations stray also enables graphical prompting for masked inpainting with no inpainting-specific sampler. The pipeline runs on CPU producing a suggestion in 2.8 s, or 0.6 s on Apple MPS, which we demonstrate in a live interactive demo. In concert with an LLM-based brain, these capabilities supply the core of a collaborative music creation agent in service of, rather than in place of, human agency.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.04378"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Un modèle de type 'world model' hiérarchique auto-supervisé (2.55M paramètres) pour la musique symbolique capture des structures temporelles et harmoniques sans supervision externe. Les représentations émergentes permettent une génération conditionnelle via flow-matching, avec des améliorations significatives après ajout de supervision partielle.",
+   "score": 7.3
+  },
+  {
+   "id": "06fe25ce849ebf9d",
+   "title": "Resume Means Resume: A Machine-Checked Conformance Contract for Checkpoint, Interrupt, and Resume Semantics in Workflow Persistence Layers",
+   "url": "https://huggingface.co/papers/2608.03836",
+   "summary": "A framework that persists execution state so a run can be interrupted, survive a crash, and continue must decide what a resume means for effects that already fired. Five widely deployed agent workflow frameworks answer differently, none exposes a machine-checkable contract, and behavior violates even the fragments they state. The RESUME CONTRACT states six properties over the persistence API (prefix continuation, effect exactly-once, fork determinism, checkpoint validity, consume-once, recovery determinism), plus fork-intent and liveness obligations. A TLA+ model checks a reference semantics exhaustively, unchanged at scaled bounds (7.4 million states); a 39-cell fault matrix yields the separating models independence requires, and consume-once splits, its consumption clause independent of all six others. A deterministic, LLM-free harness measures them at pinned releases. LangGraph 1.2.9 durably records a second resume value and never consults it, persists schema-invalid state silently, and re-executes durably recorded work after a real SIGKILL: exactly-once across interrupts, at-least-once across crashes, on one API. CrewAI 1.15.2 re-executes completed effect-bearing methods against its written claim; pydantic-graph 1.x cannot resume after a mid-node crash; no two probed frameworks share a conformance profile. Consume-once holds sequentially and fails under concurrent delivery: k processes resuming one parked interrupt fire the gated effect k times, saturation 1.0 in 36 of 40 cells, and the failure crosses hosts. REMIT, a reference sequencer whose Verus-verified recovery core is line-identical to the shipped executable, repairs the fork and validity cells. The cross-process cell is repaired at the read path, and that repair ships: an opt-in gate claims consumption in the shared store, serving one racer and refusing the rest before any node executes.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.03836"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils",
+    "regulation"
+   ],
+   "tldr": "Le framework RESUME CONTRACT formalise les propriétés de conformité pour la persistance et la reprise d'exécution dans les systèmes agentiques (checkpoint, interruption, resume), avec une vérification formelle via TLA+ et une évaluation sur des frameworks populaires (LangGraph, CrewAI).",
+   "score": 7.3
+  },
+  {
+   "id": "e443a5c319603c99",
+   "title": "Pinvou/pinvou-agent",
+   "url": "https://github.com/Pinvou/pinvou-agent",
+   "summary": "Open-source desktop AI agent for tools, files, knowledge, workflows, and real deliverables.",
+   "published": "2026-07-24T07:28:41Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 471,
+    "language": "JavaScript"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Agent IA open-source pour bureau avec accès à des outils, fichiers et workflows. Prometteur pour l'automatisation de tâches, mais dépend de la qualité des intégrations et de la robustesse du système.",
+   "score": 7.1
+  },
+  {
+   "id": "5f26376d62fabd79",
+   "title": "MASS: Multiplayer World Models with Authoritative Shared State",
+   "url": "https://huggingface.co/papers/2608.06257",
+   "summary": "Current video world models struggle in multiplayer environments because they entangle world state with view-dependent visual latents, leading to redundant compute, view inconsistencies, and poor scalability. We propose MAS (Multiplayer world models with Authoritative Shared State) to resolve this limitation. Inspired by multiplayer game architectures, MAS disentangles world dynamics and view rendering. A learned Logic Engine advances a global, authoritative typed state from joint actions without any hand-written transition function, acting as the sole recurrent memory and synchronization reference. From this shared state, a learned Rendering Engine generates independent and consistent views for any requested camera on demand. This explicit disentangling allows MAS to achieve superior state accuracy and lower cross-view inconsistency compared to state-of-the-art multi-view baselines on a matched multiplayer Snake benchmark. It advances predicted worlds with 1,024 concurrent players for 10,000 recurrent steps. Our results show that explicit, authoritative state modeling provides a practical foundation for scalable and consistent multi-agent world simulation.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.06257"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "autre"
+   ],
+   "tldr": "Proposition d'une architecture MAS pour les modèles de monde multi-joueurs, séparant la logique globale (Logic Engine) de la génération de vues (Rendering Engine). Démontre une meilleure précision d'état et une cohérence inter-vues sur un benchmark Snake à 1 024 joueurs, mais reste éloigné des centres d'intérêt principaux de l'utilisateur.",
+   "score": 7.0
+  },
+  {
+   "id": "070ec99057abc39b",
+   "title": "PaDoc: Layout-Grounded Parallel Decoding for Document Parsing",
+   "url": "https://huggingface.co/papers/2608.06146",
+   "summary": "End-to-end document parsers provide a unified interface, but serialize page layouts and regional contents into one autoregressive sequence. This formulation forces independent regions onto a decoding path whose length grows with the total content, whereas crop-based two-stage parsers expose region-level parallelism at the cost of repeated visual prefills and fragmented page context. To retain full-page context while removing dependencies, we propose PaDoc, a layout-grounded parser that treats the predicted layout as a branching structure over a shared page representation. Under a region-sufficiency assumption, we derive a prefix-conditioned factorization in which the layout stream and regional content branches advance concurrently, reducing the decoding depth to the longest layout-content path. We realize this factorization within a single MLLM: packed variable-length ancestor attention preserves the visibility under standard next-token training, while masked parallel decoding creates branches that the evaluated vLLM backend serves as concurrent requests with cache-resident shared-prefix reuse. On OmniDocBench Full, PaDoc attains an Overall layout F1 of 91.1 and, among end-to-end parsers, a top-tier Overall score of 94.24 together with the best Text Edit (0.038) and Formula CDM (95.59). On a 384-page subset and one A800 GPU, it is the fastest end-to-end parser at five concurrency levels, improving valid-page throughput by 67.4-118% and reducing P95 latency by 39.2-54.9% relative to a same-backbone Sequential SFT baseline. Code is available at https://github.com/Longin-Yu/Padoc",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.06146"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "PaDoc, un parseur de documents end-to-end utilisant une factorisation parallèle basée sur la mise en page pour accélérer le décodage. Améliore l'efficacité computationnelle, mais moins pertinent pour les LLM ou l'optimisation.",
+   "score": 7.0
+  },
+  {
+   "id": "32dba2c16c6bfaf9",
+   "title": "World-to-Wrist: Task-Conditioned Future Wrist Modeling for Fine-Grained Robot Manipulation",
+   "url": "https://huggingface.co/papers/2608.05369",
+   "summary": "Vision-language-action (VLA) models often treat main-view and wrist-view observations as parallel visual inputs, overlooking their distinct roles in robot manipulation. Fine-grained manipulation, however, benefits from anticipating how wrist-local interactions may evolve under the global task context. To address this limitation, we present World-to-Wrist VLA (W2-VLA), a VLA model for fine-grained robot manipulation with task-conditioned future wrist modeling. Given current multi-view observations and a task instruction, W2-VLA contextualizes a set of latent modeling tokens as a compact interface between the vision-language model and the wrist predictor. Conditioned on this interface and the observed wrist history, the predictor forecasts future wrist latents, which are transformed into future-aware context for action prediction. In addition, we introduce W2-CoT, a synthesis pipeline that produces structured annotations describing manipulation progress, physical transition cues, and wrist-local evidence. These annotations provide auxiliary supervision that shapes the task-conditioned latent interface. Experiments on LIBERO, RoboTwin 2.0, and real-world manipulation tasks demonstrate improved fine-grained and contact-sensitive manipulation across both single-arm and bimanual settings, while maintaining action-generation rates above 80 Hz.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2608.05369"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "autre"
+   ],
+   "tldr": "W2-VLA, un modèle VLA pour la manipulation robotique fine intégrant une modélisation prédictive des interactions locales (wrist). Montre des gains sur des benchmarks comme LIBERO, mais centré sur la robotique plutôt que les LLM.",
+   "score": 7.0
+  },
+  {
+   "id": "581c5539aad9d07f",
+   "title": "deerwork-ai/deer-workflow",
+   "url": "https://github.com/deerwork-ai/deer-workflow",
+   "summary": "An open-source graph engineering runtime that keeps orchestration in TypeScript and delegates semantic work to replaceable Agent runtimes.",
+   "published": "2026-07-26T04:20:50Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 405,
+    "language": "TypeScript"
+   },
+   "relevance": 8,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Runtime open-source pour l'orchestration d'agents IA en TypeScript, avec une architecture modulaire pour déléguer le travail sémantique. Pertinent pour les systèmes multi-agents, mais encore en développement et peu documenté.",
+   "score": 6.8
+  },
+  {
+   "id": "eace24d2e49c2109",
+   "title": "GaussianSelector: Lightweight Human-Guided Object Selection in 3D Gaussian Splatting with Graph Optimization",
+   "url": "https://huggingface.co/papers/2608.01492",
+   "summary": "Selecting a complete 3D object from a reconstructed scene with minimal user effort is essential for practical scene editing and embodied interaction. Existing 3DGS-based methods either retrain the Gaussian representation to embed per-object labels, or build dense multi-view SAM observations, both requiring heavy computation and dense viewpoint coverage that is rarely available in practice. We present GaussianSelector, a training-free framework for interactive 3D object selection from sparse views and sparse scribble guidance. Operating directly on native Gaussian primitives, we coarsen dense Gaussians into geometrically coherent superpoints and construct a continuity-weighted graph using appearance and spatial cues. Sparse user scribbles are lifted into 3D via visibility-aware transmittance coverage, and selection is solved as a global graph-cut energy minimization that propagates sparse evidence to a complete 3D object. This design naturally supports multi-round refinement, where users iteratively correct the selection from additional viewpoints to progressively improve the result. Experiments demonstrate that GaussianSelector achieves competitive selection quality against state-of-the-art multi-view SAM-based methods, while requiring significantly fewer interaction views and substantially lower computational overhead. These properties make it well suited for human-in-the-loop 3D scene editing and 3D asset extraction in real-world deployment scenarios.",
+   "published": "2026-08-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.01492"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "optimisation"
+   ],
+   "tldr": "Méthode *training-free* pour la sélection interactive d'objets 3D dans des scènes reconstruites via 3D Gaussian Splatting, utilisant des superpoints et une optimisation par graph-cut pour propager des annotations utilisateur éparses en une sélection complète, avec support du raffinement itératif.",
+   "score": 6.7
+  },
+  {
+   "id": "34c6506a5b23f80c",
+   "title": "Task-Conditional Flow Matching for Balanced Multilingual Text Embedding Adaptation",
+   "url": "https://huggingface.co/papers/2608.05785",
+   "summary": "Multilingual text embedding models are commonly adapted using a single training objective across diverse tasks, despite different tasks requiring fundamentally different optimization strategies. We introduce Task-Conditional Flow Matching (TCFM), a multilingual embedding adaptation framework that selectively applies Flow Matching to translation tasks while optimizing retrieval, classification, and pair-classification tasks with objectives better aligned to their learning dynamics. TCFM further combines teacher-guided representation preservation with a three-stage curriculum to enable stable adaptation. Evaluated on the Indic Massive Text Embedding Benchmark, TCFM establishes a new state-of-the-art, consistently improving embedding quality across a diverse set of multilingual tasks and generalizing across embedding model families. We will publicly release the codebase and datasets upon acceptance of the paper.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.05785"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode *Task-Conditional Flow Matching* pour adapter des embeddings multilingues de texte de manière ciblée par tâche (traduction vs retrieval), établissant un nouvel état de l'art sur le benchmark *Indic Massive Text Embedding* avec une généralisation accrue.",
+   "score": 6.7
+  },
+  {
+   "id": "f3cd3b5c684a4347",
+   "title": "ContextMaster: Interactive Multi-Shot Video Creation via Fixed-Budget Sparse Context Routing",
+   "url": "https://huggingface.co/papers/2608.04956",
+   "summary": "Recent video models increasingly support generation, reference conditioning, and editing within a single model, yet typically expose them as separate operations over fixed inputs. Practical creation unfolds across multiple shots, requiring one model to generate from text, follow a reference, or edit source footage while maintaining shared history. We formalize this setting as interactive multi-shot video creation (IMVC) and introduce ContextMaster, a unified model with a role-aware context representation for these operations. An interactive model must retain access to an expanding history without allowing the context read cost at each denoising step to grow. ContextMaster combines reusable clean context states with fixed budget sparse context routing and uses ConstraintSink to keep task constraints visible. To address the dual challenges of sparse context access and inference with few denoising steps, we propose a two-stage privileged context distillation framework, which transfers full context behavior from a dense teacher through consistency distillation and then refines deployment rollouts with distribution matching. Experiments on the three primitive tasks demonstrate improved task fulfillment and consistency across shots over specialized baselines. User studies further validate flexibly composed workflows, while the model reaches 16 FPS on a single GPU.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2608.04956"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "autre",
+    "vision"
+   ],
+   "tldr": "Modèle ContextMaster pour la création vidéo multi-shot interactive, combinant un contexte réutilisable et un routage sparse pour optimiser le coût de lecture. Intéressant pour l'efficacité computationnelle, mais peu aligné avec les priorités de l'utilisateur.",
+   "score": 6.4
+  },
+  {
+   "id": "534d023b8727c96e",
+   "title": "EffectLearner: World-Aware Object-Effect Reasoning for Real-World Video Object Removal",
+   "url": "https://huggingface.co/papers/2608.05565",
+   "summary": "Video object removal must eliminate not only the target object but also its induced effects while maintaining high-fidelity and spatiotemporally coherent restoration. Existing methods mainly learn object-effect correspondences implicitly from predefined effect categories and fixed data distributions, limiting their generalization to complex real-world scenes involving compositional effects, spatially detached or weakly correlated effects, long-tail physical phenomena, and dynamically evolving interactions. We propose EffectLearner, a semantic-reasoning-enhanced framework that combines a VLM-based Object-Effect Reasoner with a DiT-based Video Eraser. Guided by a structured effect-analysis prompt, the Reasoner performs cross-modal reasoning over a target-highlighted video and extracts compact effect-aware context, which guides the Video Eraser toward comprehensive object-effect removal. Motion-aware mask guidance and motion-consistency supervision further improve removal coverage and spatiotemporal stability under object motion and evolving scene dynamics. To fully exploit the framework in challenging real-world scenarios, we further construct EffectWorld, a paired video dataset specifically designed for complex object-induced effects, and introduce a progressive training curriculum that combines common supervision with complex-effect data. On the standard ROSE-Bench, EffectLearner outperforms existing baselines on most metrics and achieves clear advantages on both EffectWorld-Eval and the challenging EffectWorld-Wild, demonstrating its ability to deliver high-quality video object removal in complex real-world scenes.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2608.05565"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "autre"
+   ],
+   "tldr": "Framework EffectLearner pour la suppression d'objets en vidéo, intégrant un raisonneur VLM et un modèle de diffusion pour gérer les effets physiques complexes. Pertinent pour la vision par ordinateur, mais hors des axes LLM/optimisation.",
+   "score": 6.4
+  },
+  {
+   "id": "67795487bcbd69f7",
+   "title": "SmartMage: Dynamic Modality Orchestration for 3D Scene Understanding",
+   "url": "https://huggingface.co/papers/2608.05137",
+   "summary": "Understanding 3D scenes is fundamental to embodied intelligence, requiring joint reasoning over heterogeneous information from multiple modalities, including visual and geometric cues. However, the relevance of these modalities often varies across queries. Existing Multimodal Large Language Models (MLLMs) typically rely on fixed modality combinations, overlooking query-dependent modality needs. Such a rigid design can introduce semantic noise from irrelevant modalities while underutilizing more informative ones, leading to wasted computation and diluted reasoning. To address these challenges, this paper proposes SmartMage, a unified MLLM that dynamically orchestrates heterogeneous modalities for semantic-aware 3D scene understanding. Specifically, SmartMage incorporates: (1) a Semantic-guided Modality Adaptive RouTng (SMART) module that selects task-relevant modalities using semantic priors, text-modality alignment, and modality quality; and (2) a Modality-Aware Gating Expert (MAGE) module that leverages modality priors to guide expert activation, fostering adaptive specialization in multimodal reasoning. Empirically, SmartMage achieves state-of-the-art performance across five 3D scene understanding benchmarks, and attains competitive results on RGB-only video understanding benchmarks. In our diagnostic benchmark ScanFacet, tasks are divided into fine-grained semantic categories, enabling analysis of modality combinations preferred by each semantic type. The observed modality-semantic patterns provide further evidence of SmartMage's effectiveness. Project page: https://yuecheong.github.io/SmartMage/.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2608.05137"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "autre"
+   ],
+   "tldr": "SmartMage, un MLLM pour la compréhension 3D dynamique, orchestrant les modalités (visuel/géométrique) en fonction des requêtes. Pertinent pour la vision 3D, mais hors des axes prioritaires.",
+   "score": 6.4
+  },
+  {
+   "id": "cda34def77c5f118",
+   "title": "TryCaspian/caspian-sdk",
+   "url": "https://github.com/TryCaspian/caspian-sdk",
+   "summary": "Agent communication SDK. The open-source agent communication layer for AI agents — email, WhatsApp, Slack, Discord, Telegram, SMS. Python & TypeScript.",
+   "published": "2026-07-20T10:47:56Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 528,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "SDK de communication pour agents IA multi-canaux (email, Slack, etc.). Utile pour l'orchestration d'agents, mais nécessite une évaluation approfondie des protocoles de sécurité et de scalabilité.",
+   "score": 6.2
+  },
+  {
+   "id": "974d536836f241e8",
+   "title": "microsoft/skill-recorder",
+   "url": "https://github.com/microsoft/skill-recorder",
+   "summary": "Desktop app that records your on-screen work session and uses the GitHub Copilot CLI to reconstruct it as an intent + ordered steps, then builds a reusable Skill or Automation for Microsoft Scout, Microsoft Copilot Cowork, or Copilot Studio.",
+   "published": "2026-07-29T18:16:14Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2416,
+    "language": "TypeScript"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "Outil open-source de Microsoft pour capturer et transformer des sessions de travail en compétences réutilisables via des agents IA (Copilot), avec intégration aux produits Microsoft. Intéressant pour l'automatisation et l'orchestration d'agents, mais limité par son écosystème propriétaire.",
+   "score": 6.2
+  },
+  {
+   "id": "169dc68774d186e1",
+   "title": "MameLoshnLM: Yiddish Language Model and Evaluation Benchmark",
+   "url": "https://huggingface.co/papers/2608.05850",
+   "summary": "We present MameLoshnLM, the first open-source 8B-parameter language model built specifically for Yiddish. Despite Yiddish's rich textual tradition, its limited digital presence and the scarcity of reliable evaluation resources have constrained progress in Yiddish language modeling. Existing multilingual corpora and benchmarks are often poor proxies for the language, containing substantial amounts of noisy, machine-translated, and misclassified text. We address these gaps by introducing Oytser, a high-quality Yiddish pretraining corpus that combines contemporary web-native sources with literary materials, and Kashes, a multi-task benchmark spanning translation, linguistic analysis, information extraction, and language understanding. Using these resources, we continue pretraining Llama 3.1 8B to obtain MameLoshnLM. Across the tasks in the benchmark, MameLoshnLM outperforms open baselines of similar scale. Our analyses show that these gains are not only quantitative: relative to general-purpose multilingual models, MameLoshnLM better captures language-defining lexical and morphological patterns, pointing to a broader failure mode of noisy web-scale multilingual data for low-resource languages. Our results provide both a foundation for Yiddish NLP and a practical template for language model development in historically rich but digitally underrepresented languages.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.05850"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "autre"
+   ],
+   "tldr": "Premier modèle de langage ouvert de 8B paramètres pour le yiddish (*MameLoshnLM*), entraîné sur un corpus de haute qualité (*Oytser*) et évalué via un benchmark multitâche (*Kashes*), surpassant les modèles multilingues génériques sur des tâches spécifiques.",
+   "score": 6.1
+  },
+  {
+   "id": "ca6571e39f907b96",
+   "title": "FactorJEPA: Factorizing Monolithic Futures into Layout-Agent-Interaction Channels for Crowded and Chaotic Global South Urban Worlds",
+   "url": "https://huggingface.co/papers/2608.01049",
+   "summary": "World models have attracted significant attention for their ability to capture and predict the structure and dynamics of the physical world. In this emerging landscape, Joint Embedding Predictive Architectures (JEPA) offer a particularly compelling direction. We study a largely unexplored regime: populous, crowded, and chaotic Global South urban environments, which we call DENSEWORLD. Unlike the lower-density, lane-structured settings that dominate existing evaluations, these scenes exhibit soft spatial boundaries, extreme agent heterogeneity, persistent occlusion, and rapid social negotiation under mixed traffic. We introduce the first large-scale dataset for this regime: 1,000 hours of drive-through, walk-through, and aerial video across 22 cities. Existing JEPA formulations struggle to preserve dense interaction dynamics under heterogeneity and partial observability. We introduce FactorJEPA, which makes world structure a first-class predictive primitive. Rather than encoding the future in a monolithic latent, it composes layout, entities, and interactions, using a visibility gate and separated subspaces to preserve partially observed agents and discourage cross-factor shortcuts. FactorJEPA improves (i) future-latent accuracy (Future-frame L1), (ii) intervention-sensitive prediction (Causal L1), and (iii) robustness to reduced visual evidence (Mask-ratio slope), while exposing (iv) a reproducible motion-information trade-off (Motion cosine). Method rankings replicate across 2B and 1B V-JEPA 2.1 backbones, with rho = 0.895 to 0.978. We publicly release the DENSEWORLD-115k dataset (https://huggingface.co/datasets/anonymousML123/denseworld-115k) and the surgery-trained FactorJEPA checkpoints (https://huggingface.co/datasets/anonymousML123/factorjepa-outputs/tree/main/outputs/full/vjepa_2_1_vitg_1B/train/m09c_surgery_3stage_DI_diheavy_encoder).",
+   "published": "2026-08-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.01049"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "Proposition d'une architecture *JEPA* (Joint Embedding Predictive Architecture) adaptée aux environnements urbains denses du Sud Global, avec un nouveau jeu de données de 1 000h de vidéo et une factorisation des prédictions en sous-espaces (layout, entités, interactions) pour gérer l'hétérogénéité et les occlusions.",
+   "score": 5.8
+  },
+  {
+   "id": "da26989850177ee4",
+   "title": "kirodotdev/KiroCrew",
+   "url": "https://github.com/kirodotdev/KiroCrew",
+   "summary": "A persistent workspace for development work that self-improves and continues beyond one session.",
+   "published": "2026-07-16T21:21:54Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2333,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Workspace auto-améliorant pour le développement logiciel, inspiré des agents persistants. Intéressant pour l'automatisation des workflows, mais manque de détails techniques sur l'optimisation ou l'efficacité.",
+   "score": 5.6
+  }
+ ]
+}
