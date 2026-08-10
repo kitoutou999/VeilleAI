@@ -1,0 +1,626 @@
+{
+ "date": "2026-08-10",
+ "digest": {
+  "headline": "Parallel-RL et StreamArena redéfinissent l'entraînement multi-tâches des LLM et l'évaluation des agents vidéo en streaming",
+  "overview": "Les avancées du 10 août 2026 mettent l'accent sur l'optimisation des architectures LLM et agents, avec des solutions théoriques et empiriques pour les conflits d'entraînement, la mémoire longue, et la contamination des benchmarks. Les travaux en vision et robotique soulignent aussi une recherche de modularité et d'efficacité, notamment via des méthodes simplifiées ou des lois d'échelle généralisées.",
+  "highlights": [
+   {
+    "title": "Découplage des tâches en LLM : SFT vs. RL",
+    "text": "L'étude *SFT Conflicts, RL Coexists* analyse les conflits d'optimisation en *Supervised Fine-Tuning* (SFT) multi-tâches et propose *Parallel-RL*, une méthode pour découpler l'entraînement via le *Reinforcement Learning*. Cela améliore la flexibilité et l'efficacité des modèles, en évitant les interférences entre tâches tout en conservant les avantages de l'optimisation RL. Une avancée clé pour les architectures LLM multi-tâches, avec des implications pour la scalabilité."
+   },
+   {
+    "title": "Benchmarking des agents vidéo en streaming avec StreamArena",
+    "text": "StreamArena introduit un benchmark pour évaluer les agents multimodaux sur des vidéos longues (jusqu'à 88,8 min) avec 3 646 Q&A ouvertes. Il teste la perception en temps réel, la mémoire historique et l'interaction proactive, révélant les limites des méthodes actuelles (compression mémoire, perte de détails). *StreamMind*, la solution proposée, ouvre la voie à des agents plus robustes pour les applications en temps réel."
+   },
+   {
+    "title": "Optimisation et évaluation : PEFT pour YOLO et contamination des benchmarks",
+    "text": "*YOLO-PEFT* adapte les méthodes *Parameter-Efficient Fine-Tuning* (LoRA, RS-LoRA) aux détecteurs YOLO via un graphe de contraintes, améliorant les performances (mAP) tout en réduisant les coûts. Parallèlement, *Zero Gap Is Not Restoration* propose *SA-PPG*, une métrique pour détecter et atténuer la contamination des benchmarks dans les LLM, corrigeant les biais des approches existantes comme *G-AP*. Ces travaux renforcent la rigueur des évaluations et l'efficacité des modèles."
+   },
+   {
+    "title": "Simplification et modularité en conduite autonome et lois d'échelle",
+    "text": "*SimWAM* propose une approche minimaliste pour les modèles de conduite autonome (WAM) en utilisant uniquement la génération vidéo et un *flow matching* joint, atteignant 91,5 PDMS sur NAVSIM avec une latence réduite. *Skaling*, quant à lui, généralise les lois d'échelle en couplant capacité du modèle et données via un exposant d'interaction, réduisant l'erreur de prédiction de 1,5 à 3x. Ces travaux illustrent une tendance vers des architectures plus simples et des méthodes d'extrapolation plus précises."
+   },
+   {
+    "title": "Agents et vie privée : audits et risques de fuite de données",
+    "text": "*PrivacyPeek* introduit un benchmark pour auditer l'acquisition de données sensibles par les agents LLM, au-delà de leurs réponses. Les résultats montrent que 10 modèles testés acquièrent souvent des informations inutiles, posant des risques de fuite. Ce travail souligne l'importance de mécanismes de contrôle pour les agents déployés en production, en particulier dans des contextes réglementés."
+   }
+  ],
+  "trend": "Les recherches actuelles privilégient des architectures modulaires et des méthodes d'optimisation découplées pour améliorer l'efficacité et la robustesse des LLM et agents. Parallèlement, l'évaluation rigoureuse (benchmarks, contamination, vie privée) devient un enjeu central, avec des outils pour quantifier et atténuer les biais ou risques systémiques."
+ },
+ "items": [
+  {
+   "id": "a018ede70f753ad8",
+   "title": "SFT Conflicts, RL Coexists: A Theoretical and Empirical Analysis of Multi-Task Learning for LLMs",
+   "url": "https://huggingface.co/papers/2608.03573",
+   "summary": "Supervised Fine-Tuning (SFT) and Reinforcement Learning (RL) exhibit fundamentally different behaviors in enhancing multi-task reasoning for large language models (LLMs). Our preliminary experiments revealed a phenomenon: SFT suffers from severe task conflicts under multi-stage training, whereas RL enables stable coexistence across diverse tasks. Empirically, we trace this to the parameter level, observing that RL induces sparse and approximately orthogonal updates across tasks. We provide a theoretical explanation for this mechanism by analyzing multi-task gradient interference. Our results reveal a distinction: interference in SFT is norm-limited, scaling with the absolute gradient magnitude, whereas interference in RL is variance-limited, bounded by the gradient variance induced by advantage normalization and on-policy optimization. This small variance bound yields near-orthogonal optimization directions across tasks. Leveraging this insight, we propose Parallel-RL, a paradigm that decouples multi-task training, significantly improving efficiency and flexibility.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2608.03573"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Analyse théorique et empirique des conflits en SFT vs. la stabilité de l'optimisation RL en multi-tâches. Introduit Parallel-RL pour découpler l'entraînement, améliorant l'efficacité et la flexibilité des modèles LLM.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi des conflits entre tâches lors de l'apprentissage multi-tâches dans les grands modèles de langage (LLM). Elle cherche à expliquer pourquoi le *Supervised Fine-Tuning* (SFT) échoue à gérer ces conflits, tandis que l'apprentissage par renforcement (RL) permet une coexistence stable des tâches, limitant les interférences nuisibles.",
+    "methode": "Les auteurs comparent empiriquement SFT et RL en analysant les mises à jour des paramètres au niveau des gradients. Ils montrent que le RL induit des mises à jour *sparses* et *quasi-orthogonales* entre tâches, grâce à des mécanismes comme la normalisation des avantages (*advantage normalization*) et l'optimisation *on-policy*. Théoriquement, ils modélisent les interférences multi-tâches en distinguant deux régimes : SFT (limité par la *norme* des gradients) et RL (limité par la *variance* des gradients). Cette analyse les amène à proposer *Parallel-RL*, une approche découplant l'entraînement multi-tâches pour améliorer l'efficacité et la flexibilité.",
+    "resultats": "Les expériences révèlent que le RL réduit significativement les interférences entre tâches par rapport au SFT, avec des gradients présentant une variance bornée et des directions d'optimisation quasi-orthogonales. Les auteurs ne fournissent pas de chiffres précis dans le résumé disponible, mais soulignent une amélioration notable de la stabilité et de la performance multi-tâches avec *Parallel-RL*.",
+    "limites": "Le résumé ne détaille pas les jeux de données ou les architectures utilisées, ce qui limite l'évaluation de la généralisabilité des résultats. De plus, l'analyse théorique repose sur des hypothèses (comme la sparsité des gradients en RL) qui pourraient ne pas tenir dans tous les contextes. Enfin, l'impact pratique de *Parallel-RL* n'est pas quantifié clairement.",
+    "verdict": "Ce travail mérite l'attention pour son éclairage théorique et empirique sur les mécanismes sous-jacents aux conflits multi-tâches, offrant une piste prometteuse pour optimiser les LLM, mais nécessite des validations complémentaires."
+   }
+  },
+  {
+   "id": "810448368685e542",
+   "title": "YOLO-PEFT: Parameter-Efficient Fine-Tuning on YOLO Family",
+   "url": "https://huggingface.co/papers/2608.07051",
+   "summary": "Generic parameter-efficient fine-tuning (PEFT) methods transferred from language models can fail silently on real-time detectors, whose heterogeneous operators and detection-specific components impose placement constraints absent from regular Transformer stacks. We propose YOLO-PEFT, a structure-aware framework that formulates adapter placement as an auditable constraint-planning problem. Given a detector graph, a PEFT request, and a resource budget, YOLO-PEFT assigns operator and semantic roles, evaluates explicit operator-validity, detector-semantic, graph-interface, and deployment predicates, records a reason code for each excluded module, and either emits a budgeted target-module plan or returns Refuse before training. Under the official VOC07+12 trainval-to-VOC07 test protocol, planner-selected RS-LoRA reaches 0.7138 and 0.7307 mAP50-95 on YOLO11s and YOLO12s, respectively, compared with 0.6428 and 0.6662 for Full-SFT. On RT-DETR-L, all seven evaluated LoRA-family configurations cross the predefined catastrophic threshold, supporting a calibrated Refuse-to-Full-SFT decision within the evaluated coverage. A controlled YOLO11 audit further shows that LoRA reduces peak training memory by 43.9 percent, although training takes 1.72 times longer. Within the evaluated detector families, placement policies, and calibration coverage, YOLO-PEFT replaces manual target-module trial and error with explicit, inspectable planning while preserving verified train-save-merge-export paths; refusal on unseen detector architectures remains an open validation problem. Project Page: github.com/Tencent/YOLO-Master",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2608.07051"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision",
+    "outils"
+   ],
+   "tldr": "YOLO-PEFT adapte les méthodes PEFT (LoRA, RS-LoRA) aux détecteurs YOLO en planifiant automatiquement l'insertion des adapters via un graphe de contraintes. Améliore significativement les performances (mAP) tout en réduisant les coûts de fine-tuning.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les méthodes génériques de fine-tuning paramétriquement efficace (PEFT), initialement conçues pour les modèles de langage, échouent souvent de manière silencieuse lorsqu'appliquées aux détecteurs temps réel comme la famille YOLO. Ces échecs sont dus à des contraintes spécifiques liées à l'hétérogénéité des opérateurs et aux composants dédiés à la détection, absentes dans les architectures Transformer classiques.",
+    "methode": "YOLO-PEFT propose un cadre structurel conscient des spécificités des détecteurs, formulant le placement des adaptateurs comme un problème de planification de contraintes auditable. Le système analyse le graphe du détecteur, une requête PEFT et un budget de ressources pour attribuer des rôles aux opérateurs et évaluer leur validité via des prédicats explicites (validité des opérateurs, sémantique du détecteur, interfaces du graphe, contraintes de déploiement). Chaque module exclu est documenté avec un code de raison, et le système peut soit générer un plan de modules cibles respectant le budget, soit refuser la requête avant l'entraînement. La méthode intègre des variantes comme RS-LoRA (Rank-Stabilized LoRA) pour optimiser les performances.",
+    "resultats": "Sur le protocole VOC07+12, YOLO-PEFT avec RS-LoRA atteint des scores mAP50-95 de 0,7138 sur YOLO11s et 0,7307 sur YOLO12s, surpassant le fine-tuning complet (Full-SFT) qui obtient respectivement 0,6428 et 0,6662. Sur RT-DETR-L, sept configurations LoRA évaluées dépassent un seuil critique prédéfini, justifiant un refus automatique au profit du Full-SFT. Un audit sur YOLO11 montre que LoRA réduit la mémoire d'entraînement de 43,9 %, mais augmente la durée d'entraînement de 1,72 fois.",
+    "limites": "La validation du refus pour des architectures de détecteurs non vues reste un problème ouvert. Les performances en temps d'entraînement sont dégradées malgré les gains en mémoire, ce qui peut limiter l'adoption dans des contextes temps réel. La généralisation à d'autres familles de détecteurs ou à des cas d'usage non couverts par l'évaluation actuelle n'est pas garantie.",
+    "verdict": "YOLO-PEFT mérite une attention particulière pour son approche systématique et auditable du PEFT sur les détecteurs temps réel, mais son adoption doit être nuancée par ses limites en généralisation et en surcoût temporel."
+   }
+  },
+  {
+   "id": "a7727ab06abd89d5",
+   "title": "StreamArena: Toward Continuous, Interactive, and Long-Horizon Agentic Streaming Video Understanding",
+   "url": "https://huggingface.co/papers/2608.05703",
+   "summary": "Deploying autonomous multimodal agents in continuous, real-world environments requires them to ingest unbounded audio-visual streams and maintain hour-scale memory. However, current evaluations predominantly rely on brief clips and multiple-choice formats. This design allows minimal baselines that process only the last four frames to match or surpass complex streaming models, while answer options also expose language shortcuts. We introduce StreamArena, a benchmark for hour-scale, interactive streaming video understanding. StreamArena contains 243 full-length videos averaging 88.8 minutes and 3,646 rigorously annotated, open-ended question-answer pairs that evaluate real-time perception, historical retrospection, proactive interaction, and multimodal tool utilization. Evaluation across diverse systems exposes a tension between continuous interaction and long-horizon multimodal comprehension. Methods that retain only recent frames cannot recover distant events, methods that convert past observations into text lose visual evidence, and methods that repeatedly compress visual memory struggle to preserve fine-grained details over time. We address this tension with StreamMind, a two-tier architecture that assigns latency-critical interaction and proactive monitoring to independently scheduled frontend workers, while backend workers asynchronously construct persistent multimodal memory and perform historical recall and external search. StreamMind outperforms existing streaming baselines across all four capabilities and reduces query-to-answer latency by reusing persistent state.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.05703"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "StreamArena introduit un benchmark pour évaluer les agents multimodaux en streaming vidéo long (jusqu'à 88.8 min), avec 3 646 Q&A ouvertes pour tester la perception en temps réel, la mémoire historique et l'interaction proactive. Met en lumière les limites des méthodes actuelles (compression mémoire, perte de détails) et propose StreamMind pour y remédier.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le benchmark vise à résoudre l'incapacité des modèles d'IA actuels à traiter des flux vidéo continus et longs (plusieurs heures) tout en maintenant une interaction en temps réel et une mémoire multimodale persistante. Les évaluations existantes se limitent à des clips courts et des questions à choix multiples, ce qui favorise des solutions simplistes (comme ne traiter que les dernières frames) et masque les lacunes en compréhension longue durée et en interaction proactive.",
+    "methode": "StreamArena propose un benchmark avec 243 vidéos complètes (moyenne de 88,8 minutes) et 3 646 questions ouvertes annotées manuellement, couvrant quatre capacités : perception en temps réel, rétrospection historique, interaction proactive et utilisation d'outils multimodaux. Pour y répondre, les auteurs introduisent StreamMind, une architecture à deux niveaux : des *workers frontend* gèrent les interactions critiques en latence (ex : monitoring en temps réel), tandis que des *workers backend* construisent asynchronement une mémoire multimodale persistante (visuelle et textuelle) et effectuent des recherches externes. Cette séparation permet de concilier réactivité et conservation des détails fins sur de longues durées.",
+    "resultats": "StreamMind surpasse les baselines existantes sur les quatre capacités évaluées par StreamArena. Le système réduit également la latence entre la requête et la réponse en réutilisant un état persistant. Les chiffres clés incluent une amélioration significative par rapport aux méthodes ne conservant que les frames récentes (qui échouent sur les questions historiques) ou celles convertissant les observations passées en texte (perte de preuves visuelles). Aucune métrique quantitative précise (ex : scores de précision) n'est fournie dans le résumé disponible.",
+    "limites": "Le résumé ne détaille pas les biais potentiels des annotations ou la représentativité des vidéos sélectionnées (ex : diversité des scènes, complexité des interactions). L'architecture StreamMind semble complexe à déployer, avec des dépendances fortes entre frontend et backend, ce qui pourrait poser des défis en scalabilité ou en robustesse. Enfin, l'absence de comparaison avec des approches hybrides (ex : mémoire hiérarchique) limite l'évaluation de son originalité.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique des défis de la vidéo longue durée et de l'interaction agentique, mais son impact réel dépendra de la transparence des données et de la reproductibilité des résultats."
+   }
+  },
+  {
+   "id": "46792e65957cd294",
+   "title": "Zero Gap Is Not Restoration: Stratified Per-Question Probability Evaluation and Step-wise Mitigation of Benchmark Contamination",
+   "url": "https://huggingface.co/papers/2608.07341",
+   "summary": "Test data from public benchmarks inevitably leaks into pretraining corpora, inflating evaluation scores once memorized. Contamination mitigation evaluation intervenes in the decoding process to suppress memorization and restore a contaminated model's genuine capability, but its prevailing metric, the G-AP (Gap of Aggregate Performance), is flawed. Discrete correct/incorrect readouts cannot characterize per-question performance, averaging before differencing lets over- and under-suppression cancel out, and uniform per-question weighting invites strategies to push solve probabilities onto the clean model's high-frequency values. We propose SA-PPG (Stratified Aggregate of Per-question Probability Gaps): estimate each question's solve probability by sampling, difference it against the clean model per question, and aggregate within groups defined by the clean model's solve probability. Existing mitigation strategies first estimate where contamination lies and then operate on the estimate, so they are only as correct as the estimate. RailCap instead judges contamination during generation: whenever a sample falls back onto the greedy trajectory, the next trajectory token is capped to the runner-up, accumulating suppression until the response distribution becomes sufficiently dispersed. Across multiple contaminated models and benchmarks, SA-PPG reveals that prior strategies' restoration is substantially overestimated, while RailCap attains the lowest SA-PPG.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.07341"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "interpretabilite"
+   ],
+   "tldr": "Propose une métrique (SA-PPG) pour évaluer et atténuer la contamination des benchmarks dans les modèles LLM, corrigeant les biais des méthodes existantes comme le G-AP. Intéressant pour l'évaluation robuste des performances et la compréhension des mécanismes de mémorisation.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "La publication aborde le problème de la contamination des benchmarks d'évaluation des modèles d'IA, où des données de test fuient dans les corpus d'entraînement, faussant ainsi les performances mesurées. Les métriques actuelles, comme le G-AP (Gap of Aggregate Performance), ne permettent pas d'évaluer finement l'impact de cette contamination ni l'efficacité des méthodes de mitigation, car elles masquent les variations de performance par question et les biais liés à la pondération uniforme.",
+    "methode": "Les auteurs proposent une nouvelle métrique, SA-PPG (Stratified Aggregate of Per-question Probability Gaps), qui estime la probabilité de résolution par question via un échantillonnage, puis compare cette probabilité à celle d'un modèle non contaminé, en stratifiant les résultats selon la probabilité de résolution du modèle propre. Ils introduisent également RailCap, une méthode de mitigation qui détecte et corrige la contamination *pendant* la génération : si un échantillon revient sur une trajectoire gloutonne (signe de mémorisation), le token suivant est limité au deuxième choix le plus probable, dispersant ainsi la distribution des réponses.",
+    "resultats": "Les expériences menées sur plusieurs modèles contaminés et benchmarks montrent que les stratégies de mitigation existantes surestiment largement leur capacité à restaurer les performances réelles, comme le révèle la métrique SA-PPG. RailCap obtient les meilleurs résultats en termes de SA-PPG, démontrant une suppression plus efficace de la contamination sans sacrifier la dispersion des réponses.",
+    "limites": "Le contenu disponible ne précise pas les benchmarks exacts utilisés ni les détails sur la taille des échantillons pour estimer les probabilités par question, ce qui pourrait influencer la robustesse des résultats. De plus, RailCap repose sur une hypothèse forte : la détection de la mémorisation via un retour à la trajectoire gloutonne, qui pourrait ne pas couvrir tous les cas de contamination.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche rigoureuse et ses contributions méthodologiques, notamment SA-PPG et RailCap, qui pourraient redéfinir l'évaluation et la mitigation de la contamination dans les benchmarks d'IA."
+   }
+  },
+  {
+   "id": "6a7189717aa9573d",
+   "title": "PrivacyPeek: Auditing What LLM-Based Agents Acquire, Not Just What They Say",
+   "url": "https://huggingface.co/papers/2606.00152",
+   "summary": "LLM-based agents are rapidly advancing, autonomously invoking external tools to complete multi-step tasks for users. However, agents often acquire more sensitive information than the task requires. Existing privacy benchmarks audit what the agent's response or outgoing actions disclose, but overlook the acquisition stage where data first enters the agent's context. The over-acquired information is then one careless action or one attack away from an outright leak. To assess its prevalence, we introduce PrivacyPeek, a benchmark for evaluating acquisition-stage privacy leakage of LLM-based agents, with 1{,}182 cases across 7 acquisition behaviours and 16 application domains. Specifically, Acquisition Inspection examines the agent's tool-call trajectory, both the tools it invokes and the data it receives, to detect when it acquires sensitive information beyond the task scope. Probe Elicitation then issues a follow-up probe and measures how readily an attacker could elicit sensitive information the agent acquired but did not disclose. Our experiments on 10 LLM-based agents across 4 model families show that the unnecessary acquisition of sensitive information is widespread. In addition, we observe a correlation between the task-completion capability and acquisition-stage leakage. Prompt-level defences reduce only a small fraction of acquisition-stage leakage, leaving the majority unmitigated. These results make auditing acquisition-stage privacy both urgent and necessary. Our dataset and code are available at https://github.com/Xuan269/PrivacyPeek-Resource.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2606.00152"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "regulation"
+   ],
+   "tldr": "Propose PrivacyPeek, un benchmark pour auditer l'acquisition de données sensibles par les agents LLM (au-delà de leur réponse). Montre que les agents acquièrent souvent des informations inutiles, posant des risques de fuite, avec des résultats alarmants sur 10 modèles.",
+   "score": 8.5
+  },
+  {
+   "id": "809b966bf82d298b",
+   "title": "SimWAM: A Simple World Action Model for End-to-End Autonomous Driving",
+   "url": "https://huggingface.co/papers/2608.07468",
+   "summary": "World-Action Models (WAMs) improve end-to-end autonomous driving by transferring video dynamics priors to action prediction, but existing methods require costly future generation at inference. We present SimWAM, a simple yet effective WAM that uses video generation purely as a training signal. It co-trains a pretrained video expert and a lightweight action expert with joint flow matching. An isolated attention mask keeps action prediction independent of future frames, allowing the video branch to be discarded after training and leaving a self-contained planner that directly predicts trajectories. Since the two experts share no parameters and interact only through a unified attention interface, the video backbone could be replaced and the action expert scaled independently without modifying the learning objective or inference pipeline. We further apply reinforcement learning to optimize a compositional driving reward beyond trajectory imitation. Our SimWAM achieves 91.5 PDMS on NAVSIM, surpasses state-of-the-art WAM-based planners with substantially lower latency, and transfers zero-shot to nuScenes. These results position SimWAM as a simple yet solid baseline that could readily benefit from advances in video generation for efficient autonomous driving. The code and model weights are available at https://github.com/H-EmbodVis/SimWAM/",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2608.07468"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "SimWAM introduit une approche simplifiée pour les modèles de conduite autonome (WAM) en utilisant la génération vidéo uniquement comme signal d'entraînement, combinée à un *flow matching* joint et un masque d'attention isolé pour prédire les trajectoires sans dépendre des frames futures. Résultat : 91.5 PDMS sur NAVSIM, latence réduite et généralisation zero-shot à nuScenes, avec une architecture modulaire et scalable.",
+   "score": 8.5
+  },
+  {
+   "id": "36227cba327062b3",
+   "title": "Skaling: Chinchilla's Exponents Meet Kaplan's Coupling",
+   "url": "https://huggingface.co/papers/2608.07222",
+   "summary": "Neural scaling laws are foundational for language model development, yet standard formulations systematically under- and overestimate loss at data-scarce and overtraining extremes. This failure originates in the underlying assumption that model size and training data impact the loss independently. To address this, we introduce the Skaling law, a generalized functional form that couples model capacity and data through a single interaction exponent. This simple extension reduces the Mean Absolute Percentage Error (MAPE) by 1.5-3x across both interpolation and extrapolation regimes. When paired with a sparse grid strategy restricted to low-compute regimes, the Skaling law achieves accurate full-grid extrapolation using approximately 10x less compute than uniform sweeps. By enabling reliable performance prediction from small-scale experiments, the Skaling law provides a more robust and resource-efficient framework for allocating compute budgets in next-generation model training.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.07222"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite",
+    "benchmark"
+   ],
+   "tldr": "Skaling propose une loi d'échelle généralisée couplant capacité du modèle et données via un exposant d'interaction, réduisant l'erreur de prédiction de 1.5-3x sur les régimes de données rares et de sur-entraînement. Permet une extrapolation précise avec 10x moins de calculs que les grilles uniformes.",
+   "score": 8.5
+  },
+  {
+   "id": "e0d045a69662cfad",
+   "title": "When Privileged Guidance Misaligns: State-Matched Routing and Contextualized Self-Distillation for Multi-Turn Agents",
+   "url": "https://huggingface.co/papers/2608.05219",
+   "summary": "Privileged on-policy distillation provides dense supervision for multi-turn agents by allowing a synchronized teacher to re-score the student's response at every turn with access to training-only references, such as successful trajectories. In interactive environments, however, the student's preceding actions continually change the execution state. As the student takes different actions or completes subgoals in a different order, its rollout may reach states not covered by the reference, making the reference an unreliable source of guidance for the state actually reached. Applying privileged distillation indiscriminately therefore creates state--reference mismatch. This mismatch motivates a central objective: providing privileged reference guidance that remains compatible with the student's current execution state. We introduce State-Matched Routing and Contextualized Self-Distillation (SMRC-SD), which explicitly determines when and how a privileged trajectory should guide an on-policy student. At each turn, SMRC-SD verifies whether the student's current execution state matches a supported state along the reference trajectory. Distillation is applied only at matched states, filtering out turns for which the reference lacks locally compatible guidance. For each matched state, SMRC-SD further constructs state-conditioned teacher context from the successful trajectory, grounding supervision in the state actually reached. Across ALFWorld and WebShop, SMRC-SD consistently outperforms unconditional successful full-path distillation. With Qwen3-1.7B, it improves task success from 0.746 to 0.865 on ALFWorld and from 0.574 to 0.693 on WebShop. Controlled routing and context ablations support both selecting locally supported turns and constructing state-compatible teacher context as contributors to these gains. Code is available at https://github.com/liujunzhuo/SMRC-SD.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.05219"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Propose SMRC-SD pour résoudre le problème de mismatch entre états et références dans la distillation privilégiée des agents multi-tours. Filtre les états incompatibles et applique une distillation contextuelle, améliorant la stabilité et l'efficacité de l'entraînement.",
+   "score": 8.2
+  },
+  {
+   "id": "7dba139438058034",
+   "title": "The Optimizer Is the Agent: Reasoning-Driven Search across Prompts, Programs, and ML Workflows",
+   "url": "https://huggingface.co/papers/2608.06714",
+   "summary": "Recent systems for optimizing prompts, programs, and ML workflows typically rely on explicit outer-loop controllers such as evolutionary search, bandits, or textual-gradient methods. We ask a fundamentally different question: how much of this search policy can be internalized by a single tool-using agent? We present ReASearch, a unified framework for reasoning-driven optimization in which the agent autonomously decides what to evaluate, how to diagnose failures, which edits to make, and when to verify or restart. Rather than serving only as a proposal generator guided by hand-designed heuristics, the agent actively analyzes outcomes, allocates budget, and refines its strategy over long horizons through persistent memory. With a shared agent loop and domain-specific tools, ReASearch instantiates the exact same scaffold to optimize prompts, programs, and ML workflows. Across 14 diverse tasks, it is competitive with and mostly better than specialized optimization systems, achieving gains of 2% to 40% over strong domain-specific baselines, and in some cases discovering solutions that improve on prior human best-known results. Crucially, we observe that complex search behaviors, which are typically implemented by explicit controllers, emerge naturally from the agent's reasoning process.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.06714"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "ReASearch propose un agent unifié pour optimiser prompts, programmes et workflows ML via un cadre de *reasoning-driven search*, internalisant la politique de recherche sans contrôleur externe. Résultats compétitifs sur 14 tâches, avec gains de 2% à 40% sur les baselines, et découverte de solutions surpassant les meilleurs résultats humains connus.",
+   "score": 7.9
+  },
+  {
+   "id": "8fd0f4c59fa0cf69",
+   "title": "Beyond Simply Environment Scaling: Designing Effective Environment Distributions for Multimodal Agent Learning",
+   "url": "https://huggingface.co/papers/2608.03571",
+   "summary": "Recent works train agents by constructing large-scale multimodal environment pools. However, we find that simply increasing the number of multimodal environments does not always benefit. We further analyze the limitations in current multimodal environment distributions through a series of experiments. Based on these findings, we study how to build more effective training environment distributions from two dimensions: **diversity** and **difficulty structure**. For diversity, we propose **Ability-aware Environment Selection (AES)** to obtain diverse environment sets. For difficulty structure, we propose **Hierarchical Difficulty Curriculum (HDC)**, which organizes curriculum learning through two difficulty levels: harness weakening and state-scale progression. Experiments show that AES and HDC effectively improve multimodal agent training.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2608.03571"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Démontre que l'augmentation brute de la diversité des environnements multimodaux ne suffit pas pour l'entraînement d'agents. Propose des méthodes (AES et HDC) pour structurer la difficulté et la diversité, améliorant l'efficacité de l'apprentissage multi-modal.",
+   "score": 7.6
+  },
+  {
+   "id": "c5a68888cc1d99b4",
+   "title": "Reinforcement Learning with Evolving Rubrics as Rewards for Audio Reasoning",
+   "url": "https://huggingface.co/papers/2608.02831",
+   "summary": "Audio reasoning is essential for machine understanding of the acoustic world. Reinforcement learning with verifiable rewards can elicit such reasoning, yet existing reward designs are complementary in their limitations: outcome-based rewards supervise only the final answer and let the model reach it without attending to the audio, whereas process-based rewards score the reasoning itself but rely on coarse, hand-crafted, and fixed criteria that neither adapt to each question nor stay grounded in the acoustic evidence. Moreover, questions differ in what they demand, with some hinging on perception and others on multi-step reasoning, and any static criterion weakens as the policy improves. Supervising the reasoning process with fine-grained, audio-grounded, and adaptive rewards is therefore crucial, yet challenging since such rewards are impractical to design by hand for every sample. To this end, we introduce AudioRubrics, a reinforcement learning framework that supervises audio reasoning with self-evolving, audio-grounded rubric rewards. AudioRubrics synthesizes per-sample rubrics from the raw waveform and, conditioned on the model's own rollouts, regenerates and reweights criteria per group, supplying a continuous learning signal that keeps targeting the current policy's weaknesses as static criteria saturate. Comprehensive evaluations across three audio reasoning benchmarks reveal that AudioRubrics substantially outperforms a wide range of open-source and training-based baselines. Furthermore, our analysis shows that the gains scale with the capability of the rubric generator and judge, and AudioRubrics converges to a stable reasoning length that avoids both degenerate collapse and unbounded growth. The improvement in audio perception further demonstrates the effectiveness of anchoring supervision in the acoustic evidence. Our project page is available at https://audiorubrics.github.io.",
+   "published": "2026-08-03T15:46:13.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.02831"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Introduit AudioRubrics, un cadre RL pour superviser le raisonnement audio via des rubriques auto-évolutives et adaptatives. Permet une supervision fine et audio-groundée des processus de raisonnement, évitant les limites des récompenses statiques.",
+   "score": 7.6
+  },
+  {
+   "id": "c810d3ef38fd8fc8",
+   "title": "Addressable Memory for Video World Models",
+   "url": "https://huggingface.co/papers/2608.07408",
+   "summary": "We study visual persistence in interactive video world models. These models rely on a Key-Value (KV) cache as a growing visual memory to carry forward previously generated frames. However, we find that models can no longer reliably address stored content once rollouts extend beyond the training horizon, because temporal Rotary Positional Embeddings (RoPE) offsets then fall outside the range seen during training and the model struggles to retrieve the relevant visual information through attention. Moreover, naively compressing the cache in the RoPE-rotated space corrupts memory by averaging together incompatible positional phases. To address this, we propose WorldTrace, a training-free memory framework for long-horizon visual persistence. WorldTrace keeps compressed memory addressable by assigning each summary slot a distinct, in-distribution virtual position. Within this addressable cache, we study two memory compression approaches: WorldTrace-Field compresses history for temporal coherence, while WorldTrace-Landmark stores verbatim scene traces at detected transitions for episodic recall. We further introduce LoopBench, a benchmark evaluating whether a compressed cache can reconstruct a previously visited scene after a long detour. WorldTrace-Field improves temporal consistency by +15.5%, and WorldTrace-Landmark improves episodic recall by +19.5% on LoopBench, extending visually persistent generation without retraining.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.07408"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "WorldTrace résout le problème d'adressabilité de la mémoire visuelle dans les *world models* vidéo en assignant des positions virtuelles aux slots de mémoire compressée, évitant la corruption des phases temporelles. Deux approches (Field/Landmark) pour la cohérence temporelle et le rappel épisodique, évaluées via LoopBench.",
+   "score": 7.6
+  },
+  {
+   "id": "c38116f3f5075f57",
+   "title": "Characterizing the Quality Profile of AI-Generated C++ in Production",
+   "url": "https://huggingface.co/papers/2608.06640",
+   "summary": "The widespread integration of AI coding assistants offers undeniable boosts to engineering velocity. Yet, recent studies point to a growing trade-off, revealing persistent challenges with code quality and maintainability. Industry leaders, including frontier AI labs, echo these concerns. As large language models are increasingly relied upon to author production code, understanding their impact on shipped software quality has become a critical priority. However, assessing these effects in industrial workflows remains difficult due to observability barriers. We study the impact of AI-generated code on production quality within a large enterprise operating global products relied upon by billions of users daily. Driven by this scale and user trust, the organization values code quality and has built thorough observability for every line of code deployed into production, enabling us to overcome measurement barriers to assess these effects. This study presents a large-scale empirical analysis of AI-generated C++ code from April 2025 to April 2026, tracking 3.52 million code changes across this enterprise's brownfield codebase. The core purpose is to understand the quality, performance, and maintenance characteristics of AI-generated code compared to human-written code in a production environment at scale. We find that AI-generated C++ code has a distinct quality profile, showing higher rates of interface and coupling burdens, copy and allocation overheads, and a reliance on explicit loops over optimized standard APIs. These issues translate into tangible downstream costs, including increased review effort and a 5-8% increase in compute resource consumption. However, we demonstrate that providing models with targeted, taxonomy-informed feedback can mitigate these effects, leading to an 11.1% reduction in targeted static analysis warnings and improved computational efficiency.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.06640"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "produit",
+    "regulation",
+    "autre"
+   ],
+   "tldr": "Étude empirique à grande échelle (3.52M changements de code) sur l'impact des assistants IA génératifs en C++ dans un environnement de production à l'échelle mondiale. Analyse des trade-offs entre vélocité et qualité/maintenabilité, avec des insights critiques pour l'industrie et la régulation.",
+   "score": 7.3
+  },
+  {
+   "id": "392384eef4d9b012",
+   "title": "hahhforest/pi-textbook",
+   "url": "https://github.com/hahhforest/pi-textbook",
+   "summary": "《动手学 Pi》：沿 15 个真实 checkpoint 从零构建 Pi-style Agent",
+   "published": "2026-07-21T04:17:35Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 762,
+    "language": "TypeScript"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Guide pratique en chinois pour construire un agent de type Pi-style à partir de checkpoints réels, avec une approche pédagogique mais sans validation académique.",
+   "score": 7.1
+  },
+  {
+   "id": "c6025caa5234adb6",
+   "title": "Kritt-ai/open-kritt",
+   "url": "https://github.com/Kritt-ai/open-kritt",
+   "summary": "Open-source, self-hosted AI vulnerability research tool that orchestrates agents to find and validate security issues in code.",
+   "published": "2026-07-20T20:26:24Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1643,
+    "language": "JavaScript"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "agents"
+   ],
+   "tldr": "Outil open-source en JavaScript pour la recherche de vulnérabilités via orchestration d'agents (auto-hébergé). Pertinent pour les agents IA et la sécurité, mais manque de détails sur la méthodologie ou les benchmarks.",
+   "score": 7.1
+  },
+  {
+   "id": "b819389625093bad",
+   "title": "Do AI Personas Grow? Analyzing and Benchmarking Personality Evolution in LLM Agents After Life Events",
+   "url": "https://huggingface.co/papers/2608.06485",
+   "summary": "Personality-conditioned LLM agents (PC-Agents) are increasingly used in emotional support, social simulation, and role-playing, motivating the development of lifelong agents that remain coherent over extended interactions. A key component of such coherence is personality evolution: agents should undergo plausible, psychology-grounded changes as they experience life events in different contexts. Although prior work shows that LLM personalities can shift under contextual perturbations, how these shifts vary across traits, events, personas, and models remains poorly understood. We study event-induced personality change after 11 major life events, using the Big Five traits as a psychometric anchor and interpreting the resulting trajectories against longitudinal evidence from human personality psychology. Across four diagnostic axes, PC-Agents exhibit measurable trait shifts at similar rates for event-trait pairs with and without documented human change directions. Even when shifts follow the expected direction, their magnitudes usually fall below human effect-size ranges. Gender and cultural-region prompts show little moderating effect, while persona-level dispersion is compressed three- to four-fold relative to human samples. To enable systematic comparison, we introduce BFI-Adapt, a reusable benchmark for scoring the directional fidelity of event-induced personality change, and use it to rank 14 models. A validation suite shows that the measured shifts exceed no-event retest noise, remain stable under independently paraphrased prompts, exhibit limited and model-dependent convergence with scenario-based behavioral choices, and persist across intervening unrelated dialogue. Together, these checks establish the measured trajectories as robust event-conditioned response patterns. Our results suggest that current PC-Agents simulate the mean of human personality dynamics, but not its shape.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.06485"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étudie l'évolution de la personnalité des agents LLM après des événements de vie, comparant les changements de traits (Big Five) avec des données psychologiques humaines. Montre des écarts d'ampleur et une compression de la dispersion des traits.",
+   "score": 7.0
+  },
+  {
+   "id": "845aa85c647e4615",
+   "title": "Round-Trip Consistency: Bidirectional Diffusion Models Can Predict Their Own Rollout Errors",
+   "url": "https://huggingface.co/papers/2608.00675",
+   "summary": "Autoregressive models accumulate error over long rollouts, yet at deployment there is no ground truth to measure it against. We train a single conditional latent diffusion model that steps a dynamical system forward or backward in time via a direction flag, and show that this bidirectionality supplies a measurement-free test-time error signal: rolling forward i steps and then backward i steps must return the model to its start, so the round-trip discrepancy C_i is a self-supervised proxy for the unobservable rollout error: no ensembles, no held-out data, no governing equations, for one extra rollout. We validate on compressible magnetohydrodynamics (MHD), an astrophysical turbulent radiative mixing layer, and natural face videos (CelebV-HQ). On held-out MHD trajectories, C_i ranks rollout error (Spearman 0.91-0.98 at fixed depth; 0.69 pm 0.16 within trajectories), and a simple calibrator fit on training rollouts predicts its magnitude to within 1.14times (68%) and 1.29times (95%) with near-nominal coverage - one nat beyond a depth-only predictor, transferring to all six decoded physical fields. The same signal flags the out-of-distribution Orszag-Tang vortex (AUROC 0.98; 1.0 by depth 10) exactly where sampling-dispersion baselines invert, and it cuts incurred error by 15% at 80% coverage - three times the depth-only baseline. Bidirectional training comes at negative cost, beating direction specialists in both directions, and the backward direction doubles as a fast inverse solver. On LE-PDE-UQ's turbulent Navier-Stokes benchmark, a single bidirectional model reaches accuracy within 1.3times of their ten-model ensemble at a tenth of the training cost, with the best training-free pixel-level calibration. Round-trip consistency turns reversibility into a practical trust signal for generative models.",
+   "published": "2026-08-01T09:49:46.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.00675"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision",
+    "autre"
+   ],
+   "tldr": "Démontre que les modèles de diffusion bidirectionnels (forward/backward) peuvent prédire leurs erreurs de rollout via la cohérence round-trip (C_i), sans supervision externe. Validé sur des données MHD et des vidéos, avec des applications en astrophysique et vision.",
+   "score": 7.0
+  },
+  {
+   "id": "c4e1e59484dc3b23",
+   "title": "Uncertainty-Aware World Model for Aerial Image-Goal Navigation",
+   "url": "https://huggingface.co/papers/2608.05597",
+   "summary": "Aerial image-goal navigation requires an unmanned aerial vehicle (UAV) to reach a target location specified by a goal image. Existing world-model-based methods rank candidate trajectories using predicted futures, but typically rely on only one or a few point predictions, which is inadequate for large-scale outdoor environments with substantial future-state uncertainty. To address this limitation, we propose the Uncertainty-Aware Navigation World Model (UA-NWM), an efficient latent world model for aerial image-goal navigation, which formulates trajectory scoring as conditional out-of-distribution detection. UA-NWM represents plausible futures with an uncertainty subspace and decomposes the prediction--goal discrepancy into uncertainty-explainable and unexplainable components. Only the unexplainable residual is used for scoring, enabling robust selection without multiple future samples. Extensive experiments demonstrate that UA-NWM consistently outperforms existing navigation world models while maintaining low inference latency. Real-world UAV experiments further validate its practical applicability. Project page: https://duryi.github.io/UA-NWM-Project-Page",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.05597"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "robotique",
+    "interpretabilite"
+   ],
+   "tldr": "UA-NWM propose un modèle de navigation aérienne par image-goal basé sur un *world model* latent intégrant une détection d'incertitude pour évaluer les trajectoires candidates, réduisant les erreurs liées aux prédictions ponctuelles. Performances supérieures aux méthodes existantes avec une latence faible, validé en conditions réelles.",
+   "score": 7.0
+  },
+  {
+   "id": "d8fe63772e2bcdc4",
+   "title": "Modular TTT: Rethinking Test-Time Training as Composable Modules",
+   "url": "https://huggingface.co/papers/2608.07110",
+   "summary": "Test-time training (TTT) views sequence modeling as an online learning problem in which fast weights are updated by an internal learning rule. Despite the growing number of TTT variants, existing approaches typically hard-code each variant separately, which makes it difficult to design new TTT methods and to isolate the role of each component. To address this, we propose Modular TTT, a framework that represents the inner learner as a directed acyclic graph and exposes the fast-weight network, loss function, learning rate, weight decay, and normalization as explicit design dimensions. Modular TTT automatically composes primitive-level train-view forward, train-view backward, and causal query-view rules into the full graph-level TTT computation, including the fast-weight state transition. Using Modular TTT, we systematically ablate the components of TTT and find that small learning-rate initialization, weight decay, and a single-layer nonlinearity improve performance, while MSE and inner-product losses perform similarly. Deeper fast-weight networks and normalization tend to hurt performance because they induce excessively large activations, while residual connections and gating provide little measurable benefit. Guided by these findings, we train the best resulting variant as 410M- and 1.45B-parameter models on 100B tokens, and observe training loss and benchmark performance comparable to Gated DeltaNet.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.07110"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "interpretabilite",
+    "optimisation"
+   ],
+   "tldr": "Modular TTT formalise le *test-time training* (TTT) comme un graphe de modules composables (pertes, taux d'apprentissage, normalisation) pour étudier systématiquement l'impact de chaque composant. Résultats : régularisation légère et couches non linéaires améliorent les performances, tandis que les architectures profondes nuisent à la stabilité.",
+   "score": 6.4
+  },
+  {
+   "id": "7c213e5a7519af56",
+   "title": "makecindy/cindy",
+   "url": "https://github.com/makecindy/cindy",
+   "summary": "Consider it done. The open-source AI agent that works out of the box · 想到，就能做到。开源、开箱即用的 AI Agent。",
+   "published": "2026-07-22T17:49:34Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1957,
+    "language": "TypeScript"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Projet open-source d'agent IA prêt à l'emploi, mais avec des claims marketing ('out of the box') et une documentation limitée.",
+   "score": 6.2
+  },
+  {
+   "id": "3ad306b404969d53",
+   "title": "mereyabdenbekuly-ctrl/clodex-ide",
+   "url": "https://github.com/mereyabdenbekuly-ctrl/clodex-ide",
+   "summary": "Local-first, zero-trust agentic IDE for verifiable autonomous software development.",
+   "published": "2026-07-12T10:35:44Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 863,
+    "language": "TypeScript"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "IDE agentique local-first pour le développement autonome de logiciels, avec vérification et zero-trust. Concept innovant mais peu documenté, risqué pour une évaluation technique approfondie.",
+   "score": 6.2
+  },
+  {
+   "id": "2c5b1d2ac6412ae9",
+   "title": "Can MLLMs Decode the Creative Leap? Introducing C4 for Cross-Concept Understanding",
+   "url": "https://huggingface.co/papers/2608.06501",
+   "summary": "Creative capabilities of MLLMs matter in design, communication, education, and human--AI collaboration, yet remain difficult to evaluate because explicit targets and reward signals are scarce compared with accuracy-oriented tasks. Cross-concept understanding is a core cognitive capacity underlying receptive creativity. It enables a perceiver to recover intended meaning from non-obvious but meaningful conceptual relations. We operationalize item construction as cross-concept encoding and model inference as cross-concept decoding. We introduce C4, a cognition-inspired evaluation framework for Chengyu (Chinese idiom)-based Cross-Concept Creativity. Its encoding component maps target slots to imageable substitute concepts along bridge paths in a manually annotated and third-party-reviewed cross-concept network, enabling batch generation with explicit structure, difficulty indexed by bridge count and depth, and exact answers. Using this framework, we instantiate the C4 Evaluation Set (C4-Eval), comprising 184 synthetic items and 37 human-created cross-concept chengyu figures collected from online sources. We manually construct and review cross-concept relations, bridge paths, and reasoning processes for the collected figures. Each C4-Eval item is instantiated in five task settings, yielding 884 primary answer-recovery cases. Across ten evaluated MLLMs, the strongest closed models reach 50.7% and 48.0% primary accuracy, while open-source models remain substantially lower. Candidate constraints improve accuracy sharply, but bridge hints and explanation requests provide only modest gains. These results expose a substantial gap in how current MLLMs decode creatively encoded meaning through cross-concept relations. The code is in the supplementary material.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.06501"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "autre"
+   ],
+   "tldr": "Propose C4, un cadre d'évaluation de la créativité des MLLM via des idiomes chinois (Chengyu), combinant encodage de concepts croisés et décodage. Intéressant pour l'évaluation de capacités cognitives avancées, mais niche et peu généralisable.",
+   "score": 6.1
+  },
+  {
+   "id": "f0347f80f28d87aa",
+   "title": "Douyin Multimodal Embedding Model Technical Report",
+   "url": "https://huggingface.co/papers/2608.02148",
+   "summary": "Multimodal representation learning is a cornerstone of modern AI. By encoding multimodal queries and targets into vectors, it powers industrial search and recommendation and underpins modern agents. Real-world platforms with complex modalities and massive-scale content, such as Douyin, Xiaohongshu, and YouTube, demand both efficiency under billion-scale indexing and fine-grained discrimination for hard matching. Existing MLLM embedding models rarely satisfy both. Contrastive models are efficient but rely on pair-level supervision too coarse for fine-grained distinctions, while CoT-based models improve discrimination through explicit generation impractical to serve online. We present Douyin Multimodal Embedding (DME), a model trained in two stages to combine both strengths. Stage 1 performs large-scale contrastive pre-training that establishes a unified multimodal embedding space with broad modality and task coverage. Stage 2 supplements semantic sufficiency, the property that an embedding is grounded in retrieval-relevant evidence and preserves fine-grained counterpart-side semantics, via two mechanisms. Evidence-Grounded Typed Latent Reasoning organizes retrieval evidence through hidden-space latent reasoning, and Cross-Conditional Reconstruction enforces counterpart-side semantics through cross-directional autoregressive reconstruction. Both act only during training and add only marginal query-side overhead, so DME serves as efficiently as a standard contrastive encoder. On MMEB-v2, DME reaches state-of-the-art results at comparable scales for its 2B and 9B variants (74.8 and 78.4), with especially strong video and visual-document tasks. In production, DME delivers a 2.92% relative gain on Douyin's in-house offline evaluation set, is deployed across Douyin scenarios such as generative, image, and AI search, and yields a 0.1% Lifetime (LT) gain in online A/B testing on Douyin search.",
+   "published": "2026-08-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.02148"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "produit",
+    "benchmark"
+   ],
+   "tldr": "DME (Douyin Multimodal Embedding) combine un pré-entraînement contrastif à grande échelle et un mécanisme de *reasoning* pour améliorer la discrimination fine dans les embeddings multimodaux, ciblant les plateformes industrielles avec des milliards d'items. Approche en deux étapes pour concilier efficacité et précision.",
+   "score": 6.1
+  },
+  {
+   "id": "ee1f910b87d5af49",
+   "title": "0xwilliamortiz/openclaude-improved",
+   "url": "https://github.com/0xwilliamortiz/openclaude-improved",
+   "summary": "runs anywhere. uses anything",
+   "published": "2026-07-26T21:58:28Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 569,
+    "language": "TypeScript"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Framework TypeScript pour exécuter des modèles de langage (Claude) de manière portable, mais sans benchmarks ni évaluation technique approfondie.",
+   "score": 5.6
+  },
+  {
+   "id": "b437e30037a78af4",
+   "title": "QuantumByteOSS/quantumbyte",
+   "url": "https://github.com/QuantumByteOSS/quantumbyte",
+   "summary": "Open-source app builder engine — intent to working app",
+   "published": "2026-07-14T04:53:39Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 435,
+    "language": "Python"
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Moteur open-source pour générer des applications à partir d'intentions, mais avec des claims vagues ('working app') et une implémentation peu documentée.",
+   "score": 4.7
+  }
+ ]
+}
