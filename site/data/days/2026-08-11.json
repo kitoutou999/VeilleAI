@@ -1,0 +1,718 @@
+{
+ "date": "2026-08-11",
+ "digest": {
+  "headline": "Steerling-8B prouve que l'interprétabilité peut être intégrée dès l'entraînement des LLM sans sacrifier les performances",
+  "overview": "Les avancées du 11 août 2026 révèlent une maturation des techniques d'interprétabilité, d'optimisation des agents et de distillation de connaissances. Les benchmarks évoluent pour évaluer des tâches plus complexes, tandis que les vulnérabilités des architectures propriétaires et les solutions de sécurité pour les agents autonomes gagnent en visibilité.",
+  "highlights": [
+   {
+    "title": "Interprétabilité native dans les LLM",
+    "text": "Steerling-8B démontre que l'interprétabilité peut être une contrainte intégrée dès l'entraînement, avec des représentations alignées sur des concepts humains et une capacité d'intervention ciblée sans réentraînement. Cette approche contredit l'idée que performance et interprétabilité sont antagonistes, ouvrant la voie à des modèles plus contrôlables et auditable."
+   },
+   {
+    "title": "Agents auto-évolutifs et benchmarks réalistes",
+    "text": "Ouroboros, un agent auto-développeur, atteint des scores records sur Terminal-Bench 2.1 (86,74%) et OSWorld-Verified (90,69%) grâce à une évolution revue de son code et outils. Parallèlement, SWE-Bench ProMax corrige les biais des benchmarks existants avec 170 tâches de refactoring multilingue, évaluant les agents sur des changements complexes et préservant le comportement."
+   },
+   {
+    "title": "Optimisation de la distillation et vulnérabilités des LLM",
+    "text": "Deux innovations améliorent la distillation de connaissances : un cache des logits du professeur (réduction de 29-41% des coûts mémoire) et une perte KL segmentée pour gérer des contextes longs. Cependant, une étude révèle une faille majeure dans les API propriétaires, permettant d'extraire des traces de raisonnement chiffrées via des modèles moins protégés, exposant des risques de fuite de données."
+   },
+   {
+    "title": "Sécurité et évaluation systématique des agents",
+    "text": "A^2E propose un cadre automatisé pour auditer les *harnesses* d'agents, capturant des métriques multidimensionnelles et révélant des écarts de performance entre modèles. SHE et Agentic Harnesses renforcent la sécurité des agents autonomes, avec une réduction de 3,1x du taux de succès des attaques et une couche de vérification LLM-as-a-Judge pour la robotique."
+   },
+   {
+    "title": "Architectures et optimisations pour l'inférence et l'entraînement",
+    "text": "OasisKV réduit la pression mémoire du cache KV via un préchargement anticipé exploitant la sparsité de l'attention, tandis que Matryoshka LM permet de servir plusieurs sous-modèles imbriqués avec une réduction de 36% des coûts de calcul. FedAS-LoRA optimise le partage des facteurs LoRA en fédéré via une sélection dynamique basée sur le rang."
+   }
+  ],
+  "trend": "Les recherches se concentrent sur l'intégration de contraintes structurelles (interprétabilité, sécurité) dès la conception des modèles, tout en optimisant les coûts de calcul et de mémoire. Les agents autonomes gagnent en robustesse et en capacité d'auto-amélioration, mais leur évaluation et leur sécurisation deviennent des enjeux critiques."
+ },
+ "items": [
+  {
+   "id": "bb1de2623361d4c4",
+   "title": "Scaling Inherently Interpretable Language Models",
+   "url": "https://huggingface.co/papers/2608.07594",
+   "summary": "Interpretability is often treated as a tax on capability: language models are trained as opaque systems, then explained after the fact, with methods whose reliability is difficult to establish. In this work, we challenge this premise. Rather than reverse-engineering a model, we make interpretability a constraint of the training pipeline, optimized alongside the language modeling objective. Across three orders of magnitude of compute, on both autoregressive and diffusion language models, interpretability scales with capability rather than against it. Surprisingly, model representations become more disentangled and aligned with human-understandable concepts with scale. We instantiate the training-time recipe with Steerling-8B, a diffusion language model with a causal attention mask. For any group of generated tokens, Steerling-8B attributes the output to relevant input tokens, human-understandable concepts, and training data. This enables closed-loop intervention: diagnose an output through its concept or feature attribution, retrieve similar training data, and correct the behavior through concept steering without retraining. Steerling-8B remains competitive with open peer models trained on substantially 2-16x more compute, suggesting a different scaling paradigm: interpretability can be designed into training, and it improves with scale.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.07594"
+   },
+   "relevance": 10,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Steerling-8B démontre que l'interprétabilité peut être intégrée comme contrainte dès l'entraînement des LLM, avec des représentations qui deviennent plus alignées sur des concepts humains à mesure que la taille du modèle augmente, permettant des interventions ciblées sans réentraînement.",
+   "score": 9.7,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de l'interprétabilité dans les modèles de langage, souvent considérée comme une contrainte post-entraînement plutôt qu'une propriété intrinsèque. Les méthodes actuelles d'explication (comme les attributions de tokens ou les analyses de features) sont peu fiables et appliquées après coup, ce qui limite leur utilité pour corriger ou comprendre les comportements des modèles.",
+    "methode": "Les auteurs proposent d'intégrer l'interprétabilité dès la phase d'entraînement en la traitant comme une contrainte optimisée conjointement avec l'objectif de modélisation du langage. Ils utilisent un modèle de diffusion pour le langage (Steerling-8B) avec un masque d'attention causal, permettant d'attribuer dynamiquement les sorties à des tokens d'entrée, des concepts compréhensibles par l'humain et des données d'entraînement. Cette approche repose sur une architecture où les représentations internes se *désenchevêtrent* (disentangled) avec l'échelle, facilitant l'alignement avec des concepts interprétables. Le modèle permet aussi des interventions en boucle fermée : diagnostic via l'attribution de concepts, récupération de données similaires, et correction par *steering* sans réentraînement.",
+    "resultats": "Les résultats montrent que l'interprétabilité s'améliore avec l'échelle (trois ordres de grandeur de calcul testés), contrairement à l'idée reçue qu'elle serait antagoniste aux performances. Steerling-8B reste compétitif face à des modèles ouverts entraînés avec 2 à 16 fois plus de ressources, validant l'hypothèse d'un *scaling* bénéfique pour l'interprétabilité. Les représentations internes deviennent plus alignées avec des concepts humains à mesure que le modèle grandit, et le système permet des corrections ciblées sans perte de performance.",
+    "limites": "Le document ne détaille pas les mécanismes précis de *disentanglement* des représentations ni les critères quantitatifs utilisés pour mesurer l'alignement avec les concepts humains. L'efficacité du *steering* en boucle fermée dépend fortement de la qualité des attributions, dont la robustesse n'est pas entièrement démontrée. Enfin, la généralisation à d'autres architectures (hors diffusion) ou tâches reste à explorer.",
+    "verdict": "Ce travail mérite une attention particulière car il propose un changement de paradigme en intégrant l'interprétabilité dès la conception, avec des résultats prometteurs sur le *scaling*, mais des vérifications indépendantes et des détails techniques supplémentaires sont nécessaires pour en confirmer la portée."
+   }
+  },
+  {
+   "id": "caf3653f9a0ebbb5",
+   "title": "Ouroboros: A Self-Developing Frontier Coding Agent with Reviewed Core Evolution",
+   "url": "https://huggingface.co/papers/2608.08311",
+   "summary": "We present Ouroboros, a self-developing agent harness whose tools, prompts, context assembly, and core implementation improve through reviewed commits that become the runtime for later work. Core evolution proceeds in two modes. In recursive free evolution, improvement is itself a task, and completing one evolution cycle can schedule the next. In experience-driven core evolution, ordinary work and social interaction expose bugs, rough edges, and inefficient context construction that lead to reviewed structural changes. On Terminal-Bench 2.1, an Opus 5 run scores 86.74%, the best result reported on the benchmark. On OSWorld-Verified, an Opus 5 run reaches 90.69%, exceeding the best previously reported score. A five-rollout CL-Bench campaign achieves a normalized reward of 0.2301, setting a new state of the art. Hope is the longest-running publicly documented Ouroboros deployment. It is a 161-day living agent experiment in free evolution under governed human communication across seven surfaces. Human interaction surfaces faults and generates proposals, but the agent decides which changes to pursue. Because a self-developing agent may rewrite its own code and select new model APIs, operational safety becomes a primary design problem: guardrails must remain authoritative under evolutionary and public social pressure. Benchmark campaigns use frozen system snapshots, while Hope continues live evolution on a separate lineage.",
+   "published": "2026-08-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2608.08311"
+   },
+   "relevance": 10,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Ouroboros présente un agent auto-développeur dont le code, outils et prompts évoluent via des commits revus, atteignant des scores records sur Terminal-Bench 2.1 (86,74%) et OSWorld-Verified (90,69%), tout en démontrant une capacité d'auto-amélioration sur 161 jours.",
+   "score": 9.4,
+   "deep_analysis": {
+    "probleme": "Ouroboros vise à résoudre le défi de l'auto-amélioration continue des agents d'IA, notamment pour les tâches de codage et d'interaction système. Le problème central est de permettre à un agent de corriger ses propres bugs, d'optimiser son contexte et ses outils, et d'évoluer structurellement sans intervention humaine directe, tout en garantissant une sécurité opérationnelle malgré les modifications auto-générées.",
+    "methode": "L'approche repose sur deux modes d'évolution : (1) *Recursive free evolution*, où l'amélioration du système est traitée comme une tâche explicite, avec des cycles d'évolution pouvant s'enchaîner automatiquement. (2) *Experience-driven core evolution*, où les interactions courantes (travail ou échanges sociaux) révèlent des faiblesses (bugs, inefficacités) menant à des modifications structurelles validées. Les commits revus deviennent le runtime pour les versions ultérieures. Ouroboros utilise des *guardrails* pour maintenir la sécurité malgré les réécritures de code ou les changements d'API. L'agent intègre aussi des benchmarks (Terminal-Bench 2.1, OSWorld-Verified, CL-Bench) pour évaluer ses performances, tandis qu'un déploiement long terme (*Hope*) teste l'évolution libre sous supervision humaine.",
+    "resultats": "Ouroboros obtient des performances de pointe : 86,74 % sur Terminal-Bench 2.1 (meilleur score rapporté) et 90,69 % sur OSWorld-Verified (dépassant le précédent record). Sur CL-Bench, une campagne à cinq rollouts atteint un *normalized reward* de 0,2301, établissant un nouvel état de l'art. Le déploiement *Hope* a fonctionné en évolution libre pendant 161 jours, démontrant une capacité à maintenir une amélioration continue sous gouvernance humaine.",
+    "limites": "Les détails techniques sur les mécanismes de *guardrails* et leur robustesse face à des modifications auto-générées restent flous, ce qui soulève des questions sur la sécurité à long terme. L'évaluation repose sur des benchmarks spécifiques, dont la généralisation à d'autres domaines n'est pas garantie. Enfin, la dépendance à des *snapshots* figés pour les benchmarks contraste avec l'évolution dynamique en production, laissant planer un doute sur la reproductibilité des performances.",
+    "verdict": "Ouroboros mérite une attention particulière pour son approche innovante de l'auto-évolution des agents, mais son adoption critique nécessite une analyse approfondie des garanties de sécurité et de la transférabilité des résultats."
+   }
+  },
+  {
+   "id": "4eac36729d995b1f",
+   "title": "SWE-Bench ProMax: Benchmarking Agents on Large-Scale Multilingual Code Refactoring",
+   "url": "https://huggingface.co/papers/2608.09802",
+   "summary": "As AI coding agents take on increasingly complex, long-horizon software engineering tasks, existing benchmarks are rapidly saturating and their evaluation quality has come under serious scrutiny: a recent audit found that nearly 60% of unsolved SWE-bench Verified instances contain flawed tests -- either overly narrow tests that reject correct solutions or overly broad tests that check unstated requirements -- and that frontier models can verbatim reproduce gold patches from training data. Code refactoring, which requires coordinated, behavior-preserving changes across many files, offers a substantially harder and more realistic test of agent capability, yet remains underserved by current benchmarks. We introduce SWE-Bench ProMax, an expert-curated, multilingual code refactoring benchmark of 170 instances drawn from real commits across seven programming languages (Python, Java, TypeScript, Go, C, C++, and Rust). Every instance undergoes rigorous, multi-stage curation that directly addresses the quality problems identified in prior benchmarks: issue descriptions are rewritten from scratch to provide precise, unambiguous specifications, and test suites are manually reviewed to remove overly narrow and overly broad tests. Tasks with insufficient complexity or limited cross-file scope are filtered out, yielding a benchmark of challenging, large-scale refactoring tasks that average 11.4 modified files and 261.6 lines of code per instance, substantially exceeding the scale of existing benchmarks. Experiments with frontier models under two agent scaffolds show that the best model achieves only 41.2% resolve rate, confirming that SWE-Bench ProMax presents a meaningful and unsaturated challenge for current AI coding agents. Our benchmark is available at https://huggingface.co/datasets/swe-bench-promax/SWE-Bench-ProMax.",
+   "published": "2026-08-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 70,
+    "arxiv_id": "2608.09802"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "SWE-Bench ProMax est un benchmark expertisé de 170 tâches de refactoring multilingue (7 langages), conçu pour évaluer les agents de codage sur des changements complexes et préservant le comportement. Corrige les défauts des benchmarks existants (tests biaisés, leakage de données).",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le benchmark SWE-Bench ProMax vise à résoudre deux problèmes majeurs des évaluations actuelles des agents IA en génie logiciel : d'une part, la saturation des benchmarks existants (comme SWE-bench Verified), dont les tests sont souvent défectueux (60% des instances non résolues contiennent des tests mal conçus), et d'autre part, l'absence de benchmarks adaptés pour évaluer les capacités de refactoring multilingue à grande échelle, une tâche complexe nécessitant des modifications coordonnées et préservant le comportement du code sur plusieurs fichiers.",
+    "methode": "SWE-Bench ProMax propose une approche rigoureuse en trois étapes : 1) Sélection de 170 instances issues de commits réels couvrant sept langages (Python, Java, TypeScript, Go, C, C++, Rust). 2) Réécriture manuelle des descriptions des problèmes pour éliminer les ambiguïtés et spécifications imprécises. 3) Audit manuel des suites de tests pour supprimer les tests trop restrictifs ou trop larges. Les tâches sont filtrées pour ne retenir que celles impliquant un refactoring complexe (moyenne de 11,4 fichiers modifiés et 261,6 lignes de code par instance). Le benchmark utilise deux *scaffolds* d'agents pour évaluer les modèles, garantissant une évaluation standardisée.",
+    "resultats": "Les expériences menées avec des modèles de pointe montrent que le meilleur modèle n'atteint qu'un taux de résolution de 41,2%, confirmant que SWE-Bench ProMax représente un défi significatif et non saturé pour les agents IA actuels. La taille moyenne des tâches (11,4 fichiers modifiés) dépasse largement celle des benchmarks existants, validant sa pertinence pour évaluer des refactorings à grande échelle.",
+    "limites": "Le processus de curation manuelle, bien que rigoureux, pourrait introduire un biais subjectif dans la sélection des instances ou la réécriture des spécifications. De plus, le benchmark se concentre uniquement sur le refactoring, laissant de côté d'autres aspects critiques du génie logiciel (comme le débogage ou la conception architecturale). Enfin, la représentativité des 170 instances par rapport à l'ensemble des cas réels de refactoring reste à démontrer.",
+    "verdict": "Ce benchmark mérite une attention particulière pour son approche méthodique et son focus sur un angle technique sous-évalué, mais son adoption dépendra de sa capacité à évoluer et à couvrir un spectre plus large de tâches logicielles."
+   }
+  },
+  {
+   "id": "99c03c7702b2400f",
+   "title": "Efficient Knowledge Distillation for LLMs: Offline Top-K Logits and a Fused Chunked KL Loss",
+   "url": "https://huggingface.co/papers/2608.03796",
+   "summary": "Small language models are often the only option for deployment under tight latency, cost, and on-premises constraints, but they are rarely trained from scratch: a compressed model is usually recovered through knowledge distillation (KD). This recovery step largely decides the final quality, yet it is expensive. We present a practitioner's study of how to make distillation training efficient, organised around two systems contributions. First, we show that offline KD (caching the teacher's top-K logits once and training the student against the cache) matches online distillation at near-identical training loss while removing the teacher from memory, running about 29\\% faster per iteration, and reaching up to 41\\% higher throughput on a single H200 GPU. Second, we introduce a fused, chunked KL loss that never materialises the full vocabulary-sized logit tensor, making peak memory linear in the sequence length. This removes the memory spike that otherwise caps context length and lets us train at four times the context (32{,}768 tokens) on a single GPU. A separate output-head-only toy benchmark isolates the loss kernel and confirms its memory and iteration-rate scaling from 4K to 256K tokens. Together these make large-scale healing and hundreds of ablations affordable. We also report supporting ablations on loss design and sequence packing. We release our chunked-loss implementation: https://github.com/CompactifAI/Full-Chunked-KL-Loss.",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.03796"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Cette étude propose deux innovations pour optimiser la distillation de connaissances (KD) des LLM : un mécanisme de cache des logits du professeur (offline KD) réduisant les coûts mémoire et accélérant l'entraînement de 29-41%, et une perte KL fusionnée et segmentée pour gérer des contextes jusqu'à 32K tokens sans explosion mémoire.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La distillation de connaissances (Knowledge Distillation, KD) pour les petits modèles de langage (LLMs) est coûteuse et complexe, limitant leur déploiement dans des environnements contraints par la latence, le budget ou les infrastructures locales. Bien que ces modèles soient rarement entraînés from scratch, la phase de récupération par KD détermine largement leur qualité finale, mais reste inefficace en termes de ressources et de temps.",
+    "methode": "L'étude propose deux contributions systèmes pour optimiser la KD. Premièrement, une approche *offline KD* où les logits du professeur (top-K) sont mis en cache une seule fois, éliminant le besoin de charger le modèle enseignant en mémoire pendant l'entraînement du étudiant. Cela réduit les coûts computationnels tout en maintenant une perte d'entraînement quasi identique à la KD en ligne. Deuxièmement, un *fused chunked KL loss* évite de matérialiser le tenseur complet des logits (de taille vocabulaire), rendant la mémoire maximale linéaire par rapport à la longueur de la séquence. Cette méthode permet d'entraîner avec des contextes jusqu'à 4 fois plus longs (32 768 tokens) sur une seule GPU, sans pic de mémoire. Des benchmarks isolés confirment l'efficacité de ce noyau de perte pour des séquences allant de 4K à 256K tokens. Des ablations complémentaires sur la conception de la perte et le *sequence packing* sont également rapportées.",
+    "resultats": "L'approche *offline KD* atteint une vitesse par itération environ 29 % plus rapide et une augmentation du débit allant jusqu'à 41 % sur une seule GPU H200, tout en conservant une perte d'entraînement comparable à la KD en ligne. Le *chunked KL loss* permet de gérer des contextes de 32 768 tokens, contre une limite antérieure bien inférieure, et réduit significativement l'empreinte mémoire. Les tests montrent une scalabilité linéaire de la mémoire et du taux d'itération pour des séquences très longues.",
+    "limites": "Les résultats dépendent fortement de l'architecture matérielle (ex. GPU H200), et leur généralisation à d'autres configurations n'est pas explicitement démontrée. De plus, l'impact qualitatif final (ex. performances en aval) n'est pas détaillé, laissant planer un doute sur l'équivalence réelle entre KD offline et online. Enfin, les ablations sur le *sequence packing* ou la conception de la perte restent partielles.",
+    "verdict": "Cette publication mérite une attention particulière pour ses optimisations pratiques et reproductibles, surtout pour les équipes confrontées à des contraintes de ressources, mais nécessite des validations supplémentaires sur des cas d'usage concrets."
+   }
+  },
+  {
+   "id": "89637acbb58d347a",
+   "title": "An End-to-End Agent Auditing Engine",
+   "url": "https://huggingface.co/papers/2608.07346",
+   "summary": "With the rapid advancement of large language models (LLMs), harnesses have become essential infrastructure for deploying agents across a wide range of domains. The fast-evolving harness ecosystem has also made rigorous capability evaluation increasingly important. However, efficiently building an end-to-end, systematic, and comprehensive evaluation pipeline remains a significant challenge. To address this challenge, we introduce A^2E (Agent Auditing Engine), an end-to-end evaluation engine designed for agent harnesses. A^2E leverages our newly proposed Agent Task Protocol (ATP) to enable the rapid integration of evaluation tasks with different harnesses. Through an automatically instrumented Monitor, it captures and generates standardized execution traces during experiments. In the Evaluation stage, A^2E systematically assesses harness capabilities using a suite of multidimensional metrics. Compared with correctness alone, these metrics provide a more fine-grained characterization of differences among harnesses in execution efficiency, tool use, task planning, and error recovery. Experiments conducted with A^2E further reveal that model-harness combinations exhibit substantial performance variation across different types of tasks, and that no single combination consistently outperforms all others across every task. These findings not only demonstrate the necessity of systematic evaluation but also provide useful guidance for the co-evolving of models and harnesses. Our code is available at https://github.com/datamllab/A2E.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.07346"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "A^2E (Agent Auditing Engine) propose un cadre d'évaluation systématique et automatisé pour les *harnesses* d'agents LLM, capturant des métriques multidimensionnelles (efficacité, planification, récupération d'erreurs) et révélant des écarts de performance significatifs entre combinaisons modèle-harness.",
+   "score": 8.8
+  },
+  {
+   "id": "081664302f56430d",
+   "title": "OasisKV: Scaling In-Decode KV Cache Beyond HBM with Lookahead Sparse Prefetching",
+   "url": "https://huggingface.co/papers/2608.08097",
+   "summary": "Large language model (LLM) inference serving is increasingly constrained by memory rather than compute. As long-context and long-form reasoning workloads become more prevalent, the key-value (KV) cache dominates both memory footprint and memory traffic during LLM token generation, i.e., decode. In particular, HBM capacity has become a scarce and costly resource that heavily limits inference batch size and system throughput. This paper presents OasisKV, a memory-centric LLM inference system design that alleviates HBM capacity pressure by decoupling full KV-cache storage from HBM during LLM decoding. Because decode-time attention is naturally sparse, OasisKV keeps only the KV entries of the most relevant tokens in HBMs for attention computation. We observe that future important tokens can be predicted accurately in advance using lookahead tokens drafted by speculative decoding (SD). OasisKV employs an efficient attention background pipeline to identify important KV blocks. They are then prefetched from higher-capacity memory tiers (e.g., host or remote memory) and staged in HBMs before being used in the next decode step. We implement OasisKV based on vLLM. The lookahead prediction is accurate enough to keep accuracy within 0.7 points of full attention under a 2,048-token KV budget. This lets OasisKV turn sparsity into throughput gain: 1.69times over dense vLLM on the reasoning workload at 0.1 points of accuracy loss, and up to 2.1times on multi-GPU long-context serving. Under prefill--decode disaggregation, OasisKV reaches about 2times dense throughput while admitting each request with 6.5--9.7times less KV and holding 2.2-2.6 less decode-node host memory than full KV transfer.",
+   "published": "2026-08-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2608.08097"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "OasisKV optimise l'inférence des LLM en réduisant la pression mémoire du cache KV via un mécanisme de préchargement par anticipation (*lookahead*), exploitant la sparsité naturelle de l'attention pour découpler le stockage des tokens pertinents des mémoires HBM coûteuses.",
+   "score": 8.8
+  },
+  {
+   "id": "8a049551bc0865c5",
+   "title": "Agent Memory Distillation: Empowering Small LLM Agents with Hierarchical Teacher Memory",
+   "url": "https://huggingface.co/papers/2608.07169",
+   "summary": "Memory systems have shown promise for improving agent performance, but their potential remains largely unexplored for small language models, which struggle to generate sufficient successful trajectories on their own. We propose Agent Memory Distillation (AMD), a training-free framework that transfers structured knowledge from a large teacher agent to a small student agent through hierarchical memory. AMD constructs three complementary memory types from successful teacher trajectories: Workflow memory encodes task-level strategies, Subtask memory provides concrete behavioral examples at an intermediate granularity, and Function memory captures per-function calling conventions and common pitfalls. Workflow and Subtask memories are injected proactively at the start of each task, while Function memory is retrieved reactively upon tool-calling errors. We evaluate AMD on three tool-use benchmarks using four student models (4B-8B parameters) with GPT-5-mini as the teacher, achieving average accuracy gains of 27.2%p, 11.2%p, and 3.4%p on AppWorld, BFCL V3, and ToolSandbox, while consistently outperforming existing memory-based baselines. Further analysis shows that Subtask memory contributes the largest gains, teacher effectiveness depends on both teacher capability and student compatibility, and 4B-sized students benefit most from AMD.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2608.07169"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Agent Memory Distillation (AMD) transfère des connaissances structurées d'un agent enseignant (GPT-5-mini) vers des petits modèles (4B-8B) via trois types de mémoire hiérarchique (workflow, sous-tâches, fonctions), boostant les performances de 3,4 à 27,2 points selon les benchmarks.",
+   "score": 8.8
+  },
+  {
+   "id": "77eb019f6c649b49",
+   "title": "Intent Speaks Louder: Controllable User Simulation Beyond Response Imitation",
+   "url": "https://huggingface.co/papers/2608.09420",
+   "summary": "User simulators are widely used as scalable environments for training and evaluating interactive assistants. Generating the next user turn is inherently one-to-many: the same profile and dialogue context may support multiple plausible continuations with different local interaction intents. A fluent response may therefore advance the dialogue through an inappropriate intent, such as acceptance rather than repair. Our key insight is that controllable user simulation should separate which local interaction intent the next user turn should realize from how that intent is expressed in language. We introduce UserIDA (User Intent-Directive Alignment), which exposes interaction intent as an explicit per-turn directive. UserIDA defines a six-way intent interface, learns directive-conditioned generation through supervised fine-tuning, and uses intent-calibrated policy optimization during group-based reinforcement learning. The reward preserves composite response quality while ensuring that intent-violating candidates rank below compliant alternatives in mixed groups. On LMSYS-USP, UserIDA achieves 86.6\\% intent accuracy, outperforming the strongest dedicated user-simulator baseline by 24.3 percentage points while improving semantic and stylistic similarity. In within-context interventions, it realizes at least four of the six target intents in 91.7\\% of evaluated dialogue states, compared with 22.9\\% for the strongest external baseline. These results establish per-turn intent control as a complementary dimension to response fidelity in user simulation.",
+   "published": "2026-08-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.09420"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "UserIDA introduit un cadre pour simuler des utilisateurs contrôlables dans les dialogues, en séparant l'intention d'interaction (6 catégories) de son expression linguistique. Méthode basée sur fine-tuning supervisé et RL, atteignant 86.6% de précision d'intention sur LMSYS-USP, surpassant les baselines de 24.3 points.",
+   "score": 8.8
+  },
+  {
+   "id": "ad417e9cf97ea4a7",
+   "title": "SPOT: Sparse Probing and Outcome Calibration for On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2608.04419",
+   "summary": "On-policy distillation (OPD) provides dense teacher supervision on student-generated trajectories, but standard reverse-KL training can assign insufficient probability to other plausible continuations. Teacher entropy alone does not reveal whether uncertainty is concentrated among a few plausible next tokens or dispersed over a long probability tail, nor whether the student already represents those candidates well. Moreover, local teacher probabilities may not predict downstream success. We introduce Sparse Probing and Outcome-calibrated Targets OPD (SPOT), which addresses two coupled decisions, where to probe and what to distill, through an acquisition--exploration--exploitation procedure. During acquisition, a position-level score combines normalized teacher entropy, the probability mass captured by a small top-k candidate set, and student--teacher mismatch to allocate a limited probing budget. During exploration, SPOT evaluates teacher-proposed candidates through verifier-scored student continuations. During exploitation, these outcomes produce a closed-form, KL-regularized target that favors candidates with better downstream outcomes while remaining anchored to the teacher distribution. Extensive experiments across multiple student models and reasoning benchmarks demonstrate the effectiveness of SPOT in improving reasoning performance while balancing solution quality and coverage.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.04419"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "SPOT améliore la distillation on-policy (OPD) en combinant une exploration ciblée (acquisition-exploitation) et des cibles calibrées par résultats, optimisant la probabilité des continuations plausibles et leur succès en aval via un processus en 3 étapes (acquisition, exploration, exploitation).",
+   "score": 8.8
+  },
+  {
+   "id": "7d57e1e3b3221b0c",
+   "title": "DCAS: Decoupling CLI Agent Scaffolding to Internalize Planning across Scaffolds",
+   "url": "https://huggingface.co/papers/2608.06113",
+   "summary": "CLI-based software-engineering agents have matured rapidly, yet the open ecosystem has converged on a single training environment: trajectory datasets used to fine-tune open models are collected almost exclusively under OpenHands. Models fine-tuned on this data score well under OpenHands but degrade substantially when deployed under any non-training scaffold. Untrained base models do not show this divergence, indicating the gap is fine-tuning-induced and tied to the conventions of the training scaffold. We argue that a load-bearing scaffold-specific behavior is planning structure, in two senses this paper distinguishes: explicit planning, a pre-execution plan produced as a first-class artifact, and implicit planning, the structural conventions that shape execution throughout the agent loop. Under this hypothesis, closing the gap requires moving planning from a fixed scaffold artifact to a learned model capability. We introduce Decoupling CLI Agent Scaffolding (DCAS), a backend-substitution interception layer that routes API traffic between any CLI scaffold and any backend model without modifying the scaffold, enabling cross-scaffold evaluation and planning-aware trajectory collection. Using DCAS, a controlled plan-source intervention confirms planning quality is a high-leverage component, with gains exceeding the cross-scaffold drops we observe. A model fine-tuned on a small set of DCAS-collected planning-aware trajectories under a single scaffold gains consistently across non-training scaffolds, and the two senses of planning are empirically separable in training data.",
+   "published": "2026-08-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.06113"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "DCAS decouple l'échafaudage des agents CLI pour internaliser la planification, réduisant la dépendance aux conventions spécifiques d'un environnement d'entraînement. Cela permet une évaluation croisée entre différents scaffolds et améliore la généralisation des agents.",
+   "score": 8.8
+  },
+  {
+   "id": "8b0be48be56da3e9",
+   "title": "Mismatch Matters: On-Policy Distillation Beyond Token Agreement",
+   "url": "https://arxiv.org/abs/2608.09836v1",
+   "summary": "On-policy distillation (OPD) has emerged as a core component of modern LLM post-training pipelines, yet we reveal a failure mode: degenerate agreement, where students exploit repetitive loops to achieve near-perfect token agreement with the teacher despite globally flawed responses. We therefore shift our focus from agreement to teacher-student mismatch, and find that mismatch tokens can be mainly categorized into two types: student-excess tokens and student-deficit tokens. Student-excess tokens are generated by the student but assigned near-zero probability by the teacher; their log-ratio corrections grow unbounded and destabilize the update. Student-deficit tokens, in contrast, are preferred by the teacher but rarely sampled by the student; their absence blocks the transfer of the teacher's reasoning patterns. To tackle these mismatch directions, we propose TIDE (Token-level Independent Deficit-Excess correction), which applies bounded Hellinger shaping to suppress the most severe sampled excesses and an analytic teacher top-$K$ injection to restore deficient probability mass without requiring deficit tokens to be sampled. Across mathematical reasoning benchmarks with multiple Qwen3 teacher-student pairs, TIDE consistently outperforms standard OPD and recent token-selection and reward-shaping baselines. Moreover, the gains of TIDE are more pronounced under strong teacher-student mismatch, where it improves Avg@8 from 6.9% to 20.3%, reduces average response length by a factor of 3.6, and substantially reduces formatting failures. Code is available at https://github.com/yzc-666/TIDE",
+   "published": "2026-08-10T16:53:14+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zichao Yu, Chengzhi Yu, Shengze Xu, Yujin Han, Bingqing Jiang, Xu Wang"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Identifie un échec critique de la distillation sur politique (*on-policy distillation*) : l'accord dégénéré des tokens où l'étudiant exploite des boucles répétitives pour maximiser l'accord avec l'enseignant malgré des réponses globalement incorrectes. Propose TIDE, une méthode pour corriger les déséquilibres de tokens (excès/défaut) via des corrections bornées et une injection analytique des tokens préférés par l'enseignant. Résultats solides sur des benchmarks de raisonnement mathématique.",
+   "score": 8.6
+  },
+  {
+   "id": "d05ac3436999a273",
+   "title": "Stealing Reasoning Traces from Proprietary LLM APIs",
+   "url": "https://huggingface.co/papers/2608.09867",
+   "summary": "Leading large language model providers now conceal their models' step-by-step reasoning, or chain-of-thought, to protect intellectual property and limit information leakage. Rather than storing these traces server-side, providers return them to the client as blocks of encrypted text, which the client passes back with each subsequent request. Building on prior research, we identify an architectural vulnerability: these encrypted blocks are fully compatible and interchangeable across different sessions, users, and models within a provider's ecosystem. We exploit this compatibility to develop a scalable decryption jailbreak. By injecting an encrypted reasoning trace from a given model into a weaker, and less safeguarded model from the same provider, we force it to decode and output the trace verbatim in plaintext, without ever jailbreaking the more capable model directly. This vulnerability enables four distinct attack vectors. First, it circumvents anti-distillation mechanisms, allowing adversaries to extract a proprietary model's reasoning, as we demonstrate across Anthropic, OpenAI, and Google. Second, it allows for large-scale private data extraction. Developers frequently share session logs publicly, unaware of contents of the encrypted blocks. By decoding 315,320 reasoning blocks scraped from public repositories, we recovered 367 Personally Identifiable Information (PII) artifacts and 182 credentials. Third, it inadvertently reveals hazardous information hidden within the reasoning process, even in cases where the model's final, visible output safely rejects a malicious request. Fourth, attackers can leverage this flaw to execute invisible prompt injections, embedding malicious payloads entirely within encrypted blocks to poison public agentic rollouts. Following responsible disclosure, we propose concrete cryptographic and system-level mitigations to secure client-side reasoning.",
+   "published": "2026-08-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.09867"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Cette étude révèle une vulnérabilité architecturale majeure dans les API de LLM propriétaires (Anthropic, OpenAI, Google) permettant d'extraire les traces de raisonnement chiffrées via des modèles moins protégés du même écosystème, contournant ainsi les mécanismes anti-distillation et exposant des risques de fuite de données privées et de propriété intellectuelle.",
+   "score": 8.5
+  },
+  {
+   "id": "c64aa753da68e6b7",
+   "title": "DuplexGen: Adaptive Synthesis of Human-AI Turn-Taking Dialogues",
+   "url": "https://huggingface.co/papers/2607.26178",
+   "summary": "Turn-taking is a central component of full-duplex interaction. Which turn-taking behaviors are appropriate varies with the scenario, yet current models apply a single norm regardless of context. This limitation originates in their training data: human-human speech corpora capture natural timing phenomena but provide little role grounding or scenario-specific norms, while heuristic or prompted synthesis methods inject turn-taking behaviors without basing them on human preferences. We introduce DuplexGen, a framework for generating dialogues with scenario-adaptive turn-taking by calibrating LLM predictions against a small set of slot-level human preference annotations. In six cooperative and competitive tasks, human turn-taking preferences differ systematically, and DuplexGen aligns substantially more closely with those preferences than uncalibrated prompting or training solely on generic human-human data; a full-duplex model trained on DuplexGen-generated data exhibits distinctive, human-preferred turn-taking behaviors. These results show that human calibration, not corpus scale or prompt design alone, is what allows turn-taking synthesis to be scenario-specific.",
+   "published": "2026-07-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2607.26178"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "DuplexGen propose un cadre pour générer des dialogues avec des comportements de prise de parole adaptatifs selon le scénario, en calibrant les prédictions des LLM avec des annotations humaines. Cela permet d'aligner les modèles sur des préférences humaines spécifiques, améliorant significativement la naturalité des interactions en mode full-duplex.",
+   "score": 8.5
+  },
+  {
+   "id": "acd9f7b8fce25c1d",
+   "title": "SHE: Trajectory-driven Safety Harness Evolution for LLM Agents",
+   "url": "https://arxiv.org/abs/2608.09885v1",
+   "summary": "The safety of large language model (LLM) agents depends not only on model weights but also on the agent harness that manages context, memory, tools, permissions, and runtime control. Existing safety mechanisms often treat the harness as a fixed deployment artifact, limiting their ability to evolve with emerging risks. Moreover, coupled functions across harness components obscure safety responsibility attribution, making localized evolution difficult. We propose Safety Harness Evolution (SHE), a framework that learns evolving safe boundaries from rollout trajectories. SHE decomposes the harness into four artifacts with explicit safety responsibilities, including the System Prompt, Rule Bank, Safety Memory, and Tool Policy, defining clear functional boundaries for localized evolution. Based on this decomposition, SHE introduces an attribution-guided evolution loop that converts trajectory failures into structured diagnoses, learns artifact-specific boundary refinements, and selects evolved harnesses through safety-utility validation. Experiments on Agent-SafetyBench demonstrate that SHE effectively enhances safety through harness evolution, achieving a 3.1x ASR reduction compared with static SafeHarness, while also improving benign utility. The evolved harness further generalizes to unseen risks on the held-out AgentHarm benchmark and transfers across agent models without additional evolution.",
+   "published": "2026-08-10T17:35:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wanying Qu, Qinghua Mao, Yu Li, Jiyao Liu, Xin Zhang, Dadi Guo"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Framework SHE pour l'évolution dynamique et sécurisée des harnais d'agents LLM, décomposant les composants de sécurité et améliorant significativement la résistance aux attaques (réduction de 3.1x du taux de succès des attaques). Pertinent pour la sécurité des agents autonomes.",
+   "score": 8.3
+  },
+  {
+   "id": "b8680362cec21fbb",
+   "title": "Agentic Harnesses: LLM-Driven Verification Layers for Robot Autonomy",
+   "url": "https://arxiv.org/abs/2608.09857v1",
+   "summary": "Advances in advanced artificial intelligence tools have sparked research in robot autonomy, but the development of such systems has largely focused on execution rather than verifying the feasibility actions planning models propose. Like general-purpose LLMs, robotics planning models carry risks: biased toward user-specified goals, they may suggest actions misaligned with scientific ethics, they may be unsafe due to an inability to \"remember\" prior safety risks, or they may be vulnerable to adversarial attacks on the autonomy ecosystem. We propose a LLM-driven verification layer between planning and execution to evaluate action permissibility. Our LLM-as-a-Judge ensemble combines chain-of-thought reasoning across models and synthesizes those expert judge outputs, mirroring a combination of a mixture of experts and self-consistency approach. This layer serves as middleware, gating plans from the server's planning module before they reach the MCP server and therefore the robot's low-level controls: plans are approved, rejected for reformulation, or escalated for human review. With this system, we achieve near 85% precision across accept/escalate/reject categories 97% containment of adversarial attacks, with negligible errors between accepting and rejecting tasks, and errors mostly manifesting at the escalate boundary.",
+   "published": "2026-08-10T17:15:55+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Rohan Bhagra, Mahantesh Halapannavar, Uddhav Bhattarai"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Couche de vérification LLM-as-a-Judge pour l'autonomie robotique, évaluant la faisabilité des plans avant exécution et atteignant 85% de précision. Solution innovante pour la sécurité des systèmes robotiques autonomes.",
+   "score": 8.3
+  },
+  {
+   "id": "7473ac846de4bc85",
+   "title": "RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance",
+   "url": "https://arxiv.org/abs/2608.09853v1",
+   "summary": "General-purpose reward models are increasingly the bottleneck for scaling robot learning, yet the recipe for learning value-related capabilities from large-scale heterogeneous corpora remains underexplored. Existing approaches tie supervision to task-internal anchors such as preferences or normalized progress, none of which transfer cleanly across embodiments and data sources. We introduce RynnValue, an open-source value foundation model for robotic manipulation that replaces these anchors with temporal distance, the directed cost-to-go from an observation to the language-specified goal. Because temporal-distance labels can be derived directly from timestamps, RynnValue scales to over 7,000 hours and roughly 3M instruction-conditioned clips without preference or progress annotations. To make temporal-value learning reliable at scale, we combine random temporal sampling, temporal-order shuffling, and value-isolation attention, suppressing shortcuts that would leave predictions insensitive to failures and regressions. Trained without preference labels, RynnValue attains an average Kendall's tau_a of 0.675 on RBM-EVAL-OOD, surpassing the fully preference-supervised state of the art (0.655) and more than doubling a progress-only counterpart (0.292), while generalizing zero-shot to unseen tasks, embodiments, and viewpoints. Converted into dense rewards via potential-based shaping, it raises real-world policy success from 52.5% to 72.5% online and from 63.8% to 82.5% offline. These results establish temporal distance as a scalable supervision target and practical reward interface for generalist robot policies.",
+   "published": "2026-08-10T17:09:37+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Dongchi Huang, Hongyin Zhang, Bohan Hou, Siteng Huang, Zhian Su, Hang Guo"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Présente RynnValue, un modèle de fondation pour l'évaluation de récompenses en robotique manipulant des objets, utilisant la *distance temporelle* (coût jusqu'à l'objectif) comme signal d'apprentissage à grande échelle (7 000h de données). Dépasse les approches basées sur préférences avec un score Kendall's tau_a de 0.675 sur RBM-EVAL-OOD. Pertinent pour l'optimisation des modèles de récompense en robotique et l'apprentissage à partir de données hétérogènes.",
+   "score": 8.3
+  },
+  {
+   "id": "bed8a5a9110e1e24",
+   "title": "SWE-Bench ProMax: Benchmarking Agents on Large-Scale Multilingual Code Refactoring",
+   "url": "https://arxiv.org/abs/2608.09802v1",
+   "summary": "As AI coding agents take on increasingly complex, long-horizon software engineering tasks, existing benchmarks are rapidly saturating and their evaluation quality has come under serious scrutiny: a recent audit found that nearly 60% of unsolved SWE-bench Verified instances contain flawed tests -- either overly narrow tests that reject correct solutions or overly broad tests that check unstated requirements -- and that frontier models can verbatim reproduce gold patches from training data. Code refactoring, which requires coordinated, behavior-preserving changes across many files, offers a substantially harder and more realistic test of agent capability, yet remains underserved by current benchmarks. We introduce SWE-Bench ProMax, an expert-curated, multilingual code refactoring benchmark of 170 instances drawn from real commits across seven programming languages (Python, Java, TypeScript, Go, C, C++, and Rust). Every instance undergoes rigorous, multi-stage curation that directly addresses the quality problems identified in prior benchmarks: issue descriptions are rewritten from scratch to provide precise, unambiguous specifications, and test suites are manually reviewed to remove overly narrow and overly broad tests. Tasks with insufficient complexity or limited cross-file scope are filtered out, yielding a benchmark of challenging, large-scale refactoring tasks that average 11.4 modified files and 261.6 lines of code per instance, substantially exceeding the scale of existing benchmarks. Experiments with frontier models under two agent scaffolds show that the best model achieves only 41.2% resolve rate, confirming that SWE-Bench ProMax presents a meaningful and unsaturated challenge for current AI coding agents. Our benchmark is available at https://huggingface.co/datasets/swe-bench-promax/SWE-Bench-ProMax.",
+   "published": "2026-08-10T16:23:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yuling Shi, Jinghan Xu, Kelin Fu, Wenhao Zeng, Shilin He, Lei Zhang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "SWE-Bench ProMax introduit un benchmark de 170 tâches de refactorisation de code multilingue, conçu pour évaluer les agents IA sur des problèmes complexes et réalistes, avec des tests corrigés manuellement pour éviter les biais des benchmarks existants.",
+   "score": 8.3
+  },
+  {
+   "id": "df260c538544d2f1",
+   "title": "Rethinking Factor Sharing in Federated LoRA: A Rank-Aware Adaptive Approach",
+   "url": "https://arxiv.org/abs/2608.09742v1",
+   "summary": "Low-rank adaptation (LoRA) represents large language model (LLM) updates with two compact matrix factors, i.e., $A$ and $B$, providing an efficient way to fine-tune large models in federated learning paradigm. Inspired by the asymmetric roles of the LoRA factors, we study whether $A$ should be shared across clients while $B$ remains client-specific (Share-A/Local-B), or whether $B$ should instead be shared while $A$ remains client-specific (Share-B/Local-A). With a least-squares surrogate, we reveal that Share-A/Local-B requires the client-specific LoRA update matrices to use a common rank-$r$ input-side space, whereas Share-B/Local-A requires a common rank-$r$ output-side space. The two strategies therefore incur different projection residuals, indicating that the preferred strategy is the one with the smaller aggregate residual across clients. With this insight, we propose Federated Adaptive Factor Sharing Low-Rank Adaptation (FedAS-LoRA), which selects the sharing side before training to enhance fine-tuning performance. To enable adaptive factor selection before training, we design a Rank-Aware Shared-Subspace Sufficiency (RSS) metric, which effectively assesses whether a shared rank-$r$ input subspace is sufficient for the local data distributions using representations extracted from a frozen LLM backbone. Experiments across different tasks, data distributions, LoRA ranks, and participation settings confirm the effectiveness of RSS and the superior performance of FedAS-LoRA.",
+   "published": "2026-08-10T15:38:45+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xinyi Xu, Bingnan Xiao, Shuang Qin, Gang Feng, Tony Q. S. Quek"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "FedAS-LoRA optimise le partage des facteurs LoRA en fédéré en sélectionnant dynamiquement la stratégie (Share-A/Local-B ou Share-B/Local-A) via une métrique RSS basée sur le rang, réduisant les résidus de projection et améliorant les performances de fine-tuning.",
+   "score": 8.3
+  },
+  {
+   "id": "618f7b7e678dffce",
+   "title": "ColluSkill: Adversarial Cross-Skill Composition for Evading Agent Skill Scanners",
+   "url": "https://arxiv.org/abs/2608.09732v1",
+   "summary": "Agent skills are emerging as an important attack surface in LLM-based agent systems. Through an empirical study of existing skill scanners, we find that current defenses mainly inspect individual skills, leaving risks from cross-skill composition insufficiently examined. This creates a practical blind spot: multiple locally plausible skills may pass security checks while collectively forming a harmful workflow during agent execution. To investigate this threat, we propose ColluSkill, a collusive multi-skill-chain attack framework that decomposes a complete malicious intent into interdependent sub-payloads embedded in independently packaged skills. The attack does not rely on any single malicious skill, but emerges from the ordered composition of locally plausible behaviors through contextual dependencies, artifact passing, and execution handoffs. ColluSkill further employs LLM-based chain planning and scanner-feedback refinement to preserve chain-level attack semantics while reducing suspicious signals in individual sub-skills. To defend against such attacks, we propose ChainGuard, a context-aware skill-chain scanner that jointly analyzes a candidate skill and the skills already installed in the agent environment. ChainGuard reconstructs cross-skill dependencies, artifact flows, capability compositions, and downstream behaviors to identify risks that emerge only at the workflow level. Experiments on six representative skill scanners show that ColluSkill achieves an average attack success rate of 96.0% and consistently outperforms the evaluated single-skill and multi-skill attack baselines. Meanwhile, ChainGuard reduces the attack success rate to 22.5% while allowing 99.5% of benign workflows to pass, highlighting the importance of chain-level security analysis for agent skill ecosystems.",
+   "published": "2026-08-10T15:32:44+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Puyu Zeng, Simeng Qin, Jingzhi Li, Ju Jia, Zheli Liu, Xiaojun Jia"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Propose ColluSkill, un cadre d'attaque multi-compétences collusives exploitant les dépendances contextuelles entre compétences locales pour contourner les scanners de sécurité des agents LLM. Intéressant pour identifier des vulnérabilités dans les workflows d'agents et motiver des défenses contextuelles comme ChainGuard.",
+   "score": 8.3
+  },
+  {
+   "id": "46e0d82d92ff0b54",
+   "title": "Matryoshka Language Model Suites",
+   "url": "https://arxiv.org/abs/2608.09703v1",
+   "summary": "Training a language model suite classically requires training each model separately and serving them independently. We improve both training and inference efficiency by stacking sub-models of increasing size into a single nested architecture trained end-to-end. This Matryoshka training framework reduces the total parameter count of the suite, enables low-cost distillation from the largest to all smaller sub-models at every training step, and is well-suited for speculative decoding as the draft model is contained within the verifier. We validate our approach by training a Matryoshka suite comprising 500M, 1.5B, and 3B sub-models. Our suite is on par with independently trained baselines on benchmark performance and validation and out-of-domain perplexities, while using 36% less training compute and improving the throughput of speculative decoding by 14-26%. We also ablate key architectural choices, offering guidance for building strong Matryoshka LM suites.",
+   "published": "2026-08-10T15:07:29+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Nathan Godey, Yoav Artzi"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Présente Matryoshka LM, une architecture imbriquée pour entraîner et servir simultanément plusieurs sous-modèles de tailles croissantes, réduisant les coûts de calcul de 36% et améliorant le throughput de 14-26% via distillation et decoding spéculatif intégré.",
+   "score": 8.3
+  },
+  {
+   "id": "50adcdf9135481a2",
+   "title": "Evo-Bench: Can Language Models Improve Agent Harness?",
+   "url": "https://huggingface.co/papers/2608.09096",
+   "summary": "Large Language Models (LLMs) have driven rapid progress in autonomous agents, yet standard evaluations remain confined to static task solving. An emerging frontier is harness evolution---the agent's capacity to autonomously optimize its own operating harness. However, systematically benchmarking this capability remains challenging, as existing evaluations fail to isolate harness improvements from base model strength, prevent task-specific overfitting, or capture long-horizon iterative research. To address these challenges, we introduce Evo-Bench, the first benchmark designed to evaluate models' intrinsic harness-evolving capabilities across Search, Office, and General agent domains. To rigorously isolate this capability, Evo-Bench employs a novel harness-guided construction framework: it leverages auxiliary-task evolution to identify tasks genuinely sensitive to framework improvements, followed by sensitivity-aware stratified splitting to ensure robust cross-suite generalization. Extensive evaluations across nine frontier and open-weight models reveal that top models achieve massive absolute gains reaching 16.6 points, closely approaching state-of-the-art human-engineered baselines. Crucially, while autonomous evolution outpeforms artificial harness in General tasks and excels in Search tasks, it struggles in Office tasks that demand highly specific processing workflows. Furthermore, our analysis exposes critical temporal anomalies like early saturation, while demonstrating that the synthesized harnesses act as highly transferable reasoning structures, consistently boosting diverse policy models.",
+   "published": "2026-08-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.09096"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Evo-Bench propose le premier benchmark dédié à l'évaluation de la capacité des LLM à optimiser de manière autonome leur propre *harness*, isolant cette compétence des biais de force de base du modèle et révélant des gains absolus jusqu'à 16,6 points.",
+   "score": 8.2
+  },
+  {
+   "id": "fb018d3425d89fbf",
+   "title": "Multi-Agent Forensic Reasoning for Generalizable Deepfake Video Detection",
+   "url": "https://huggingface.co/papers/2608.06865",
+   "summary": "The malicious use of generative artificial intelligence to create highly realistic deepfake videos raises serious ethical concerns and poses substantial challenges to AI safety. However, existing deepfake video benchmarks provide limited coverage of recent synthesis methods and generally lack reliable fine-grained textual annotations. Meanwhile, conventional detectors and multimodal large language models (MLLMs), whether operating as a single model or relying on a single analytical perspective, often fail to capture subtle forgery artifacts, limiting their generalization to emerging AI-generated methods. To address these limitations, we introduce FaceVid-Forensics-100K, a large-scale deepfake video dataset comprising 100,000 videos and spanning 33 synthesis methods across face swapping, face reenactment, and entire-face synthesis, including recent generators such as Seedance 2.0. The dataset provides fine-grained textual annotations of visual observations and verdict-consistent forensic explanations, automatically synthesized through a multi-model aggregation and conflict-resolution pipeline powered by advanced MLLMs. Building on this benchmark, we propose a multi-agent forensic reasoning framework that employs four specialized domain-expert agents to independently analyze forgery cues from four perspectives: texture, lighting, motion, and physics. A judge agent then reconciles their reports to produce a final prediction together with an explanation. Extensive evaluations on out-of-domain test sets show that, despite being composed entirely of small open-source MLLMs, our framework outperforms all methods including closed-source GPT and Gemini models and ranks first across all reported metrics on this benchmark. The project page is available at https://xavierjiezou.github.io/ARGUS/.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.06865"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "vision"
+   ],
+   "tldr": "FaceVid-Forensics-100K introduit un benchmark de 100 000 vidéos deepfake couvrant 33 méthodes de synthèse, avec des annotations textuelles fines. Un système multi-agents de forensic reasoning améliore la détection généralisable des deepfakes en analysant les artefacts de manière collaborative.",
+   "score": 8.2
+  },
+  {
+   "id": "4548ae9bb557ae3a",
+   "title": "Capek 0.5: An Execution-Centric Vision-Language Model for Embodied Intelligence",
+   "url": "https://huggingface.co/papers/2608.06756",
+   "summary": "Vision-language models are increasingly serving as the reasoning core of embodied agents. Robot execution is inherently iterative: each action reshapes the scene and physical state, continually renewing what must be perceived, reasoned about, and verified. Meeting these demands requires complementary capabilities that differ in supervision signals, prediction formats, and verification criteria. Existing approaches typically develop these capabilities against isolated, task-specific objectives, leaving open how they should be organized and integrated around execution as a whole. We present Capek 0.5, an embodied vision-language model built around an execution-centric capability taxonomy. Rather than organizing training by datasets or tasks, the taxonomy groups embodied capabilities according to their functional roles throughout execution and comprises four capability families: Spatial Reasoning, Temporal Understanding, Action Guidance, and State Verification. Each capability is first acquired by a dedicated specialist through reinforcement learning with verifiable rewards from a shared backbone, and the specialists are then consolidated into a single inference-time model through weight-space merging followed by routed policy-space distillation. We instantiate Capek 0.5 at the 2B and 35B-A3B scales and evaluate it from three complementary perspectives: comprehensive benchmark suites including Capek-StateBench, a new benchmark for state verification; a controlled study of capability retention from specialists to the unified model; and closed-loop evaluation in simulated embodied environments. Capek 0.5 improves the large majority of matched benchmark rows over its initialization, retains all four specialized capabilities in one checkpoint with quantified losses, and transfers to closed-loop embodied task execution.",
+   "published": "2026-08-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.06756"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Capek 0.5 propose une taxonomie centrée sur l'exécution pour les agents embodied, structurant les capacités (raisonnement spatial, compréhension temporelle, guidage d'action, vérification d'état) via un apprentissage par renforcement et une consolidation en un seul modèle.",
+   "score": 8.2
+  },
+  {
+   "id": "afcae7f6d212f9b8",
+   "title": "Multimodal Model Diffing for Feature Discovery and Control",
+   "url": "https://arxiv.org/abs/2608.09928v1",
+   "summary": "Multimodal Large Language Models (MLLMs) exhibit strong visual understanding, yet the internal features that cause these behaviors remain difficult to identify, audit, or control. While applicable to post-hoc inspection, hidden states that are decomposed into interpretable feature directions using sparse autoencoders (SAEs) neither readily isolate which features are changed by multimodal training, nor are they directly useful for targeted control. We introduce MMDiff, a multimodal model-diffing framework that trains multimodal SAEs and turns them into feature-level interfaces for discovering and controlling multimodal behavior. MMDiff supports three uses: (i) feature isolation, by diffing a base-LM SAE against its multimodal-adapted counterpart to identify features altered by multimodal training; (ii) task-specific feature detection, via per-token contrastive firing analysis that isolates causal features; and (iii) feature-level control, by causally removing or steering the discovered feature directions. We train multimodal SAEs for three MLLM families, LLaVA-MORE, PaliGemma 2, and InternVL3.5, and evaluate on visual-spatial understanding, multimodal safety, and OCR. MMDiff discovers sparse, causally specific features whose removal selectively degrades target behaviors by an average of 12% on spatial tasks and 17% on OCR, and reduces attack success rate by 24% on multimodal safety attacks, with no impact on VQA performance. Steering these features improves spatial and OCR accuracy by +3.6% and +1.8% on average over a standard single-layer steering baseline. These results show that multimodal SAEs can serve not only as interpretability tools, but as mechanisms for auditing, steering, and controlling MLLMs behavior toward safer and more capable generations.",
+   "published": "2026-08-10T17:59:30+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hunar Batra, Lachin Naghashyar, Ashkan Khakzar, Philip Torr, Christian Schroeder de Witt, Constantin Venhoff"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "interpretabilite",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "MMDiff introduit un cadre pour découvrir et contrôler les caractéristiques multimodales des MLLM via des SAE, en différenciant les traits modifiés par l'adaptation multimodale et en permettant une manipulation causale des directions de features. Évalué sur 3 familles de modèles (LLaVA-MORE, PaliGemma 2, InternVL3.5) pour des tâches de compréhension spatiale, sécurité et OCR.",
+   "score": 8.0
+  },
+  {
+   "id": "a0f4af95cb4721ea",
+   "title": "patchy631/time-to-first-token",
+   "url": "https://github.com/patchy631/time-to-first-token",
+   "summary": "A 10-week, 30-minutes-a-day roadmap for LLM inference serving and optimization. vLLM, SGLang, quantization, speculative decoding, benchmarking.",
+   "published": "2026-08-02T13:02:26Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 407,
+    "language": "HTML"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Roadmap de 10 semaines pour optimiser l'inférence des LLM (vLLM, SGLang, quantization, speculative decoding) avec benchmarks. Ressource pratique et technique, bien documentée, idéale pour les ingénieurs.",
+   "score": 8.0
+  },
+  {
+   "id": "dc30cfafb1950c28",
+   "title": "RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance",
+   "url": "https://huggingface.co/papers/2608.09853",
+   "summary": "General-purpose reward models are increasingly the bottleneck for scaling robot learning, yet the recipe for learning value-related capabilities from large-scale heterogeneous corpora remains underexplored. Existing approaches tie supervision to task-internal anchors such as preferences or normalized progress, none of which transfer cleanly across embodiments and data sources. We introduce RynnValue, an open-source value foundation model for robotic manipulation that replaces these anchors with temporal distance, the directed cost-to-go from an observation to the language-specified goal. Because temporal-distance labels can be derived directly from timestamps, RynnValue scales to over 7,000 hours and roughly 3M instruction-conditioned clips without preference or progress annotations. To make temporal-value learning reliable at scale, we combine random temporal sampling, temporal-order shuffling, and value-isolation attention, suppressing shortcuts that would leave predictions insensitive to failures and regressions. Trained without preference labels, RynnValue attains an average Kendall's tau_a of 0.675 on RBM-EVAL-OOD, surpassing the fully preference-supervised state of the art (0.655) and more than doubling a progress-only counterpart (0.292), while generalizing zero-shot to unseen tasks, embodiments, and viewpoints. Converted into dense rewards via potential-based shaping, it raises real-world policy success from 52.5% to 72.5% online and from 63.8% to 82.5% offline. These results establish temporal distance as a scalable supervision target and practical reward interface for generalist robot policies.",
+   "published": "2026-08-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.09853"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "RynnValue introduit un modèle de fondation pour la robotique basé sur la distance temporelle (coût pour atteindre un but) comme supervision scalable, atteignant un score Kendall's tau_a de 0,675 sur RBM-EVAL-OOD sans annotations de préférences, surpassant les approches supervisées classiques.",
+   "score": 7.9
+  },
+  {
+   "id": "0902187faa230c08",
+   "title": "Macaron-V1: Towards Open Continual Learning with Self-Improvement and Mixture-of-LoRA",
+   "url": "https://huggingface.co/papers/2608.09819",
+   "summary": "Macaron-V1 is an open agent-model family for experiential intelligence: learning from experience in real environments and continuing to learn after deployment. It is organized around two system goals. Adaptation is pursued through recursive improvement of versioned model-harness pairs, where experience from one configuration is evaluated under an external contract and used to construct its successor. Collaboration is pursued via the Mixture-of-LoRA (MoL) architecture that freezes a base model, composes specialist LoRA adapters, and selects one LoRA per user turn. The flagship Macaron-V1-Venti combines a 744B GLM-5.2 base with four LoRAs for chat, agent, coding, and GenUI; the Qwen3.6-based Macaron-V1-Tall (50B) uses the same design for local deployment. This report presents Macaron-V1 as a co-designed system spanning architecture, algorithms, and infrastructure. The MoL architecture supports continual learning through extensible LoRA specialists. The algorithm combines Model-Harness Co-design and recursive self-improvement loop, including the UI4A component-native GenUI harness, a stateful action substrate, versioned HCP contract, and the agentic RL framework MindForge. The supporting infrastructure includes the post-training platform MinT, the long-context RL method LongStraw, and stability techniques for sparse MoE and DSA base models. We evaluate Macaron-V1 on Personal Intelligence, GenUI, and general capability benchmarks against frontier baselines. Our results validate the current system, while compounding gains from continual learning and collective intelligence remain open questions.",
+   "published": "2026-08-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 38,
+    "arxiv_id": "2608.09819"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Macaron-V1 propose un modèle-agent open source (744B GLM-5.2) avec une architecture Mixture-of-LoRA (MoL) pour l'apprentissage continu et l'adaptation via des boucles de self-improvement. Intègre des LoRA spécialisés (chat, agent, code, GenUI) et un système de contrats HCP pour évaluer les versions successives.",
+   "score": 7.9
+  },
+  {
+   "id": "58e63d7ba48635fe",
+   "title": "RoMeRL: Balancing Feedback Coverage and the Memory-Reward Trap in Self-Evolving Agent Memory via Reduced-Order Utility States",
+   "url": "https://huggingface.co/papers/2608.02508",
+   "summary": "Learning-based memory systems for self-evolving LLM agents face two tightly coupled challenges. First, trajectory-indexed utilities grow with the interaction history, thereby dispersing limited feedback over an ever-expanding state space. Second, because trajectory-level rewards are jointly assigned to co-retrieved memories, irrelevant experiences may receive misleading utility updates and consequently enter the memory-reward trap. To address these challenges, we introduce Reduced-Order Memory Reinforcement Learning (RoMeRL), which represents the growing trajectory-indexed utility space using a fixed-dimensional per-task memory state factorized by outcome polarity and memory dynamics. RoMeRL incorporates new experiences through a fixed set of semantic coordinates whose contents are updated or replaced over time, thereby concentrating feedback over a bounded utility support. Theoretically, we show that this reduced-order parameterization increases the average feedback received by each utility coordinate and characterize the steady-state occupancy of erroneous coordinates under a generic coordinate-transition model. Empirically, across ALFWorld and LifelongAgentBench, RoMeRL improves task performance, reduces the Cold-Q ratio by 80.0%, increases feedback density by approximately 6.0 times, reduces the maintained memory size by 84.4%, and cuts LLM calls by 21.1%. These results show that reduced-order utility states support efficient self-evolving agent memory while limiting persistent reward contamination. Code is available at: https://github.com/YOUNG-fnxm/RoMeRL",
+   "published": "2026-08-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.02508"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "RoMeRL introduit une méthode de RL pour les mémoires d'agents auto-évolutifs, réduisant le piège de la mémoire-récompense via des états utilitaires réduits (facteurs fixes par tâche) et une mise à jour ciblée des coordonnées sémantiques, améliorant les performances sur ALFWorld et LifelongAgentBench.",
+   "score": 7.9
+  },
+  {
+   "id": "aeff2dd12c3e86a9",
+   "title": "Relevant but Incomplete: Referential Dangling as a Paradigm-Level Failure Mode in Hard Prompt Compression",
+   "url": "https://huggingface.co/papers/2608.04569",
+   "summary": "Hard prompt compression reduces long-context inference cost by independently scoring tokens, sentences, or chunks and retaining the highest-scoring units under a budget. We identify a structural failure in this procedure: independent selection can split dependent evidence pairs, retaining one member while deleting the other. When retained text contains an answer but deleted text defines the entity needed to interpret it, we call the result referential dangling. At a compression ratio of 0.30, Beaver, which ranks coherent chunks using Qwen3-0.6B embeddings, leaves the answer path incomplete in 34-54% of bridge examples across three multi-hop question answering datasets. On a shared HotpotQA bridge set, all six hard compressors we test exhibit dangling at rates up to 60%, and every document in LongBench-v2 Single-Document QA contains at least one dangling reference. On dangling examples evaluated with Qwen3-8B, reinserting the missing supporting paragraph while removing nonsupporting paragraphs to maintain the token budget improves accuracy by 29-34 percentage points (p < 0.0001), recovering at least 88% of the gap to contexts retaining both supporting paragraphs. Stronger answer models do not absorb the loss: on MuSiQue, GPT-5.5 is 8.8 points less accurate on compressed contexts than on contexts retaining both supporting paragraphs. Finally, we train a compact classifier to rank omitted sentences by whether they are needed to interpret retained text and reinsert the top-ranked candidates without support annotations at inference. On HotpotQA with Qwen3-8B, this automatic restoration improves accuracy by 4.7 points while changing the compression ratio only from 0.30 to 0.31. Hard compressors should optimize both relevance and referential completeness.",
+   "published": "2026-08-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.04569"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Ce travail identifie le 'referential dangling' comme un échec structurel de la compression de prompts durs, où des paires de preuves dépendantes sont séparées, dégradant les performances. Une solution consiste à réinsérer les paragraphes manquants pour rétablir la cohérence.",
+   "score": 7.9
+  },
+  {
+   "id": "daed580a1d1045fd",
+   "title": "Energy-Structured Latent World Models with Neural Time Fields for Physically Constistent Open-World Motion Planning",
+   "url": "https://arxiv.org/abs/2608.09876v1",
+   "summary": "Physically consistent motion planning remains a fundamental challenge in embodied AI, as generated trajectories must strictly conform to real-world execution dynamics. While latent world models offer a promising approach by predicting these dynamics, existing methods learn unconstrained future representations where absorbed physics remains implicit. Therefore, they fail to form reusable physical knowledge, which compromises reliability in unpredictable open-world navigation. To address this, we propose a novel Energy-Structured Latent World Model (ELWM). Our key idea is to structure the ELWM latent state to explicitly carry energy and momentum, ensuring strictly causal transitions via dissipation and control ports. Trained on multimodal RGB-D and inertial interaction histories, our model guarantees physically consistent predictions. We further implement this for motion planning by constructing Physics-Conditioned Neural Time Fields (PC-NTF), a key technical cornerstone that integrates ELWM into an arrival time field via the Eikonal equation to yield a physically-informed navigation policy. Across held-out scenes, our evaluation reveals significant improvements. Compared to generic latent models, PC-NTF reduces 0.8-s motion-prediction NRMSE from 0.36 to 0.29. Against Active Neural Time Fields, it improves navigation success from 81.3% to 89.7% and SPL from 0.64 to 0.73, while cutting the physical collision rate from 12.1% to 5.8% and the Eikonal residual from 0.083 to 0.031. Beyond these targeted gains, our results demonstrate that embedding explicit physical structures into latent spaces intrinsically bridges the gap between predictive world models and safe, dynamically feasible motion planning.",
+   "published": "2026-08-10T17:31:18+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yapeng Liu, Yuanzhao Zhai, Bo Ding, Huaimin Wang, Lin Wang"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Modèle ELWM pour la planification de mouvement en robotique, structurant les états latents avec des contraintes physiques (énergie/momentum) pour des prédictions causales et une navigation robuste. Avancée majeure pour l'IA embodied.",
+   "score": 7.7
+  }
+ ]
+}
