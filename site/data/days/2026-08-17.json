@@ -1,0 +1,620 @@
+{
+ "date": "2026-08-17",
+ "digest": {
+  "headline": "Les architectures découplées et l'optimisation matérielle redéfinissent l'efficacité des LLM et des agents autonomes",
+  "overview": "La veille du 2026-08-17 met en lumière des avancées majeures en architecture de modèles, avec une séparation explicite des composants (connaissance/raisonnement) et des optimisations matérielles poussées. Parallèlement, les benchmarks révèlent des limites persistantes en détection de désinformation et en autonomie des agents, tout en proposant des outils pour y remédier.",
+  "highlights": [
+   {
+    "title": "Découplage connaissance/raisonnement : gains d'efficacité sans compromis",
+    "text": "L'architecture Mobius (Intern-S2-Mobius) sépare mémoire partagée et modules de raisonnement, réduisant de 37,4% les données d'entraînement et accélérant l'inférence par 4x pour un modèle 7B, avec des performances équivalentes à un Transformer standard. LittleLearner, quant à lui, utilise un corpus contrôlé (88B tokens) pour étudier l'acquisition de connaissances par un LLM de 5B paramètres, offrant une base interprétable pour analyser les limites des modèles."
+   },
+   {
+    "title": "Optimisation matérielle : LLM légers et inférence CPU",
+    "text": "L'implémentation en C99 du modèle Kimi K3 (2,78 trillions de paramètres) démontre une inférence possible sur CPU avec seulement 8,24 Go de RAM, sans dépendances lourdes. Cette avancée ouvre la voie à des déploiements légers et scalables, tout en soulignant l'importance croissante de l'efficacité matérielle pour les LLM."
+   },
+   {
+    "title": "Agents autonomes : parallélisation et mémoire à long terme",
+    "text": "Le framework Second Thought parallélise le raisonnement des agents LLM pendant les phases d'action/observation, réduisant jusqu'à 43% le nombre de tours sans perte de performance. MobileMem propose un benchmark pour évaluer la mémoire à long terme sur mobile via des trajectoires multimodales synthétiques, essentiel pour des agents persistants et contextuels."
+   },
+   {
+    "title": "Limites des détecteurs de désinformation et évaluation des agents",
+    "text": "RA-Bench révèle l'incapacité des détecteurs actuels à généraliser face aux vidéos générées par IA dans des contextes de crise réelle, soulignant les risques de désinformation. Par ailleurs, une évaluation systématique de 7 modèles agents montre qu'ils agissent davantage comme des optimiseurs d'ingénierie que comme des chercheurs autonomes, avec des progrès limités en innovation méthodologique."
+   },
+   {
+    "title": "Interprétabilité et contrôle des modèles multimodaux",
+    "text": "UniProbe détecte les hallucinations dans les LVLMs via des traces internes unifiées (graphes d'attention, géométrie 2D), tandis que MMDiff identifie et contrôle les caractéristiques internes des MLLMs via des SAEs multimodaux. Ces outils permettent une meilleure compréhension et un contrôle causal des modèles, essentiels pour des applications critiques."
+   }
+  ],
+  "trend": "Les architectures modulaires et les optimisations matérielles deviennent des leviers clés pour améliorer l'efficacité et la scalabilité des modèles, tandis que les benchmarks et outils d'interprétabilité révèlent des lacunes persistantes en autonomie et en robustesse, orientant la recherche vers des solutions plus ciblées et transparentes."
+ },
+ "items": [
+  {
+   "id": "445fce4891f32203",
+   "title": "LittleLearner: Language Models Under Pedagogically Controlled Knowledge Exposure",
+   "url": "https://huggingface.co/papers/2608.13545",
+   "summary": "Modern language models are trained on heterogeneous web-scale text corpora. Consequently, studying knowledge and skill acquisition is difficult, as prior exposure to related content is hard to characterize. To address this challenge, we introduce LITTLECURRICULUM, a curated 88B-token pretraining corpus tailored to U.S. elementary school material, explicitly excluding concepts, facts, and vocabulary taught above Grade 5. Training a 5B-parameter LLM from scratch on LITTLECURRICULUM yields LITTLELEARNER, a model with sufficient language competence for open-ended evaluation, yet with clear knowledge and capability boundaries mapped to interpretable curriculum guidelines. We release LITTLECURRICULUM and LITTLELEARNER as a developmentally restricted sandbox to study how models acquire, represent, and use data under a well-defined training scope. We illustrate the sandbox's utility in a first suite of experiments on injecting new knowledge through post-training and in-context learning. These methods let LITTLELEARNER better utilize existing knowledge, but do not raise out-of-scope capabilities. Our findings underscore the value of this controlled environment for future investigations.",
+   "published": "2026-08-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.13545"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Création d'un corpus de pré-entraînement contrôlé (88B tokens) limité au niveau scolaire élémentaire pour étudier l'acquisition de connaissances par un LLM de 5B paramètres (LITTLELEARNER). Permet d'analyser les limites interprétables des capacités du modèle et d'évaluer des méthodes d'injection de connaissances post-entraînement.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage modernes sont entraînés sur des corpus de texte hétérogènes à l'échelle du web, ce qui rend difficile l'étude précise de l'acquisition des connaissances et des compétences. En effet, il est complexe de caractériser leur exposition préalable à des contenus spécifiques, ce qui limite la compréhension des mécanismes d'apprentissage et des limites des modèles.",
+    "methode": "Pour résoudre ce problème, les auteurs ont créé LITTLECURRICULUM, un corpus de pré-entraînement de 88 milliards de tokens soigneusement sélectionné et aligné sur le matériel pédagogique des écoles élémentaires américaines (niveau jusqu'à la 5ème année). Ce corpus exclut délibérément les concepts, faits et vocabulaire enseignés au-delà de ce niveau. Un modèle de langage de 5 milliards de paramètres, nommé LITTLELEARNER, a été entraîné *from scratch* sur ce corpus. Cela permet d'obtenir un modèle doté d'une compétence linguistique suffisante pour des évaluations ouvertes, tout en ayant des frontières de connaissances et de capacités clairement définies et interprétables. Les auteurs ont également exploré l'injection de nouvelles connaissances via le post-entraînement et l'apprentissage *in-context* pour évaluer l'impact sur l'utilisation des connaissances existantes et l'émergence de capacités hors périmètre.",
+    "resultats": "LITTLELEARNER démontre une compétence linguistique adéquate pour des tâches ouvertes, tout en respectant les limites du curriculum défini. Les expériences montrent que les méthodes de post-entraînement et d'apprentissage *in-context* améliorent l'utilisation des connaissances existantes, mais ne permettent pas au modèle d'acquérir des capacités hors de son périmètre initial. Les auteurs publient LITTLECURRICULUM et LITTLELEARNER comme un environnement contrôlé pour étudier l'acquisition et la représentation des connaissances dans les modèles de langage.",
+    "limites": "Le corpus LITTLECURRICULUM est limité au matériel pédagogique américain de niveau élémentaire, ce qui peut restreindre la généralisabilité des résultats à d'autres contextes culturels ou linguistiques. De plus, bien que le modèle soit contrôlé, les mécanismes précis d'acquisition des connaissances et leur représentation interne restent partiellement opaques, comme pour la plupart des modèles de langage.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante et rigoureuse visant à créer un environnement contrôlé pour étudier les modèles de langage, offrant ainsi une base solide pour des recherches futures sur l'acquisition et les limites des connaissances."
+   }
+  },
+  {
+   "id": "7139346353de8f38",
+   "title": "Intern-S2-Mobius: Foundation Model with Decoupled Knowledge and Reasoning",
+   "url": "https://huggingface.co/papers/2608.14290",
+   "summary": "We introduce Mobius-v0, an architecture that comprises a globally shared Memory (FFN) that stores knowledge vectors and multiple Reasoners (Self-Attn) that iteratively achieve compositional reasoning. Using hidden states as cache and carrier, reasoners repeatedly query memory for required knowledge-vectors, while the knowledge is transmitted back to reasoning operators. Through this knowledge-reasoning-separation architecture, Mobius achieves better knowledge compression and reasoning efficiency. Built upon Mobius-v0 architecture: 1) Our 7B model trained-from-scratch achieves similar downstream score as a 7B Transformer baseline with 62.6% of baseline's training data. 2) Our Intern-S2-Mobius, continually-pretrained from Qwen3.5-35B, achieves similar downstream score while delivering nearly 4x end-to-end inference speedup.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 26,
+    "arxiv_id": "2608.14290"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Architecture Mobius (Intern-S2-Mobius) séparant connaissance (mémoire partagée) et raisonnement (modules dédiés), réduisant les données d'entraînement nécessaires de 37,4% et accélérant l'inférence de 4x pour un modèle 7B, avec des performances comparables à un Transformer standard.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le modèle cherche à résoudre deux défis majeurs des architectures de transformeurs actuelles : d'une part, la redondance et le manque d'efficacité dans le stockage des connaissances (mémoire), et d'autre part, la difficulté à optimiser séparément les capacités de raisonnement et d'accès aux connaissances. Cela limite l'efficacité computationnelle et la scalabilité des modèles de grande taille.",
+    "methode": "Mobius-v0 propose une architecture découplée avec deux composants principaux : une *Memory* partagée globalement (implémentée via des couches Feed-Forward Networks, FFN) qui stocke les vecteurs de connaissances, et plusieurs *Reasoners* (basés sur des mécanismes d'auto-attention, Self-Attn) dédiés au raisonnement compositionnel. Les états cachés (*hidden states*) servent de cache et de vecteur de transmission : les *Reasoners* interrogent itérativement la *Memory* pour récupérer les connaissances nécessaires, tandis que ces dernières sont renvoyées aux opérateurs de raisonnement. Cette séparation permet une compression plus efficace des connaissances et une optimisation ciblée du raisonnement. Le modèle est entraîné *from scratch* ou par *continual pretraining* à partir de Qwen3.5-35B.",
+    "resultats": "Les résultats montrent que le modèle Mobius-7B, entraîné depuis zéro, atteint des performances similaires à un transformeur 7B de référence en utilisant seulement 62,6 % des données d'entraînement de ce dernier. De plus, Intern-S2-Mobius, dérivé de Qwen3.5-35B par *continual pretraining*, offre des performances comparables tout en accélérant l'inférence de près de 4 fois (*4x end-to-end inference speedup*).",
+    "limites": "Les détails techniques sur la manière dont la *Memory* et les *Reasoners* interagissent restent flous, notamment sur les mécanismes de synchronisation ou de mise à jour des connaissances. De plus, l'évaluation se limite à des métriques de performance globale sans analyse fine des biais ou des erreurs spécifiques introduits par cette architecture. Enfin, l'impact sur la qualité des générations longues ou complexes n'est pas documenté.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à améliorer l'efficacité des grands modèles, mais des validations indépendantes et des analyses plus poussées sont nécessaires avant une adoption large."
+   }
+  },
+  {
+   "id": "edf1d2b608404e32",
+   "title": "Second Thought: Reasoning in Parallel as LLM Agents Act and Observe",
+   "url": "https://huggingface.co/papers/2608.13667",
+   "summary": "LLM agents in the ReAct paradigm alternate between reasoning, acting, and observing, but deliberate reasoning is confined to the Thought phase: while the agent serializes an action and waits for the environment, its reasoning is frozen. We identify this recurring interval for Action and Observation as a reasoning idle window and ask whether it can host additional reasoning in parallel that serves future turns. Therefore, we propose Second Thought, a training-free inference framework that forks four auxiliary branches the instant each Thought phase concludes, decodes them concurrently with the main loop, and merges the generated thoughts back when the environment observation arrives. In this way, Second Thought relocates the added reasoning off the main thread's sequential decoding path. Across three agentic benchmarks and three reasoning LLMs, Second Thought lowers the average turn count in all nine (model,benchmark) pairs and reduces main thread decoding in six of them by up to 43% (roughly 20% on average among those settings), while leaving it essentially unchanged in a seventh; Pass@1 shows no significant change in seven of nine pairs and the two significant differences are +12.4 and +10.2 points. Against a compute-matched control that forces an equivalent budget onto the main thread's own reasoning, it attains strictly higher Pass@1 with 1.3 to 3.2 less sequential decoding in all four settings where the control applies.",
+   "published": "2026-08-13T14:04:53.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.13667"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Framework Second Thought pour les agents LLM (ReAct) : parallélisation du raisonnement pendant les phases d'action/observation via des branches auxiliaires. Réduit le nombre de tours et le décodage séquentiel jusqu'à 43% sans perte significative de performance.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le paradigme ReAct (Reasoning + Acting) utilisé par les agents basés sur les LLM impose une alternance séquentielle entre raisonnement, action et observation. Pendant les phases d'action et d'observation, le raisonnement de l'agent est gelé, créant une 'fenêtre inactive' sous-exploitée. Cela limite l'efficacité des agents en gaspillant des cycles de calcul potentiellement utiles pour anticiper les prochaines étapes.",
+    "methode": "Second Thought propose un cadre d'inférence sans entraînement qui exploite cette fenêtre inactive en forkant quatre branches auxiliaires dès la fin de la phase *Thought*. Ces branches effectuent un raisonnement parallèle pendant que l'agent attend la réponse de l'environnement. Les pensées générées sont ensuite fusionnées avec le flux principal dès la réception de l'observation. Cette approche déplace le raisonnement supplémentaire hors du chemin critique de décodage séquentiel, réduisant ainsi la latence perçue. Le framework utilise des mécanismes de décodage concurrent et de fusion dynamique, sans modifier l'architecture sous-jacente du LLM.",
+    "resultats": "Sur trois benchmarks d'agents (dont les détails ne sont pas précisés dans le résumé) et trois modèles de raisonnement (non nommés), Second Thought réduit le nombre moyen de tours dans les neuf paires (modèle, benchmark). Il diminue également le décodage séquentiel sur le fil principal dans six de ces paires (jusqu'à 43%, soit ~20% en moyenne), sans impact significatif sur une septième. Le *Pass@1* reste stable dans sept paires, avec des gains notables de +12,4 et +10,2 points dans deux cas. Comparé à un contrôle appariant le budget de calcul sur le fil principal, Second Thought obtient un *Pass@1* strictement supérieur avec 1,3 à 3,2 fois moins de décodage séquentiel dans les quatre configurations testées.",
+    "limites": "Le résumé ne précise pas les benchmarks ou modèles utilisés, ni les détails de l'implémentation (ex : stratégie de fusion des branches auxiliaires). L'absence de données sur la robustesse face à des environnements dynamiques ou bruités limite l'évaluation. Enfin, l'approche repose sur une hypothèse forte : que le raisonnement parallèle est toujours bénéfique, ce qui pourrait ne pas tenir pour des tâches nécessitant une cohérence stricte entre actions et observations.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à optimiser l'efficacité des agents LLM sans entraînement supplémentaire, mais son applicabilité réelle dépendra de validations sur des cas d'usage plus variés et de détails techniques encore absents."
+   }
+  },
+  {
+   "id": "f71a874cf75a0110",
+   "title": "MobileMem: Learning from a Year of Mobile Experiences",
+   "url": "https://huggingface.co/papers/2608.13606",
+   "summary": "The next generation of AI agents is increasingly moving beyond systems that answer isolated questions toward persistent personal assistants that can understand, remember, and continuously learn from users' experiences. Such assistants require long-term memory to accumulate and leverage user-specific experiences over time, yet existing benchmarks remain inadequate for realistic mobile settings, where experiences are heterogeneous, multimodal, evolving, and deeply personal. We introduce MobileMem, a benchmark and framework for studying on-device long-term memory, grounded in a year-scale collection of mobile experiences. MobileMem employs a knowledge-grounded synthesis pipeline to construct coherent and temporally consistent long-horizon trajectories from user-app sessions. It provides complementary text and multimodal settings covering multi-hop and temporal reasoning, knowledge updating, and implicit preference inference. Specifically, MobileMem enables agents to remember the past, understand the present, and adapt to the future. By modeling experiences rather than isolated facts, MobileMem moves memory beyond information retrieval toward experiential intelligence for continuous personal learning.",
+   "published": "2026-08-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2608.13606"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "vision"
+   ],
+   "tldr": "Benchmark MobileMem pour étudier la mémoire à long terme sur mobile via des trajectoires multimodales synthétiques (1 an de données). Évalue le raisonnement multi-sauts, temporel et l'inférence de préférences implicites pour des agents persistants.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les assistants IA actuels peinent à évoluer vers des systèmes persistants capables de mémoriser et d'exploiter les expériences utilisateur sur le long terme, notamment dans un contexte mobile. Les benchmarks existants ne reflètent pas la complexité des interactions réelles (hétérogénéité, multimodalité, évolution temporelle et personnalisation profonde), limitant ainsi le développement d'agents dotés d'une mémoire à long terme adaptée aux usages mobiles.",
+    "methode": "MobileMem propose un benchmark et un cadre d'étude pour la mémoire à long terme *on-device*, basé sur une collecte d'expériences mobiles à l'échelle d'une année. Le système utilise un pipeline de synthèse ancré dans la connaissance pour reconstruire des trajectoires cohérentes et temporellement consistantes à partir de sessions utilisateur-app. Il couvre des scénarios complémentaires en texte et multimodaux, incluant le raisonnement multi-sauts, temporel, la mise à jour des connaissances et l'inférence de préférences implicites. L'approche modélise les expériences plutôt que des faits isolés, visant une intelligence expérientielle pour un apprentissage continu et personnalisé.",
+    "resultats": "Les détails quantitatifs (chiffres clés, performances comparatives) ne sont pas explicitement mentionnés dans le contenu disponible. Le papier met cependant en avant la capacité de MobileMem à évaluer des agents sur des tâches complexes comme la mémorisation du passé, la compréhension du présent et l'adaptation au futur, dans un cadre réaliste et évolutif.",
+    "limites": "Le contenu ne précise pas les biais potentiels liés à la collecte des données (représentativité des utilisateurs, diversité des usages mobiles). L'absence de métriques détaillées ou de comparaisons avec d'autres benchmarks rend difficile l'évaluation objective de l'apport réel. Enfin, la faisabilité technique d'une implémentation *on-device* à grande échelle reste une zone d'ombre, notamment en termes de ressources et de confidentialité.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche novatrice de la mémoire à long terme dans un contexte mobile, mais son impact réel dépendra de la publication de résultats concrets et de son adoption par la communauté."
+   }
+  },
+  {
+   "id": "38cd7f11927f4682",
+   "title": "Can We Defend Against AI-Generated Video Attacks on Real-World Crisis Events? A Systematic Evaluation of Detectors, Generators and Social Dissemination",
+   "url": "https://huggingface.co/papers/2608.14391",
+   "summary": "Recent video generators can fabricate realistic depictions of wars, disasters, public emergencies, and other real-world crises, creating substantial risks of misinformation. Existing benchmarks, however, provide limited evidence on detector and generator behavior in such settings, including how detectability varies with generation conditions, how people perceive generated videos, and whether detectors remain reliable during social dissemination. To address this gap, we introduce RA-Bench, a benchmark for AI-generated video detection that uses Real videos as Anchors. RA-Bench contains 17,886 videos, comprising 1,830 real-video anchors across 10 social-risk categories and 16,056 generated clips from four open-source and five closed-source generators. Based on RA-Bench, we organize our evaluation along three dimensions. We first assess detector generalization across seven traditional detectors, ten zero-shot multimodal models under three review settings, and two MLLMs specifically fine-tuned on AI-generated video detection. Across these methods, none of the three detector families generalizes consistently across RA-Bench instances. We then examine how detectability varies with generation quality, conditioning information, and sampling seeds. These analyses show that generation properties affect detector families differently, while source-level detection patterns remain stable across seeds. Finally, we study human authenticity judgments and detector reliability during social dissemination. We find that videos that mislead people are also difficult for current detectors, and that social dissemination makes detection harder. Together, these findings show that current methods struggle to detect realistic AI-generated videos, highlighting the need for detectors robust to evolving video generators.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 43,
+    "arxiv_id": "2608.14391"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "regulation"
+   ],
+   "tldr": "Benchmark RA-Bench pour la détection de vidéos générées par IA dans des contextes de crise réelle, évaluant 17 886 vidéos (réelles et générées) et révélant l'absence de généralisation cohérente des détecteurs actuels, soulignant les risques de désinformation et les lacunes des outils existants.",
+   "score": 8.8
+  },
+  {
+   "id": "cd998f7203039563",
+   "title": "FareedKhan-dev/kimi-k3-in-c",
+   "url": "https://github.com/FareedKhan-dev/kimi-k3-in-c",
+   "summary": "A 2.78-trillion-parameter Kimi K3 running inference on a single CPU in 8.24 GB of RAM. Portable C99: no BLAS, no framework, no GPU.",
+   "published": "2026-08-01T09:29:38Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 5858,
+    "language": "C"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Implémentation en C99 d'un modèle Kimi K3 de 2,78 trillions de paramètres capable de tourner en inférence sur un CPU avec seulement 8,24 Go de RAM, sans dépendances lourdes. Démontre une avancée majeure en optimisation matérielle et efficacité des LLM pour des déploiements légers.",
+   "score": 8.3
+  },
+  {
+   "id": "d75ae987c37ab9cc",
+   "title": "Latent On-Policy Self-Distillation",
+   "url": "https://huggingface.co/papers/2608.13040",
+   "summary": "Enabling agents to learn from experience and internalize it into their policy has become a central problem in self-evolving AI. On-policy self-distillation (OPSD) offers an effective pathway by using a privileged self-teacher to provide dense supervision on the student's own trajectories; however, existing methods still rely heavily on designer-specified privileged artifacts (e.g., answers, feedback, skills, or trajectories), limiting the end-to-end learnability and scalability required for continual self-improvement. In this work, we introduce Latent On-Policy Self-Distillation (LOPD), which, rather than proposing another hand-crafted OPSD variant with a newly prescribed form of privileged context, makes the teacher's privileged context itself learnable end-to-end from experience. Technically, LOPD retrieves relevant experiences and composes them into continuous latent tokens that condition a self-teacher, while the student generates trajectories from the task and interaction history and receives dense token-level supervision at every visited prefix. We further introduce a privileged-margin objective to stabilize and regulate the learning of latent context. Empirically, LOPD demonstrates (I) strong performance, outperforming RLVR and representative OPSD methods including OPSD, SDPO, and Skill-SD across both agentic tool use and code generation; and (II) high learning efficiency, surpassing GRPO and Skill-SD with less than 30% of their rollout budget. Ablation studies further provide direct evidence that making privileged context learnable is necessary for realizing these gains. Together, these results position LOPD as a step toward a more scalable and self-directed paradigm for agent evolution.",
+   "published": "2026-08-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.13040"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Méthode LOPD pour l'auto-distillation en ligne des agents, où le contexte privilégié du professeur est appris de manière end-to-end via des tokens latents. Améliore l'apprentissage continu sans dépendre d'artefacts prédéfinis.",
+   "score": 8.2
+  },
+  {
+   "id": "08c4507c6065fa3d",
+   "title": "Verifier-Induced Support Reshaping in On-Policy Optimization",
+   "url": "https://huggingface.co/papers/2608.00220",
+   "summary": "We show that on-policy reinforcement learning with verifiable rewards (RLVR) can improve the current objective while making successful behaviors for later objectives too rare to sample and reinforce. We call this verifier-induced support reshaping and define effective rewardable support as successful trajectories reachable within a fixed rollout budget. Across two model families, we study this effect through repeated verifier-scored sampling and bidirectional training on mathematical reasoning and constrained instruction following, including sequential training with the opposite verifier. Math-RLVR raises average instruction-following success but reduces the number of prompts with any successful response under repeated sampling. On IFEval with Qwen3-8B-Base, pass@1 rises by 6.5 percentage points while best@32 falls by 9.8 percentage points, and the same divergence appears across both models and IF benchmarks. Conversely, IF-RLVR shifts math responses from step-by-step openings toward direct answers, lowers best@k across sampling budgets, and reduces reward variation for later Math-RLVR. Token-distribution analyses and controlled opening interventions show that these changes concentrate in the first few response tokens. RLVR mainly reranks openings already available in the base policy, and the selected opening causally affects math searchability. The tested reference-policy constraints, routing priors, and on-policy distillation preserve cross-task support only partially; MathIF and ReasonIF show that marginal gains translate only partly into responses that are both correct and constraint-following. Therefore, endpoint improvements do not guarantee future trainability or joint capability under on-policy optimization. Code is available at https://github.com/sylvain-wei/verifier-induced-support-reshaping",
+   "published": "2026-07-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.00220"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Étude sur les limites des méthodes d'optimisation RL avec récompenses vérifiables (RLVR) en apprentissage par renforcement sur politique, révélant un phénomène de 'reshaping' du support des comportements réussis, réduisant leur diversité malgré l'amélioration des métriques moyennes. Analyse empirique sur des modèles de raisonnement mathématique et de suivi d'instructions avec des divergences entre pass@1 et best@k.",
+   "score": 8.2
+  },
+  {
+   "id": "740fbec912c232ac",
+   "title": "Claim-Level Reliability Assessment for Efficient Test-Time Reasoning",
+   "url": "https://huggingface.co/papers/2608.11994",
+   "summary": "We propose claim-level falsification as a principle for test-time scaling and instantiate it through Claim-Level Reliability Assessment (CLR), a training-free framework that reallocates test-time compute from additional solution sampling to targeted verification. Since whole-trace evaluation often obscures decisive errors due to signal dilution from routine tokens, CLR condenses each reasoning trace into a compact set of decision-critical claims, thereby isolating its logical anchors. Furthermore, recognizing the inherent difficulty of generating entirely correct solutions under fixed model capabilities, CLR shifts the focus to semantic falsification. This approach exploits a fundamental asymmetry between solution construction and claim refutation. Constructing a valid solution requires a flawless reasoning path, whereas refuting an incorrect claim requires identifying only a single decisive flaw. This targeted search for negative evidence systematically compresses the survival space of high-confidence incorrect traces, effectively suppressing erroneous consensus via nonlinear reliability scoring. Across four LLMs and four reasoning benchmarks under matched budgets, CLR generally improves upon pass@1 and self-consistency. On GPT-OSS-20B/CMIMC25, for instance, CLR exceeds pass@1 by 27.15 percentage-points and raises self-consistency accuracy from 77.50\\% to 82.19\\% with 37.0\\% fewer tokens.",
+   "published": "2026-08-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.11994"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Méthode CLR (Claim-Level Reliability Assessment) pour optimiser le temps de calcul en test-time en ciblant la vérification de claims spécifiques dans les traces de raisonnement, exploitant l'asymétrie entre construction de solutions et réfutation d'erreurs pour réduire les erreurs de consensus.",
+   "score": 8.2
+  },
+  {
+   "id": "a745c71a2d7aa19f",
+   "title": "Beyond Final Scores: A Systematic Evaluation of Agents for Long-Horizon AI Research and Development",
+   "url": "https://huggingface.co/papers/2608.13417",
+   "summary": "Autonomous agents are increasingly capable of improving models, systems, and other technical artifacts through long-horizon experimentation. To understand the current state of this capability, however, evaluation must go beyond final scores, which neither reveal where progress is gained or lost nor indicate whether accumulated experience improves later decisions. We therefore present a systematic evaluation of seven frontier models on 36 long-horizon tasks based on a new framework that uses rule-based metrics to characterize within-run behavior through Solution Framing, Execution, and Feedback Control and controlled comparisons to assess experience reuse within and across tasks. The results show that current agents operate more like engineering optimizers than fully autonomous researchers: they can formulate and implement practical solutions, but their performance varies substantially across runs, their strongest solutions mainly adapt or combine established techniques, and genuine methodological novelty remains rare. Detailed analysis reveals that observed performance is shaped by multiple factors, including distinct process bottlenecks behind similar final outcomes, experience reuse that can help or mislead subsequent decisions, and harness designs that affect performance stability. These findings suggest concrete directions for improving model training, inference-time strategies, experience management, and harness design.",
+   "published": "2026-08-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 26,
+    "arxiv_id": "2608.13417"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Évaluation systématique de 7 modèles agents sur 36 tâches de recherche et développement à long terme, révélant que les agents actuels agissent davantage comme des optimiseurs d'ingénierie que comme des chercheurs autonomes, avec des progrès limités en innovation méthodologique.",
+   "score": 8.2
+  },
+  {
+   "id": "56278091c77adc87",
+   "title": "UniProbe: A Learnable Token-Level Hallucination Detector for Large VLMs using Multi-Structural Internal Representations",
+   "url": "https://huggingface.co/papers/2608.10835",
+   "summary": "Large Vision-Language Models (LVLMs) achieve impressive visual reasoning and dialogue capabilities, yet frequently hallucinate content unsupported by the visual input. Effective mitigation requires token-level localization, enabling targeted intervention without discarding the entire response. Existing detectors require expensive full-model fine-tuning, rely on external verifiers that ignore the model's generation process, or reduce internal signals to isolated features and hand-crafted statistics, discarding spatial, sequential, and relational structure. We introduce UniProbe, a lightweight, unified, learnable detector that models a frozen LVLM's heterogeneous computational trace from a single forward pass. UniProbe constructs a directed graph over image patches, query tokens, and generated tokens, with attention weights encoding their relations. It processes this trace with alternating structure-aware modules: a GNN for relational evidence, a ViT for 2-D visual geometry, and a GRU for response order. Interleaving them allows spatial, relational, and sequential evidence to interact throughout the detector. We further develop a streaming variant for hallucination-aware decoding, which detects and resamples hallucinated tokens during generation, and a self-adaptation strategy aligning the detector with the LVLM's own generations. Across diverse LVLM backbones, UniProbe achieves state-of-the-art token-level and object-hallucination detection. During decoding, it reduces object hallucinations by up to 55\\% at 1.06times the latency of standard generation.",
+   "published": "2026-08-11T08:01:59.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.10835"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Détection des hallucinations dans les LVLMs via UniProbe, un détecteur léger et unifié qui exploite les traces internes (graphes d'attention, géométrie 2D, séquences) d'un seul forward pass. Propose une variante pour un décodage conscient des hallucinations.",
+   "score": 7.9
+  },
+  {
+   "id": "b4cf188ec887b359",
+   "title": "PRM-as-a-Judge 1.5: A Toolkit for Robot Process Assessment",
+   "url": "https://huggingface.co/papers/2608.14284",
+   "summary": "Fine-grained robotic evaluation matters for understanding embodied models, going beyond binary success rates and rule-based process scores. We present PRM-as-a-Judge 1.5, a toolkit for robot process assessment that turns rollout videos into dense progress curves and derives multiple fine metrics. PRM-as-a-Judge 1.5 introduces three metrics, building on version 1.0, that characterize failure-side progress, post-drawdown recovery, and success-side execution quality, helping users understand embodied model capability. Based on the rollout videos from benchmarks, we perform a comprehensive assessment of the embodied models, providing some fine-grained metric results and key findings. We further introduce RoboPulse++ to evaluate the reliability of process reward models (PRM), providing evaluators with a more accurate testing platform. Moreover, we release a user-friendly assessment suite, including the benchmark, metric implementation, and visualization tools, to support reproducible manipulation process evaluation. We call on the community to rethink how robots are evaluated and establish transparent, procedural, and reproducible assessment as a foundation for the next generation of embodied intelligence.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.14284"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Outil PRM-as-a-Judge 1.5 pour évaluer finement les modèles robotiques via des métriques avancées (échec, récupération, qualité d'exécution) et RoboPulse++ pour tester la fiabilité des PRM. Favorise une évaluation transparente et reproductible.",
+   "score": 7.6
+  },
+  {
+   "id": "9e869dc468b0c1a4",
+   "title": "Scaling Domain Data Repetition in LLM Pretraining",
+   "url": "https://huggingface.co/papers/2608.14071",
+   "summary": "As large language models scale, their training-token budgets must also increase to maintain an appropriate tokens-per-parameter ratio (\\(TPP\\)). However, high-quality domain data is much harder to scale than general web data. As model size and the training-token budget increase, its fraction in the training mixture tends to decrease. Repeating the available high-quality data provides an effective way to counteract this dilution, but excessive repetition may lead to overfitting. We study this trade-off under practical LLM scaling, where the training-token budget grows proportionally with model size. For a fixed domain, we first find that, surprisingly at a fixed \\(TPP\\), the optimal repetition count mildly increases with model size. Across different domains, we find that the optimal repetition count is strongly negatively correlated with the final validation loss of a domain: domains with lower loss can generally benefit from more repetitions. In contrast, the amount of unique domain data is only weakly related to the optimal repetition count. These findings suggest that repetition counts tuned on smaller proxy models with the same \\(TPP\\) can provide a practical estimate for larger models.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.14071"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Analyse empirique sur l'impact de la répétition des données de domaine dans l'entraînement des LLM à grande échelle, montrant que le nombre optimal de répétitions augmente avec la taille du modèle et est corrélé négativement avec la perte de validation finale. Implications pratiques pour le scaling des données de haute qualité.",
+   "score": 7.6
+  },
+  {
+   "id": "be99169569b6898a",
+   "title": "Multimodal Model Diffing for Feature Discovery and Control",
+   "url": "https://huggingface.co/papers/2608.09928",
+   "summary": "Multimodal Large Language Models (MLLMs) exhibit strong visual understanding, yet the internal features that cause these behaviors remain difficult to identify, audit, or control. While applicable to post-hoc inspection, hidden states that are decomposed into interpretable feature directions using sparse autoencoders (SAEs) neither readily isolate which features are changed by multimodal training, nor are they directly useful for targeted control. We introduce MMDiff, a multimodal model-diffing framework that trains multimodal SAEs and turns them into feature-level interfaces for discovering and controlling multimodal behavior. MMDiff supports three uses: (i) feature isolation, by diffing a base-LM SAE against its multimodal-adapted counterpart to identify features altered by multimodal training; (ii) task-specific feature detection, via per-token contrastive firing analysis that isolates causal features; and (iii) feature-level control, by causally removing or steering the discovered feature directions. We train multimodal SAEs for three MLLM families, LLaVA-MORE, PaliGemma 2, and InternVL3.5, and evaluate on visual-spatial understanding, multimodal safety, and OCR. MMDiff discovers sparse, causally specific features whose removal selectively degrades target behaviors by an average of 12% on spatial tasks and 17% on OCR, and reduces attack success rate by 24% on multimodal safety attacks, with no impact on VQA performance. Steering these features improves spatial and OCR accuracy by +3.6% and +1.8% on average over a standard single-layer steering baseline. These results show that multimodal SAEs can serve not only as interpretability tools, but as mechanisms for auditing, steering, and controlling MLLMs behavior toward safer and more capable generations.",
+   "published": "2026-08-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.09928"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "interpretabilite",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Framework MMDiff pour identifier et contrôler les caractéristiques internes des MLLMs via des SAEs multimodaux. Permet de différencier les features modifiées par l'entraînement multimodal et d'appliquer un contrôle causal sur ces directions.",
+   "score": 7.3
+  },
+  {
+   "id": "6276768cf82c29a0",
+   "title": "HumanTracker: Towards Comprehensive and Human-Aligned Motion Tracking Benchmark",
+   "url": "https://huggingface.co/papers/2608.13555",
+   "summary": "Humanoid motion tracking is central to teleoperation and whole-body imitation, yet evaluation often disagrees with what people perceive in videos. Kinematic errors average per-frame pose differences but miss the physical artifacts that matter most, particularly unstable support and incorrect contacts such as foot skating and mistimed touch-downs. Meanwhile, widely used test suites are small and lack the diversity needed to stress contact-rich, long-horizon behaviors. We introduce HumanTracker to make humanoid tracking evaluation both perceptually aligned and scalable. The HumanTracker benchmark contains approximately 153 hours of optical motion trajectories from multiple professional performers, organized into four motion families with text labels for fine-grained diagnosis. We further propose HumanScore, a preference-aligned metric trained on 12K motion pairs containing 24K motions. Across representative state-of-the-art trackers, HumanScore better predicts human preferences and reveals contact and stability failures that kinematic metrics often miss.",
+   "published": "2026-08-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2608.13555"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Nouveau benchmark HumanTracker pour l'évaluation de la capture de mouvement humanoïde, intégrant une métrique alignée sur les préférences humaines (HumanScore) et mettant en lumière les échecs de stabilité et de contact souvent ignorés par les métriques cinématiques classiques.",
+   "score": 7.3
+  },
+  {
+   "id": "4e128761ac1fab25",
+   "title": "SPARGen: Unifying Spatial Perception and Reasoning through Native Multimodal Generation",
+   "url": "https://huggingface.co/papers/2608.14138",
+   "summary": "Spatial perception and reasoning from visual observations require recovering geometric structure, establishing correspondences, and understanding spatial relations. Existing approaches typically address these capabilities separately using task-specific architectures or external geometric modules, limiting knowledge transfer among complementary representations of the same physical scene. We introduce SPARGen, a unified multimodal framework that casts 3D reconstruction, dense correspondence, and spatial reasoning as instruction-conditioned generation tasks. SPARGen serializes compact structured and linguistic outputs as token sequences while generating dense geometric fields in image-aligned forms, enabling spatial supervision to jointly shape shared representations within a native multimodal generative model. Experiments across benchmarks for 3D reconstruction, correspondence, and spatial reasoning show that SPARGen achieves competitive performance across heterogeneous spatial tasks within a single native multimodal generative framework.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2608.14138"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Framework SPARGen unifiant perception spatiale et raisonnement via une génération multimodale native, traitant la reconstruction 3D, les correspondances denses et le raisonnement spatial comme des tâches de génération conditionnée par des instructions, avec des performances compétitives sur des benchmarks hétérogènes.",
+   "score": 7.3
+  },
+  {
+   "id": "01eb27591a990c14",
+   "title": "RibAssist 3D: Biplanar Rib-Fracture Detection, Addressing, and Selective 3D Localization from CT-Derived Projections",
+   "url": "https://huggingface.co/papers/2608.06914",
+   "summary": "Rib fractures are common and time-consuming to localize on computed tomography (CT). We ask whether fractures detected independently in two orthogonal CT-derived projections (anteroposterior and lateral) can be paired across views and triangulated into reliable 3D points at a controlled rate of false outputs, and we answer it with a staged diagnostic study. The projection geometry is exact, and given correct correspondence, localization is accurate (median 4.0 mm, 88% within 10 mm, 93.6% rib-exact). On a sealed 55-case cohort, a large share of fractures is in principle recoverable (61.1% dual-view availability, and a correct pair present in the candidate graph for 58.4% of fractures), yet the binding limitation is neither geometry nor localization but confidence-limited cross-view correspondence. A controlled detector-by-correspondence factorial attributes the operational gain to lateral-detector quality rather than the tested matching methods; retraining the lateral detector produces the first nonzero controlled-budget reconstructions. Under a deliberately conservative commitment policy, a pre-specified sealed pass promotes 15 of 601 fractures to correct 3D localizations at 0.436 false points per case (2.50% end-to-end commitment yield), and committed points are accurate (median 1.49 mm, 93% rib-exact). The low yield is a consequence of confidence-gated abstention, not of geometry or detection: the study establishes a reproducible framework for selective 3D localization and identifies cross-view correspondence as the dominant operational bottleneck.",
+   "published": "2026-08-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.06914"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "RibAssist 3D propose une méthode de détection et localisation 3D de fractures de côtes à partir de projections CT biplanaires, avec une précision médiane de 4.0 mm et 93.6% des localisations exactes sur les côtes. L'étude révèle que la limitation majeure réside dans la correspondance inter-vues, pas dans la géométrie ou la localisation.",
+   "score": 7.3
+  },
+  {
+   "id": "323e31f56c7532f0",
+   "title": "Forecast Collapse in Time-Series Foundation Models",
+   "url": "https://huggingface.co/papers/2608.14106",
+   "summary": "When forecasting hourly returns for 1,000 US equities, we observe an unexpected phenomenon: predictions become nearly flat and show poor stock ranking, as measured by cross-sectional correlation. We call this forecast collapse. Surprisingly, the phenomenon largely disappears when forecasting trading volume under the same setting. We investigate forecast collapse across time-series foundation models (TSFMs), twelve deep-learning forecasting models, and 97 public benchmark configurations, and find that it is closely tied to target predictability. We identify two distinct reasons behind it: low predictability limits the amplitude of calibrated point forecasts, while per-series objectives leave cross-series structure unidentified. These findings reveal a calibration-ranking tradeoff: optimizing squared error leads to flat predictions, whereas directly optimizing cross-sectional correlation improves ranking but can inflate forecast amplitude by more than an order of magnitude. To address this tradeoff, we introduce CalibRank, a simple objective that balances calibration and ranking. On Finance1K, CalibRank nearly triples cross-sectional correlation while keeping amplitude close to the target, and improves correlation on all tested models. Our results reveal a blind spot in conventional time-series evaluation: per-series metrics can hide failures in cross-series structure needed by downstream decisions.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.14106"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Phénomène de 'forecast collapse' observé dans les modèles de séries temporelles (TSFMs) où les prédictions deviennent plates et mal classées. Propose CalibRank pour équilibrer calibration et classement, améliorant la corrélation transversale sans déformer l'amplitude.",
+   "score": 7.0
+  },
+  {
+   "id": "f154fc2fa607832c",
+   "title": "Generation as Auxiliary Supervision: Enhancing Visual Understanding at Zero Inference Overhead via Decoupled Embedding Prediction",
+   "url": "https://huggingface.co/papers/2608.12209",
+   "summary": "While Multimodal Large Language Models (MLLMs) have achieved remarkable progress, visual understanding and generation are typically treated as divergent objectives. Existing unified frameworks often rely on discrete visual tokenization or diffusion objectives whose generative targets differ from the continuous representations consumed by visual understanding models, making direct transfer to enhance existing pretrained MLLMs non-trivial. In this work, we present GAS, a generation-guided training framework that reinterprets visual generation as auxiliary supervision for representation learning. Concretely, GAS adapts Next Embedding Prediction (NEP) as a cross-modal generation paradigm within a decoupled Mixture-of-Transformers (MoT) architecture. By maintaining a shared lower trunk and parallel upper layers, GAS lets generation losses enrich the shared visual pathway with finer spatial precision and stronger visual retention while shielding the upper understanding layers from direct generation gradients. To maximize this synergy, we further construct highly correlated generation tasks that demand deep cognitive grounding rather than generic synthesis alone. Across model scales and training stages, GAS improves aggregate multimodal understanding, with its most reliable gains on perception and spatial comprehension. Crucially, because the auxiliary generation branch is discarded after training, these gains incur zero inference overhead. Extensive controlled comparisons and representation-level analyses further clarify when and why generation-guided training benefits understanding, and demonstrate the feasibility of generation-guided training as a practical route to stronger multimodal understanding.",
+   "published": "2026-08-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2608.12209"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "vision",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Framework GAS pour améliorer la compréhension visuelle des MLLMs via la génération comme supervision auxiliaire (prédiction d'embeddings). Optimise les représentations visuelles sans surcoût d'inférence, avec des tâches génératives corrélées.",
+   "score": 7.0
+  },
+  {
+   "id": "2e6d0b37c1eb05f4",
+   "title": "Dion3: Full-Stack Orthogonal Updates",
+   "url": "https://huggingface.co/papers/2608.11612",
+   "summary": "The Muon optimizer incurs a significant overhead cost due to its cubic-time Newton-Schulz orthogonalization step. When weights are sharded, communication overhead compounds this computational cost, eroding the benefits of Muon in many settings. We present Dion3, a revision of Muon that targets this overhead at every level of the stack. Our Gram Newton-Schulz algorithm reduces the FLOP cost of orthogonalization, our CuteDSL kernels accelerate it by exploiting symmetry, and our megabatching strategy reduces communication overhead. Moreover, we propose a simple change to the update rule that cuts costs even further: selecting only a fraction of the momentum matrix's rows to orthogonalize at each step. This update rule improves on Dion (another \"compressed\" version of Muon), in both speed and performance. Overall, Dion3 matches or improves on the loss achieved by Muon but reduces optimizer step time by up to 6x. Dion3 is available via the dion package (https://github.com/microsoft/dion) as a drop-in replacement for Muon.",
+   "published": "2026-08-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.11612"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Optimiseur Dion3 réduisant jusqu'à 6x le temps de calcul des étapes d'orthogonalisation dans Muon, grâce à des algorithmes Gram Newton-Schulz, des kernels accélérés (CuteDSL) et une stratégie de megabatching, tout en maintenant ou améliorant les performances.",
+   "score": 7.0
+  },
+  {
+   "id": "76390b83742a0ed4",
+   "title": "CPI-Bench: A Comprehensive,Practical and Intelligent Benchmark for Real-World Image Editing",
+   "url": "https://huggingface.co/papers/2608.14546",
+   "summary": "With the rapid advancement of image editing models and their widespread application across various domains, there is an increasingly urgent need to deploy these model capabilities directly into real-world scenarios. However, existing benchmarks remain confined to simple single-image tasks, suffering from limited coverage dimensions and an inability to effectively differentiate performance among diverse models. Consequently, they fail to reliably evaluate model performance in complex multi-image editing, highly demanding reasoning instructions, and practical deployment settings. To address these limitations, we propose CPI-Bench, a Comprehensive, Practical andIntelligent benchmark for real-world image editing. CPI-Bench comprises three core subsets: CPI-General-Bench, which comprehensively covers diverse editing tasks and pioneers the inclusion of multi-image editing evaluation; CPI-Practical-Bench, which focuses on high-frequency real-user application scenarios; and CPI-Intelligent-Bench, which is dedicated to evaluating capabilities in highly demanding reasoning-based editing. Evaluation results of mainstream image editing models based on CPI-Bench demonstrate that CPI-Bench enhances performance differentiation among models. It provides a comprehensive and reliable quantification of gaps in general editing capabilities, practical deployment efficacy, and advanced reasoning-based editing, offering invaluable guidance for the future optimization of image editing models. Crucially, our ranking analysis reveals that CPI-Bench achieves the highest alignment with the Arena Image Edit Leaderboard, indicating it faithfully captures the preferences and perceptual judgments of human evaluators, serving as a robust proxy for real-world user experience.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2608.14546"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark",
+    "produit"
+   ],
+   "tldr": "Benchmark CPI-Bench pour l'édition d'images en conditions réelles, incluant des tâches multi-images, des instructions complexes et des scénarios pratiques. Met en lumière les lacunes des modèles actuels dans des contextes applicatifs exigeants.",
+   "score": 6.7
+  },
+  {
+   "id": "bdf893dcb4fdc11c",
+   "title": "TailBooster: A Dual-Layer Generative Framework for Extreme Value Augmentation with Operational Validity Enforcement",
+   "url": "https://huggingface.co/papers/2608.11951",
+   "summary": "Extreme events in air transport, such as severe arrival delays and abnormal air times, cause cascading network disruptions with substantial operational, economic, and safety costs. Such events are rare in historical records, leaving insufficient training signal for machine learning models. Synthetic data augmentation offers a principled solution, but conventional generative models under-represent distributional tails and give no guarantee against operationally infeasible instances, such as a short air time paired with a long flight distance. No existing approach addresses both limitations for mixed-type tabular records. We propose TailBooster, a dual-layer generative framework combining generative modelling with two anomaly detection layers. A statistical layer extracts extremes via the interquartile range, supplying tail-concentrated training signal to dedicated generative models, here a Tabular Variational Autoencoder. A deep learning layer then applies autoencoder-based cleaning, discarding synthetic records that violate the operational envelope learned from historical data. The framework was evaluated on US flight records across five dimensions: diversity, statistical similarity, fidelity, operational validity, and utility, the latter two being the primary improvement targets. Data-driven cleaning markedly improved operational validity, while targeted augmentation enhanced utility for extreme-event prediction. Across six regression algorithms, training on the framework's records reduced Mean Absolute Error by 47-49% on extreme air time and 29-57% on extreme arrival delay prediction relative to conventional synthetic data, with comparable gains when real records were enriched with synthetic extremes. Being fully data-driven and model-agnostic, TailBooster extends to domains where extreme-event prediction is critical and domain-specific rules are unavailable.",
+   "published": "2026-08-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.11951"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "outils",
+    "autre"
+   ],
+   "tldr": "TailBooster est un cadre génératif en deux couches pour l'augmentation de données extrêmes (ex: retards aériens), combinant extraction statistique des extrêmes et filtrage par autoencodeur pour garantir la validité opérationnelle. Évalué sur des données de vols US, il améliore la diversité et la similarité statistique des événements rares.",
+   "score": 6.4
+  },
+  {
+   "id": "6457f8b367672afd",
+   "title": "Marionette: Predicting World States, Rendering Geometry, Painting Appearance",
+   "url": "https://huggingface.co/papers/2608.14530",
+   "summary": "Interactive game world models typically autoregress visual observations directly in pixel or latent space, forcing structured properties such as pose, geometry, and occlusion to be implicitly maintained by the same generative sequence. Over long horizons, errors in these latent world properties accumulate, making consistency and controllability fragile. We explicitly model the evolving world state, delegate exact geometric computation to a fixed, zero-parameter renderer, and leave the neural model to synthesize appearance. We instantiate this idea as Marionette, a world model for interactive games with articulated characters. First, a two-stage autoregressive dynamics model predicts an explicit and interpretable 276-dimensional 3D world state comprising multi-entity articulated skeletons, metric root trajectories, and rotations. Second, a zero-parameter graphics bridge converts the predicted state into pose-control videos, computing world-space geometry and occlusion in closed form. Third, a control-conditioned video-diffusion observation model synthesizes photorealistic RGB observations from the resulting structured controls. Our experiments establish two properties of Marionette. First, the predicted world state is directly controllable. Forcing a mismatched action stream changes root-aligned joint error by 31% across 48 held-out segments. Second, long-horizon behaviour is determined in the state, and can be repaired there. Left free, the two generated characters drift to 21.2 m apart (recorded sessions stay near 5 m) and a third of frames show ground penetration. Two rules imposed on the explicit state, a terrain collider and a separation cap, cut penetration by 66% and keep the pair engaged, with no change to the observation model. Routing appearance through the predicted state costs no fidelity we can detect, at an FVD of 831 against 799 for recorded pose.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.14530"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "Modèle de monde Marionette pour jeux interactifs, séparant prédiction d'état 3D, rendu géométrique et synthèse d'apparence, réduisant les erreurs d'accumulation de propriétés latentes et améliorant la cohérence et la contrôlabilité sur de longues séquences.",
+   "score": 6.1
+  },
+  {
+   "id": "519f2391d1c54db9",
+   "title": "MathCode, Mathematical Coding Agent",
+   "url": "https://math-ai-org.github.io/mathcode/",
+   "summary": "",
+   "published": "2026-08-16T18:17:10Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 86,
+    "comments": 28
+   },
+   "relevance": 7,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Présentation d'un agent de codage mathématique (MathCode) sur Hacker News, mettant en avant des capacités avancées de génération de code pour des problèmes mathématiques. Intéressant pour l'évaluation des agents spécialisés dans des tâches techniques, mais manque de détails techniques ou de validation externe.",
+   "score": 5.9
+  },
+  {
+   "id": "45a1aed23b516cae",
+   "title": "dataelement/dsh-desktop",
+   "url": "https://github.com/dataelement/dsh-desktop",
+   "summary": "Desktop app for DeepSeek Harness",
+   "published": "2026-08-13T13:45:50Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 653,
+    "language": "TypeScript"
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "outils",
+    "produit"
+   ],
+   "tldr": "Application desktop pour interagir avec DeepSeek, mais sans documentation technique approfondie ni validation par une communauté ou un labo reconnu. Utile pour les utilisateurs de DeepSeek, mais peu pertinent pour la recherche ou l'optimisation de modèles.",
+   "score": 4.4
+  }
+ ]
+}
