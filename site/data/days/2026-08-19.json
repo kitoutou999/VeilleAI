@@ -1,0 +1,743 @@
+{
+ "date": "2026-08-19",
+ "digest": {
+  "headline": "StateM atteint 95,3% de précision brute sur Terminal-Bench 2.1 sans modifier les poids du modèle, marquant une avancée majeure pour les agents à long horizon",
+  "overview": "La journée du 19 août 2026 est dominée par des avancées significatives dans le domaine des agents autonomes, avec des optimisations techniques et des benchmarks critiques. Les travaux mettent en lumière des progrès en scalabilité, sécurité et évaluation des systèmes agents, tout en soulignant des défis persistants en robustesse et interprétabilité. Les modèles de langage et leurs applications continuent d'évoluer vers des architectures plus efficaces et adaptatives.",
+  "highlights": [
+   {
+    "title": "Optimisation des agents et benchmarks critiques",
+    "text": "StateM améliore la précision brute sur Terminal-Bench 2.1 de 83,1% à 95,3% en optimisant la gestion d'état et les transitions, sans toucher aux poids du modèle. Parallèlement, StartupBench et AutoResearchEval révèlent les limites des agents actuels sur des workflows réels (taux de réussite maximal de 30%) et des tâches de recherche scientifique, avec une taxonomie détaillée des patterns de défaillance. Ces travaux soulignent l'écart entre les performances en environnement contrôlé et les applications pratiques."
+   },
+   {
+    "title": "Sécurité et vulnérabilités des agents",
+    "text": "L'évaluation de DeepSeek Harness via A.I.G montre un taux de succès de 25,5% pour les attaques par injection de prompts indirects, tandis que HarnessRisk révèle des taux d'attaque réussie allant jusqu'à 80,9% sur les *agent harnesses*. Ces résultats mettent en évidence des vulnérabilités critiques dans la gestion des outils et des permissions, essentielles pour la régulation et la robustesse des systèmes agents. HarmProfile complète ce panorama en analysant les profils de risque de 23 LLMs, montrant une corrélation entre capacités et dangerosité."
+   },
+   {
+    "title": "Optimisation de l'inférence et des architectures",
+    "text": "FreeToken permet de servir des modèles MoE jusqu'à 753B paramètres sur un seul GPU via une exécution adaptative CPU-GPU et un layout de modèle co-conçu, répondant aux contraintes des edge devices. La technique de *recirculation* réduit la perplexité des transformers avec un surcoût minimal, offrant une optimisation post-entraînement. Enfin, Abra fournit des lois de scaling pour les modèles de diffusion, optimisant l'entraînement avec 200 tokens/image/paramètre."
+   },
+   {
+    "title": "Mémoire et auto-amélioration des agents",
+    "text": "L'étude *Harness the Memory* évalue 8 substrats de mémoire pour agents, montrant qu'aucun ne domine : le retrieval améliore le QA mais nuit aux décisions séquentielles. *Chain-of-Experience* (CoE) permet aux LLM d'améliorer leurs performances en temps réel via des boucles de feedback, réduisant les coûts API de 19% et augmentant la précision de 5,6%. Ces travaux explorent des mécanismes clés pour l'autonomie et l'adaptabilité des agents."
+   },
+   {
+    "title": "Fragilité des agents auto-améliorants",
+    "text": "L'analyse *On the Fragility of Self-Improving Agents* révèle une dépendance critique des agents à l'ordre des tâches et à la variance des évaluations, remettant en question les claims de performance actuels. Cette étude souligne l'importance de méthodologies rigoureuses pour évaluer la robustesse des systèmes autonomes, avec des implications fortes pour la recherche en agents."
+   }
+  ],
+  "trend": "Les avancées techniques se concentrent sur l'optimisation des agents pour des tâches complexes et à long horizon, tout en exposant des vulnérabilités critiques en sécurité et robustesse. La tendance de fond pointe vers une intégration accrue de mécanismes d'auto-amélioration et de mémoire adaptative, couplée à une évaluation plus rigoureuse des performances réelles et des risques associés."
+ },
+ "items": [
+  {
+   "id": "23ec62a0bbb77ceb",
+   "title": "StateM: Reaching 95.3% Raw Accuracy, or a \\$15 Frontier Run, on Terminal-Bench 2.1 via Harness Scaling",
+   "url": "https://huggingface.co/papers/2608.15089",
+   "summary": "Long-horizon agents can fail even when their underlying models can solve the constituent steps. They may lose track of mutable state, fail to reactivate lessons from earlier executions, skip known procedures, or stop prematurely. We bet on harness scaling to improve the execution system around an agent without changing its model weights. We introduce StateM, an agent-native runtime that organizes execution around durable states, phase-local context, checked transitions, recoverable runbooks, and versioned procedural practices that agents and users can inspect together. On Terminal-Bench 2.1, StateM raises GPT-5.5 xhigh to 92.1\\%, versus 83.1\\% reference and GPT-5.6 Sol Ultra at 91.9\\%. The runbook transfers unchanged to GPT-5.6. With GPT-5.6 Sol xhigh, StateM reaches 95.3\\% raw accuracy across 445 trials and succeeds on all 89 tasks at least once. The frozen profile raises GPT-5.6 Luna from 76.7 to 85.4\\%, above the 84.9\\% Sol xhigh reference. Using the same runtime, runbook structure, and golden rules, less than \\38 of adaptation raises DeepSeek-V4 Flash from 82.7 to 88.1% under standard timeouts and to 89.1% on an 88-task common core. Extending only the remaining latency-sensitive task matches the reported 88.8% GPT-5.6 Sol max result. Final-score API usage is about 15 versus \\574.68 for the GPT reference; total DeepSeek expenditure is 52.22. On BusinessBench, family-specific runbooks built on development sets yield held-out gains of 0.55 macro and 1.34 micro points; two mechanism-matched families improve by 10.04 points. Concrete rules generalize when tasks share execution structure, while the control methodology applies broadly. StateM turns selected postmortem findings into persistent, executable preconditions and practices, making learned controls explicit and enforceable through stateful controls. Code at github.com/henryqin1997/statem.",
+   "published": "2026-08-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 219,
+    "arxiv_id": "2608.15089"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "StateM, un runtime pour agents, améliore la précision brute sur Terminal-Bench 2.1 de 83.1% à 95.3% avec GPT-5.6 Sol xhigh, en optimisant la gestion d'état et les transitions sans modifier les poids du modèle. Une avancée majeure pour les agents à long horizon.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents à long horizon échouent souvent malgré la capacité de leurs modèles sous-jacents à résoudre les étapes individuelles. Ces échecs incluent la perte de suivi de l'état mutable, l'incapacité à réactiver des leçons apprises précédemment, l'omission de procédures connues ou l'arrêt prématuré des tâches.",
+    "methode": "L'approche proposée mise sur le *harness scaling*, c'est-à-dire l'amélioration du système d'exécution autour de l'agent sans modifier les poids du modèle. StateM est un *runtime* natif pour agents qui structure l'exécution autour de plusieurs concepts clés : des états durables, un contexte local par phase, des transitions vérifiées, des *runbooks* récupérables, et des pratiques procédurales versionnées. Ces éléments permettent une inspection conjointe par les agents et les utilisateurs. StateM intègre des règles explicites et des préconditions exécutables, dérivées de post-mortems, pour rendre les contrôles appris persistants et applicables via des mécanismes d'état.",
+    "resultats": "Sur Terminal-Bench 2.1, StateM améliore les performances de GPT-5.5 xhigh de 83,1% à 92,1%, et atteint 95,3% de précision brute avec GPT-5.6 Sol xhigh sur 445 essais, réussissant toutes les 89 tâches au moins une fois. Le même *runbook* transfère sans modification à GPT-5.6. StateM élève également GPT-5.6 Luna de 76,7% à 85,4%. Pour DeepSeek-V4 Flash, une adaptation mineure (<38$) améliore les résultats de 82,7% à 88,1%, et jusqu'à 89,1% sur un sous-ensemble de 88 tâches. Les coûts API sont drastiquement réduits : ~15$ pour StateM contre 574,68$ pour la référence GPT. Sur BusinessBench, des gains significatifs sont observés, notamment +10,04 points pour deux familles de mécanismes appariés.",
+    "limites": "Le document ne détaille pas les mécanismes précis de généralisation des règles entre tâches, ni les critères de sélection des *postmortems* transformés en préconditions. De plus, l'efficacité de StateM semble dépendre fortement de la structure d'exécution partagée entre tâches, ce qui pourrait limiter son applicabilité à des scénarios très variés ou non structurés. Enfin, les résultats sur BusinessBench, bien que prometteurs, nécessitent une validation plus large.",
+    "verdict": "StateM mérite une attention particulière pour son approche innovante de *harness scaling*, offrant des gains significatifs en précision et en efficacité économique, tout en maintenant une transparence et une inspectabilité accrues des exécutions d'agents."
+   }
+  },
+  {
+   "id": "d13b03843028b052",
+   "title": "Agent Lightning v1.0: Towards Harnessed Agentic RL",
+   "url": "https://huggingface.co/papers/2608.17528",
+   "summary": "Modern agents operate inside agent harnesses that manage tools, context, and control flow, making the harness a critical part of the agent system. Our original Agent Lightning introduced a disaggregated architecture that connects arbitrary agents to RL training through an LLM endpoint proxy, an approach later adopted by frameworks such as verl Uni-Agent, AReaL 2.0, slime, and Polar. We refer to this paradigm as harnessed agentic RL, where the deploy-time harness directly participates in model post-training. Harnessed agentic RL differs fundamentally from traditional agentic RL: the harness, rather than the training engine, owns the environment interaction loop, while the trainer observes only sequences of LLM request-response pairs. This introduces challenges in retokenization, sample merging, advantage calculation, loss normalization, and backend scheduling, which can substantially affect training stability and effectiveness. We present Agent Lightning v1.0, a lightweight framework for harnessed agentic RL implemented in approximately 3,500 lines of code. It supports arbitrary agent harnesses and serves as a practical testbed for studying these challenges. We evaluate it on instruction-following, search, and coding agents, and provide a complete reproducible pipeline for coding-agent RL. Using only 6K training examples and modest compute, RL improves Qwen3.5-9B on SWE-bench Verified from 41.8% to 56.4%, a 14.6-point absolute gain. We release the complete workflow and training scripts to facilitate reproducible research on harnessed agentic RL.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2608.17528"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Agent Lightning v1.0 formalise le *harnessed agentic RL*, où l'agent (via son harness) gère l'interaction avec l'environnement pendant l'entraînement RL. Propose un framework léger (3.5k lignes) pour étudier les défis de stabilité et d'efficacité. Clé pour l'optimisation des agents autonomes et leur entraînement post-fine-tuning.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de l'intégration des agents autonomes dans des systèmes complexes où les 'harnais' (agent harnesses) gèrent les outils, le contexte et le flux de contrôle. Ces harnais, essentiels pour le déploiement, ne sont traditionnellement pas exploités pendant la phase de post-entraînement par renforcement (RL), limitant ainsi l'efficacité et la stabilité des agents entraînés.",
+    "methode": {
+     "approche_generale": "Agent Lightning v1.0 propose une architecture *désagrégée* où le harnais, plutôt que le moteur d'entraînement, contrôle la boucle d'interaction avec l'environnement. L'entraînement RL s'effectue via un proxy LLM qui observe uniquement des paires requête-réponse, sans accès direct à l'environnement.",
+     "details_techniques": {
+      "defis_techniques": [
+       "La *retokenization* des séquences pour adapter les données brutes aux formats compatibles avec les modèles de langage.",
+       "La *fusion des échantillons* (sample merging) pour optimiser l'utilisation des données d'entraînement.",
+       "Le *calcul des avantages* (advantage calculation) dans un contexte où l'agent ne perçoit pas directement les récompenses environnementales.",
+       "La *normalisation des pertes* (loss normalization) pour éviter des gradients instables ou explosifs.",
+       "La *planification des backends* (backend scheduling) pour gérer efficacement les ressources lors de l'entraînement distribué."
+      ],
+      "implementation": "Le framework est léger (~3 500 lignes de code) et conçu pour être compatible avec n'importe quel harnais d'agent. Il sert de banc d'essai pour étudier les défis spécifiques au *harnessed agentic RL*."
+     }
+    },
+    "resultats": {
+     "performances": "Sur le benchmark SWE-bench Verified (résolution de problèmes de développement logiciel), l'application de RL avec Agent Lightning v1.0 améliore les performances du modèle Qwen3.5-9B de 41,8 % à 56,4 %, soit un gain absolu de 14,6 points.",
+     "ressources": "Cette amélioration est obtenue avec seulement 6 000 exemples d'entraînement et des ressources de calcul modestes, démontrant l'efficacité de l'approche.",
+     "applications": "Le framework a été évalué sur des agents dédiés au suivi d'instructions, à la recherche et au codage, avec une pipeline reproductible fournie pour les agents de codage."
+    },
+    "limites": {
+     "manque_details": "Le document ne précise pas clairement comment les défis techniques (ex. : retokenization, calcul des avantages) sont résolus concrètement, laissant des zones d'ombre sur la robustesse des solutions proposées.",
+     "generalisation": "Les résultats impressionnants sur SWE-bench Verified ne garantissent pas une généralisation à d'autres types d'agents ou de tâches, surtout si le harnais ou l'environnement diffère significativement.",
+     "scepticisme": "L'approche repose sur une hypothèse forte : le harnais peut efficacement participer à l'entraînement RL sans introduire de biais ou de complexité supplémentaire. Cela mérite une validation plus large."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son innovation architecturale et ses résultats prometteurs, mais son adoption nécessitera des validations indépendantes et une exploration plus approfondie de ses limites techniques."
+   }
+  },
+  {
+   "id": "9376b61147eee176",
+   "title": "FreeToken: Efficient Edge-Native MoE Serving with Bandwidth-Adaptive Execution",
+   "url": "https://huggingface.co/papers/2608.16157",
+   "summary": "Frontier open-weight models are increasingly available, but serving them still largely assumes datacenter infrastructure. We present FreeToken, an edge-native MoE serving system that treats a personal machine not as a small GPU, but as a unified, elastic inference platform. FreeToken co-designs the full serving stack, including model layout and loading, expert residency, CPU--GPU execution, agentic state reuse, and runtime memory management, around two realities of local AI: agent workloads continuously change their execution pattern, and edge hardware exposes heterogeneous resources whose balance differs from machine to machine. Rather than committing to a fixed offloading strategy, FreeToken continuously maps computation and model state onto the resources actually available. FreeToken supports more than 20 MoE models and real coding and tool-using agents across hardware ranging from an 8GB laptop GPU to a single workstation GPU. More importantly, it changes what these machines can practically serve, from a 35B model on a laptop to a 284B model on a gaming desktop and the 753B GLM-5.2 on a single workstation GPU. FreeToken turns open weights into deployable local software, making the machines users already own a practical platform for frontier-scale intelligence. We release the system at flashml.ai.",
+   "published": "2026-08-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 34,
+    "arxiv_id": "2608.16157"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "produit"
+   ],
+   "tldr": "FreeToken optimise le *serving* de MoE sur edge devices (laptops, workstations) via une exécution adaptative (CPU-GPU, mémoire élastique) et un layout de modèle co-conçu. Permet de servir des modèles jusqu'à 753B de paramètres sur un seul GPU. Pertinent pour l'optimisation de l'inférence et le déploiement local.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le déploiement de modèles de langage de pointe (notamment les modèles à experts dispersés ou MoE) est actuellement optimisé pour des infrastructures de datacenters, ce qui limite leur accessibilité sur des machines personnelles ou des configurations matérielles hétérogènes. FreeToken vise à résoudre ce problème en adaptant le *serving* de ces modèles aux contraintes des environnements *edge* (ex. : ordinateurs portables, postes de travail), où les ressources (CPU, GPU, mémoire) sont limitées et variables d'une machine à l'autre, et où les charges de travail (ex. : agents conversationnels ou outils) évoluent dynamiquement.",
+    "methode": "FreeToken propose une refonte complète de la pile logicielle pour le *serving* de MoE, en intégrant plusieurs optimisations co-conçues : 1) **Modèle de chargement et de résidence des experts** : au lieu de charger statiquement les experts (sous-modèles spécialisés des MoE), FreeToken gère dynamiquement leur résidence en mémoire en fonction des besoins immédiats, évitant ainsi les goulots d'étranglement. 2) **Exécution CPU-GPU adaptative** : le système exploite de manière élastique les ressources hétérogènes (CPU et GPU) pour répartir la charge, en tenant compte des capacités spécifiques de chaque machine. 3) **Réutilisation de l'état agentique** : pour les agents interactifs (ex. : assistants de codage), FreeToken optimise la réutilisation des états intermédiaires, réduisant les calculs redondants. 4) **Gestion mémoire runtime** : une allocation dynamique de la mémoire permet de s'adapter aux contraintes matérielles locales. 5) **Stratégie de *bandwidth-adaptive execution*** : FreeToken ajuste en continu la répartition des calculs et des données entre CPU et GPU en fonction de la bande passante disponible, évitant ainsi les décisions statiques inefficaces.",
+    "resultats": "FreeToken permet de servir des modèles MoE de tailles variées sur des machines grand public, avec des performances inédites : un modèle de 35 milliards de paramètres (35B) sur un ordinateur portable équipé de seulement 8 Go de VRAM, un modèle de 284B sur un PC de gaming standard, et même le modèle GLM-5.2 de 753B sur une seule carte graphique de poste de travail. Le système prend en charge plus de 20 modèles MoE et des agents réels (ex. : outils de codage), démontrant une scalabilité et une flexibilité accrues par rapport aux solutions existantes. Les benchmarks montrent une amélioration significative de l'efficacité, bien que les chiffres précis (latence, débit) ne soient pas détaillés dans le résumé disponible.",
+    "limites": "Le résumé ne fournit pas d'évaluation comparative rigoureuse avec d'autres solutions de *serving* (ex. : vLLM, TensorRT-LLM), ce qui rend difficile l'appréciation du gain réel. De plus, les performances sur des machines très contraintes (ex. : GPU < 8 Go) ou avec des modèles non-MoE ne sont pas abordées, laissant planer des doutes sur la généralisabilité. Enfin, l'absence de détails sur la consommation énergétique ou la stabilité à long terme (ex. : gestion des fuites mémoire) mérite un examen critique.",
+    "verdict": "FreeToken mérite une attention particulière pour son approche innovante et pragmatique du *serving* de MoE sur matériel grand public, mais son adoption nécessitera des validations indépendantes et des benchmarks transparents pour confirmer ses promesses."
+   }
+  },
+  {
+   "id": "fd2feaa1c3341986",
+   "title": "Security Assessment of DeepSeek Harness with A.I.G: Evaluating Resistance to Indirect Prompt Injection",
+   "url": "https://huggingface.co/papers/2608.16393",
+   "summary": "We assess indirect prompt injection in DeepSeek Harness (DSH), using AI-Infra-Guard (A.I.G) to construct tests, deliver controlled taint, execute DSH, collect traces, and judge outcomes. The study covers 14,560 controlled executions over 16 indirect-content channels, text and file carrier modes, 35 payload objectives, one unmodified baseline, and 12 attack methods. The experiment preserves DSH's agent loop, tool registry, model adapter, and session-event path; source tools and sensitive sinks are local fixtures, so attempted actions are recorded without external side effects. We evaluate each trace with a deterministic rule-based judge, (RuleJudge), and a semantic LLM-based judge, (LLMJudge). The strongest observed attack success rates are 17.0% under for fake-completion attack in text mode, 25.5% under for hidden Unicode in file mode, and 16.0% under for the skills channel in file mode. also assigns partial compliance more often than (7.3% versus 2.0%). We relate these results to DSH's treatment of tool results, additional contexts, and tool-call policy hooks, then identify controls that should sit between untrusted content and sensitive actions. Our code is available at https://github.com/Tencent/AI-Infra-Guard/tree/main/Research/deepseek-harness-security-assessment .",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.16393"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Évaluation de la résistance de DeepSeek Harness aux attaques par injection de prompts indirects via A.I.G, avec un taux de succès maximal de 25,5%. Met en lumière des vulnérabilités critiques dans les agents LLM et propose des contre-mesures.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette étude aborde la vulnérabilité des systèmes d'IA, en particulier DeepSeek Harness (DSH), face aux attaques par *indirect prompt injection*. Le problème consiste à évaluer dans quelle mesure un agent IA peut être manipulé pour exécuter des actions non autorisées ou malveillantes via des contenus contaminés, sans interaction directe avec l'utilisateur. Cela menace la sécurité des applications intégrant des modèles d'IA, notamment dans des contextes où des outils externes ou des données non fiables sont traités.",
+    "methode": "L'approche repose sur l'outil *AI-Infra-Guard (A.I.G)* pour systématiser l'évaluation. Les tests incluent 14 560 exécutions contrôlées, couvrant 16 canaux de contenu indirect (ex. : métadonnées, fichiers, requêtes API), 2 modes de transmission (texte et fichier), 35 objectifs de payload, et 12 méthodes d'attaque (ex. : Unicode caché, fausses complétions). L'architecture de DSH est préservée, avec des outils et *sinks* sensibles simulés localement pour éviter des effets externes réels. Deux juges évaluent les traces : *RuleJudge* (règles déterministes) et *LLMJudge* (modèle sémantique). Les résultats sont analysés en fonction des politiques de traitement des outils et des contextes supplémentaires dans DSH.",
+    "resultats": "Les taux de succès d'attaque les plus élevés atteignent 25,5 % pour les payloads Unicode cachés en mode fichier, 17,0 % pour les fausses complétions en mode texte, et 16,0 % via le canal *skills* en mode fichier. *LLMJudge* attribue plus souvent une conformité partielle (7,3 %) que *RuleJudge* (2,0 %), suggérant une sensibilité accrue aux nuances sémantiques. Les résultats révèlent des faiblesses dans la gestion des résultats d'outils et des contextes non fiables par DSH, ainsi que l'efficacité limitée des *hooks* de politique actuels.",
+    "limites": "L'étude se concentre uniquement sur DeepSeek Harness, sans comparaison avec d'autres frameworks (ex. : LangChain, AutoGen), ce qui limite la généralisation des conclusions. Les juges, bien que complémentaires, introduisent des biais : *RuleJudge* est rigide, tandis que *LLMJudge* peut être influencé par des artefacts sémantiques. Enfin, les tests locaux évitent les effets réels, mais ne reproduisent pas entièrement les dynamiques d'un environnement déployé en production.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche systématique et ses résultats quantitatifs sur les vulnérabilités des agents IA, bien que ses conclusions restent spécifiques à DSH et nécessitent des validations externes."
+   }
+  },
+  {
+   "id": "494583b8c09fa641",
+   "title": "StartupBench: Benchmarking General-Purpose Agents on Market-Validated End-to-End Workflows",
+   "url": "https://huggingface.co/papers/2608.17800",
+   "summary": "Recent advances in Large Language Models(LLMs) and agents have substantially improved the ability of AI systems to execute complex tasks. Yet existing benchmarks largely rely on researcher-selected tasks, leaving uncertain whether such progress extends to the work that real-world users actually demand from AI systems. We introduce StartupBench, an E2E agent benchmark grounded in market-validated AI startup products. Rather than defining tasks from pre-defined assumptions about useful agent capabilities, we systematically study AI products with demonstrated adoption, together with their product workflows and users, to identify real-world tasks for which AI has established practical demand across diverse professional domains. We translate these workflows into complete deliverable-oriented tasks and evaluate them with fine-grained rubrics capturing their complex requirements. Across representative models evaluated under a unified agent harness, even the strongest model successfully completes only approximately 30\\% of StartupBench, despite making substantial partial progress on many tasks. Further analysis identifies aspects like complex instruction following and domain-specific expertise as major sources of failure. Our results reveal that many market-validated workflows remain beyond the reliable capabilities of current general-purpose agents, establishing StartupBench as an empirical measure of progress toward E2E completions of real-world user tasks.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.17800"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "produit"
+   ],
+   "tldr": "Benchmark StartupBench évaluant les agents IA sur des workflows réels validés par le marché, avec un taux de réussite maximal de 30%. Met en évidence les lacunes des modèles actuels face à des tâches complexes et non simulées.",
+   "score": 8.8
+  },
+  {
+   "id": "e82c2e0ae02e2717",
+   "title": "From Sequence to Structure: Relational Uncertainty Propagation for LLM Agents",
+   "url": "https://huggingface.co/papers/2608.16002",
+   "summary": "Reliable uncertainty quantification (UQ) is essential for deploying large language model (LLM) agents in complex interactive environments. Existing UQ methods largely rely on local signals, such as token probabilities, predictive entropy, or per-step confidence, and therefore overlook the long-range dependencies through which errors accumulate across an execution trajectory. As a result, they may fail to identify agent failures whose causes originate several reasoning or interaction steps before the final answer. We propose RUPA (Relational Uncertainty Propagation for Agents), a trajectory-level UQ framework for LLM agents. RUPA represents an execution history as a directed trajectory graph in which reasoning states, tool interactions, and environment feedback are nodes connected by temporal and semantic dependency edges. It then propagates uncertainty over this graph to capture how execution risk accumulates and transfers across interaction steps. The propagated signal is combined with trajectory-level behavioral features and goal-alignment information to produce a confidence estimate for the full agent trajectory. We evaluate RUPA on representative agent benchmarks, including τ-2, Terminal-Bench-2, and GAIA, using 6 open-source LLMs spanning multiple model families. Experimental results show that RUPA consistently outperforms existing UQ methods by providing more accurate uncertainty estimates, enabling earlier failure detection, and improving uncertainty-guided agent execution across diverse agent tasks. These results demonstrate that explicitly modeling relational dependency is crucial to reliable UQ for long-horizon LLM agents, providing a practical foundation for trustworthy agent execution.",
+   "published": "2026-08-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.16002"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite",
+    "outils"
+   ],
+   "tldr": "Framework RUPA pour quantifier l'incertitude des agents LLM en propageant les risques le long des trajectoires d'exécution. Améliore la détection des échecs en capturant les dépendances à long terme dans les interactions.",
+   "score": 8.8
+  },
+  {
+   "id": "9d11d4b994e23865",
+   "title": "HarmProfile: Characterizing Harmful Distributions in Frontier LLMs",
+   "url": "https://huggingface.co/papers/2608.14577",
+   "summary": "Frontier large language models (LLMs) safety evaluation has largely treated harmful generation as an attack outcome rather than as an object of analysis. Consequently, little is known about the harmful outputs produced during model misbehavior, partly because large-scale, high-quality collections of frontier-LLM misbehavior are difficult to obtain. To address this gap, we introduce HarmProfile, a content-centric benchmark dataset that collects model misbehavior across diverse harm categories and model families, and defines the resulting harmful-output distribution as a model-level risk profile. The premise is that, just as linguistic behavior can be characterized from an utterance corpus, model risk can be characterized from the content, severity, and variation of its safety failures. HarmProfile contains over 80,000 validated artifacts from 23 frontier LLMs across 13 model families, organized into 15 harm categories and 57 subcategories. Using this corpus, we find that frontier LLMs reliably produce harmful content at scale, yet exhibit distinct risk profiles; both harmfulness and diversity grow with model capability, suggesting that frontier LLMs may appear safe yet harbor increasingly dangerous knowledge beneath the alignment surface. Our source code is available at https://github.com/fresh-ma/HarmProfile .",
+   "published": "2026-06-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2608.14577"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "regulation"
+   ],
+   "tldr": "HarmProfile propose un benchmark de 80 000 artefacts de comportements dangereux générés par 23 LLMs de pointe, révélant que leur dangerosité et diversité augmentent avec leurs capacités. Une analyse des profils de risque par modèle, utile pour évaluer la sécurité des LLMs et orienter les régulations.",
+   "score": 8.8
+  },
+  {
+   "id": "25f481e0652167f1",
+   "title": "How Do Agents Fail on AutoResearch: End-to-End Diagnostic Evaluation on 100 Real-World Frontier Research Tasks",
+   "url": "https://huggingface.co/papers/2608.14905",
+   "summary": "AI has long assisted scientific research, but the rapid advance of LLMs and agentic scaffolds is reshaping the landscape; a single system can now carry whole-stage research from an initial hypothesis all the way to final published paper, which is a paradigm now referred to as AutoResearch. Existing evaluations reveal little about how these agents operate or where they break down. Tasks are narrowly-scoped, evaluation measures performance but not process, and failure diagnoses lack systematic coverage or artifact-level visibility. To address this gap, we introduce AutoResearchEval, featuring 100 tasks grounded in published frontier science across 7 scientific domains and the full research lifecycle, including ideation, retrieval, execution, analysis, writing, and review. Evaluating 8 harness-model combinations yields 800 autoresearch agent trajectories, with process-level annotation. We organize these insights into AutoResearch Failure Taxonomy or ARFT, a framework of 45 empirically-grounded failure patterns. To enable scalable fine-grained attribution, we leverage a human-calibrated agent-as-a-judge pipeline to inspect complete trajectories and intermediate artifacts. Failure patterns converge on a single overarching limitation, namely that current agents lack a metacognitive loop, which entails the ability to check what they produced against what they found, revise when it does not hold up, and question whether the path they took was sound. The same patterns recur across all 8 harness-model combinations, including the strongest models tested, locating the deficit at the model level rather than in any particular scaffold; whether orchestration-level interventions can close it is an open question this work does not test. We publicly release AutoResearchEval and ARFT to facilitate continued research and development in autonomous scientific discovery.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2608.14905"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Introduit AutoResearchEval, un benchmark de 100 tâches de recherche scientifique couvrant tout le cycle de recherche, avec une taxonomie de 45 patterns de défaillance pour les agents AutoResearch. Analyse 800 trajectoires pour diagnostiquer systématiquement les échecs des agents.",
+   "score": 8.8
+  },
+  {
+   "id": "4834099cf3a1da05",
+   "title": "On the Fragility of Self-Improving Agents: Variance, Task Order, and Underspecification",
+   "url": "https://arxiv.org/abs/2608.18066v1",
+   "summary": "Memory-based self-improving agents--those that learn from an online stream of tasks and improve over time by maintaining a textual memory bank--have shown great promise in recent literature. However, the reliability aspects of these methods have been critically overlooked. In this work, we conduct a comprehensive re-evaluation of two memory-based methods, broadening the scope of evaluation along two axes: (1) including multiple runs to quantify variance, and (2) randomly shuffling the tasks to investigate the effect of task order. Through these experiments, we make two observations that expose the fragility of current methods: First, agent evaluation is inherently noisy in complex environments and on multi-step tasks, and stacking a self-improving loop on top can further amplify this noise. Second, the agent's improvement is highly dependent on task order. Prior works often adopt default orderings that impose an implicit curriculum, acting as a hidden prerequisite for success. To better understand this fragility, we manually examine the agents' memory and hypothesize that task and environment underspecification contribute to this fragility. We validate this hypothesis by incorporating information that enables better specification, such as detailed rubrics and environment feedback, into the memory construction process. While this added information partially closes the performance degradation in previous experiments, significant gaps still remain, suggesting that other uncharacterized factors contribute to this fragility. Looking ahead, our work advocates for more rigorous evaluation protocols for self-improving agents by reporting results across multiple runs and stress-testing them under challenging conditions. Moreover, our findings on underspecification call for systems and interfaces that enable effective human oversight, preventing agents from failing in unforeseeable ways.",
+   "published": "2026-08-18T17:55:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Qinyuan Ye, Yu Li, Yada Pruksachatkun, Jiaxin Zhang, Chien-Sheng Wu"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Analyse la fragilité des agents auto-améliorants basés sur la mémoire en révélant leur dépendance critique à l'ordre des tâches et à la variance des évaluations. Démontre que les claims de performance sont souvent conditionnés par des biais méthodologiques, avec des implications fortes pour la recherche sur les agents autonomes.",
+   "score": 8.6
+  },
+  {
+   "id": "b0df8e65b1b05a98",
+   "title": "MathForm: Scaling Mathematical Autoformalization with Knowledge Retrieval and Verification-Guided Refinement",
+   "url": "https://huggingface.co/papers/2608.14221",
+   "summary": "Autoformalization is commonly framed as translating natural-language mathematical statements into machine-verifiable formal languages such as Lean 4. However, faithful formalization requires more than translation. Models must map mathematical concepts to the complex hierarchy of types and definitions in formal libraries such as Mathlib, while ensuring that generated statements preserve the meaning of the source propositions. Existing approaches struggle because they rely heavily on the model's parametric memory for library-specific knowledge, while common data construction pipelines often resort to filtering single-pass outputs and lack mechanisms for feedback-driven revision. To address these challenges, we introduce MathForm, an autoformalization framework for constructing verified training data through Mathlib knowledge retrieval and verification-guided iterative refinement. Before generation, a retrieval planner gathers relevant definitions and existing formalizations from Mathlib to guide the formalization generator. Generated statements are then revised using compiler diagnostics and semantic-consistency feedback. Using this framework, we construct FormalVerse, a Lean 4 dataset containing approximately 367K verified examples across diverse mathematical domains and sources. We then train MathForm-8B through supervised fine-tuning followed by reinforcement learning. Across six benchmarks, MathForm-8B achieves average Pass@8 rates of 88.06% under Syntax Check (SC) and 72.37% under Consistency Check (CC), outperforming multiple specialized 32B autoformalizers. On the challenging FATE-H and FATE-X subsets, it attains CC pass rates of 63% and 37%, exceeding the strongest specialized baselines in both cases.",
+   "published": "2026-08-14T07:51:12.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.14221"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "MathForm introduit un cadre pour l'autoformalisation mathématique (Lean 4) via récupération de connaissances (Mathlib) et raffinement itératif guidé par vérification. FormalVerse, construit avec cette méthode, améliore la précision des formalisations. Pertinent pour l'interprétabilité et l'efficacité des LLM dans des tâches techniques complexes.",
+   "score": 8.5
+  },
+  {
+   "id": "d644a5e17af6b16e",
+   "title": "HarnessRisk: A Lifecycle-Oriented Benchmark for Agent Harness Safety",
+   "url": "https://huggingface.co/papers/2608.17597",
+   "summary": "Large language models are increasingly deployed through agent harnesses that manage tools, extensions, persistent state, permissions, and external actions. Existing safety benchmarks mainly target individual attack mechanisms or a limited subset of operational settings, making it difficult to compare how safety failures emerge across different harness responsibilities. We present HarnessRisk, a lifecycle oriented benchmark that organizes agent harness safety into six operational phases including Harness Configuration, Capability Extension, Runtime Operation, State Persistence, Action Control, and Incident Recovery. HarnessRisk contains 128 sandboxed cases, each pairing a benign user objective with an adversarial instruction embedded in an untrusted workflow artifact. We evaluate each trajectory using Utility, Attack Success Rate, Persistence, and Detection. Across three harnesses, six language models, and 14 model and harness configurations, attack success ranges from 12.6% to 80.9%, while Utility remains between 75.0% and 97.6%. Harness Configuration is the most vulnerable phase across all three harnesses, showing that attacks can succeed by altering security sensitive parameters within otherwise authorized workflows. We also find that explicit risk recognition does not reliably lead to safe action, as some configurations detect risks in more than 90% of runs while retaining substantial attack success. These results highlight the need to evaluate agent safety across multiple harness responsibilities and at the level of the deployed model and harness configuration.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.17597"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "HarnessRisk évalue la sécurité des *agent harnesses* (gestion des outils, permissions, etc.) sur 6 phases opérationnelles avec 128 cas adversariaux. Montre des taux d'attaque réussie entre 12.6% et 80.9%, soulignant les vulnérabilités critiques (ex: configuration). Essentiel pour la régulation et la robustesse des systèmes agents.",
+   "score": 8.5
+  },
+  {
+   "id": "b1142964815fbb54",
+   "title": "Harness the Memory: A Holistic Evaluation of Memory Substrates in Memory Agents",
+   "url": "https://huggingface.co/papers/2608.15008",
+   "summary": "Memory is becoming core infrastructure for long-horizon LLM agents, yet existing evaluations offer limited guidance on which memory substrate, namely the underlying medium in which memory is represented and stored, should be used under different operating regimes. We present a controlled harness evaluation of memory substrates for memory-augmented agents, covering dense and sparse indices, text records, structural stores, hierarchical stores, refinement-based memories, parametric updates, and activation-compatible context mechanisms. Across three backbone models and four benchmark suites spanning user-centric question answering and agent-centric decision-making, we instrument 26 performance and efficiency metrics under a unified harness. Our results show that no single substrate consistently dominates: broad retrieval benefits long-context factual QA, while excessive retrieval can harm sequential decision-making by shifting attention away from action-critical context. Scalability introduces a further routing axis, as substrates that perform well at moderate history lengths can become costly or brittle at longer horizons. These findings motivate substrate routing as a necessary component of adaptive agent memory systems and provide empirical guidance for designing efficient, reliable, and regime-aware long-term memory for LLM agents. Code will be made available upon acceptance.",
+   "published": "2026-08-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.15008"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Harness the Memory évalue 26 métriques sur 8 substrats de mémoire (dense/sparse indices, text records, etc.) pour agents à long horizon. Montre qu'aucun substrat ne domine : le retrieval aide pour le QA, mais nuit aux décisions séquentielles. Guide pour le design des systèmes de mémoire agents.",
+   "score": 8.5
+  },
+  {
+   "id": "c942635a8a931a8a",
+   "title": "From Corpora to Co-Evolving Capabilities: Capability-Centric Data Design for Generalist Image Generation",
+   "url": "https://huggingface.co/papers/2608.18076",
+   "summary": "Large-scale image generation has benefited from advances in data scale, quality, rebalancing, and recaptioning, yet conventional pipelines typically optimize task-specific datasets in isolation. A central challenge is not only how to curate each task-specific corpus, but also how to organize heterogeneous supervision according to the dependencies among generative capabilities. We present a capability-driven data infrastructure that couples capability-specific supervision construction with capability-aligned curriculum scheduling. Its three specialized yet interoperable data engines build complementary relational supervision for text-image grounding, inter-image transformation, and image-knowledge association, while caption experts align T2I and editing supervision across tasks and granularities. A multi-stage curriculum jointly evolves task composition, visual-concept distribution, data quality, and image resolution along the dependency order of capability acquisition, with capability-aware evaluation closing the loop through targeted retrieval, expert construction, and gap-aware resampling. At scale, the framework curates a 440M-image T2I corpus, 120M editing pairs, and over 27M image-entity pairs. With this infrastructure, we train multimodal diffusion models at two scales from scratch, with 3B and 6B sizes respectively. We conduct quantitative evaluation on CPI-Bench, along with qualitative evaluations across diverse text-to-image and editing scenarios. Experimental results present broad visual coverage, versatile rendering, and effective transfer across generative capabilities.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.18076"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Propose une infrastructure de données centrée sur les capacités pour la génération d'images, organisant des supervisions hétérogènes (text-image, inter-image, image-connaissance) via un curriculum multi-étapes. Intéressant pour optimiser l'entraînement des modèles de génération d'images à grande échelle avec une approche systématique.",
+   "score": 8.5
+  },
+  {
+   "id": "bfd3b14b12f44c94",
+   "title": "Abra: Scaling Diffusion Image Training",
+   "url": "https://huggingface.co/papers/2608.17286",
+   "summary": "Compute-optimal scaling laws guide the training of frontier language models yet remain largely unexplored for visual generation. We present a systematic scaling law study for text-to-image diffusion models using Abra, a controlled family of flow-matching transformers trained across three orders of magnitude worth of compute (10^{19} to 10^{22} FLOPs), reaching significantly larger compute budgets than previous works. We demonstrate that diffusion models scale just as predictably as language models but require far more data to train optimally: compute optimality occurs at approximately 200 image tokens per parameter, ten times the Chinchilla compute-optimal prescription for LLMs. We show that unlike language models, diffusion models are robust to overtraining and that practitioners should err on the side of more data rather than a larger model. Finally, we show that this predictability extends beyond training loss to generative quality metrics, optimal CFG settings, representation quality, and even the shape of the training curves, which collapse onto a universal form.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.17286"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Étude des lois de scaling pour les modèles de diffusion text-to-image (Abra), montrant une robustesse à l'overtraining et une optimisation à 200 tokens/image/paramètre. Fournit des insights pour l'entraînement efficace des modèles de génération d'images.",
+   "score": 8.5
+  },
+  {
+   "id": "61318fe921d51521",
+   "title": "Recirculation",
+   "url": "https://arxiv.org/abs/2608.17981v1",
+   "summary": "We describe an inference-time architectural enhancement for off-the-shelf foundation models that markedly reduces perplexity and boosts accuracy across generation and reasoning tasks. Our approach incurs essentially no additional latency during generation, though it requires serial processing in the prefill phase. Motivated by the fundamental limitation that state updates in feedforward transformers are bounded by model depth, our technique, recirculation, introduces a specific form of recurrence that allows the model to act as a dynamical system and track belief states. We distinguish this technique from chain-of-thought computation---which is better reserved for complex inferences rather than basic state tracking---as well as from popular depth-recurrence techniques (looping) and the costly training of recurrent transformers. We also propose and evaluate an adaptive variant of recirculation which requires only light tuning of hyperparameters while freezing the original model weights. Relative to the off-the-shelf baseline, adaptive recirculation achieves remarkable gains on the Gemma3 family, including a 23% reduction in perplexity on a suite of datasets, a 21% increase in accuracy on GSM8k, and reliable improvements in accuracy on other downstream tasks. Our training-free approach succeeds by leveraging the model itself to inform architectural modifications, suggesting a route to architectural evolution guided by a trained network's properties rather than forced, arbitrary design choices.",
+   "published": "2026-08-18T16:30:21+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Michael C. Mozer, Shoaib Ahmed Siddiqui, Danny Sawyer, Sunny Sanyal, Rosanne Liu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Technique d'inférence 'recirculation' pour les transformers, réduisant la perplexité et améliorant la précision avec un surcoût minimal en préfill. Approche innovante pour optimiser les modèles existants sans réentraînement, applicable aux LLM modernes.",
+   "score": 8.3
+  },
+  {
+   "id": "c0c9b87f61b857e3",
+   "title": "Agentic ESOpt: Fine-Tuning Long-Horizon LLM Agents with Minimal GPU Requirements",
+   "url": "https://huggingface.co/papers/2608.17310",
+   "summary": "Reinforcement Learning (RL) has been promising in single-turn LLM fine-tuning. However, long-horizon agentic reasoning introduces increasingly branching interactions and sparse rewards, exposing several limitations of RL: its heavyweight backpropagation-based training stack makes it impractical to fine-tune larger LLMs, and longer-horizon trajectories make credit assignment in RL substantially harder. This paper argues that evolution strategies (ES) can be a better choice for fine-tuning long-horizon LLM agents. Compared with agentic RL, ES offers three key advantages: 1) Model Scalability: ES enables full-parameter optimization with only minimal, inference-level GPU memory, making it possible to fine-tune large LLMs. 2) Flexibility: its lightweight, black-box feedback interface makes ES fine-tuning easy to compose with prompt-space evolution (e.g., skill optimization & test-time compute); and 3) Long-Horizon Scalability: ES performs trajectory-level parameter attribution without decomposing rewards across horizons, yielding better scalability than Agentic RL as the horizon length grows. Based on this insight, we propose Agentic ESOpt, a full-parameter agentic fine-tuning framework tailored to flexible parameter--context co-evolution. At each step, Agentic ESOpt samples perturbations around the current LLM parameters, evaluates the resulting agents with rewards, and applies an online reward-weighted update. To improve the exploration--adaptation trade-off, Agentic ESOpt further introduces a cosine decay schedule of the perturbation scale σ. On WebArena-Lite, full-parameter optimization of Qwen-3.5-27B improves the No Skill baseline by 6.69%. In test-time automatic heuristic design, Agentic ESOpt performs online prompt--parameter co-evolution, improving its matched baseline in 28 of 36 settings.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2608.17310"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Agentic ESOpt propose d'utiliser des stratégies d'évolution (ES) pour fine-tuner les agents LLM à long terme, avec une mémoire GPU minimale et une meilleure scalabilité que le RL. Une alternative prometteuse pour l'optimisation des agents.",
+   "score": 8.2
+  },
+  {
+   "id": "2572b9fa66149537",
+   "title": "Large Discovery Models: Empirically-grounded Model-Based Open-Ended Search",
+   "url": "https://huggingface.co/papers/2608.15669",
+   "summary": "Scientific discovery often involves optimising expensive-to-evaluate objectives over vast, structured, and open-ended hypothesis spaces, such as molecules, protein sequences, and computer programs. Generative models such as large language models (LLMs) provide expressive priors over such spaces, but their likelihoods and self-assessments are unreliable proxies for the objectives and calibrated epistemic uncertainty, especially for novel candidates outside the observed data distribution. We introduce the Large Discovery Model (LDM), an empirically grounded recurrent architecture that couples a generative model with a Bayesian non-parametric reward surrogate model. The generative model proposes and refines candidate designs, while the surrogate predicts their performance and quantifies uncertainty, yielding an uncertainty-aware value that guides candidate generation, refinement, and selection. The discovery memory and the surrogate model are continually updated as each new experimental observation arrives. We evaluate LDM on three scenarios spanning different design modalities and objectives, including neural-network training, antibody design, and molecular optimisation. Compared to LLM-only reflection or traditional statistical search across these domains, LDM achieves a 2.4times greater reduction in validation BPB, an 18.2% relative decrease in binding energy, and more than 60% relative gains in molecular multi-objective performance. These results suggests that LDM could serve as a general-purpose discovery engine for effective search over open-ended hypothesis spaces.",
+   "published": "2026-08-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 55,
+    "arxiv_id": "2608.15669"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Présente les Large Discovery Models (LDM), une architecture récurrente combinant un modèle génératif et un surrogate bayésien pour l'optimisation d'hypothèses ouvertes (molécules, protéines). Évalue sur 3 scénarios (entraînement de réseaux, design d'anticorps, optimisation moléculaire) avec des gains significatifs.",
+   "score": 8.2
+  },
+  {
+   "id": "a442e86b8d202171",
+   "title": "Chain-of-Experience for Continual LLM Improvement",
+   "url": "https://arxiv.org/abs/2608.18027v1",
+   "summary": "Humans continuously learn from experience, whereas conventional large language model (LLM) evaluations ignore the models' ability to improve through inference-time interaction. In this paper, we study how LLMs learn from iterative experience at test time, a setting we refer to as Chain-of-Experience (CoE), where models accumulate experiential traces through iterative interactions with self or environmental feedback to form a continual improvement loop beyond zero-shot inference. We instantiate CoE with diverse feedback mechanisms, including model self-feedback and environmental signals such as correctness or public coding test pass rates, and evaluate across math, coding, and knowledge domains using 8 LLMs, including GPT-5, Gemini-2.5 Pro, Claude-4.5 Sonnet. Our study shows that leveraging iterative experience consistently outperforms feedback-free baselines, achieving substantial gains with self feedback alone, alongside a 5.6% overall improvement and 19% lower API cost across tasks and models. We further show that combining complementary feedback channels (e.g., model and correctness signals) yields additional gains, and that CoE delivers higher accuracy per token than existing test-time strategies. We observe a positive correlation between LLM base ability and improvement capacity, and show that models remain robust under weak or spurious feedback, with different feedback contributing to distinct improvement aspects and most gains emerging early in the iterations.",
+   "published": "2026-08-18T17:22:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Haoqin Tu, Yunhao Fang, Yizhong Wang, Cihang Xie, Shen Yan"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Méthode Chain-of-Experience (CoE) permettant aux LLM d'améliorer leurs performances en temps réel via des boucles de feedback itératives (auto-feedback, signaux environnementaux), réduisant les coûts API de 19% tout en augmentant la précision de 5.6% en moyenne.",
+   "score": 8.0
+  },
+  {
+   "id": "a4b98ccd25947b5a",
+   "title": "ASI-Bench: At the Dawn of Artificial Superintelligence",
+   "url": "https://huggingface.co/papers/2608.17271",
+   "summary": "Artificial superintelligence (ASI) requires AI to move beyond mastering existing knowledge toward exploring the unknown, creating new knowledge, and turning new ideas into verifiable results. However, the capabilities of today's AI systems are still largely built on learning, compressing, and applying existing human knowledge. Accordingly, existing benchmarks primarily test whether AI can produce correct answers based on learned knowledge, or whether it can complete tasks under extensive human guidance. We therefore introduce ASI-Bench, the first benchmark to jointly evaluate AI systems' capabilities of innovative exploration and autonomous scientific execution across general research domains, and the first to progressively withdraw human methodological guidance within the same research project to test how far AI can proceed on its own. Built by over 40 experts with the cost of 31,000+ human hours, ASI-Bench contains 60 project-level research tasks across 11 scientific domains and progressively reduces methodological guidance to test whether AI can independently select methods, conduct research, and produce verifiable results. All tasks undergo expert review, AI-assisted auditing, sandbox execution, and scorer validation. Across 18 state-of-the-art agent--model configurations, the average score drops from 50.91 with full methodological guidance to 29.10 with only the method specified and 26.62 when agents must determine the method themselves. This sharp decline shows that current systems remain heavily dependent on human guidance and are still far from autonomously conducting end-to-end, project-level scientific research. ASI-Bench is open to the world. We invite researchers and builders everywhere to contribute new tasks, challenge the limits of today's AI, and help accelerate humanity's collective path toward artificial superintelligence at https://asibench.apexin.ai/submit.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 37,
+    "arxiv_id": "2608.17271"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "Benchmark ASI-Bench évaluant les capacités d'exploration autonome et de recherche scientifique des IA, avec 60 tâches multi-domaines et une réduction progressive de l'assistance méthodologique. Premier benchmark à tester l'innovation et l'autonomie des modèles.",
+   "score": 7.9
+  },
+  {
+   "id": "bf33538a729bc523",
+   "title": "Beyond Visual CoT: Internalized Visual Thinking for Proactive Video Reasoning",
+   "url": "https://huggingface.co/papers/2608.15869",
+   "summary": "Multimodal large language models increasingly use visual chain-of-thought (Visual CoT) to reason about spatial, temporal, and embodied environments. By generating intermediate reasoning images, Visual CoT provides an intuitive mechanism for visual foresight but introduces substantial inference overhead, which is particularly problematic for proactive video reasoning. We ask whether models can learn to think visually during training while reasoning directly at inference. We introduce Internalized Visual Thinking (IVT), a post-training framework that jointly optimizes textual prediction and next-embedding prediction over unlabeled videos. Given a partially observed video, IVT predicts latent representations of future frames together with the target textual answer, encouraging the model to capture motion, object transitions, interactions, and latent intent. At inference, IVT generates the answer directly without synthesizing or re-encoding future frames. We conduct controlled studies across target representations, decoder designs, prediction horizons, data mixtures, training curricula, and predictive objectives. IVT improves over direct-answer fine-tuning on all six evaluation settings while retaining the same inference pathway. Compared with explicit Visual CoT, IVT achieves comparable or better performance and reduces average end-to-end latency by more than 5x. Together, our findings suggest that explicit pixel-space generation at inference time, as used in visual chain-of-thought, may not be necessary for effective proactive video reasoning. Predictive world modeling can be internalized during training to produce multimodal reasoners that are both more accurate and substantially more efficient.",
+   "published": "2026-08-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.15869"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "vision",
+    "llm"
+   ],
+   "tldr": "Internalized Visual Thinking (IVT) permet aux MLLMs de raisonner visuellement pendant l'entraînement sans générer d'images intermédiaires à l'inférence, réduisant les coûts tout en améliorant les performances sur des tâches vidéo complexes.",
+   "score": 7.9
+  },
+  {
+   "id": "5cac15ada9e12023",
+   "title": "MOSS-VL Technical Report",
+   "url": "https://huggingface.co/papers/2608.15045",
+   "summary": "We present MOSS-VL, an open vision-language model family that treats real-time interaction -- perceiving while it speaks -- as a first-class capability. It is co-designed across the stack: the language decoder attends to vision only through gated cross-attention, so the model can naturally see incoming frames while generating; a synthesized interaction corpus supervises when to speak, when to stay silent, and when to revise; and a staged curriculum concentrates all real-time-specific training in one light final stage over a strong offline foundation. Offline, MOSS-VL-Instruct is competitive at comparable scale and leads temporal-reasoning video sets. Across four streaming benchmarks, MOSS-VL-Realtime posts the best average on three (second on the fourth) among open-source streaming models, sweeping the three subsets that squarely test proactive behavior -- 66.0 vs. 37.5 for the best baseline on OmniMMI Proactive Alerting. With 11.3B parameters but visual tokens outside the decoded sequence, MOSS-VL widens its time-to-first-token advantage over same-backbone Qwen3-VL-8B from 2.8x to 5.1x as visual context grows. We release all five checkpoints, the training curriculum, and the real-time inference code at https://github.com/OpenMOSS/MOSS-VL.",
+   "published": "2026-08-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 41,
+    "arxiv_id": "2608.15045"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "llm",
+    "produit"
+   ],
+   "tldr": "MOSS-VL introduit un modèle vision-langage open-source optimisé pour les interactions en temps réel, avec un décodage géré par attention croisée et un corpus d'interaction synthétisé. Il surpasse les baselines open-source sur des benchmarks de streaming.",
+   "score": 7.9
+  },
+  {
+   "id": "205b005f47c4b70f",
+   "title": "DumpsterCluster: From Dumpster Diving to Serving LLaMA-70B on $60 GPUs",
+   "url": "https://huggingface.co/papers/2608.14614",
+   "summary": "As AI datacenters retire functional GPUs, vast quantities of still capable accelerators enter secondary markets. This paper investigates whether these retired GPUs can find a productive afterlife to form a DumpsterCluster that can serve modern LLM inference, and under what conditions such repurposing is economically viable and environmentally sustainable. We physically built a 128-GPU DumpsterCluster from scratch using only second-hand components and ran it for one year. At current market prices (\\22K for the DumpsterCluster vs. 600K for an 8-GPU B200 system), the economic advantages are substantial. Through pipeline-parallel optimizations, our V100 based DumpsterCluster achieves competitive LLaMA-70B throughput, validating production viability. However, our deployment reveals critical context dependencies. Older GPUs consume significantly more energy per token, making total cost of ownership favorable only in regions with inexpensive electricity. Under grid-average carbon intensity, second-hand systems can produce approximately 4x higher total carbon emissions per token for 8B models, and over 40x for 70B models, compared to current-generation hardware. These findings show that GPU afterlife is not universally sustainable - hardware repurposing must be strategically coupled with low carbon energy sources. When deployed in regions with favourable energy economics and clean electricity, second-hand GPUs offer a viable pathway for expanding AI capacity while advancing affordability, energy security, and environmental responsibility.",
+   "published": "2026-07-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.14614"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "produit"
+   ],
+   "tldr": "Évalue la viabilité économique et environnementale d'un cluster de GPUs d'occasion (DumpsterCluster) pour servir des LLM comme LLaMA-70B. Montre un avantage économique mais un impact carbone 4 à 40 fois supérieur à du matériel neuf selon la taille du modèle.",
+   "score": 7.9
+  },
+  {
+   "id": "3c7f0c7b652383c5",
+   "title": "Optimize Your Sampling: Tuned Diffusion Sampling with Bayesian Optimization",
+   "url": "https://arxiv.org/abs/2608.18040v1",
+   "summary": "Sampling from a diffusion model typically requires many forward passes through a large neural network, making generation computationally expensive. While much work has focused on efficient solvers and samplers, comparatively little attention has been paid to selecting the sampling timesteps themselves. A recent line of work optimizes theoretically derived surrogates for sample quality rather than the quality metric itself. We propose Optimizing Your Sampling (OYS), which instead treats timestep selection as a black-box optimization problem, optimizing the target metric directly with Bayesian optimization. OYS outperforms both the default schedules and those of Align Your Steps on text-to-image generation, and improves over the default schedules on inpainting and other image tasks, in both quantitative and human evaluations. OYS requires no additional training, is applicable even to distilled models, and improves both simple and sophisticated samplers such as Euler and DPM-Solver++. A 5-step OYS schedule retains 89%-94% of the quality of a 50-step schedule while reducing inference cost by 10x.",
+   "published": "2026-08-18T17:33:00+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Travis Zhang, Christian Belardi, Justin Lovelace, Jin Peng Zhou, Saebyeol Shin, Carla P. Gomes"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Optimisation des timesteps de sampling pour les modèles de diffusion via optimisation bayésienne directe, réduisant les coûts d'inférence de 10x tout en conservant 89-94% de la qualité avec 5 étapes au lieu de 50, applicable aux modèles distillés et sans entraînement supplémentaire.",
+   "score": 7.7
+  },
+  {
+   "id": "3aaf3c66fccdd44f",
+   "title": "Judge, Retrieve, or Abstain: Uncertainty-Guarded LLM Judging with Provable Risk Guarantees",
+   "url": "https://arxiv.org/abs/2608.17994v1",
+   "summary": "Using LLMs as judges has become standard practice for evaluating model outputs at scale. This is particularly common for subjective, open-ended tasks such as assessing helpfulness or alignment, where no single reference answer exists. However, objective tasks introduce a distinct reliability challenge for reference-free LLM judging. In the absence of a reference answer, the judge evaluates factual correctness either through its parametric knowledge or through tool augmentation. Although the former enables efficient evaluation, the judge may hallucinate or lack sufficient evidence for its verdict. Conversely, tool augmentation can provide additional evidence but introduces extra computational cost and requires an appropriate mechanism to determine when and how that evidence should be used reliably. More importantly, neither approach alone provides formal control over the risk of accepted verdicts or guarantees their reliability at a specified level. We propose a risk-controlled framework that calibrates uncertainty thresholds on a held-out set so that the false discovery rate among accepted verdicts remains below a user-specified level~$α$ with high probability, using finite-sample Clopper--Pearson intervals. When the parametric mode is not sufficiently confident, the instance is routed to a retrieval-augmented mode, where the judge gathers web evidence and re-evaluates the instance under a second calibrated threshold. The finite-sample guarantee carries over to this two-threshold routing without additional assumptions. Across open-domain QA benchmarks and judges of varying scales, the framework maintains the target error rate while achieving substantially higher coverage than single-mode baselines.",
+   "published": "2026-08-18T16:42:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sher Badshah, Ali Emami, Hassan Sajjad"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Framework pour évaluer les LLM comme juges avec des garanties probabilistes sur le taux d'erreur (faux positifs), combinant connaissances paramétriques et outils externes. Essentiel pour la fiabilité des évaluations automatisées, notamment sur des tâches factuelles.",
+   "score": 7.7
+  },
+  {
+   "id": "a77e270aa3dab6a4",
+   "title": "Do Large Language Models Play Six Degrees of Separation? Measuring Topological Compression in Long-Context Manifolds",
+   "url": "https://arxiv.org/abs/2608.17950v1",
+   "summary": "Large Language Models (LLMs) demonstrate remarkable multi-hop reasoning capabilities over long contexts, yet the internal mechanisms enabling these distant cognitive leaps remain poorly understood. Traditional attention-based interpretability often fails to capture true semantic proximity due to routing artifacts like attention sinks. In this paper, we bypass attention weights to directly analyze the dynamic geometry of the hidden state manifold, proving that deep LLM latent spaces natively organize into Small-World networks. By sparsifying the continuous similarity matrices of long-context representations into unweighted graphs, we trace the connectivity between highly disjoint semantic anchors across two distinct architectures. Our findings reveal a sharp topological phase transition: while early syntactic layers remain entirely fractured, deep reasoning layers abruptly compress massive conceptual distances into highly navigable pathways strictly bounded by the \"Six Degrees of Separation\" limit (=< 6 semantic hops). Furthermore, we demonstrate the practical efficacy of this framework by applying it to zero-shot hallucination detection within Retrieval-Augmented Generation (RAG) using the RAGognize dataset. We show that factually grounded generations maintain structural integrity with their source context (approximately 3 hops), whereas hallucinations induce severe topological collapse. Ultimately, this work mathematically formalizes how transformers execute abstract reasoning and provides a novel, strictly geometric signature for evaluating factual reliability.",
+   "published": "2026-08-18T16:05:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Md. Faiyaz Abdullah Sayeedi"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette recherche révèle que les espaces latents des LLM organisent leurs représentations en réseaux de type 'Small-World', compressant les distances sémantiques en ≤6 sauts dans les couches profondes. La méthode permet une détection zéro-shot des hallucinations en RAG en exploitant cette topologie.",
+   "score": 7.7
+  },
+  {
+   "id": "ec3665de1f28f90f",
+   "title": "Embodied-Navigator: Point, Think, Memorize, and Align for Efficient Navigation",
+   "url": "https://huggingface.co/papers/2608.17512",
+   "summary": "Although Large Vision-Language Models (VLMs) have significantly advanced embodied navigation, their direct deployment remains challenging, as existing methods often force VLMs into unnatural action spaces that misalign with their 2D pre-training priors, compounded by rigid reasoning schedules and inefficient memory management. To overcome these limitations, we propose TAMP-Nav, a unified framework for efficient embodied navigation. First, we introduce a Pixel-to-3D Action Formulation (Point) that reformulates navigation into 2D visual prompting. Specifically, the VLM merely selects 2D pixels, which are then projected into 3D coordinates for a low-level SLAM controller. This design naturally aligns embodied execution with the VLM's inherent 2D visual capabilities. Second, we propose an integrated Selective Reasoning and Anchor-Trajectory Memory mechanism (Think and Memorize), which dynamically triggers Chain-of-Thought and retains high-fidelity memory only at critical nodes, compressing redundant trajectories into lightweight Space-Time Indicators, thereby preserving critical historical information and enhancing spatio-temporal perception. Finally, we design an efficient Two-Level Alignment Paradigm (Align) via Group Relative Policy Optimization (GRPO). By superimposing global outcome rewards with fine-grained process rewards, this dense supervision tightly aligns the agent's cognitive planning with physical environmental feedback, endowing the model with adaptive reasoning capabilities. Experiments demonstrate that TAMP-Nav achieves state-of-the-art performance (e.g., 66.2% SR on R2R-CE) with high runtime and sample efficiency (requiring only 90k training trajectories).",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2608.17512"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "Embodied-Navigator (TAMP-Nav) reformule la navigation robotique en 2D (sélection de pixels → projection 3D) et intègre un mécanisme de raisonnement sélectif + mémoire hiérarchique. Améliore l'alignement avec les VLMs pré-entraînés en 2D et réduit la redondance computationnelle.",
+   "score": 7.6
+  },
+  {
+   "id": "6264bf8e3fb1b65a",
+   "title": "aDSL: Agentic 3D Creation via Joint Agent-Program Design",
+   "url": "https://huggingface.co/papers/2608.17975",
+   "summary": "Programmatic representations provide a compelling paradigm for 3D content creation, enabling fine-grained edits, interpretability, and explicit structural control. Yet, agentic workflows that rely on large language models (LLMs) to author 3D programs remain brittle, often failing to translate high-level intent into consistent low-level geometry. We attribute this fragility to a mismatch between existing programmatic interfaces and the reasoning strengths of LLMs, which favor semantic structure and spatial relations over fragile numeric choices. In this paper, we jointly design an Agent-centric Domain-Specific Language (aDSL) and a role-specialized multi-agent system to close this gap. aDSL bridges semantic logic and geometric constraints by emphasizing composability and spatial reasoning; it enables agents to manipulate geometry through relational operators instead of brittle absolute coordinates. Building on aDSL, our training-free multi-agent system follows a Plan-Execute-Critic loop to decompose requests, synthesize code, and iteratively repair errors and constraint violations using execution feedback. Experiments show that this co-design improves robustness, controllability, and faithfulness to user intent. Our method outperforms prior LLM-based baselines on text-to-shape and image-to-shape tasks while preserving explicit structure, editability, and interpretability. It also enables downstream applications such as articulated object creation and structured scene composition. Our code is available at https://github.com/sig-pku/aDSL.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.17975"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "aDSL, un langage spécifique pour la création 3D par agents, combiné à un système multi-agents pour améliorer la robustesse et la contrôlabilité. Permet une manipulation géométrique via des opérateurs relationnels plutôt que des coordonnées absolues.",
+   "score": 7.6
+  },
+  {
+   "id": "bc9459f6317d3728",
+   "title": "Learn What's Left, Not What's Mastered: Saturation Aware Advantage Reweighting for Multi-Reward Policy Optimization",
+   "url": "https://huggingface.co/papers/2608.16072",
+   "summary": "Reinforcement learning (RL) with group-relative advantages has become the de facto standard for post-training language model reasoners. However, when optimizing multiple reward objectives, existing methods typically scalarize the reward vector with a fixed weighted sum before group-wise standardization. We show that this design leads to two fundamental problems: rollouts with distinct reward profiles can receive identical advantages, and all objectives are optimized with fixed relative weights regardless of their current level of saturation. As a result, training continues to allocate gradient budget to already-solved objectives instead of focusing on those with greater remaining headroom. We introduce Saturation Aware Advantage Reweighting for Multi-Reward Policy Optimization (SA-MRPO), which standardizes each reward objective independently and adaptively discounts its contribution according to a batch-level estimate of objective saturation. This dynamically reallocates optimization effort toward under-optimized objectives while empirically maintaining performance on those that are already well satisfied. We further show that saturation-aware reweighting can reverse the sign of an update, rather than merely rescale its magnitude. Across mathematical reasoning with two- and three-objective reward combinations, SA-MRPO improves the harder correctness objective over GDPO in 12 of 15 benchmark comparisons, with gains of up to 5% on AIME24. On adaptive reasoning it improves accuracy on all five benchmarks, by 3.8% on average and up to 9.2 % on AMC23, and on coding benchmarks it improves pass rate by up to 2.3%, while in all settings maintaining the easier objectives near their already satisfied levels.",
+   "published": "2026-08-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 81,
+    "arxiv_id": "2608.16072"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Propose SA-MRPO, une méthode de rééquilibrage des avantages pour l'optimisation multi-récompenses en RL, adaptant dynamiquement les poids en fonction de la saturation des objectifs. Réalloue le budget de gradient vers les objectifs sous-optimisés tout en maintenant les performances.",
+   "score": 7.6
+  },
+  {
+   "id": "905642c03ab7133a",
+   "title": "Multi-Agent AI System for Radiology Report Structuring and Quality Assurance with Independent Radiologist Evaluation",
+   "url": "https://arxiv.org/abs/2608.18072v1",
+   "summary": "Purpose: To develop and evaluate a locally deployed multi-agent AI system for radiology report structuring and quality assurance. Materials and Methods: This retrospective study included 638 radiology reports from CT examinations of the chest, abdomen, and pelvis dictated by 15 board-certified radiologists in 2023 and 2024. A multi-agent AI pipeline was developed to perform report structuring and quality assurance (QA). The system structured the report into standardized anatomical sections at the sentence level using regex rules and local large language models. It also detected mismatches between the Findings and Impression sections, or within sections; gender-anatomy conflicts; and undocumented communication of critical findings. Two board-certified radiologists independently evaluated a 45-report subset. Results: The multi-agent system structured the Findings sections of all reports (22,270 sentences) into a predefined anatomical format while retaining the original report content. The system flagged 90 (14.1%) reports, most commonly for section mismatches (80 reports, 12.5%). In the radiologist evaluation, both reviewers agreed that 31 (69%) were correctly restructured, 2 reports (4%) were incorrectly restructured, and disagreed on the remaining 12 reports (27%). Both reviewers agreed that no clinically important information was omitted and no fabricated content was introduced. Overall QA performance was rated as \"excellent\" or \"good\" in 84% of the evaluated reports, with the remaining reports rated as \"fair\". Conclusion: A locally deployed multi-agent AI system combined radiology report structuring and quality assurance within a single workflow. The system demonstrated favorable performance in radiologist evaluation. Such systems may support standardization of reporting and quality assurance in radiology practice.",
+   "published": "2026-08-18T17:57:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Iryna Hartsock, Cesar Lam, Christopher Otteni, Aliya Qayyum, Robert Gatenby, Cyrillo Araujo"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "Système multi-agents déployé localement pour structurer et assurer la qualité des comptes-rendus radiologiques, évalué par des radiologues indépendants. Montre l'utilité concrète des agents dans un domaine critique (santé), avec des résultats quantitatifs sur 638 rapports et une analyse qualitative sur 45 cas.",
+   "score": 7.4
+  },
+  {
+   "id": "3c7f711ede18cd1c",
+   "title": "Policy-Invariant Reward Shaping from LLM Feedback: A Framework for Hybrid RL Agents",
+   "url": "https://arxiv.org/abs/2608.18008v1",
+   "summary": "Combining large language models with reinforcement learning is increasingly explored, yet the theoretical status of LLM-derived reward signals is often left implicit. We formalize the hybrid LLM-planner and RL-controller architecture as a Goal-Augmented Markov Decision Process and show that when the LLM per-state progress score is used as a bounded potential function, the resulting shaping term preserves the optimal policy set even when the LLM scores are inaccurate. This guarantee is stronger than what general LLM-as-reward approaches provide. We verify the result numerically on a small MDP under four potential configurations, including an adversarial one scaled to twenty times the base reward magnitude.",
+   "published": "2026-08-18T16:55:46+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Christophe D. Hounwanou, John Emeka Eze, Yaé U. Gaba"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Cadre théorique pour des agents hybrides LLM-RL où les récompenses dérivées de LLM sont formalisées comme des fonctions potentielles bornées, préservant l'optimalité de la politique même en cas d'erreurs de scoring, validé numériquement sur un MDP.",
+   "score": 7.4
+  }
+ ]
+}
