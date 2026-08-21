@@ -1,0 +1,710 @@
+{
+ "date": "2026-08-21",
+ "digest": {
+  "headline": "Les benchmarks révèlent les limites critiques des agents LLM en tâches scientifiques et en auto-amélioration, tout en proposant des solutions architecturales pour y remédier",
+  "overview": "La veille du 2026-08-21 met en lumière des avancées majeures en optimisation et architecture des systèmes multi-agents, ainsi que des évaluations rigoureuses des capacités actuelles des LLM. Les benchmarks récents soulignent des lacunes persistantes en raisonnement scientifique, formalisation mathématique et généralisation, tandis que des frameworks émergent pour structurer la délégation sécurisée et l'apprentissage dynamique.",
+  "highlights": [
+   {
+    "title": "Échecs des agents en tâches scientifiques et formalisation",
+    "text": "SWE-bench Science et FormalTCS révèlent que les meilleurs modèles (Claude Opus-5, GPT-4) échouent sur plus de 50% des tâches scientifiques complexes et ne formalisent correctement que 11,5% des preuves théoriques. Ces benchmarks identifient des faiblesses en intégration système, exploration et auto-formalisation, cruciales pour les applications critiques. FormalTCS propose un pipeline automatisé pour générer et valider des claims théoriques, offrant une base pour améliorer la rigueur des LLM."
+   },
+   {
+    "title": "Architectures pour agents sécurisés et auto-améliorants",
+    "text": "Bounded Agents introduit une chaîne de délégation (Agentic Principal Chain) avec vérifications dynamiques pour limiter les risques de propagation non contrôlée, tandis qu'AI4AI-Bench évalue la capacité des agents à concevoir des algorithmes d'auto-amélioration récursive. Ces travaux adressent des défis clés pour les systèmes autonomes : robustesse théorique (monotonicité, composition) et évaluation rigoureuse des gains d'auto-optimisation, comme le souligne Phantom Gains en démystifiant les artefacts méthodologiques."
+   },
+   {
+    "title": "Optimisation des LLM pour longs contextes et inférence CPU",
+    "text": "FlashPrefill V2 optimise le pré-remplissage des LLM via une attention sparse dynamique, réduisant les erreurs d'approximation pour les contextes étendus. Daedalus-150M, un modèle hybride convolution-attention, démontre des gains en efficacité pour l'inférence CPU (4-bit weights), répondant aux contraintes matérielles des déploiements edge. Ces avancées sont critiques pour le scaling pratique des modèles, notamment avec les lois de transfert d'hyperparamètres pour MoE proposées dans Let's Scale Step by Step."
+   },
+   {
+    "title": "Émergence de raisonnement et transfert de compétences",
+    "text": "Co-RL montre que la diversité des cohortes en entraînement multi-agents réduit les biais auto-renforcés et améliore la généralisation, tandis que Cross-Task Skill Transfer analyse la transférabilité des compétences entre tâches. Ces travaux explorent des mécanismes fondamentaux pour les systèmes autonomes : l'émergence de comportements complexes via des interactions structurées et la réutilisation de compétences abstraites, avec des implications pour la robotique (EnvHarness, EAFG)."
+   },
+   {
+    "title": "Frameworks pour la génération et la validation de code",
+    "text": "Repo0 et FACET proposent des méthodes pour générer des projets logiciels complets (Dual-DAG) et synthétiser des tâches terminales exécutables, en préservant l'intention source et la cohérence. Ces outils adressent des besoins concrets en ingénierie logicielle, avec des gains mesurés en couverture fonctionnelle et taux de réussite. MidTool complète ces approches en améliorant l'usage d'outils via un mid-training sur données synthétiques."
+   }
+  ],
+  "trend": "Les recherches convergent vers une maturité des architectures multi-agents et des benchmarks critiques, avec un focus sur la robustesse, la généralisation et l'efficacité computationnelle. Les limites identifiées en formalisation et auto-amélioration suggèrent que les progrès futurs dépendront de l'intégration de contraintes théoriques et de mécanismes de validation rigoureux, plutôt que de scaling brut."
+ },
+ "items": [
+  {
+   "id": "28a139730e541d20",
+   "title": "Co-RL: Unsupervised Reasoning Emerges from Diverse Cohort in Multi-agent RL",
+   "url": "https://huggingface.co/papers/2608.17253",
+   "summary": "Reinforcement learning (RL) has emerged as a powerful approach for improving reasoning in language and vision-language models, yet its strongest successes still depend heavily on ground-truth supervision (e.g., verifiable reward). Such annotations are costly to obtain and become increasingly scarce as reasoning capabilities advance beyond what humans can reliably evaluate. Self-rewarding RL reduces this dependence by enabling models to derive reward signals from their own completions. However, training solely on self-generated feedback can reinforce existing biases and suboptimal behaviors, reduce response diversity, and ultimately lead to homogenized responses and training collapse. In this work, we show that unsupervised reasoning can emerge through cooperative multi-agent training. We introduce Co-RL, a framework in which multiple decoupled models, sharing no parameters, are simultaneously optimized through RL using rewards derived from their peers. We further show that increasing cohort diversity, through heterogeneous model families, sizes, and rephrased training samples, reduces the correlated errors that drive self-reinforcing feedback loops. This diversity consistently improves reasoning performance, maintains behavioral diversity, and mitigates training collapse. Across text-only and multimodal domains, Co-RL consistently outperforms the base models and prior label-free approaches, while matching or surpassing supervised methods, without access to any ground-truth labels. Concretely, Co-RL yields average gains of 3.0-8.6% across seven text-only benchmarks for LLMs and 2.3-7.2% across four multimodal benchmarks for VLMs. Code is available at https://github.com/DrStranded/Co-RL.",
+   "published": "2026-08-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 86,
+    "arxiv_id": "2608.17253"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Cadre Co-RL pour l'émergence de raisonnement non supervisé via un entraînement multi-agents coopératif avec récompenses inter-modèles, démontrant que la diversité des cohortes réduit les biais auto-renforcés et améliore la généralisation.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le renforcement par apprentissage (RL) pour améliorer le raisonnement des modèles de langage et multimodaux dépend fortement de récompenses supervisées, coûteuses à obtenir et limitées par la capacité humaine à évaluer des raisonnements complexes. Les méthodes auto-récompensantes, bien que réduisant cette dépendance, risquent de renforcer les biais, réduire la diversité des réponses et mener à un effondrement de l'entraînement en s'appuyant uniquement sur des feedbacks auto-générés.",
+    "methode": "Co-RL propose un cadre multi-agents où plusieurs modèles découplés (sans partage de paramètres) sont optimisés simultanément via RL, en utilisant des récompenses dérivées des réponses de leurs pairs. La diversité de la cohorte est renforcée par l'utilisation de familles de modèles hétérogènes, de tailles variées et de reformulations des échantillons d'entraînement. Cette approche vise à briser les boucles de feedback auto-renforçantes en réduisant les erreurs corrélées, tout en maintenant une diversité comportementale. Le cadre est appliqué à la fois aux modèles de langage (LLMs) et multimodaux (VLMs) sans accès à des labels supervisés.",
+    "resultats": "Co-RL surpasse systématiquement les modèles de base et les méthodes antérieures sans labels, tout en égalant ou dépassant les performances des approches supervisées. Les gains moyens varient entre 3,0 % et 8,6 % sur sept benchmarks textuels pour les LLMs, et entre 2,3 % et 7,2 % sur quatre benchmarks multimodaux pour les VLMs. La diversité des réponses est préservée, et le risque d'effondrement de l'entraînement est atténué.",
+    "limites": "Le contenu disponible ne précise pas les détails sur la scalabilité de la méthode (coût computationnel, nombre optimal d'agents) ni les mécanismes exacts de génération des récompenses entre pairs. L'absence de comparaison avec des méthodes hybrides (supervisées/non supervisées) limite l'évaluation de son potentiel réel. Enfin, la robustesse face à des cohortes malveillantes ou biaisées n'est pas abordée.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à résoudre un verrou majeur du RL non supervisé, mais nécessite des analyses complémentaires sur sa robustesse et son efficacité en conditions réelles."
+   }
+  },
+  {
+   "id": "6e530c6d215e056a",
+   "title": "SWE-bench Science: Can Coding Agents Resolve Engineering Tasks in Science?",
+   "url": "https://huggingface.co/papers/2608.19799",
+   "summary": "Software increasingly functions as part of the scientific instrument itself, making failures in scientific code capable of compromising not only program behavior but also the evidence underlying scientific conclusions. Yet existing evaluations of coding agents largely emphasize aggregate task success, providing limited insight into why agents fail when repairing scientific software. We introduce SWE-bench Science, a repository-level benchmark for scientific software engineering comprising 119 tasks from 98 GitHub repositories across 20 scientific domains. Each task is organized into one of three paradigms: Issue-driven, Expert-exploratory, and Engineering-integration. Even the best-performing agent, Claude Code with Opus-5 (max), achieves a pass@1 below 50\\%, highlighting the substantial challenges posed by scientific software engineering. We identify four recurring failure mechanisms: deficits in scientific knowledge or abstraction, misguided exploration or surface-level repair, incomplete repair coverage or system integration, and failures to generalize scientific knowledge beyond observed cases in our analysis. We further conduct a paired ablation that removes explicit scientific guidance while preserving the repository and executable engineering context. The results show that scientific knowledge is not uniformly beneficial: well-grounded information can constrain repair and improve average performance and token efficiency, whereas poorly aligned guidance can induce anchoring and does not necessarily improve exact repair success. Together, SWE-bench Science provides a broad testbed for studying both the capabilities and failure mechanisms of coding agents in scientific software engineering.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2608.19799"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "SWE-bench Science évalue les agents de codage sur des tâches scientifiques complexes, montrant que même les meilleurs modèles (comme Claude Code avec Opus-5) échouent à plus de 50% des cas, identifiant des lacunes en connaissances scientifiques, exploration et intégration système.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le logiciel scientifique joue un rôle croissant dans la production de résultats de recherche, mais les erreurs dans ce code peuvent compromettre non seulement son fonctionnement, mais aussi la validité des conclusions scientifiques. Les évaluations actuelles des agents de codage se concentrent sur des métriques globales de succès, sans expliquer pourquoi ces agents échouent spécifiquement dans la réparation de logiciels scientifiques, un domaine exigeant des connaissances techniques et disciplinaires pointues.",
+    "methode": "Les auteurs introduisent *SWE-bench Science*, un benchmark au niveau des dépôts GitHub, composé de 119 tâches issues de 98 dépôts couvrant 20 domaines scientifiques. Ces tâches sont classées en trois paradigmes : *Issue-driven* (résolution de problèmes signalés), *Expert-exploratory* (exploration guidée par un expert) et *Engineering-integration* (intégration système). Le benchmark évalue des agents comme *Claude Code avec Opus-5* en mesurant leur capacité à résoudre des problèmes réels, avec une analyse fine des mécanismes d'échec. Une ablation appariée a été menée pour isoler l'impact des connaissances scientifiques explicites, en les supprimant tout en conservant le contexte technique et exécutable.",
+    "resultats": "Même l'agent le plus performant, *Claude Code avec Opus-5 (max)*, n'atteint qu'un *pass@1* inférieur à 50 %, soulignant la difficulté des tâches. Quatre mécanismes d'échec récurrents sont identifiés : lacunes en connaissances scientifiques ou en abstraction, réparations superficielles ou explorations mal orientées, couverture incomplète des réparations ou intégration système défaillante, et incapacité à généraliser les connaissances scientifiques au-delà des cas observés. L'ablation révèle que les connaissances scientifiques ne sont pas toujours bénéfiques : bien alignées, elles améliorent la performance moyenne et l'efficacité en tokens, mais mal adaptées, elles peuvent induire un biais d'ancrage sans améliorer le taux de succès exact.",
+    "limites": "Le benchmark se limite à 119 tâches, ce qui peut ne pas couvrir toute la diversité des défis en ingénierie logicielle scientifique. De plus, l'analyse des échecs repose sur une interprétation humaine, potentiellement subjective, des comportements des agents. Enfin, l'impact des connaissances scientifiques est évalué de manière binaire (présence/absence), sans explorer des nuances comme leur granularité ou leur mode de présentation aux agents.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique et son éclairage sur les limites des agents de codage dans un domaine critique, mais ses conclusions doivent être nuancées par la taille réduite de l'échantillon et les biais potentiels d'interprétation."
+   }
+  },
+  {
+   "id": "3fd2448cbb42e064",
+   "title": "FlashPrefill V2: Block-Sparse Prefill Attention for Long-Context LLM Serving",
+   "url": "https://huggingface.co/papers/2608.19758",
+   "summary": "Long-context modeling is a pivotal capability for Large Language Models, yet the quadratic complexity of attention remains a critical bottleneck, particularly during the compute-intensive prefilling phase. Our previous work, FlashPrefill, mitigates this cost through instantaneous pattern discovery and max-based dynamic thresholding; however, it remains an algorithmic prototype that is still distant from production deployment. In this paper, we present FlashPrefill V2, which evolves FlashPrefill from a prototype toward practical long-context serving along three dimensions. First, we introduce a mean correction term that effectively suppresses the approximation error, keeping performance degradation manageable even at extreme sparsity levels. Second, we redesign the sparse attention operator with PackGQA memory access, warp specialization, and pingpong pipelining, fully aligning with the latest FlashAttention-3/4 implementations and supporting FP8 inference to meet practical quantization requirements. Third, FlashPrefill V2 natively supports paged KV cache and continuous batching, allowing integration as an attention backend in modern inference frameworks such as SGLang. Extensive evaluations on NVIDIA H20 GPUs---among the most widely deployed inference accelerators---demonstrate that FlashPrefill V2 delivers up to 47.26x and 27.19x speedups over FlashAttention-2 at 128K context length under FP8 and BF16 precision, respectively, and, in FP8, still achieves a 30.49x speedup against an FA3/4-aligned dense baseline.",
+   "published": "2026-08-20T04:02:55.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.19758"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "FlashPrefill V2 optimise le pré-remplissage des LLM pour les longs contextes via une attention sparse dynamique, réduisant les erreurs d'approximation et intégrant des mécanismes de production (FP8, cache KV paginé, batching continu) pour un déploiement pratique.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le traitement des longs contextes par les grands modèles de langage (LLM) est limité par la complexité quadratique de l'attention, notamment lors de la phase de pré-remplissage (prefilling), qui est gourmande en calcul. Cela entrave l'efficacité et la scalabilité des systèmes de serving pour des contextes étendus, comme ceux dépassant 100K tokens.",
+    "methode": "FlashPrefill V2 améliore son prédécesseur en introduisant trois avancées majeures. Premièrement, un terme de correction moyenne réduit l'erreur d'approximation, permettant une sparsité extrême sans dégradation significative des performances. Deuxièmement, l'opérateur d'attention sparse est repensé avec des optimisations matérielles (PackGQA pour l'accès mémoire, spécialisation des warps, et pipelining pingpong), aligné sur les implémentations récentes comme FlashAttention-3/4, et compatible avec l'inférence FP8. Troisièmement, le système supporte nativement le cache KV paginé et le batching continu, facilitant son intégration dans des frameworks modernes comme SGLang.",
+    "resultats": "Les évaluations sur des GPU NVIDIA H20 montrent des accélérations impressionnantes : jusqu'à 47,26x et 27,19x par rapport à FlashAttention-2 pour des contextes de 128K tokens en précision FP8 et BF16, respectivement. En FP8, une accélération de 30,49x est encore observée face à une baseline dense alignée sur FlashAttention-3/4.",
+    "limites": "Les détails sur la robustesse de l'approximation (ex. : cas d'usage où l'erreur reste problématique) et l'impact sur la qualité des sorties du modèle ne sont pas exhaustivement documentés. De plus, les gains dépendent fortement du matériel (ici, NVIDIA H20), ce qui limite la généralisation à d'autres architectures. La compatibilité avec des modèles non optimisés pour la sparsité reste une zone d'ombre.",
+    "verdict": "Cette publication mérite une attention particulière pour son potentiel à révolutionner le serving de LLM en longs contextes, mais son adoption en production nécessitera des validations supplémentaires sur des cas d'usage variés et des architectures matérielles diversifiées."
+   }
+  },
+  {
+   "id": "c27dc258a8cea93d",
+   "title": "Repo0: Design-Driven Zero-to-All Code Generation",
+   "url": "https://huggingface.co/papers/2608.19854",
+   "summary": "Large language model agents have made substantial progress in code generation, yet most existing systems assume a predefined repository architecture. This assumption does not hold in zero-to-all code generation, where an agent must construct an entire software project directly from natural-language requirements while maintaining a modular repository architecture throughout development. We present Repo0, a continuous structural evolution framework for zero-to-all code generation. Repo0 maintains an explicit architectural state instantiated as a Dual-Directed-Acyclic-Graph (Dual-DAG), consisting of a requirement-level DAG, a component-level DAG, and their alignment relation. Starting from natural-language requirements, it iteratively evolves component boundaries through structural actions guided by modularity metrics until structural convergence, after which the converged architecture guides test-driven development code generation. We evaluate Repo0 on six real-world repositories from RepoCraft using GPT-5 mini and DeepSeek V3.2. Repo0 achieves the highest Functionality Coverage and Pass Rate across all settings. Compared with RPG, the strongest repository-planning baseline, Repo0 improves Functionality Coverage by up to 20.08 percentage points and Pass Rate by up to 29.74 percentage points. Ablation and structural-evolution analyses further demonstrate the importance of the Dual-DAG architectural state, modularity-guided structural evolution, and explicit structural convergence.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.19854"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Repo0 permet la génération de projets logiciels complets à partir de descriptions en langage naturel, en maintenant une architecture modulaire via un Dual-DAG, améliorant la couverture fonctionnelle et les taux de réussite par rapport aux baselines existantes.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème adressé par Repo0 est l'incapacité des systèmes actuels de génération de code basés sur les grands modèles de langage (LLM) à créer un projet logiciel complet à partir de zéro (zero-to-all) en partant uniquement de spécifications en langage naturel. Les approches existantes supposent souvent une architecture de dépôt préexistante, ce qui limite leur applicabilité dans des scénarios où l'agent doit concevoir et structurer lui-même un dépôt modulaire tout au long du développement.",
+    "methode": "Repo0 propose un cadre d'évolution structurelle continue pour la génération de code zero-to-all. Il maintient un état architectural explicite sous la forme d'un Dual-Directed-Acyclic-Graph (Dual-DAG), composé d'un DAG au niveau des exigences, d'un DAG au niveau des composants, et d'une relation d'alignement entre eux. À partir des exigences en langage naturel, le système itère pour faire évoluer les frontières des composants via des actions structurelles guidées par des métriques de modularité, jusqu'à atteindre une convergence structurelle. Une fois cette architecture convergée obtenue, elle guide une génération de code pilotée par des tests (TDD). L'approche combine ainsi une planification dynamique de l'architecture et une génération de code incrémentale.",
+    "resultats": "Les évaluations de Repo0 ont été menées sur six dépôts réels issus de RepoCraft, en utilisant GPT-5 mini et DeepSeek V3.2. Repo0 obtient les meilleurs résultats en termes de *Functionality Coverage* (couverture des fonctionnalités) et de *Pass Rate* (taux de réussite des tests) dans toutes les configurations. Par rapport à RPG, le meilleur baseline en planification de dépôts, Repo0 améliore la *Functionality Coverage* jusqu'à 20,08 points de pourcentage et le *Pass Rate* jusqu'à 29,74 points. Les analyses d'ablation et d'évolution structurelle confirment l'importance du Dual-DAG, de l'évolution guidée par la modularité et de la convergence structurelle explicite.",
+    "limites": "Le contenu disponible ne permet pas d'identifier clairement les limites techniques ou conceptuelles de Repo0. On peut cependant s'interroger sur la généralisabilité des résultats, notamment la dépendance aux modèles utilisés (GPT-5 mini, DeepSeek V3.2) et la représentativité des dépôts testés (RepoCraft). De plus, l'absence de détails sur les métriques de modularité ou les critères de convergence structurelle laisse planer des incertitudes sur la robustesse du processus itératif.",
+    "verdict": "Repo0 mérite une attention particulière pour son approche innovante combinant planification dynamique d'architecture et génération de code zero-to-all, avec des gains significatifs en performance, mais nécessite une validation plus large pour confirmer sa robustesse et son applicabilité industrielle."
+   }
+  },
+  {
+   "id": "f1c9beeefd861112",
+   "title": "FACET: Preserving Source Intent and Executable State in Terminal Task Synthesis",
+   "url": "https://huggingface.co/papers/2608.18580",
+   "summary": "Training terminal agents requires scalable executable supervision, yet synthesizing high-quality terminal tasks remains challenging. Each task couples an instruction, an initialized environment, a reference solution, and an executable verifier; if these artifacts are generated from inconsistent assumptions, the resulting task may be unsolvable or incorrectly evaluated. Meanwhile, multi-stage synthesis can discard the goals, dependencies, state transitions, and procedural constraints encoded in the original sources. We present FACET (Fine-grained Agentic Construction of Executable Tasks), a framework that addresses both information preservation and cross-artifact consistency. FACET reconstructs related agent skills into coherent, information-rich scenarios, then realizes and repairs the execution environment before generating the final task artifacts. The resulting container state serves as shared grounding for the instruction, solution, and verifier, while execution-based validation and targeted repair correct artifact-specific failures without unnecessarily regenerating valid components. FACET produces complex terminal tasks with dense executable checks, and successful trajectories collected from these tasks provide effective, data-efficient supervision. Fine-tuning models across multiple scales consistently improves performance on Terminal-Bench 2.1, while analyses of alternative generation schemes support the importance of environment-grounded construction for task validity and solution-verifier alignment. These results establish source-intent preservation and shared executable-state grounding as key principles for scalable terminal-task synthesis.",
+   "published": "2026-08-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 41,
+    "arxiv_id": "2608.18580"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "FACET introduit un framework pour synthétiser des tâches terminales exécutables et cohérentes pour les agents, en préservant l'intention source et en corrigeant les incohérences entre artefacts via une validation et réparation basées sur l'exécution.",
+   "score": 8.8
+  },
+  {
+   "id": "9c443f21d5814099",
+   "title": "EnvHarness: Awakening Static Worlds for Agent Learning",
+   "url": "https://huggingface.co/papers/2608.19880",
+   "summary": "LLM agents learn by interacting with environments, yet these environments are hand-built and static: blind to an agent's weaknesses, and quickly left behind as it improves. While recent environment generation methods attempt to address this, they require domain-specific pipelines, rely on expensive or unreliable verifiers, and still produce static environments. To alleviate the engineering burden of rebuilding environments from scratch, we propose Environment Harness (EnvHarness), a programmable layer of plug-in components that wraps a static environment to reshape its behavior without modifying the underlying logic. Operating through standard interfaces, EnvHarness applies across diverse domains while ensuring every reshaped environment retains its original verifier. To automate this process, we introduce EnvRigger, which treats the target policy as a black box, observing its execution trajectories to synthesize EnvHarness components targeting diagnosed flaws, and validating them via fresh rollouts. Across five benchmarks in four domains, EnvHarness outperforms both original environments and domain-specific environment generation pipelines, achieving up to a 9.0-point improvement on held-out instances with 9.8% fewer execution steps. Furthermore, EnvHarness provides a superior optimization signal for reinforcement learning, enabling continuous, targeted co-evolution of the policy and its environment.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 135,
+    "arxiv_id": "2608.19880"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "EnvHarness propose une couche programmable pour dynamiser les environnements statiques des agents, en diagnostiquant leurs faiblesses via des trajectoires et en générant automatiquement des composants ciblés pour améliorer les performances.",
+   "score": 8.8
+  },
+  {
+   "id": "7ff61ab1b607ac6f",
+   "title": "Bounded Agents: Delegation Security for Multi-Agent AI Systems",
+   "url": "https://huggingface.co/papers/2608.15888",
+   "summary": "LLM-based agents can act on behalf of a user to access cloud services, call tools, or invoke agents. At session start, the agent's permissions are set but remain static, and each request is evaluated independently, without considering prior actions. Within its permissions, an agent may act contrary to the delegated task, combine individually permitted actions into a prohibited outcome, or delegate authority to a sub-agent without limiting it. A prompt injection poses a risk only if the agent has authority to perform such actions; this is therefore a problem of authorization architecture, not just the model. The Agentic Principal Chain (APC) tracks delegated authority from one principal to the next. APC evaluates each request against the accumulated session state using six authorization checks. APC carries forward and restricts delegated scope and budgets. Using composition closure, APC checks requests against prior actions to prevent prohibited combinations and enforces the decision outside the model. We prove Blast Radius Monotonicity and Composition Soundness for APC implementations; Composition Soundness is limited to prohibited combinations under a complete restriction set and serialized admission. We evaluated 3,154 instances including InjecAgent, AgentDojo, and ASB. Our compromised-model evaluation tests APC independently of model behavior by inserting the ground-truth attack call after the first legitimate tool call. AgentDojo exfiltration fell from 75-100% to 0% across all four domains; APC blocked all 544 InjecAgent data-stealing cases. Intent binding reduced destruction from 38.6% to 4.0% and manipulation from 90.5% to 12.1%. Authorization latency was 0.24 ms at the 99th percentile on an idle host; across 949 AgentDojo task-injection pairs, utility was 8.6 and 13.9 percentage points lower in the two settings. Implementation, evaluation tools, and data are publicly available.",
+   "published": "2026-08-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.15888"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Proposition d'une architecture de sécurité pour agents IA multi-niveaux (Agentic Principal Chain) qui limite les risques de délégation non contrôlée via des vérifications d'autorisation dynamiques et une traçabilité des permissions, avec preuves théoriques de robustesse (monotonicité et composition).",
+   "score": 8.8
+  },
+  {
+   "id": "bb88ef095c9b7c00",
+   "title": "MemTrapBench: Benchmarking Cognitive Traps in LLM Memory Use",
+   "url": "https://arxiv.org/abs/2608.20202v1",
+   "summary": "Memory has become a key component of large language models, enabling them to retain information and learn from long-term interactions. However, existing memory benchmarks mainly evaluate whether information is correctly extracted, stored, and retrieved, while largely overlooking how retrieved memories reshape model reasoning and affect performance on the current task. We identify memory-induced cognitive traps: even faithfully recorded and semantically relevant memories can distort model reasoning or beliefs and degrade current task performance. To systematically evaluate these failure modes, we introduce MemTrapBench, which covers two forms of cognitive traps: Reasoning Fixation and Belief Distortion. Experiments across two model families and five representative memory frameworks show that MemTrapBench is challenging: all evaluated memory strategies underperform the no-memory setting, with even the strongest methods suffering drops of more than 10%. To mitigate these cognitive traps, we propose AdaptiveMem, a simple yet effective inference-time method that instructs LLMs to avoid memory traps. AdaptiveMem mitigates cognitive traps on MemTrapBench while preserving or improving performance on standard memory benchmarks across diverse memory frameworks.",
+   "published": "2026-08-20T16:00:17+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mengru Wang, Haozhe Luo, Zhenqian Xu, Zhixiang Cui, Haoming Xu, Qu Yang"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "MemTrapBench identifie deux pièges cognitifs (fixation de raisonnement et distorsion de croyances) liés à l'utilisation de la mémoire par les LLM, montrant que les stratégies actuelles dégradent les performances de plus de 10% par rapport à un réglage sans mémoire. La méthode AdaptiveMem est proposée pour atténuer ces effets tout en améliorant les performances.",
+   "score": 8.6
+  },
+  {
+   "id": "c4ab213609038452",
+   "title": "FormalTCS: Benchmarking End-to-End Frontier Formal Theoretical Computer Science Research of Large Language Models",
+   "url": "https://arxiv.org/abs/2608.20153v1",
+   "summary": "Large language models (LLMs) have shown growing potential for automated theoretical computer science (TCS) research, yet existing benchmarks remain far from realistic research settings. We introduce \\ourbenchmark, an expert-validated benchmark for evaluating LLMs on frontier, end-to-end TCS research. \\ourbenchmark contains $175$ instances drawn from papers accepted to STOC, FOCS, SODA, and COLT in 2025-2026, preserving paper-specific definitions, assumptions, and proof dependencies, with expert-verified Lean formalizations and proofs. Evaluations of leading LLMs reveal that current models remain far from reliably completing the full research pipeline. In particular, autoformalization is the sharpest bottleneck: the best model achieves only $11.5$ on translating natural-language claims into formal theorem statements, compared with $28.6$ Pass@8 when proving human-provided formal statements. Building on \\ourbenchmark, we further develop an automated TCS research framework that generates, formalizes, filters, and proves new claims. Of $64$ generated claims, only $6$ ultimately pass expert evaluation and proof verification, indicating that beyond formalization, limited research taste remains another major barrier to autonomous TCS research.",
+   "published": "2026-08-20T15:13:41+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Dingzirui Wang, Xuanliang Zhang, Keyan Xu, Qingfu Zhu, Wanxiang Che"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "interpretabilite"
+   ],
+   "tldr": "Benchmark expert-validé pour évaluer les LLMs sur la recherche théorique en informatique (TCS), incluant 175 instances formalisées en Lean à partir de papiers STOC/FOCS/SODA/COLT 2025-2026. Met en lumière les limites actuelles des modèles (notamment l'auto-formalisation à 11.5% contre 28.6% pour la preuve formelle) et propose un framework automatisé pour générer, formaliser et prouver de nouvelles claims.",
+   "score": 8.6
+  },
+  {
+   "id": "3316a70c04fc5f93",
+   "title": "AI4AI-Bench: Benchmarking LLM Agents in Algorithmic Design for Recursive Self-Improvement",
+   "url": "https://arxiv.org/abs/2608.20318v1",
+   "summary": "Recursive self-improvement (RSI) asks whether an AI system can improve the process that produces AI systems, so that the next system inherits the improvement. That process is the training algorithm: a better objective or update rule improves the compute\\mbox{-}capability exchange rate for every subsequent run, including the one that produces the next agent. Whether RSI is feasible therefore turns on whether an agent can design training algorithms. No benchmark isolates that ability: existing suites are won by collecting data or by tuning hyperparameters, and none tells a change to how a run is executed apart from a change to how the model learns. We present AI4AI\\mbox{-}Bench, 10 frozen research repositories spanning 10 training algorithm families. In each task, an agent has 4 hours on one B300 to rewrite the training algorithm; its code is then rerun from scratch for up to 12 hours and scored by a fixed evaluator hidden from the agent, against the repository's original algorithm under the same procedure. Because the 10 metrics are incommensurable, every task is mapped onto one scale on which $0$ is an uninformative model, $0.1$ is the algorithm the repository ships, and $1.0$ is the task optimum. Across 29 configurations of 6 systems on all 10 tasks the mean score is $0.166$, and the best system reaches $0.250$: even the strongest closes under a fifth of the distance between the algorithm that was already there and the optimum. The submissions show where that distance went: most never change how the model learns at all, and the minority that do average $0.226$ against $0.126$ for the rest. More reasoning effort mostly buys the willingness to go there, taking that minority from $8\\%$ of submissions to $64\\%$ and the mean score from $0.094$ to $0.196$. We release the task suite, the evaluators and every scored submission, so that the measurement can be repeated as these systems change.",
+   "published": "2026-08-20T17:56:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yizhe Chi, Wenyi Li, Deyao Hong, Xiaoqiu Wang, Mingju Gao, Kaisen Yang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "AI4AI-Bench évalue la capacité des agents LLM à concevoir des algorithmes d'entraînement pour l'auto-amélioration récursive, testant 10 familles d'algorithmes sur des dépôts de code réels. Fondamental pour l'architecture des systèmes IA autonomes et l'optimisation des processus.",
+   "score": 8.3
+  },
+  {
+   "id": "e0ba484df4ec0902",
+   "title": "MidTool: Mid-training Data Synthesis for Agentic Tool Use",
+   "url": "https://arxiv.org/abs/2608.20314v1",
+   "summary": "Mid-training is increasingly recognized as a critical stage for shaping the capabilities of large language models. Recent work has shown that targeted mid-training can strengthen reasoning-intensive abilities such as math and science, and can also improve agentic capabilities in software-engineering settings. In this work, we study the parallel but less explored agentic capability: general tool use. We present MidTool, an open corpus construction pipeline for agentic tool-use mid-training that combines large-scale web, PDF, and code data with synthesized supervision from real-world tool APIs, MCP skills, and document-grounded workflows. MidTool is designed to teach models how to recognize tool affordances, ground arguments from context, compose tool call workflow, and recover from incomplete information. We mid-train Qwen3-4B-Base and Qwen3-8B-Base on MidTool-Mix, and then apply follow-up post-training with both supervised fine-tuning and reinforcement learning. Compared with baselines, MidTool-Mix consistently improves downstream performance under both SFT and RL on BFCL, tau2-Bench, and MCP Universe. These results suggest that general tool use, like other important LLM capabilities, benefits from dedicated mid-training rather than being left entirely to post-training.",
+   "published": "2026-08-20T17:53:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Fengqing Jiang, Yite Wang, Boyi Liu, Zhaoyang Wang, Canwen Xu, Zhewei Yao"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "MidTool propose une méthode de mid-training pour améliorer l'usage généralisé d'outils par les LLM via un corpus synthétique combinant données web, PDF et code, avec des gains mesurés sur des benchmarks comme BFCL et MCP Universe après fine-tuning et RL.",
+   "score": 8.3
+  },
+  {
+   "id": "990ea766961f722e",
+   "title": "Break It Down, Pass It On: Cross-Task Skill Transfer in LLM Agents",
+   "url": "https://arxiv.org/abs/2608.20274v1",
+   "summary": "Large language model (LLM) agents can induce skills from completed tasks and reuse them later to grow more capable with experience. In practice, induced skills may transfer unreliably and can even harm the agent that retrieves them. When agent-induced skills transfer reliably across tasks remains an open question. We conduct a comprehensive and controlled study of how the way skills are induced shapes their transfer across tasks. Specifically, we compare task-level with subtask-level skill induction and text with code skill formats, the two axes along which existing methods differ. Task-level skills mostly reduce the agent's performance below its no-memory baseline while subtask-level skills raise it above on average, and text skills transfer better than code skills. To further understand our findings, we examine two complementary properties of the induced skills: specificity, which measures how closely a skill matches real tasks, and abstractness, which measures how evenly its relevance spreads across tasks. Neither property alone predicts task success, but their combined effect does, which we propose as a skill utility score. The score correlates consistently with task success when skills are transferred, and subtask-level and text skills score higher. Computing skill utility only needs the skills and task descriptions but not any task execution, so our score serves as a practical diagnostic of a skill memory before any new task runs.",
+   "published": "2026-08-20T17:12:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yiyang Feng, Biddut Sarker Bijoy, Niranjan Balasubramanian, Jiawei Zhou"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Cross-Task Skill Transfer analyse comment les compétences induites par les agents LLM (texte vs code, sous-tâches vs tâches) se transfèrent entre tâches, proposant un score d'utilité basé sur spécificité et abstraction pour prédire leur efficacité.",
+   "score": 8.3
+  },
+  {
+   "id": "0e50031131312f56",
+   "title": "Evidence-Gated Task and Motion Planning with Vision-Language Models",
+   "url": "https://arxiv.org/abs/2608.20084v1",
+   "summary": "Robots executing long-horizon manipulation tasks from natural-language instructions must reason about both semantic task structure and geometric feasibility. However, under partial observability, the availability of goal-relevant objects may be uncertain. In such cases, approaches that combine Vision-Language Models (VLMs) with Task and Motion Planning (TAMP) may generate subgoals that rely on the VLM's prior knowledge without observational support, leading to execution failures or unintended outcomes. We propose Evidence Acquisition and Feasibility Gating (EAFG), a framework that acquires visual evidence through VLM-generated exploratory subgoals and TAMP-based execution. EAFG then applies a feasibility gate to decide whether to proceed with task planning, acquire further evidence, or halt. Our experiments show that, in cooking tasks with ambiguous object use, EAFG improves recipe completion by discovering task-relevant objects before planning. For instructions requiring an absent object, EAFG promotes appropriate halt decisions and reduces repeated attempts to manipulate that object.",
+   "published": "2026-08-20T14:17:52+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Tsunehiko Tanaka, Matthew Stephenson, Alistair Macvicar, Edgar Simo-Serra"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "EAFG est un framework pour robots manipulant des tâches longues à partir d'instructions en langage naturel, combinant Vision-Language Models (VLMs) et Task and Motion Planning (TAMP). Il améliore la complétion de tâches en acquérant des preuves visuelles et en filtrant les sous-objectifs irréalistes, réduisant les échecs d'exécution dans des scénarios ambigus (ex. cuisine).",
+   "score": 8.3
+  },
+  {
+   "id": "8b0167c1162be6f5",
+   "title": "Let's Scale Step by Step: Compute-Efficient Hyperparameter Transfer for Large-Scale Mixture-of-Experts",
+   "url": "https://arxiv.org/abs/2608.20061v1",
+   "summary": "Mixture-of-Experts (MoE) architectures significantly expand model capacity without a proportional increase in computational cost. However, optimizing their hyperparameters---particularly the learning rate---at extreme scales of both model size and token budget via sweeping remains computationally prohibitive. In this paper, we propose a compute-efficient, two-step hyperparameter transfer framework that estimates optimal learning rates for training large MoE models by transferring them across scaling model widths, and subsequently extrapolating to trillion-token horizons. First, we formulate a Maximal Update Parameterization ($μ$P) adaptation for MoE architectures utilizing Multi-head Latent Attention (MLA) and the Muon optimizer, demonstrating that optimal learning rates transfer consistently across width-scaled models. Second, we extend this transferability along the token dimension by establishing a predictive scaling law. By applying linear regression to the optimal values derived from small proxy models on limited budgets, we successfully extrapolate the ideal learning rate to massive training horizons (e.g., 10 trillion tokens) with high fidelity ($R^2=0.95$). Consequently, this indicates that proxy training on small models is sufficient to determine the optimal learning rate for the extensive training of large-scale MoEs. We apply the proposed methodology to pretrain our foundation model (155B total, 17B active parameters) from scratch, and the stable training and evaluation results validate that optimal configurations for full-scale target models can be accurately predicted with minimal ablation costs.",
+   "published": "2026-08-20T13:57:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Nayeon Kim, Hojin Lee, Yunju Bak, Jaesun Park, Boseop Kim"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Ce travail propose un cadre de transfert d'hyperparamètres (learning rate) pour les modèles Mixture-of-Experts (MoE) à grande échelle, utilisant une paramétrisation μP adaptée et des lois de scaling pour extrapoler les hyperparamètres à des échelles de 10 000 milliards de tokens avec une haute fidélité (R²=0.95), réduisant les coûts de tuning.",
+   "score": 8.3
+  },
+  {
+   "id": "0e1d601aa3e57cae",
+   "title": "Inject, Align, Recover: Staged Post-Training for Retrieval-Free Document Knowledge Internalization",
+   "url": "https://huggingface.co/papers/2608.20281",
+   "summary": "Large language models often fail to answer questions about a bounded document collection when the source documents are not retrieved at inference time. We study this setting as document knowledge internalization: converting a fixed corpus into usable parametric knowledge for retrieval-free question answering. We propose IAR (Inject, Align, and Recover), a three-stage post-training framework that separates structured document knowledge injection, QA behavior alignment, and general ability recovery. Unlike conventional continued pretraining, Inject converts source documents into continuation, rewrite, and instruction-conditioned reconstruction objectives. Align then adapts the injected model with answer-only QA supervision, while Recover merges the domain-adapted model with the base instruction model to recover general capabilities. Across Common Corpus (CC) and CCI, and across Llama, Phi, Qwen, and SmolLM model families, IAR improves the domain-primary domain-general frontier for retrieval-free document internalization. In the main comparison, IAR improves over Vanilla SFT on all four reported metrics in 7 of 8 dataset-model settings, with average gains of 3.6 percentage points in domain QA accuracy and 12.1 percentage points in mean general performance across IFEval, MMLU, and MSBench. Extended CC baselines show that LoRA and FAPM can win individual general metrics, but among methods that also reach leading or near-leading domain internalization, IAR retains one of the strongest general profiles.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.20281"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "rag"
+   ],
+   "tldr": "IAR (Inject, Align, Recover) propose un cadre en trois étapes pour internaliser les connaissances documentaires dans les LLM sans récupération, améliorant les performances en QA sans récupération de 3,6 points en moyenne sur plusieurs modèles.",
+   "score": 8.2
+  },
+  {
+   "id": "72256298ec360db6",
+   "title": "SkillGate: Training In-Policy Skill Selection in Long-Horizon Agents",
+   "url": "https://huggingface.co/papers/2608.18852",
+   "summary": "Agent frameworks increasingly package procedural knowledge as skills: instruction files an agent reads on demand, while public libraries now hold thousands of them. Which skill to read has thus become a decision the policy itself makes in the middle of an episode, yet no existing signal trains it. We show that the default remedy, outcome-rewarded RL over the candidate slate, cannot teach it, for a structural reason we identify and name selector credit starvation: under a broadcast, sequence-level advantage, the few tokens that name the chosen skill carry a vanishing share of the loss, and the credit they inherit is increasingly wrong-signed as trajectories lengthen. A correct choice is punished whenever the execution after it fails, even though the choice itself is among the most valuable decisions in the trajectory. Auditing a completed run's own training artifacts confirms all three properties, each worsening monotonically with horizon. SkillGate removes the failure by construction: it partitions the token support into two disjoint credit channels, outcome credit reaching only execution tokens, and a separate action-local advantage reaching exactly the skill-naming tokens, positive only when a trajectory's single read is the correct one. On five agentic benchmarks under a 16-candidate slate, SkillGate lifts a 9B policy from 40.8% to 53.2% trial success, well ahead of the identical budget spent on outcome reward alone, while cutting exposure to misleading candidates by two thirds and reading fewer skills.",
+   "published": "2026-08-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.18852"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Méthode SkillGate pour entraîner des agents à sélectionner dynamiquement des compétences (skills) en cours d'épisode via un partitionnement des canaux de crédit, résolvant le problème de 'selector credit starvation' dans les trajectoires longues.",
+   "score": 8.2
+  },
+  {
+   "id": "b3f2ae3bdf7b8add",
+   "title": "Phantom Gains: Auditing Self-Improvement Against a Measured Null",
+   "url": "https://arxiv.org/abs/2608.20290v1",
+   "summary": "Whether a language model has improved itself is increasingly judged not by mean accuracy but by which individual problems it gains and loses. Tracking these transitions means differencing two noisy estimates, leaving them vulnerable to measurement artifacts. Auditing three rounds of rank-$32$ LoRA self-training on Qwen3-8B against a frozen control pushed through the identical pipeline, we identify seven measurement failures, each of which inverts a reported finding when its control is absent. Several are standard practice. A ledger built on a single greedy decode manufactures capability changes on an untrained model, largely an artifact of inference batching; the expansion statistic separating acquisition from sharpening assigns that same model a rate of $0.280$. The natural threshold repair does not survive replication: estimated across the frozen comparisons such a design already contains, its null stays non-zero. We replace it with a per-problem exact test against a pooled baseline under false-discovery-rate control, which detects nothing on any held-out replicate and is unchanged under the multiple-testing rule, error rate and pool size. Applied to a ladder of arms matched in stream, volume and evaluation, the audit finds that external distillation improves problems the base model rarely reaches while three forms of self-training do not; a regression rejects this asymmetry as a by-product of distillation's larger overall gain ($p < 10^{-8}$). On the far smaller set of problems the base model never reaches, the evidence is inconclusive, while self-training corrupts problems solved at baseline at rates well above the measured floor. Transition-level auditing therefore requires a separately measured null for every statistic it reports: nulls that cost no new experiments, built from baseline replicates a multi-arm study already owns, though not from as few as most possess.",
+   "published": "2026-08-20T17:30:14+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Cheng Xu, Nan Yan, Liming Chen, M-Tahar Kechadi"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Phantom Gains démontre que des gains apparents d'auto-amélioration des LLM sont souvent des artefacts méthodologiques (batch inference, seuils inadaptés), soulignant l'importance des contrôles rigoureux dans l'évaluation des modèles.",
+   "score": 8.0
+  },
+  {
+   "id": "dc47b856af3c4348",
+   "title": "Rule-Compliant Visual Spatial Planning for Multimodal Large Language Models",
+   "url": "https://arxiv.org/abs/2608.20237v1",
+   "summary": "Multimodal large language models (MLLMs) combine linguistic reasoning with visual perception, yet their ability to perform visual spatial planning under explicit or previously unseen rule constraints remains underexplored. This setting requires models to jointly understand spatial layouts, interpret natural-language rules, and plan valid actions accordingly. To address this gap, we introduce RuleMaze, a controllable benchmark in which MLLMs must navigate mazes while obeying natural-language rules of varying complexity. RuleMaze isolates rule-compliant spatial planning by requiring accurate perception, rule interpretation, and constrained action planning. To enable scalable and systematic rule construction, we propose Language-Logic-Function Hybridization, which automatically generates natural-language rules and translates them into logical representations and executable validators, eliminating manual rule engineering. To improve rule following and generalization, we introduce Disentangled Multimodal Planning (DMP), which separates perception, execution, and rule verification through interpretable reasoning primitives. By disentangling these components, DMP facilitates systematic generalization to more complex and previously unseen rules, while providing transparent intermediate planning traces. Experiments demonstrate that DMP substantially improves rule compliance and planning success compared to end-to-end textual planning baselines. Overall, RuleMaze establishes a principled benchmark for studying grounded and interpretable rule-based spatial planning in MLLMs. Code is available at https://github.com/oceanflowlab/RuleMaze.",
+   "published": "2026-08-20T16:28:28+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yu Chen, Ting Lei, Yaoyi Li, Jia Cai, Zhecen Wu, Yang Liu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Benchmark RuleMaze pour évaluer la planification spatiale des MLLM sous contraintes de règles en langage naturel, avec une méthode de génération automatique (DMP) pour séparer perception, exécution et vérification des règles, crucial pour les agents autonomes.",
+   "score": 8.0
+  },
+  {
+   "id": "2040d0cef604c3a2",
+   "title": "Daedalus-150M: A Convolution-Attention Hybrid Designed for CPU Inference",
+   "url": "https://arxiv.org/abs/2608.20210v1",
+   "summary": "Small language models are usually built like large ones and then squeezed onto a CPU afterwards. We did the opposite: we fixed the target first, one user, one token at a time, 4-bit weights, ordinary CPU, and chose the architecture to suit it. The result keeps full attention in only 6 of its 18 blocks. The other 12 use short convolutions whose memory is two timesteps wide no matter how long the conversation gets, so two thirds of the network never re-reads a growing cache. Trained from scratch on 59.9B tokens, the model scores 47.31 on a five-task benchmark against a bar of 42.20 that was fixed before training began. It beats GPT-2 124M, Pythia-160M, OPT-125M and GPT-neo-125M, all trained on three to six times more data, and exceeds MobileLLM-125M's published score despite that model seeing a trillion tokens. Validation bits-per-byte is 0.8685. To check the architecture rather than the training recipe, we trained a conventional all-attention model of the same size on the same data, and wrote down the winning condition before scoring either. The hybrid won the chosen quality metric by 0.81%, matched it on downstream tasks, produced a 6.3% smaller 4-bit file, and decoded 1.76x faster at 2048 tokens of context, 2.08x against an external model of similar size. In every measurement the speed advantage is near zero at an empty context and grows with length, which is what the mechanism predicts and what a merely leaner model would not show. A simple bandwidth calculation predicts only 1.17x, so memory volume alone does not explain the gap. We also report what did not work: an unmitigated 4-bit quality cost, roughly half the convolution channels ending up inert and impossible to remove, and a vocabulary larger than this model size warrants.",
+   "published": "2026-08-20T16:09:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Christos Koutsiaris"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Modèle hybride convolution-attention (Daedalus-150M) optimisé pour l'inférence CPU avec 4-bit weights, surpassant des modèles comparables en taille et en données d'entraînement, avec gains en vitesse et taille de fichier.",
+   "score": 8.0
+  },
+  {
+   "id": "0876c9c2b39765c7",
+   "title": "CopilotKit/OpenBot",
+   "url": "https://github.com/CopilotKit/OpenBot",
+   "summary": "Open-source AI coworkers that each get a computer of their own: a browser, files and tools, with every action decided before it happens and recorded after. Bring any AG-UI agent.",
+   "published": "2026-08-17T00:44:59Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1819,
+    "language": "TypeScript"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Framework open-source pour agents IA autonomes avec accès à des outils (navigateur, fichiers) et traçabilité des actions. Très pertinent pour les agents et l'écosystème IA, avec une fiabilité élevée grâce à la communauté et la documentation.",
+   "score": 8.0
+  },
+  {
+   "id": "02df52ccb82cdd5c",
+   "title": "Chain-of-Experience for Continual LLM Improvement",
+   "url": "https://huggingface.co/papers/2608.18027",
+   "summary": "Humans continuously learn from experience, whereas conventional large language model (LLM) evaluations ignore the models' ability to improve through inference-time interaction. In this paper, we study how LLMs learn from iterative experience at test time, a setting we refer to as Chain-of-Experience (CoE), where models accumulate experiential traces through iterative interactions with self or environmental feedback to form a continual improvement loop beyond zero-shot inference. We instantiate CoE with diverse feedback mechanisms, including model self-feedback and environmental signals such as correctness or public coding test pass rates, and evaluate across math, coding, and knowledge domains using 8 LLMs, including GPT-5, Gemini-2.5 Pro, Claude-4.5 Sonnet. Our study shows that leveraging iterative experience consistently outperforms feedback-free baselines, achieving substantial gains with self feedback alone, alongside a 5.6% overall improvement and 19% lower API cost across tasks and models. We further show that combining complementary feedback channels (e.g., model and correctness signals) yields additional gains, and that CoE delivers higher accuracy per token than existing test-time strategies. We observe a positive correlation between LLM base ability and improvement capacity, and show that models remain robust under weak or spurious feedback, with different feedback contributing to distinct improvement aspects and most gains emerging early in the iterations.",
+   "published": "2026-08-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.18027"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Chain-of-Experience (CoE) propose une méthode pour améliorer les LLM en temps réel via des boucles de rétroaction itératives (auto-évaluation, tests de code), réduisant les coûts API de 19% tout en améliorant les performances de 5,6% en moyenne.",
+   "score": 7.9
+  },
+  {
+   "id": "a0405125595a5fab",
+   "title": "SkillEvo: Self-Renewing Evolution Gradients from Multi-Turn Interaction Feedback",
+   "url": "https://huggingface.co/papers/2608.13120",
+   "summary": "Agent Skills are today either hand-authored or produced in a single LLM generation pass, and consequently possess no closed loop through which they might improve from the interaction failures they actually cause. Recent work does close this loop, but derives its feedback from single-turn question-answering evaluation. The consequence is a sharp asymmetry: once the first round has patched the gaps that a single exchange can reveal, the evolution gradient decays, the defects that surface only across multiple turns remain invisible, and evolution stalls. Governance in these systems is likewise driven by an end-to-end verification score, a scalar gate that can reject a degraded candidate but can neither localize nor repair its structural cause. We argue that the binding constraint on sustained skill evolution is neither editing capability nor the number of iterations, but whether the evaluation feedback keeps supplying trustworthy evolution gradients. We introduce SkillEvo, in which trustworthy feedback generates the gradient and controllable governance constrains its direction. The first component recasts multi-turn user simulation from an evaluation endpoint into a feedback generator: follow-up questions expose defects layer by layer, so that every round of revision both consumes feedback and produces new feedback. The second replaces the passive rejection of a scalar gate with an independent governance layer that actively repairs factual degradation and structural bloat, preventing the gradient from drifting as degradation accumulates. Across six categories of cloud services, 9 production Skills, and 98 skill-reference files, SkillEvo surpasses self-reflection-based evolution by 23.0 points and single- turn-QA-driven evolution by 15.4 points.",
+   "published": "2026-08-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.13120"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "SkillEvo introduit un cadre d'évolution auto-renouvelable pour les compétences des agents, utilisant des rétroactions multi-tours pour générer des gradients d'évolution fiables et éviter la stagnation après les premières itérations.",
+   "score": 7.9
+  },
+  {
+   "id": "b784ca0227e337fe",
+   "title": "EXIMO: VLM Guided Exploration of VLA Policies",
+   "url": "https://huggingface.co/papers/2608.19891",
+   "summary": "How to efficiently finetune robot policies to learn new tasks on the fly? State of the art robotic manipulation policies are based on behaviour cloning of large vision-language-action (VLA) models with billions of parameters on huge teleoperation datasets. While this simple approach has enabled significant advances for robotic manipulation, finetuning of VLA policies for learning new tasks still remains an open problem. In particular, collecting teleoperation datasets requires hundreds of hours of expensive human labour and the alternative, reinforcement learning (RL), can be notoriously sample-inefficient especially for long-horizon tasks. In addition, RL with VLAs imposes several challenges due to the model's size and architectural design. In this work, we propose EXIMO, an efficient algorithm for finetuning of VLA policies. EXIMO operates in three stages: explore, imitate, and optimize. During the explore phase, EXIMO equips the VLA with a vision language model (VLM) that acts as a planner. The VLM thinks and breaks down challenging long-horizon problems into shorter ones for the VLA. The VLM, together with the VLA, is used to collect an orchestrated dataset on new tasks. During the imitate phase, the VLA is finetuned with the orchestrated data. Finally, during the optimize stage, we use residual off-policy RL to further finetune the policy. In our experiments, we ablate all three stages of EXIMO and show that it outperforms existing approaches significantly in terms of sample-efficiency and final performance.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.19891"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "robotique"
+   ],
+   "tldr": "EXIMO combine un VLM planificateur et un VLA pour affiner efficacement des politiques robotiques sur de nouvelles tâches, en décomposant les problèmes longs en sous-tâches et en collectant des données orchestrées pour l'imitation.",
+   "score": 7.9
+  },
+  {
+   "id": "eaf1563c90a31ef5",
+   "title": "PolicyGuide: From Guarding One Action to Guiding the Whole Workflow for Policy-Compliant LLM Agents",
+   "url": "https://huggingface.co/papers/2608.19861",
+   "summary": "Customer-service LLM agents must follow organizational policy when acting on a user's behalf. Compliance failures arise from either forbidden actions, such as granting an ineligible change, or omitted procedural requirements, such as identification or confirmation. Runtime safeguards can intervene on risky actions, but action-local checks do not guide an agent through a multi-step procedure. Workflow-following systems support prescribed process execution, but primarily target workflow completion rather than safeguarding agent behavior. PolicyGuide instead compiles each domain policy into a workflow graph and invokes a proactive verifier at user-turn boundaries. From persisted graph state, the verifier reconciles open requests and returns step-specific remediation along a policy-compliant path. Across the τ^2-bench airline, retail, and telecom domains with a GPT-5.4 agent and verifier, PolicyGuide raises mean Pass^4 from 0.42 to 0.62, with the largest gain on telecom (0.19 to 0.61), the most workflow-structured domain. The same workflows transfer to Claude Sonnet 4.6 and Gemini 2.5 Pro agents. Complementary evaluations find the lowest observed attack-success rate under adversarial users and the strongest procedural compliance in an author-designed workflow-level validation.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.19861"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "PolicyGuide compile les politiques organisationnelles en graphes de workflow et utilise un vérificateur proactif pour guider les agents LLM vers des comportements conformes, améliorant significativement les scores de conformité dans des benchmarks multi-domaines.",
+   "score": 7.9
+  },
+  {
+   "id": "d67e105d160462b4",
+   "title": "ConceptGuard: Benchmarking Context-Sensitive Unlearning in Large Language Models",
+   "url": "https://arxiv.org/abs/2608.20338v1",
+   "summary": "Large Language Models (LLMs) increasingly require selective removal of harmful or sensitive knowledge, called unlearning, yet existing methods and benchmarks fail to evaluate this capability completely. Current approaches rely on disjoint forget and retain sets composed of independent facts, and measure success using simple and direct factual recall. This framing fails to capture a key requirement of unlearning, namely the ability to eliminate harmful behaviors while preserving benign and beneficial knowledge. We argue that effective unlearning must operate at the level of concepts, ensuring complete removal of unsafe applications while maintaining their correct and useful usage, thereby achieving conceptually meaningful and complete unlearning. To better evaluate unlearning techniques from such a practical viewpoint, we introduce the notion of dual-use concepts: concepts that can be used in both harmful and benign contexts. Building on these concepts, we construct a benchmark called ConceptGuard where forget and retain sets are explicitly complementary in concept usage. Our benchmark uniquely enables unlearning to be explored and gauged at the level of concepts, instead of sparse facts, and evaluation is intent-sensitive with the goal of maximizing contextual separation to promote safer behavior. We demonstrate that current unlearning techniques perform poorly under this setting, showing weak contextual separation alongside poor performance in ROUGE and concept-level metrics. Our results reveal strong forgetting-utility trade-offs, limited gains in contextual sensitivity, and poor consistency in concept-level control across methods, and provide ideas for unlearning approaches that better align with real-world safety requirements. Our dataset is publicly available.",
+   "published": "2026-08-20T17:59:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sahil Kale, Ian Harris"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "ConceptGuard propose un benchmark pour évaluer l'unlearning contextuel des LLM en se concentrant sur des concepts duals (usage bénéfique vs. malveillant), comblant une lacune des méthodes existantes qui ignorent les nuances conceptuelles. Critique pour les systèmes de sécurité et l'interprétabilité des modèles.",
+   "score": 7.7
+  },
+  {
+   "id": "f72adb325a546957",
+   "title": "Pandora's AI Model Routing Box: Efficient Allocation with Costly Value Estimation",
+   "url": "https://arxiv.org/abs/2608.20316v1",
+   "summary": "Heterogeneous AI systems composed of multiple models, architectures, harnesses, or inference-time settings can improve quality and efficiency by routing queries to the specialist who can answer most effectively at the lowest cost. Routing requires estimating each specialist's expected return, but this value estimation has a cost. Cheap estimators (e.g., embedding-based predictors) are fast but noisy, while accurate estimators (e.g., fine-tuned models with access to retrieval results or partial reasoning traces) are expensive. We formalize this tradeoff as an instance of Pandora's Box, the classical problem of optimal search with costly inspection. Under a Gaussian signal model, the resulting policies have closed-form value-of-information expressions that determine, for each specialist and input, whether refining the value estimate is worth its cost. We call the centralized policy Pandora's Router. We extend this to a decentralized setting, Pandora's Bidder, where specialists independently decide whether to invest in self-assessment before accepting an offered price to claim a query. Experiments across three domains---a standard multi-LLM benchmark, retrieval-augmented specialists, and LLMs with variable inference-time reasoning---show that Pandora's Router matches the routing quality of exhaustive estimation, while querying the expensive estimator far less often. In the decentralized setting, value-of-information reasoning improves allocative efficiency when competing estimates are accurate; when competing estimates are noisy, however, it can increase the strategic specialist's utility at the expense of others.",
+   "published": "2026-08-20T17:54:37+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Adam Fisch, Shubhendu Trivedi, Fantine Huot, William W. Cohen, Michael Kaisers, Mirella Lapata"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Pandora's AI Model Routing formalise le routage de requêtes entre modèles hétérogènes comme un problème de boîte de Pandore, optimisant le coût d'estimation de valeur. Critique pour l'efficacité des systèmes multi-modèles et le déploiement de LLM.",
+   "score": 7.7
+  },
+  {
+   "id": "e2230525507edceb",
+   "title": "Inject, Align, Recover: Staged Post-Training for Retrieval-Free Document Knowledge Internalization",
+   "url": "https://arxiv.org/abs/2608.20281v1",
+   "summary": "Large language models often fail to answer questions about a bounded document collection when the source documents are not retrieved at inference time. We study this setting as document knowledge internalization: converting a fixed corpus into usable parametric knowledge for retrieval-free question answering. We propose IAR (Inject, Align, and Recover), a three-stage post-training framework that separates structured document knowledge injection, QA behavior alignment, and general ability recovery. Unlike conventional continued pretraining, Inject converts source documents into continuation, rewrite, and instruction-conditioned reconstruction objectives. Align then adapts the injected model with answer-only QA supervision, while Recover merges the domain-adapted model with the base instruction model to recover general capabilities. Across Common Corpus (CC) and CCI, and across Llama, Phi, Qwen, and SmolLM model families, IAR improves the domain-primary domain-general frontier for retrieval-free document internalization. In the main comparison, IAR improves over Vanilla SFT on all four reported metrics in 7 of 8 dataset-model settings, with average gains of 3.6 percentage points in domain QA accuracy and 12.1 percentage points in mean general performance across IFEval, MMLU, and MSBench. Extended CC baselines show that LoRA and FAPM can win individual general metrics, but among methods that also reach leading or near-leading domain internalization, IAR retains one of the strongest general profiles.",
+   "published": "2026-08-20T17:14:24+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Qian Kou, Xiaofeng Shi, Xiaosong Qiu, Hua Zhou"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "rag"
+   ],
+   "tldr": "IAR introduit un cadre en 3 étapes (Inject, Align, Recover) pour internaliser des connaissances documentaires sans retrieval, améliorant significativement les performances en QA sans retrieval sur plusieurs familles de modèles.",
+   "score": 7.7
+  },
+  {
+   "id": "78a63fe337932a41",
+   "title": "Learning When to Think: Adaptive Reasoning for Test-Time Compute Allocation",
+   "url": "https://arxiv.org/abs/2608.20256v1",
+   "summary": "Reasoning language models trained with reinforcement learning typically operate under a fixed token budget rather than an explicitly adaptive one, which can lead to over-computation on easy problems and insufficient computation on difficult ones. We study whether a model can learn to allocate its own reasoning effort by choosing, as the first token of its response, one of three modes: \\textsc{NoThink} (answer as quickly as possible), \\textsc{Short} (brief reasoning), or \\textsc{Long} (extended reasoning). The choice is learned inside Group Relative Policy Optimization (GRPO) with no separate router, through a shaped reward that makes each mode worthwhile at a different response length, together with hard per-mode token caps that keep the modes distinct. On a 1.5B distilled model trained on MATH, the three modes emerge without collapsing to a single choice, and the brief modes end up more accurate than \\textsc{Long}, which shows that the router sorts problems by difficulty rather than at random. Averaged over three seeds, the resulting policy stays close to the base model's accuracy on the held-out MATH500 ($0.782$ vs.\\ $0.796$) while cutting the mean response length from $4{,}796$ to $2{,}811$ tokens (a $41\\%$ reduction). Interestingly, it also transfers to other benchmarks without retraining, with the largest savings where problems are easier, with for instance 76\\% token reduction on GSM8K and at higher accuracy than the baselines at similar response length. In short, we build a reasoning model that adaptively chooses how much to reason for each problem.",
+   "published": "2026-08-20T16:54:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Gijs Kassenaar, Zhao Yang, Vincent François-Lavet"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Learning When to Think propose un modèle LLM capable d'allouer dynamiquement son effort de raisonnement (NoThink, Short, Long) via RL, réduisant le coût computationnel tout en maintenant la précision.",
+   "score": 7.7
+  },
+  {
+   "id": "67969febfbbe2af8",
+   "title": "InsufficiencyBench: Evaluating LLM legal advice on underspecified user queries",
+   "url": "https://arxiv.org/abs/2608.20220v1",
+   "summary": "Legal AI systems are increasingly used to answer legal questions, yet existing benchmarks assume queries arrive fully specified. In practice, users omit facts that materially determine the legal outcome. We introduce InsufficiencyBench, the first legal benchmark targeting query-side insufficiency: whether a model recognizes when a query lacks legally material information, identifies what is missing, and refrains from premature conclusions. We formalize a taxonomy of eight canonical missing-element categories across three structural failure modes---switch, gating, and fatal prerequisite--- and construct 202 benchmark items (58 base queries, 144 deficient variants) spanning six legal domains and 24 US jurisdictions and annotated by practising attorneys. Evaluating ten frontier models, we find that no model exceeds F2 = 0.46 on missing-element identification and that the median recall is 0.44. Models either hedge indiscriminately or answer silently under fabricated presumptions. No model both identifies and qualifies responses to deficient queries while directly addressing complete ones.",
+   "published": "2026-08-20T16:14:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Samuel J. Vincent, Daniel Calloway, Fangyi Yu, Andrew M. Bean, Nabeel Seedat"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "regulation"
+   ],
+   "tldr": "Benchmark InsufficiencyBench évaluant la capacité des LLM à détecter les requêtes juridiques insuffisantes (manque d'éléments matériels), révélant des lacunes majeures dans la prudence juridique des modèles malgré des performances élevées sur d'autres tâches.",
+   "score": 7.7
+  },
+  {
+   "id": "94de6e0692ddb5e4",
+   "title": "Ask Self, Ask Others: Relation Is All You Need",
+   "url": "https://arxiv.org/abs/2608.20172v1",
+   "summary": "Attention directly derives normalized information flow from pairwise scores. We introduce Relation, an alternative token-mixing primitive that first organizes pairwise evidence into explicit Self and Exchange relations and derives information flow afterward. This relational organization gives rise to Full Relation, FlashRelation, Linear Relation, Hybrid Relation, and a KV-style Relation Cache. Across matched decoder-only models at approximately 10M, 30M, and 100M parameters, Full Relation achieves lower final validation NLL than MHA at all three scales. In a fixed-context reference benchmark, FlashRelation is 3.60-4.41x faster than the materialized Full Relation implementation. Across scale-matched production workloads, it reaches 76.4-84.9% of PyTorch FlashAttention throughput while executing the Full Relation operator. Hybrid Relation uses 75% Linear Relation layers and achieves strong language-modeling quality. These results support a relation-first view of token mixing: ask Self, ask Others, then let Flow follow Relation.",
+   "published": "2026-08-20T15:27:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yuting Ge, Pengju Yang, Mingkai Nie"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture"
+   ],
+   "tldr": "Relation, un nouveau mécanisme de mélange de tokens alternatif à l'attention, organise les relations entre tokens en 'Self' et 'Exchange' pour améliorer l'efficacité et la qualité des modèles, avec des gains significatifs en vitesse et performance.",
+   "score": 7.7
+  }
+ ]
+}
