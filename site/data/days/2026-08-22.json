@@ -1,0 +1,717 @@
+{
+ "date": "2026-08-22",
+ "digest": {
+  "headline": "Les biais de benchmark en ASR et l'auto-évolution des agents LLM dominent la veille IA du 2026-08-22, révélant des limites structurelles dans l'évaluation et l'optimisation des modèles.",
+  "overview": "La journée met en lumière des avancées critiques en évaluation des modèles (biais de benchmark, métriques comportementales) et en architectures auto-évolutives (agents, robotique). Les études soulignent aussi des compromis techniques (coût des LLMs vs embeddings) et des solutions pour des défis spécifiques comme l'oubli adaptatif ou la préhension robotique.",
+  "highlights": [
+   {
+    "title": "Benchmark ASR : les modèles optimisent les références, pas l'audio",
+    "text": "Une étude révèle que les modèles de reconnaissance vocale (ASR) hautement performants reproduisent des transcriptions de référence même en cas de contradictions avec l'audio. Ce biais de benchmark, quantifié via des probes mécanistiques, remet en cause la validité des évaluations actuelles et souligne la nécessité de métriques plus robustes pour mesurer les capacités réelles des modèles."
+   },
+   {
+    "title": "Agents auto-évolutifs : workflows et compétences s'enrichissent mutuellement",
+    "text": "FlowEvo propose un cadre où les agents LLM améliorent dynamiquement leurs workflows et compétences à l'inférence, réduisant les tokens utilisés tout en boostant les performances (+26.4 points sur ALFWorld). τ_0-VLA applique une logique similaire en robotique, avec un monde-modèle guidant l'allocation de calcul pour des tâches longues. Ces approches illustrent l'importance du calcul adaptatif et de la réutilisation des compétences."
+   },
+   {
+    "title": "LLMs vs embeddings : parité de performance, coût 1431x supérieur",
+    "text": "Une comparaison systématique sur 37 tâches montre que les LLMs égalent les embeddings textuels en performance globale, mais à un coût prohibitif (154$ vs 0.11$ par benchmark). Les LLMs excellent en retrieval complexe, tandis que les embeddings dominent en classification. L'étude justifie une division des tâches selon les besoins, évitant le surcoût des LLMs pour des cas simples."
+   },
+   {
+    "title": "Métriques classiques masquent les changements comportementaux des LLMs",
+    "text": "Le fine-tuning multilingue améliore la grammaticalité et le raisonnement dans la langue cible (ex. grec), sans impact sur l'exactitude des benchmarks. MemTrapBench et des études similaires révèlent que les métriques traditionnelles ignorent des dimensions critiques comme les pièges cognitifs ou les distorsions de mémoire. Six nouvelles dimensions comportementales sont proposées pour évaluer ces évolutions."
+   },
+   {
+    "title": "Outils et frameworks : automatisation et optimisation pour agents",
+    "text": "Microsoft Skill Recorder et Pinvou Agent (Rust) automatisent des workflows via des compétences réutilisables, tandis que Moli optimise les navigateurs headless pour les agents. Ces outils reflètent une tendance vers l'intégration des agents LLM dans des produits grand public et des pipelines techniques, avec un accent sur la modularité et la performance."
+   }
+  ],
+  "trend": "Les recherches convergent vers une remise en question des métriques d'évaluation traditionnelles et une exploration des architectures auto-optimisantes, tout en cherchant à réduire les coûts computationnels et à améliorer la généralisation des modèles dans des contextes réels (multilingue, robotique, agents)."
+ },
+ "items": [
+  {
+   "id": "745dfd38758d7bd9",
+   "title": "Towards Quantifying Benchmark Optimization in ASR Models",
+   "url": "https://huggingface.co/papers/2608.19936",
+   "summary": "Public benchmarks are important measures of Automatic Speech Recognition (ASR) model capabilities. However, by nature of being public, there is risk of models being optimized for these benchmarks in ways that do not generalize well to real-world data. We present a methodology for quantifying benchmark optimization, focusing on cases where the audio underdetermines the reference transcript. We identify three families of behavioral probes that reveal models' capabilities of reproducing benchmark reference spans despite underdetermined audio: reference disagreement, masked-number recovery, and orthographic switching. We find that the highest-scoring open source models output verbatim reference transcript spans even when the relevant audio is contradictory, masked, or ambiguous. Using a variety of mechanistic probes, we show that models respond to narrow acoustic cues to override the faithful representation of the audio in favor of a benchmark-optimized policy. We show the benchmark-optimized behavior can be causally manipulated via low-rank linear steering or simply appending audio to the end of a segment in some cases. Overall, our results indicate that high-performing models exhibit benchmark-conditioned behaviors that can inflate benchmark performance without reflecting improved general-purpose transcription ability.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.19936"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "benchmark",
+    "regulation"
+   ],
+   "tldr": "Analyse des biais de benchmark dans les modèles ASR (Automatic Speech Recognition), révélant que les modèles hautement performants reproduisent des transcriptions de référence même en cas de contradictions audio. Met en lumière un problème critique pour l'évaluation réelle des capacités des modèles et propose des probes mécanistiques pour le quantifier.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un enjeu critique dans l'évaluation des modèles de reconnaissance automatique de la parole (ASR) : la sur-optimisation sur des benchmarks publics. Le problème réside dans le fait que les modèles peuvent apprendre à performer artificiellement bien sur ces benchmarks sans pour autant généraliser à des données réelles, notamment lorsque l'audio ne détermine pas de manière univoque la transcription de référence.",
+    "methode": "Les auteurs proposent une méthodologie pour quantifier cette sur-optimisation en se concentrant sur des cas où l'audio est sous-déterminé par rapport à la transcription de référence. Ils utilisent trois familles de *probes comportementaux* : 1) le désaccord de référence (où plusieurs transcriptions sont plausibles), 2) la récupération de nombres masqués (où l'audio est modifié pour cacher des informations), et 3) le basculement orthographique (où des variations d'écriture sont introduites). Des analyses mécanistiques, incluant des techniques comme le *low-rank linear steering* et des manipulations acoustiques (ajout de segments audio), sont employées pour démontrer que les modèles privilégient des indices acoustiques étroits au détriment d'une représentation fidèle de l'audio.",
+    "resultats": "Les résultats montrent que les modèles open source les plus performants reproduisent mot pour mot des segments de la transcription de référence, même lorsque l'audio est contradictoire, masqué ou ambigu. Par exemple, les modèles peuvent ignorer des modifications acoustiques évidentes pour s'aligner sur le benchmark. Les auteurs démontrent également que ce comportement peut être manipulé de manière causale, soit en ajustant des représentations internes via des techniques de *steering*, soit en ajoutant des segments audio en fin d'échantillon.",
+    "limites": "Le contenu disponible ne précise pas l'ampleur quantitative de cette sur-optimisation (par exemple, le pourcentage de cas concernés ou l'impact sur les métriques globales). De plus, la méthodologie repose sur des *probes* spécifiques qui pourraient ne pas capturer toutes les formes de sur-optimisation. Enfin, il n'est pas clair si ces comportements sont généralisables à tous les benchmarks ou uniquement à ceux étudiés dans l'article.",
+    "verdict": "Cette publication mérite une attention particulière car elle révèle un biais systémique dans l'évaluation des modèles ASR, remettant en question la fiabilité des benchmarks publics comme indicateurs de performance réelle."
+   }
+  },
+  {
+   "id": "b96d389be3c46a77",
+   "title": "FlowEvo: Self-Evolving Agents through the Co-Evolution of Workflows and Executable Skills",
+   "url": "https://huggingface.co/papers/2607.21596",
+   "summary": "Large language model agents can adapt to complex tasks by constructing workflows at inference time, but procedures discovered in one episode are usually discarded after execution. Existing skill libraries provide reusable executable routines, but are typically assembled offline and do not grow from the agent's own workflows. We introduce FlowEvo, a training-free framework in which workflows and skills co-evolve at inference time. FlowEvo compiles successful workflows into callable skills, stores them in a persistent bank, and uses retrieved skills either through direct execution or as context for constructing new workflows. It also tracks each skill's downstream utility and suppresses skills that cause negative transfer. Using a shared GPT-4o-mini backbone, FlowEvo achieves the highest accuracy among 8 baselines on the full standard splits of ALFWorld, HumanEval, MBPP, GSM8K, and MATH-500. On ALFWorld, it reaches 85.6%, 26.4 points above the strongest baseline, while using roughly one third as many tokens. Across 10 base models spanning 7B to 671B parameters, FlowEvo outperforms ExpeL in 49 of 50 model-dataset comparisons. Code is available at https://github.com/DEFENSE-SEU/FlowEvo.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2607.21596"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "FlowEvo propose un cadre d'agents auto-évolutifs où workflows et compétences s'enrichissent mutuellement à l'inférence, améliorant significativement les performances (jusqu'à +26.4 points sur ALFWorld) avec une réduction drastique des tokens utilisés. Le modèle compile les workflows réussis en compétences réutilisables et optimise leur utilité, surpassant ExpeL sur 49/50 comparaisons.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents basés sur les grands modèles de langage (LLM) rencontrent des difficultés à réutiliser efficacement les procédures découvertes lors de l'exécution de tâches complexes. Ces workflows, souvent construits dynamiquement à l'inférence, sont généralement abandonnés après une seule utilisation. Par ailleurs, les bibliothèques de compétences existantes, bien que réutilisables, sont statiques et ne s'enrichissent pas des expériences passées de l'agent.",
+    "methode": "FlowEvo propose un cadre *training-free* où workflows et compétences évoluent conjointement pendant l'inférence. Les workflows réussis sont compilés en compétences exécutables et stockés dans une banque persistante. Ces compétences peuvent ensuite être réutilisées soit directement, soit comme contexte pour générer de nouveaux workflows. Un mécanisme de suivi de l'utilité des compétences permet de supprimer celles causant un *negative transfer*. Le système repose sur un modèle GPT-4o-mini partagé et utilise des techniques de récupération (*retrieval*) pour optimiser la réutilisation des compétences.",
+    "resultats": "FlowEvo surpasse 8 méthodes de référence sur les jeux de données ALFWorld, HumanEval, MBPP, GSM8K et MATH-500, avec une précision de 85,6 % sur ALFWorld (soit +26,4 points par rapport au meilleur baseline). Il réduit également la consommation de tokens d'environ deux tiers. Sur 10 modèles de base (de 7B à 671B paramètres), FlowEvo dépasse ExpeL dans 49 comparaisons sur 50.",
+    "limites": "Le document ne détaille pas les critères exacts de suppression des compétences ni les éventuels biais introduits par la sélection des workflows 'réussis'. L'absence de phase d'entraînement explicite pourrait limiter la généralisation à des tâches très éloignées des données d'évaluation. Enfin, la dépendance à un modèle sous-jacent performant (GPT-4o-mini) soulève des questions sur la transférabilité à des modèles moins capables.",
+    "verdict": "FlowEvo mérite une attention particulière pour son approche innovante de co-évolution dynamique des workflows et compétences, avec des gains significatifs en précision et efficacité, mais son applicabilité à des scénarios hors distribution reste à explorer."
+   }
+  },
+  {
+   "id": "9683f118cbc78e7d",
+   "title": "τ_0-VLA: a Hierarchical Robot Foundation Model with World-Model-Guided Test-Time Computation",
+   "url": "https://huggingface.co/papers/2608.16885",
+   "summary": "Long-horizon robot manipulation requires a robot to both execute individual skills reliably and sequence them coherently over extended tasks. Most hierarchical vision-language-action (VLA) models make each such decision with a single forward pass, leaving no mechanism to allocate additional computation to difficult or consequential choices. We introduce τ_0-VLA, a hierarchical robot foundation model that formulates high-level subtask generation as a compute-scalable inference problem through world-model-guided test-time computation. At each inference step, the high-level policy uses execution memory to generate a subtask and, when needed, searches over alternatives before committing to its output. A low-level policy then executes the generated subtask across multiple robot embodiments. The policy is trained on 40,115 hours of heterogeneous real-world data with multimodal co-training. Across in-domain and distribution-shifted settings, allocating additional test-time computation substantially improves next-subtask prediction accuracy, and these gains translate into higher closed-loop success on long-horizon robot manipulation tasks.",
+   "published": "2026-08-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.16885"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "τ_0-VLA est un modèle de fondation robotique hiérarchique utilisant un monde-modèle pour allouer dynamiquement du calcul à l'inférence, améliorant la précision des sous-tâches et le succès en manipulation longue durée. Entraîné sur 40K heures de données réelles, il démontre l'importance du calcul adaptatif en robotique.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le modèle τ_0-VLA vise à résoudre le défi de la manipulation robotique sur le long terme, où un robot doit exécuter des compétences individuelles de manière fiable tout en les enchaînant de façon cohérente pour accomplir des tâches complexes. Les modèles hiérarchiques existants de type vision-langage-action (VLA) prennent généralement leurs décisions en une seule passe avant, sans possibilité d’allouer davantage de ressources computationnelles aux choix difficiles ou critiques.",
+    "methode": "τ_0-VLA introduit une architecture hiérarchique où la génération de sous-tâches de haut niveau est formulée comme un problème d’inférence scalable en calcul, guidé par un modèle du monde. À chaque étape d’inférence, la politique de haut niveau utilise une mémoire d’exécution pour proposer une sous-tâche, puis explore des alternatives via une recherche avant de valider son choix. Cette approche permet d’allouer dynamiquement plus de calcul aux décisions complexes. La politique de bas niveau, quant à elle, exécute la sous-tâche générée sur plusieurs plateformes robotiques. Le modèle est entraîné sur 40 115 heures de données réelles hétérogènes, avec un co-entraînement multimodal (vision, langage, action).",
+    "resultats": "Les résultats montrent que l’allocation de calcul supplémentaire pendant l’inférence améliore significativement la précision de prédiction des sous-tâches suivantes, tant dans des scénarios *in-domain* que sous des décalages de distribution. Ces gains se traduisent par une augmentation du taux de succès en boucle fermée pour des tâches de manipulation robotique sur le long terme. Les chiffres exacts de performance ne sont pas détaillés dans le résumé disponible.",
+    "limites": "Le résumé ne précise pas les détails sur la robustesse du modèle du monde utilisé pour guider la recherche, ni les coûts computationnels réels de cette approche scalable. De plus, l’évaluation semble se concentrer sur des métriques intermédiaires (précision des sous-tâches) plutôt que sur des tâches finales complexes, ce qui pourrait masquer des limitations pratiques. La généralisation à des environnements non vus ou à des tâches très éloignées du jeu d’entraînement reste une zone d’ombre.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante combinant hiérarchie, scalabilité computationnelle et modèle du monde, mais son impact réel dépendra de sa capacité à passer à l’échelle et à gérer des scénarios réels imprévisibles."
+   }
+  },
+  {
+   "id": "6e9173db8a4a79e9",
+   "title": "The Embedder's Dilemma: LLMs Are Better, but at What Cost?",
+   "url": "https://huggingface.co/papers/2608.12875",
+   "summary": "Should you replace your text-embedding pipeline with a large language model? We answer this with a controlled, cost-aware comparison of ten LLMs across six families and 26 embedding models (118M to 14B parameters) on 37 tasks spanning classification, semantic textual similarity (STS), clustering, pair classification, and retrieval. In aggregate the two paradigms are effectively tied: the best LLM (Gemini 3.1 Pro, 77.6) and the best embedding model (77.2) differ by 0.4 points. Their strengths differ by task: LLMs lead on reasoning-heavy retrieval, embedding models lead on classification, and the two match on clustering, STS, and pair classification. Reaching that parity is expensive. An LLM costs up to 1,431x more than an embedding model of comparable quality (USD 154 vs. USD 0.11 per benchmark pass), and the open LLMs tested process tokens 2.5 to 736x more slowly on the same GPU. Reasoning tokens account for 28 to 81% of LLM inference cost; lower reasoning budgets preserve or improve retrieval quality for most models in our ablation. The Pareto frontier contains the leading embedding models and one LLM, Gemini 3.1 Pro. These results support a division of labour: use embedding models for similarity, classification, and clustering, and reserve LLMs for reasoning-intensive retrieval. Our code, datasets, and results are publicly available at https://github.com/embeddings-benchmark/embedders-dilemma.",
+   "published": "2026-08-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.12875"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "produit"
+   ],
+   "tldr": "Cette étude compare systématiquement les embeddings textuels et les LLMs pour 37 tâches, montrant une parité globale mais un coût 1431x supérieur pour les LLMs (154$ vs 0.11$ par benchmark). Les LLMs excellent en retrieval complexe, mais les embeddings dominent en classification, justifiant une division des tâches selon les besoins.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un dilemme technique et économique crucial : faut-il remplacer les modèles d'embedding traditionnels par des grands modèles de langage (LLMs) pour des tâches comme la classification, la similarité sémantique ou la recherche d'informations ? Le problème réside dans l'arbitrage entre performance, coût computationnel et efficacité opérationnelle, notamment pour des applications en production.",
+    "methode": "Les auteurs effectuent une comparaison systématique et contrôlée entre 10 LLMs (répartis en 6 familles, de 118M à 14B paramètres) et 26 modèles d'embedding sur 37 tâches variées, incluant la classification, la similarité textuelle sémantique (STS), le clustering, la classification de paires et la recherche d'informations. La méthodologie intègre une analyse coût-performance, mesurant à la fois la qualité des résultats (scores agrégés) et les coûts en dollars par passage de benchmark, ainsi que la vitesse de traitement des tokens sur GPU. Une ablation sur les budgets de tokens de raisonnement est également réalisée pour évaluer leur impact sur la qualité des résultats.",
+    "resultats": "Globalement, les deux paradigmes (LLMs et modèles d'embedding) obtiennent des performances comparables, avec un écart minimal de 0,4 point entre le meilleur LLM (Gemini 3.1 Pro, score de 77,6) et le meilleur modèle d'embedding (77,2). Cependant, leurs forces varient selon les tâches : les LLMs excellent dans la recherche nécessitant du raisonnement, tandis que les modèles d'embedding dominent en classification. Les coûts diffèrent radicalement : un LLM peut coûter jusqu'à 1 431 fois plus cher qu'un modèle d'embedding de qualité similaire (154 USD contre 0,11 USD par benchmark). De plus, les LLMs open source traitent les tokens 2,5 à 736 fois plus lentement sur le même GPU. Enfin, réduire le budget de tokens de raisonnement (28 à 81 % du coût d'inférence) préserve, voire améliore, la qualité de la recherche pour la plupart des modèles.",
+    "limites": "Les résultats dépendent fortement des modèles et tâches sélectionnés, ce qui peut limiter leur généralisation à d'autres contextes ou architectures émergentes. L'analyse des coûts se base sur des benchmarks spécifiques et des tarifs actuels, qui peuvent évoluer rapidement avec les optimisations matérielles ou logicielles. Enfin, l'étude ne couvre pas les compromis en termes de latence ou de consommation mémoire en conditions réelles de production.",
+    "verdict": "Cette étude offre une analyse rigoureuse et pragmatique pour guider les choix techniques et économiques entre LLMs et modèles d'embedding, justifiant une attention particulière pour les ingénieurs et décideurs en IA."
+   }
+  },
+  {
+   "id": "386cdb37d254b300",
+   "title": "Thinking in a Low-Resource Language: What SFT Builds, What RL Fixes, What Accuracy Cannot See",
+   "url": "https://huggingface.co/papers/2608.17744",
+   "summary": "Take three frontier mixture-of-experts models (Alibaba, OpenAI, NVIDIA; 3.6-4.0B active parameters each) and fine-tune them to reason in a low-resource language. On accuracy benchmarks almost nothing happens, and the benchmark itself is noise at this scale: changing only the random seed moves the score by 7.7 points, more than every data and recipe effect we measured. That null is our first result. The real changes live where accuracy cannot see. Base models never think in Greek: 0 of 1,000 reasoning traces, even when the question is Greek, so the model answers correctly while reasoning in a form its user cannot read, audit, or correct. After supervised fine-tuning (SFT), every released checkpoint reasons in the language of the question on ~98% of items, one family at 3x fewer tokens, with judged grammaticality improving on all four models and general ability within a few points of each base: nothing was forgotten, and fluency was gained. We propose six behavioural dimensions that make such changes measurable, each gated to reject any metric that correlates with output length, and we report how our own instruments lied: six failures, each caught by a control. What SFT cannot do is fix its own defects: a quarter of answers skip the requested format, answers leak into the reasoning channel, and an explicit \"think in English\" is obeyed under half the time. Reinforcement learning with verifiable rewards, pre-registered before training, fixes the first two outright (fallback 24% to 2.5%, leak 3.5% to 0.0%, both against a flat random-reward control) and moves the third (+9.1pp), while the Greek reasoning habit survives an accuracy-only gradient untouched. We release five checkpoints. The instruments, the controls and the pre-registration travel to any low-resource language; Greek is the case that let us measure them.",
+   "published": "2026-08-18T09:09:03.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2608.17744"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude montre que les benchmarks d'exactitude masquent des changements comportementaux majeurs : après fine-tuning, les LLMs raisonnent dans la langue cible (ex. grec) avec une grammaticalité améliorée, mais l'exactitude reste stable. Six dimensions comportementales sont proposées pour évaluer ces évolutions, révélant des limites des métriques classiques.",
+   "score": 8.5
+  },
+  {
+   "id": "841237356084ad46",
+   "title": "LLMs Get Smarter from Targeted Synthetic Multilingual Data",
+   "url": "https://huggingface.co/papers/2608.15964",
+   "summary": "Language-specific competency (LSC) is the phenomenon of a language model performing better or worse depending on the language of the prompt. In other words, a language model outputs different (and potentially incorrect) responses to the same semantic query when prompted in different languages. Prior work attributes this to an internal misalignment of semantic representation across languages. Currently, there are two main approaches to address LSC in the literature: (1) routing all queries through English, improving performance, but limiting language expressivity to English; or (2) training on language-balanced data, equalizing model performance across languages, but reducing overall performance. In this work, we take a data centric perspective and introduce HOTFIXR: Hardness Optimized Training data For Improving X-Lingual Reasoning. It is a data generation framework that uses models to probe and learn a student model's multilingual weaknesses, and generates data to mitigate them. HOTFIXR can generate multilingual synthetic training data that can improve multilingual performance. We evaluate on three in-distribution tasks, three out-of-distribution tasks, and four out-of-distribution languages. On average, HOTFIXR (1) improves in-distribution performance by 6.2%, (2) reduces catastrophic forgetting (induced by fine-tuning) on OOD tasks by 3.7%, and (3) on OOD languages by 7.1%. Overall, as many real-world applications requires multilingual LLMs, our work contributes to the efforts of making LLMs multilingually proficient. We will release code upon acceptance.",
+   "published": "2026-08-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.15964"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Présentation de HOTFIXR, un framework de génération de données synthétiques multilingues ciblant les faiblesses spécifiques des LLM en raisonnement multilingue (LSC). La méthode améliore les performances multilingues sans sacrifier la performance globale ni limiter l'expressivité linguistique, contrairement aux approches existantes.",
+   "score": 8.5
+  },
+  {
+   "id": "68f7b322a86623e3",
+   "title": "MemTrapBench: Benchmarking Cognitive Traps in LLM Memory Use",
+   "url": "https://huggingface.co/papers/2608.20202",
+   "summary": "Memory has become a key component of large language models, enabling them to retain information and learn from long-term interactions. However, existing memory benchmarks mainly evaluate whether information is correctly extracted, stored, and retrieved, while largely overlooking how retrieved memories reshape model reasoning and affect performance on the current task. We identify memory-induced cognitive traps: even faithfully recorded and semantically relevant memories can distort model reasoning or beliefs and degrade current task performance. To systematically evaluate these failure modes, we introduce MemTrapBench, which covers two forms of cognitive traps: Reasoning Fixation and Belief Distortion. Experiments across two model families and five representative memory frameworks show that MemTrapBench is challenging: all evaluated memory strategies underperform the no-memory setting, with even the strongest methods suffering drops of more than 10%. To mitigate these cognitive traps, we propose AdaptiveMem, a simple yet effective inference-time method that instructs LLMs to avoid memory traps. AdaptiveMem mitigates cognitive traps on MemTrapBench while preserving or improving performance on standard memory benchmarks across diverse memory frameworks.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2608.20202"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Introduction de MemTrapBench, un benchmark évaluant les 'pièges cognitifs' des mémoires des LLM (fixation de raisonnement, distorsion de croyances) qui dégradent les performances malgré une récupération correcte des informations. Propose AdaptiveMem comme solution simple pour atténuer ces effets, avec des résultats significatifs sur les benchmarks.",
+   "score": 8.2
+  },
+  {
+   "id": "cd325faeb2dc7ceb",
+   "title": "Hierarchical Self-Improvement: A Framework for Task-Specific Evolvable Agent Harnesses",
+   "url": "https://huggingface.co/papers/2608.08466",
+   "summary": "Modern LLM agents are often improved by modifying prompts, tools, or workflows manually, while the executable scaffold surrounding the model---the harness---is typically treated as a fixed artifact after deployment. This work studies an alternative where the harness is task-specific and continuously evolvable: each task family maintains its own harness, which is hot-swapped across iterations through a fixed task-injection seam and rewritten using environment feedback. We introduce Hierarchical Self-Improvement (HSI), a framework in which a single frozen LLM M operates across three hierarchical scopes: a task harness H that executes tasks, an evolver that rewrites H, and a meta-evolver that rewrites the evolver's strategy code under a frozen outer anchor. A thinking-on/off design isolates the contribution of harness evolution by disabling reasoning during task execution while enabling it during self-modification. HSI is bounded by two factors: a feedback-fidelity bound, since evolution requires informative reward signals to guide selection, and a backbone capability bound, since harness redesign cannot overcome limitations of the frozen model. On BALROG with DeepSeek-V4-Flash-Preview as the frozen backbone, HSI achieves consistent gains over the initial harness on moderate-difficulty tasks (+39.3 on BabyAI, +33.0 on Crafter, +25.0 on TextWorld, and +15.0 on MiniHack, all in raw \\% Progress), while obtaining strong held-out generalization on BabaIsAI sub-suites (0.98 best-test on BreakStop and 1.00 on GoTo from a 20% unseen split). On tasks beyond the backbone's capability (NLE), harness evolution provides no improvement. These results demonstrate task-specific harness evolution as a viable axis for improving frozen LLM agents under clear empirical limits. Code is available at https://github.com/TailinZhou/hsi.",
+   "published": "2026-08-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.08466"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "HSI propose un cadre où le harnais des agents LLM est auto-évolutif via un processus hiérarchique à trois niveaux (harnais, évolueur, méta-évolueur), améliorant les performances sur BALROG avec DeepSeek-V4-Flash-Preview. Le cadre est limité par la fidélité du feedback et les capacités du modèle sous-jacent.",
+   "score": 7.9
+  },
+  {
+   "id": "974d536836f241e8",
+   "title": "microsoft/skill-recorder",
+   "url": "https://github.com/microsoft/skill-recorder",
+   "summary": "Desktop app that records your on-screen work session and uses the GitHub Copilot CLI to reconstruct it as an intent + ordered steps, then builds a reusable Skill or Automation for Microsoft Scout, Microsoft Copilot Cowork, or Copilot Studio.",
+   "published": "2026-07-29T18:16:14Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 3344,
+    "language": "TypeScript"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils",
+    "produit"
+   ],
+   "tldr": "Application desktop (Microsoft) enregistrant des sessions de travail et reconstruisant des compétences automatisables via GitHub Copilot CLI. Très pertinent pour l'intégration des agents LLM dans des produits grand public, avec un écosystème Microsoft solide.",
+   "score": 7.7
+  },
+  {
+   "id": "3cebf83122de0d92",
+   "title": "QuoteBench: How Matched Scores Can Hide Command-Path Failures",
+   "url": "https://huggingface.co/papers/2608.13547",
+   "summary": "LLM coding agents issue Bash commands through interfaces that may serialize, wrap, and reparse model output. Matched execution scores alone cannot distinguish command-generation errors from failures introduced after generation. QuoteBench measures this boundary with exact final-state validation on 56 one-shot tasks from 14 incident-derived families, crossing the generation contract with the execution transport around one deliberately unescaped added parser. Escaping at the interpolation point reproduces each replayed reply's raw-path outcome, so any recovery under a disclosed boundary must come from the model changing its generation. Across eight same-window configurations, replaying the same reply through the added parser lowers success by 55.4 to 73.2 percentage points; disclosure recovers 30.4 to 60.7 points for six configurations, and zero or slightly negative for the other two. Raw generation is nearly saturated at the frontier; boundary adaptation is what still separates models. GPT-5.6-sol's matched gap of -3.6 points hides -64.3 points of damage and +60.7 points of compensation. The deployment configuration reorders models: one reversal among 26 comparable pairs is unambiguous and four more sit on single-task margins. Evaluations of command-issuing agents should report the model configuration, generation contract, execution path, operating point, and final-state validator rather than treat a matched score as an intrinsic model property.",
+   "published": "2026-08-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.13547"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "QuoteBench révèle que les scores d'exécution appariés masquent des échecs critiques liés à l'échappement des commandes Bash, avec des pertes de performance allant jusqu'à -73.2 points. L'étude souligne l'importance de valider les chemins finaux et montre que l'adaptation des frontières de génération est cruciale pour les agents de codage.",
+   "score": 7.6
+  },
+  {
+   "id": "4c0ba9485418764b",
+   "title": "Listening Forward: Next Patch Embedding Prediction Enables Scalable Audio Learners",
+   "url": "https://huggingface.co/papers/2608.19863",
+   "summary": "Self-supervised learning (SSL) has driven substantial progress in audio representation learning, though existing methods have increasingly relied on elaborate pre-training recipes to reach competitive performance. A markedly different pre-training philosophy underpins the most influential progress in language modeling and, more recently, in visual representation learning: rather than train encoders as static feature extractors, models are trained to predict the next element, a discrete token or a continuous embedding, from the preceding context. Autoregressive prediction thereby provides a unified pre-training interface that transfers across modalities, compelling the model to learn the underlying data distribution. We ask whether such a simple causal paradigm can yield strong audio learners, given that audio's temporal structure makes autoregressive prediction of patch embeddings a natural fit. We introduce NAPE (Next-Audio-Patch-Embedding prediction), a self-supervised framework in which a causal Transformer predicts each next patch embedding of a log-mel spectrogram from the previous ones, using causal masking and stop-gradient as its sole training signal. The design is intentionally minimalist, avoiding reconstruction decoders, acoustic tokenizers, student-teacher setups, and auxiliary regularization losses. Across six audio and speech benchmarks, NAPE achieves state-of-the-art fine-tuning performance on several tasks, scales consistently across encoder sizes, and yields strong linear-probing results. NAPE also produces structured attention patterns without explicit supervision.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.19863"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "audio"
+   ],
+   "tldr": "Présentation de NAPE, une méthode de SSL pour l'audio basée sur la prédiction autoregressive des embeddings de patches (log-mel spectrogram), inspirée des succès en modélisation du langage et vision. Intéressant pour son approche unifiée et son potentiel de transfert inter-modalités, mais nécessite validation sur des benchmarks standardisés.",
+   "score": 7.6
+  },
+  {
+   "id": "d1a661544e62bc21",
+   "title": "ForgeWM: Progressive Causal Training for Few-Step Action-Conditioned Video World Models",
+   "url": "https://huggingface.co/papers/2608.14022",
+   "summary": "Action-conditioned video world models require low-latency causal generation and reliable responses to game-native controls. Although causal distillation enables one- or few-step video synthesis, extending it to interactive world models remains challenging, as discrete keyboard states and continuous mouse motion must remain aligned with temporally compressed latent chunks during causal training and autoregressive rollout. We introduce ForgeWM, a progressive framework that transforms a bidirectional action-conditioned video generator into efficient few-step world models through domain adaptation, teacher-forced causal training, causal consistency distillation, and on-policy distribution matching with a bidirectional teacher. The resulting budget-specialized students operate at steady-state denoising budgets of 1, 2, and 4 steps. ForgeWM further supports a dual-path deployment protocol combining latency-critical interaction with optional replay-time refinement, where the one-step student re-noises and refines its saved draft. On paired Minecraft trajectories, ForgeWM leads the evaluated systems in Imaging Quality, reference-aligned motion-profile agreement, action-sign accuracy, and mouse-control accuracy, while achieving the lowest reference LPIPS; the same four-stage recipe transfers to gamepad-controlled FPS gameplay. Replay-time refinement matches four-step reference quality while remaining roughly three times closer to the experienced trajectory than regeneration from noise. These results demonstrate ForgeWM's effectiveness for controllable few-step video generation.",
+   "published": "2026-08-14T03:13:34.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2608.14022"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "Framework ForgeWM pour entraîner des modèles de 'world models' vidéo-action conditionnée en quelques étapes (1-4), via distillation causale progressive et adaptation de domaine. Permet une génération interactive à faible latence tout en maintenant la qualité, avec des résultats supérieurs sur des trajectoires Minecraft.",
+   "score": 7.6
+  },
+  {
+   "id": "671cdc8df2462889",
+   "title": "The More Popular, The Harder to Forget: Adaptive Popularity for LLM Unlearning",
+   "url": "https://huggingface.co/papers/2608.14229",
+   "summary": "Popular facts are memorised more deeply during pretraining and resist removal longer than rare ones, yet existing LLM unlearning methods apply uniform gradient pressure regardless of training-data frequency. We propose the AdaPop (Adaptive Popularity) method, which combines local token confidence with a per-fact popularity-dependent exponent derived from an external proxy (e.g., Wikidata sitelinks, LLM-as-Judge), and automates the forget-retain balance via a dual-ascent controller that adjusts the retain penalty each epoch. Across three model families and two benchmarks, AdaPop leaks ~5x less forgotten content than competing methods under paraphrased queries and ~1.6x less under adversarial reformulations. We support our analysis with internal metrics: under our method, forget-set hidden states move further from the pre-unlearning model's states than under other methods, while retain-set representations remain close.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2608.14229"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Proposition d'AdaPop, une méthode d'oubli adaptatif pour LLM qui ajuste la pression de gradient en fonction de la popularité des faits (via Wikidata ou LLM-as-Judge), réduisant les fuites de contenu oublié de 5x par rapport aux méthodes classiques sous requêtes paraphrasées.",
+   "score": 7.6
+  },
+  {
+   "id": "e443a5c319603c99",
+   "title": "Pinvou/pinvou-agent",
+   "url": "https://github.com/Pinvou/pinvou-agent",
+   "summary": "Open-source desktop AI agent for tools, files, knowledge, workflows, and real deliverables.",
+   "published": "2026-07-24T07:28:41Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1109,
+    "language": "Rust"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Agent IA open-source en Rust pour automatiser des tâches (fichiers, workflows, livrables) avec une approche modulaire, aligné sur les tendances des agents autonomes et des outils d'automatisation.",
+   "score": 7.4
+  },
+  {
+   "id": "7f937d27c3f1db39",
+   "title": "GOAG: Generative and Object-Agnostic Grasp Planner for Dexterous Robotic Manipulation",
+   "url": "https://huggingface.co/papers/2608.19759",
+   "summary": "Multifingered grasping is a crucial robotic skill, but current deep-learning grasp planners often struggle to generalize to new objects because they are trained on limited, object-specific datasets. We introduce a fundamentally different approach, grounded in the observation that the gripper and the object share identical surface geometry at their mutual contact points. We propose GOAG: Generative and Object-Agnostic Grasp Planner for Dexterous Robotic Manipulation, a novel deep generative model that learns a compact latent representation of a specific gripper's contact surface distribution, enabling the efficient sampling of valid grasp configurations without relying on object-specific training data. We show that by introducing object features only at inference time, our model can effectively retrieve admissible contact areas that are compatible with the gripper's capabilities. We validate our approach through extensive experiments on established grasp protocols in both simulated and real-world scenarios, demonstrating its effectiveness with different grippers from the literature. Our method delivers state-of-the-art results on the objects from the MultiDex dataset, achieving an average success rate of 86.93%. It offers significantly faster processing when generating numerous grasps, while matching the performance of leading approaches specifically trained on this dataset. Unlike these methods, our approach does not rely on object-specific training data, highlighting the advantages of object-agnostic learning. It effectively addresses the generalization challenges faced by traditional data-driven grasp planners. Code and videos are available on our project website https://cea-list.github.io/goagweb/ .",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.19759"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "GOAG introduit un planificateur de préhension générique et agnostique des objets, exploitant la géométrie partagée entre pince et objet pour générer des configurations de préhension valides sans données d'entraînement spécifiques. Il atteint un état de l'art sur MultiDex, démontrant une généralisation robuste.",
+   "score": 7.3
+  },
+  {
+   "id": "2eace900acd0a826",
+   "title": "CoToGrasp: Contact-Topology-Conditioned Dexterous Grasp Synthesis via Canonical Workspace Learning",
+   "url": "https://huggingface.co/papers/2608.19776",
+   "summary": "Current dexterous grasp planners primarily optimize for physical stability, focusing on whether an object can be grasped rather than how it should be grasped to support downstream functional tasks. However, conditioning grasp synthesis on specific human grasp taxonomies typically requires prohibitively expensive, object-annotated datasets. To address these limitations, we propose CoToGrasp, a novel generative framework that synthesizes diverse, stable grasps strictly conditioned on specific contact topologies. To bypass the data collection bottleneck, CoToGrasp is trained entirely in an object-agnostic manner. We introduce a feature-based canonical workspace that projects local object features into a unified gripper-centric domain, effectively decoupling the semantic functional intent from the arbitrary object geometry. By learning the intrinsic contact manifold of the gripper within this workspace, our model achieves zero-shot generalization to unseen objects at inference. Extensive evaluations on the large-scale DexGraspNet dataset demonstrate that CoToGrasp achieves state-of-the-art performance, outperforming existing taxonomy-guided planners. Finally, we demonstrate the physical viability and kinematic feasibility of our synthesized contact topologies on a physical robot platform. Code is available on our project website https://cea-list.github.io/cotograspweb/ .",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.19776"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "CoToGrasp synthétise des préhensions dextres conditionnées par des topologies de contact spécifiques, apprises dans un espace de travail canonique pour éviter les biais liés aux objets. Le modèle généralise en zero-shot sur DexGraspNet et améliore les planificateurs guidés par taxonomie.",
+   "score": 7.3
+  },
+  {
+   "id": "47787b62b5e4f940",
+   "title": "Scaling Creative Writing Beyond Story-Centric Data with Attribute-Guided Genre Expansion",
+   "url": "https://huggingface.co/papers/2608.13947",
+   "summary": "High-quality creative writing data for large language models (LLMs) remains dominated by story-centric data, limiting models' ability to follow the structural and functional conventions of diverse creative formats. We propose an attribute-guided genre expansion framework for scaling creative writing data beyond story generation. By separating thematic breadth from genre-form control, our framework leverages human-authored story prompts as diverse creative seeds, while utilizing manually curated genre attributes to enforce distinct structural, stylistic, and formatting conventions. We combine these to prompt strong LLMs for genre-faithful query-response pairs, which are then quality-filtered. Applying this framework, we construct the Multi-Genre Collection, a 50K-example corpus spanning 13 creative genres, including story, rap, lyrics, scripts, game design, character design, and other creative formats. Experiments across out-of-distribution writing benchmarks and held-out genre diagnostics demonstrate that models fine-tuned on our data consistently surpass not only base models and writing-specialized baselines, but also models trained on existing writing corpora. Genre-count ablations further indicate that controlled genre expansion, rather than story-centric scaling alone, is a key driver of robust creative writing capability.",
+   "published": "2026-08-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.13947"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Cadre d'expansion de données pour l'écriture créative guidé par des attributs de genre, générant 50K exemples couvrant 13 formats (rap, scripts, etc.). Les modèles fine-tunés sur ce corpus surpassent les bases existantes sur des benchmarks hors-distribution et des diagnostics de genre.",
+   "score": 7.0
+  },
+  {
+   "id": "b775801356645530",
+   "title": "lexmount/moli",
+   "url": "https://github.com/lexmount/moli",
+   "summary": "Best headless browser for AI agents. Lite, Fast, High-Compatibility. Built in Rust",
+   "published": "2026-08-10T13:20:30Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 876,
+    "language": "Rust"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "Navigateur headless léger et rapide (Rust) optimisé pour les agents IA, avec une haute compatibilité. Pertinent pour l'optimisation de l'inference et l'orchestration d'agents, avec une implémentation robuste.",
+   "score": 6.8
+  },
+  {
+   "id": "5616409265e51ab0",
+   "title": "TinyCast: Probabilistic Zero-Shot Forecasting with Computed Periodicity",
+   "url": "https://huggingface.co/papers/2608.15767",
+   "summary": "We introduce TinyCast, an attention-free zero-shot forecaster that emits a predictive distribution from 146,505 parameters, on the premise that at this size the periodic structure of a context is worth computing rather than learning. A zero-parameter spectral detector supplies the dominant periods, the context is folded on their phase, and a dilated convolutional encoder and a block-autoregressive quantile decoder model the rest. It is smaller than every zero-shot entry on the GIFT-Eval board whose parameter count can be established. On probabilistic accuracy it defines the size-accuracy frontier. Among zero-shot entries declaring no test-data leakage it is the only one below 1.4M parameters that emits a predictive distribution, and every entry scoring better carries at least that budget. On Chronos-ZS and fev-bench every neural model ahead of it carries at least 28 times its parameters. Because the mixing path is convolutions and matrix multiplications only, it exports to static INT8 and forecasts end to end on an embedded device without per-signal fitting.",
+   "published": "2026-08-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.15767"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "TinyCast introduit un modèle de prévision probabiliste zero-shot de 146K paramètres, exploitant la périodicité des données via un détecteur spectral et des convolutions, définissant une nouvelle frontière taille-précision. Il est optimisé pour l'embarqué et évite les coûts d'entraînement, mais reste limité à des tâches de prévision structurées.",
+   "score": 6.7
+  },
+  {
+   "id": "e3dd722f7dfb85fc",
+   "title": "4DAnyone: Create Anyone in 4D from a Casual Monocular Video",
+   "url": "https://huggingface.co/papers/2608.20335",
+   "summary": "We present 4DAnyone, a framework for reconstructing 4D humans from an uncalibrated monocular video by generating reconstruction-grade multiview-consistent videos and lifting them into 4D Gaussian Splatting (4DGS). Existing camera-controlled video diffusion models synthesize plausible novel-view videos but fail to maintain consistency when scaled to the tens of target views required for 4DGS reconstruction. We identify this failure as a bounded-attention-context problem: when target views exceed the capacity of a single DiT forward pass, they must be split into groups, exposing two coupled bottlenecks. On the reference-context side, conditioning on all previously generated views grows as O(N), weakening cross-view appearance guidance. On the target-context side, disjoint groups cannot directly exchange information, causing global structural drift. 4DAnyone addresses both bottlenecks with two complementary designs: Reference Context Packing (RCP) compresses growing reference views into a fixed-length mixed-resolution context with O(1) reference-context complexity, while Target Context Routing (TCR) rotates target-view groupings during denoising to share context across groups at high-noise steps and stabilize details at low-noise steps. We further build the MVGameHuman dataset using our in-house game engine and combine it with light-stage and in-the-wild video datasets for training. Experiments on DNA-Rendering and DyMVHumans show that 4DAnyone outperforms prior methods in both novel-view video quality and downstream 4DGS reconstruction, with robust in-the-wild generalization. See our project page for video results and source code: https://4danyone.github.io.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 59,
+    "arxiv_id": "2608.20335"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Méthode 4DAnyone pour reconstruire des humains en 4D à partir d'une vidéo monoculaire non calibrée, combinant génération de vidéos multivues cohérentes et lifting vers 4D Gaussian Splatting. Solution technique originale aux problèmes de cohérence globale et de contexte limité, mais dépendante de la qualité des modèles de diffusion sous-jacents.",
+   "score": 6.7
+  },
+  {
+   "id": "f74d936e4af702e4",
+   "title": "VA-Judger: Reward Modeling from Human Preference Feedback for Joint Video-Audio Generation",
+   "url": "https://huggingface.co/papers/2608.18607",
+   "summary": "Using reinforcement learning to post-train joint video-audio generation models requires a reward signal. Existing methods construct this reward by combining metrics for individual quality dimensions, including audio quality, visual fidelity, and synchronization. However, these metrics evaluate perceptual dimensions separately and fail to capture the overall semantic and temporal coherence among the text prompt, video, and audio that shapes human preferences. Optimizing models against these metrics encourages reward hacking, generating video-audio content that achieves high scores on these metrics yet appears incoherent or unfaithful to human viewers. To address this problem, we first construct a large-scale human-preference dataset VAPref-10K for joint video-audio generation, comprising 9K prompts and 10.3K fine-grained paired comparisons from open-source generation models. We also introduce the VA-Judger-Bench benchmark with both in-domain and out-of-domain model comparisons to evaluate whether reward models truly align with human preferences. We further propose VA-Judger, a chain-of-thought omni-reward model for joint video-audio generation. In particular, VA-Judger first learns from pairs with clear quality gaps to establish structured output and coarse preference discrimination, then distills reliable preference explanations for harder near-quality comparisons via rejection sampling verified against human annotations, and finally performs dimension-wise reinforcement learning that decomposes human feedback into individual quality dimensions for denser reward signals than a single binary preference label. Experiments show that VA-Judger outperforms metric baselines in predicting human preferences on both in-domain and out-of-domain evaluations. Using its human-aligned rewards for post-training audio-video generation model also yields significant improvements in generation quality.",
+   "published": "2026-08-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2608.18607"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "produit"
+   ],
+   "tldr": "VA-Judger, un modèle de récompense omnidimensionnel pour la génération vidéo-audio jointe, entraîné sur des préférences humaines (VAPref-10K) et évalué via VA-Judger-Bench. Adresse le problème des métriques séparées qui mènent à des contenus incohérents, mais nécessite des validations supplémentaires sur des tâches réelles.",
+   "score": 6.7
+  },
+  {
+   "id": "06daba08af15aa42",
+   "title": "From Atari to EVE Online: Building on 15 Years of AI Research in Games",
+   "url": "https://deepmind.google/blog/from-atari-to-eve-online-building-on-15-years-of-ai-research-in-games/",
+   "summary": "Google DeepMind partners with game studios to prototype breakthrough AI gameplay.",
+   "published": "2026-08-21T11:59:48+00:00",
+   "source": "deepmind-blog",
+   "source_label": "DeepMind",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 5,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "produit"
+   ],
+   "tldr": "Partenariats de DeepMind avec des studios de jeux pour prototyper des IA de jeu innovantes, illustrant l'application de la recherche IA dans des environnements interactifs complexes comme EVE Online.",
+   "score": 6.7
+  },
+  {
+   "id": "ba9496400676ceb3",
+   "title": "Leonxlnx/unlazy",
+   "url": "https://github.com/Leonxlnx/unlazy",
+   "summary": "Anti-laziness skill for AI agents. Core: the Depth Tree method, which splits a task N layers deep and gives every leaf the full time budget of the whole task, so effort multiplies with depth. Grounded in 2025-2026 research on model laziness, underthinking and premature completion.",
+   "published": "2026-08-09T23:39:12Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 699,
+    "language": "JavaScript"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Méthode 'Depth Tree' pour lutter contre la paresse des agents IA en allouant dynamiquement le temps de calcul selon la profondeur de la tâche, inspirée de recherches récentes sur l'optimisation des agents.",
+   "score": 6.5
+  },
+  {
+   "id": "bcb846d5829e9efe",
+   "title": "SPK: Eliciting Structured Prior Knowledge for Interpretable Out-of-Distribution Detection in Real-Time Object Detection",
+   "url": "https://huggingface.co/papers/2608.19080",
+   "summary": "Object detectors often produce over-confident predictions for objects outside their training categories, leading to so-called out-of-distribution (OoD) hallucinations. Existing approaches for detecting or mitigating such hallucinations typically either construct scoring functions directly over learned object detector representations or modify the object detector itself to suppress hallucination emergence. However, the latent priors implicitly encoded in these representations remain largely unexplored and have not been explicitly decoded for OoD detection. To uncover and exploit these latent priors, we propose Structured Prior Knowledge (SPK), a hallucination-oriented framework that explicitly elicits OoD-relevant priors from pretrained object detectors. Specifically, SPK leverages in-distribution data and hallucination-inducing samples as diagnostic supervision to elicit part-level semantic concepts underlying object detector decision-making, rather than using them merely for rejection or object detector adaptation. The elicited semantic priors are further integrated with geometric and contextual priors to form a compact five-dimensional SPK representation for OoD detection. Extensive experiments across diverse object detector architectures and multiple OoD benchmarks demonstrate that SPK achieves state-of-the-art OoD detection. Our findings reveal that pretrained object detectors already encode substantially richer latent knowledge than is typically exploited for OoD detection. More importantly, this knowledge can be explicitly elicited and organized into a compact, structured, and interpretable knowledge space for prediction reliability analysis. This suggests a promising proactive route for improving object detector reliability by explicitly uncovering and leveraging latent priors. Code and data are available at: https://gricad-gitlab.univ-grenoble-alpes.fr/dnn-safety/spk",
+   "published": "2026-08-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.19080"
+   },
+   "relevance": 6,
+   "reliability": 6,
+   "tags": [
+    "interpretabilite",
+    "vision"
+   ],
+   "tldr": "SPK, un framework pour détecter les hallucinations hors-distribution (OoD) dans les détecteurs d'objets en extrayant des connaissances prioritaires structurées (parties sémantiques, géométriques) des représentations du modèle. Approche originale mais complexe, avec une évaluation limitée à des cas spécifiques.",
+   "score": 6.4
+  },
+  {
+   "id": "7b8d3d36b349acda",
+   "title": "What happens when a GPU reads memory",
+   "url": "https://blog.doubleword.ai/what-happens-when-a-gpu-reads-memory",
+   "summary": "",
+   "published": "2026-08-21T16:16:42Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 105,
+    "comments": 18
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "autre"
+   ],
+   "tldr": "Analyse technique sur le fonctionnement des accès mémoire des GPU, utile pour comprendre les goulots d'étranglement en calcul haute performance, mais peu spécifique à l'IA moderne ou aux modèles d'apprentissage.",
+   "score": 6.2
+  },
+  {
+   "id": "c0ad282d3a81749a",
+   "title": "AmazingAng/old-coder",
+   "url": "https://github.com/AmazingAng/old-coder",
+   "summary": "An old coder's strategy for the agent era: don't read the code — make it run the gauntlet. Evidence-first development skill for coding agents, inspired by Uncle Bob.",
+   "published": "2026-07-27T05:03:11Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 664,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Stratégie de développement par preuve pour agents codeurs, inspirée par Uncle Bob, promouvant une approche 'evidence-first' plutôt que la lecture du code. Intéressant pour l'optimisation des workflows d'agents LLM en contexte de production.",
+   "score": 6.2
+  },
+  {
+   "id": "581c5539aad9d07f",
+   "title": "deerwork-ai/deer-workflow",
+   "url": "https://github.com/deerwork-ai/deer-workflow",
+   "summary": "An open-source graph engineering runtime that keeps orchestration in TypeScript and delegates semantic work to replaceable Agent runtimes.",
+   "published": "2026-07-26T04:20:50Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 483,
+    "language": "TypeScript"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Runtime graphique open-source pour l'orchestration d'agents en TypeScript, déléguant le travail sémantique à des runtimes remplaçables. Pertinent pour les architectures multi-agents, mais dépendant de l'écosystème communautaire.",
+   "score": 6.2
+  },
+  {
+   "id": "9e234210c09847c5",
+   "title": "NARU: A Benchmark for NARrative Evolution and Cultural Nuance Understanding in Japanese Extreme Long Video",
+   "url": "https://huggingface.co/papers/2608.13210",
+   "summary": "Long-form video understanding encompasses tasks that go beyond retrieving isolated events, including tracking an evolving narrative and interpreting social meaning that may remain implicit. However, existing benchmarks rarely evaluate these capabilities jointly, particularly in high-context, non-English media. To address this gap, we introduce NARU, a benchmark designed to evaluate Narrative evolution and Reasoning on cultural Understanding in Japanese long-form video. NARU consists of 1,481 questions grounded in 155 videos totaling 146.8 hours, spanning four narrative and five cultural dimensions. To construct the benchmark at this scale, we propose a hierarchical memory-based annotation pipeline that transforms raw video into structured event, narrative, and cultural annotations, then generates questions via task-oriented synthesis and iterative shortcut removal. The construction process includes two native-speaker verification stages involving 68 annotators. Evaluations across eight model configurations reveal substantial limitations in both long-range narrative integration and culturally grounded reasoning. By exposing these persistent gaps, NARU offers a systematic testing ground for developing MLLMs capable of reliably interpreting long-form, high-context video.",
+   "published": "2026-08-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.13210"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "NARU est un benchmark japonais évaluant la compréhension narrative et culturelle dans des vidéos longues (146.8h), avec 1,481 questions couvrant 4 dimensions narratives et 5 culturelles. Les résultats révèlent des lacunes persistantes dans l'intégration narrative et le raisonnement culturel, malgré des pipelines d'annotation complexes.",
+   "score": 6.1
+  },
+  {
+   "id": "772c20bf67ec11cc",
+   "title": "WithEveryone: Unified Planning and Identity Grounding for Group Image Generation",
+   "url": "https://huggingface.co/papers/2608.20336",
+   "summary": "Identity-preserving image generation becomes increasingly unreliable when a scene must contain many specified people. Beyond retaining each identity, the model must bind every reference to a distinct person and location, while training-time identity losses must establish correspondence among several noisy predicted faces. We introduce WithEveryone, a unified framework for generating group images up to ten reference identities. WithEveryone injects each selected identity as an addressed token, predicts a structured identity--layout plan, and renders the plan as a visual condition. Its key objective, Layout-Grounded ID Loss, uses annotated face regions to supervise the intended identities directly, avoiding unstable embedding-based face matching; ID Representation Forcing additionally trains a prediction for each identity before image synthesis. On an identity-disjoint benchmark, WithEveryone achieves the highest target-context identity similarity, improving face similarity from 0.462 for GPT-Image-2 to 0.499, while reducing copy-paste artifacts from 0.169 to 0.055. It further covers 97.3\\% of the requested identities with a duplicate rate of only 2.8\\%. These results show that explicit identity--layout grounding enables identity-preserving generation to scale to larger groups without relying on direct reference-face copying.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 38,
+    "arxiv_id": "2608.20336"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "produit"
+   ],
+   "tldr": "AvecEveryone, un framework unifié pour générer des images de groupe avec jusqu'à 10 identités de référence, utilisant un plan d'identité-layout et une perte dédiée pour éviter les artefacts de copie-collage. Améliore significativement la similarité faciale et la couverture des identités demandées, mais reste limité à des cas d'usage spécifiques.",
+   "score": 6.1
+  },
+  {
+   "id": "476e74197ecdc8f1",
+   "title": "Towards Real-Time and Adaptable LiDAR Scene Completion",
+   "url": "https://huggingface.co/papers/2608.16490",
+   "summary": "LiDAR scene completion is a key component of 3D perception in autonomous driving, where the scene must be completed in real time to be usable in downstream tasks. Existing approaches typically follow an initialize-and-refine paradigm, in which a coarse initialization of the scene is first constructed, then refined into complete 3D geometry. Generative models are slower because they iteratively refine random Gaussian noise into the scene, while non-generative methods perturb the partial scene with a fixed noise scale, which limits coverage of large gaps and occluded regions and requires manual recalibration for each new sensor configuration. We present RapidLiDAR, a LiDAR scene completion method that treats the initialization itself as a learned, data-driven component. We propose an adaptive initialization module that predicts a spatially varying displacement for each partial input point, expanding the partial observations into a coarse scene initialization adapted to the local geometry, without requiring manual noise tuning. To refine this coarse initialization into a complete and coherent scene, we additionally propose a multi-scale reconstruction module that further refines point positions by querying multi-scale 3D voxel and 2D BEV feature maps constructed from the input scan. By replacing point-neighborhood operators such as farthest point sampling and k-nearest neighbor search with voxel- and BEV-based feature extraction, our architecture is faster and can handle different input resolutions by design. Experiments on SemanticKITTI and KITTI-360 show that our method achieves completion performance on par with the state of the art while completing a full scene in 0.1 seconds, which is 2.3 times faster than the fastest prior method. This matches the 10 Hz acquisition rate of typical automotive LiDAR sensors, taking a step toward real-time LiDAR scene completion.",
+   "published": "2026-08-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.16490"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "RapidLiDAR, une méthode de complétion de scènes LiDAR en temps réel utilisant une initialisation adaptative basée sur des déplacements appris et un module de reconstruction multi-échelle. Améliore la couverture des régions occluses sans recalibrage manuel, mais reste spécifique à un domaine (autonomie).",
+   "score": 6.1
+  }
+ ]
+}
