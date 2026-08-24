@@ -1,0 +1,245 @@
+{
+ "date": "2026-08-24",
+ "digest": {
+  "headline": "Optimisation CPU et quantification extrême dominent les avancées pour le déploiement edge des LLMs et VLMs",
+  "overview": "Les travaux du jour se concentrent sur l'efficacité des modèles en environnement contraint, avec des architectures hybrides et des méthodes de quantification poussées pour les CPU. Les enjeux de généralisation, d'interprétabilité et de cohérence comportementale des modèles multimodaux complètent ce panorama technique.",
+  "highlights": [
+   {
+    "title": "Hybridation convolution-attention et quantification pour l'inférence CPU",
+    "text": "Daedalus-150M combine convolutions et attention pour réduire la mémoire et accélérer l'inférence CPU (1.76x) sans perte de performance sur des benchmarks standardisés. Llama-Mobile quantifie les VLMs à 2.7 bits, réduisant Llama 3.2 11B Vision à 3.7 GB tout en préservant les performances sur VQA. Ces approches ciblent les contraintes matérielles des appareils edge, où la latence et la consommation mémoire sont critiques."
+   },
+   {
+    "title": "Généralisation et distillation on-policy : transferts de raisonnement vs réponses",
+    "text": "L'étude sur la distillation on-policy révèle que ce processus transfère davantage les *comportements de raisonnement* que les réponses exactes du modèle professeur. La généralisation est optimale lorsque les modèles partagent la même origine, soulignant l'importance de l'alignement des architectures et des données d'entraînement. Ces résultats éclairent les limites des méthodes de distillation actuelles pour les applications nécessitant une fidélité comportementale."
+   },
+   {
+    "title": "Édition vidéo infinie et réordonnancement d'images : efficacité et explicabilité",
+    "text": "InfinityEdit propose un adaptateur léger pour l'édition vidéo en streaming, résolvant les problèmes d'alignement frame-by-frame via un mécanisme d'ignition d'édition. EviRank reformule le réordonnancement d'images comme un problème de satisfaction de contraintes sémantiques, améliorant les performances SOTA sur 5 benchmarks tout en offrant une approche déterministe et sans hallucination. Ces travaux illustrent l'évolution vers des systèmes plus robustes et interprétables pour les tâches multimodales."
+   },
+   {
+    "title": "Cohérence comportementale des MLLMs hybrides : au-delà de la justesse",
+    "text": "PatternEval introduit un benchmark pour évaluer l'alignement entre les modes 'thinking' et 'non-thinking' des MLLMs hybrides, révélant des incohérences (répétitions, contradictions) même lorsque les réponses sont correctes. Ce travail souligne que la fiabilité des modèles multimodaux dépend autant de la cohérence interne que de la précision, un enjeu clé pour les applications critiques."
+   }
+  ],
+  "trend": "Les optimisations matérielles (CPU, edge) et les méthodes de quantification extrême deviennent des leviers majeurs pour démocratiser les LLMs et VLMs, tandis que l'interprétabilité et la cohérence comportementale émergent comme des critères aussi importants que la performance brute."
+ },
+ "items": [
+  {
+   "id": "950868ddcc023d7e",
+   "title": "Daedalus-150M: A Convolution-Attention Hybrid Designed for CPU Inference",
+   "url": "https://huggingface.co/papers/2608.20210",
+   "summary": "Small language models are usually built like large ones and then squeezed onto a CPU afterwards. We did the opposite: we fixed the target first, one user, one token at a time, 4-bit weights, ordinary CPU, and chose the architecture to suit it. The result keeps full attention in only 6 of its 18 blocks. The other 12 use short convolutions whose memory is two timesteps wide no matter how long the conversation gets, so two thirds of the network never re-reads a growing cache. Trained from scratch on 59.9B tokens, the model scores 47.31 on a five-task benchmark against a bar of 42.20 that was fixed before training began. It beats GPT-2 124M, Pythia-160M, OPT-125M and GPT-neo-125M, all trained on three to six times more data, and exceeds MobileLLM-125M's published score despite that model seeing a trillion tokens. Validation bits-per-byte is 0.8685. To check the architecture rather than the training recipe, we trained a conventional all-attention model of the same size on the same data, and wrote down the winning condition before scoring either. The hybrid won the chosen quality metric by 0.81%, matched it on downstream tasks, produced a 6.3% smaller 4-bit file, and decoded 1.76x faster at 2048 tokens of context, 2.08x against an external model of similar size. In every measurement the speed advantage is near zero at an empty context and grows with length, which is what the mechanism predicts and what a merely leaner model would not show. A simple bandwidth calculation predicts only 1.17x, so memory volume alone does not explain the gap. We also report what did not work: an unmitigated 4-bit quality cost, roughly half the convolution channels ending up inert and impossible to remove, and a vocabulary larger than this model size warrants.",
+   "published": "2026-08-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.20210"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Daedalus-150M est un modèle hybride (convolution-attention) optimisé pour l'inférence CPU, réduisant les coûts mémoire et accélérant l'inférence de 1.76x tout en surpassant des modèles comparables sur des benchmarks standardisés. Son architecture cible spécifique (4-bit, cache limité) et son entraînement ciblé (59.9B tokens) démontrent une approche efficace pour les petits modèles sur hardware contraint.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de l'inférence efficace des modèles de langage sur des CPU standards, sans recourir à des optimisations matérielles spécifiques. Les petits modèles de langage actuels sont souvent conçus comme des versions réduites de grands modèles, ce qui les rend inefficaces pour une exécution sur CPU, notamment en raison de la gestion coûteuse du cache d'attention lors de longues séquences.",
+    "methode": {
+     "approche_generale": "Les auteurs ont adopté une démarche inverse : partir des contraintes matérielles (CPU standard, poids en 4 bits, inférence token par token) pour concevoir une architecture adaptée. Le modèle Daedalus-150M combine des blocs d'attention complète et des blocs à convolutions courtes pour réduire la dépendance au cache croissant.",
+     "details_architecture": "Le modèle comprend 18 blocs au total : 6 blocs utilisent une attention complète, tandis que les 12 autres reposent sur des convolutions de largeur mémoire fixe (2 timesteps), indépendamment de la longueur de la séquence. Cela permet d'éviter la relecture d'un cache croissant pour deux tiers du réseau.",
+     "entrainement": "Le modèle a été entraîné *from scratch* sur 59,9 milliards de tokens, avec une quantification 4 bits dès la conception. Une comparaison a été effectuée avec un modèle tout-attention de même taille et entraîné sur les mêmes données pour isoler l'impact de l'architecture.",
+     "optimisations": "L'architecture vise à minimiser la bande passante mémoire et à exploiter des opérations plus efficaces sur CPU, comme les convolutions, tout en conservant une capacité de modélisation suffisante grâce aux blocs d'attention."
+    },
+    "resultats": {
+     "performances": "Daedalus-150M obtient un score de 47,31 sur un benchmark à cinq tâches, dépassant la barre de référence fixée à 42,20 avant l'entraînement. Il surpasse des modèles comme GPT-2 124M, Pythia-160M, OPT-125M et GPT-neo-125M, bien que ceux-ci aient été entraînés sur 3 à 6 fois plus de données.",
+     "efficience": "Le modèle affiche un débit de décodage 1,76 fois plus rapide à 2048 tokens de contexte (2,08 fois par rapport à un modèle externe similaire). La taille du fichier 4 bits est réduite de 6,3 %. L'avantage en vitesse croît avec la longueur du contexte, conformément aux prédictions théoriques.",
+     "validation": "Le modèle hybride surpasse le modèle tout-attention de référence de 0,81 % sur la métrique de qualité choisie et obtient des performances équivalentes sur les tâches en aval. La consommation en bits par byte est de 0,8685."
+    },
+    "limites": {
+     "points_faibles": "Les auteurs reconnaissent un coût de qualité non atténué lié à la quantification 4 bits, ainsi que l'inefficacité de près de la moitié des canaux de convolution, impossibles à supprimer sans dégradation. Le vocabulaire utilisé semble également surdimensionné pour un modèle de cette taille.",
+     "questions_ouvertes": "L'impact réel de la réduction du cache sur des tâches très longues ou complexes n'est pas entièrement exploré. De plus, la généralisation des résultats à d'autres architectures ou jeux de données reste à démontrer."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche pragmatique et ses gains mesurables en efficacité CPU, mais son applicabilité à des cas d'usage variés et sa robustesse face à des scénarios extrêmes restent à valider."
+   }
+  },
+  {
+   "id": "3d840e0e33cbd1e7",
+   "title": "Llama-Mobile: Efficient 2.7-Bit Quantization of VLMs",
+   "url": "https://huggingface.co/papers/2608.21134",
+   "summary": "Deploying vision-language models (VLMs) on mobile devices is challenging due to their significant memory and compute requirements. We present a framework for quantizing VLMs for efficient inference on resource-constrained hardware. Our approach combines a quantization pipeline that uses the model itself to generate training data and does not require access to the training setup, with a novel 2.7-bit-per-parameter format supporting efficient execution on Arm CPUs. We validate our approach by compressing the Llama 3.2 11B Vision Instruct model to 3.7 GB with 8-bit activations, preserving strong performance on a set of standard visual question answering tasks.",
+   "published": "2026-08-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.21134"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Présente Llama-Mobile, une méthode de quantification à 2.7 bits pour VLMs optimisée pour les CPU Arm, réduisant la taille du Llama 3.2 11B Vision Instruct à 3.7 GB tout en conservant des performances élevées sur des tâches de VQA. Pertinent pour le déploiement edge des modèles multimodaux.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le déploiement de modèles vision-langage (VLMs) sur des appareils mobiles est entravé par leurs besoins élevés en mémoire et en puissance de calcul. Ces contraintes rendent difficile leur utilisation sur des hardware aux ressources limitées, comme les smartphones ou les appareils embarqués, malgré leur potentiel pour des applications comme la réponse aux questions visuelles (VQA).",
+    "methode": "L'approche proposée, nommée *Llama-Mobile*, combine une pipeline de quantification innovante avec un format de 2,7 bits par paramètre optimisé pour les processeurs Arm. La quantification utilise le modèle lui-même pour générer des données d'entraînement, évitant ainsi de dépendre de l'accès au jeu de données original ou à l'environnement d'entraînement. Le format 2,7 bits permet une exécution efficace sur les architectures mobiles, tout en maintenant des activations en 8 bits pour préserver la précision. Les détails techniques sur la méthode de génération des données de calibration ou l'algorithme de quantification spécifique (ex : QAT, PTQ) ne sont pas explicitement précisés dans le résumé.",
+    "resultats": "Le modèle *Llama 3.2 11B Vision Instruct* est compressé à 3,7 Go avec des activations en 8 bits, tout en conservant des performances solides sur des tâches standard de VQA. Aucune métrique quantitative précise (ex : score de précision, latence) n'est fournie dans le résumé pour évaluer l'impact exact de la quantification sur les performances ou l'efficacité énergétique.",
+    "limites": "Le résumé ne mentionne pas les compromis précis entre la réduction de taille du modèle et la dégradation des performances, ni les éventuelles limitations liées à des tâches spécifiques (ex : reconnaissance d'objets rares). De plus, l'absence de détails sur la robustesse de la méthode face à des variations de données ou de hardware (ex : différents modèles de CPU Arm) laisse des zones d'ombre. Enfin, la reproductibilité pourrait être un défi sans accès aux données de calibration ou aux outils de quantification utilisés.",
+    "verdict": "Cette publication mérite l'attention pour son approche prometteuse de quantification extrême adaptée aux mobiles, mais son évaluation technique approfondie nécessitera des détails supplémentaires sur les méthodes et les résultats concrets."
+   }
+  },
+  {
+   "id": "06f295ddb3eb0954",
+   "title": "Every Coin Has Two Sides: On the Dual Nature of Generalization in On-Policy Distillation of Large Language Models",
+   "url": "https://huggingface.co/papers/2608.16647",
+   "summary": "On-policy distillation (OPD) transfers teacher capabilities by supervising trajectories sampled from the student's own policy, yet its generalization behavior remains poorly understood, as most studies evaluate OPD on a single domain and on benchmarks close to the training data. We present a controlled study that varies one generalization factor at a time, from in-domain distribution shifts to cross-domain transfer and the multi-teacher setting. We find that OPD transfers a teacher's reasoning behavior rather than its answers to particular problems: training difficulty barely matters, and even problems the teacher never solves are useful. Transfer depends strongly on the origin relationship between teacher and student: same-origin pairs bring the student close to the teacher across languages, reasoning horizons, and even other domains, whereas cross-origin pairs mostly fit the trained distribution. This broad reach is a double-edged sword: since routing prompts to domain experts cannot confine each teacher's influence, combining them yields a mixture-dependent seesaw among their capabilities. These results clarify when OPD generalizes and offer a useful perspective for diagnosing multi-teacher OPD.",
+   "published": "2026-08-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.16647"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude démontre que la distillation on-policy (OPD) transfère davantage les *comportements de raisonnement* que les réponses spécifiques du professeur, avec une généralisation dépendante de l'origine (même origine = meilleur transfert). Les résultats révèlent aussi un effet ",
+   "score": 8.2,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le manque de compréhension systématique du comportement de généralisation dans la distillation *on-policy* (OPD) des grands modèles de langage (LLM). Bien que l'OPD soit efficace pour transférer les capacités d'un modèle enseignant (*teacher*) vers un étudiant (*student*) en utilisant des trajectoires générées par la politique de l'étudiant lui-même, ses performances en dehors des données d'entraînement ou sur des domaines variés restent mal comprises. Les études existantes se limitent souvent à des évaluations mono-domaine ou proches des données d'entraînement, sans analyse fine des facteurs de généralisation.",
+    "methode": "Les auteurs réalisent une étude contrôlée en faisant varier un seul facteur de généralisation à la fois, couvrant : (1) des décalages de distribution *in-domain*, (2) des transferts *cross-domain*, et (3) des scénarios multi-enseignants. Ils analysent comment l'OPD transfère non pas des réponses spécifiques, mais des *comportements de raisonnement* du *teacher*, en évaluant des métriques comme la performance sur des problèmes jamais résolus par le *teacher* ou la sensibilité à l'origine des modèles (même architecture/pré-entraînement vs. origines différentes). Les expériences incluent des variations de langues, de horizons de raisonnement, et de domaines cibles, avec des modèles comme Llama ou Mistral.",
+    "resultats": "Les résultats révèlent que l'OPD généralise bien au-delà des données d'entraînement pour les paires *teacher-student* de même origine, permettant un transfert efficace même sur des langues ou domaines non vus. Par exemple, un *student* peut atteindre des performances proches du *teacher* sur des tâches de raisonnement complexes, même si ce dernier n'a jamais résolu ces problèmes. En revanche, pour des paires *cross-origin*, la généralisation se limite principalement à la distribution entraînée. Dans les scénarios multi-enseignants, l'influence des *teachers* devient dépendante du mélange, créant un effet de *seesaw* (balance) entre leurs capacités respectives, sans possibilité de confinement par domaine.",
+    "limites": "L'étude se concentre sur des architectures et jeux de données spécifiques (ex. : modèles basés sur Llama), ce qui limite la généralisabilité des conclusions à d'autres familles de LLM. De plus, les mécanismes précis expliquant pourquoi les paires *same-origin* généralisent mieux restent flous, et les interactions entre facteurs de généralisation (ex. : langue + domaine) ne sont pas explorées en profondeur. Enfin, l'absence de benchmarks standardisés pour évaluer la généralisation en OPD rend les comparaisons difficiles.",
+    "verdict": "Cette publication mérite une attention particulière pour son analyse rigoureuse et systématique des limites et forces de l'OPD, offrant des pistes concrètes pour diagnostiquer et améliorer les pipelines de distillation multi-enseignants."
+   }
+  },
+  {
+   "id": "59c7387cfa944c95",
+   "title": "InfinityEdit: Infinite Video Editing with a Lightweight Edit-Ignition Adapter",
+   "url": "https://huggingface.co/papers/2608.20910",
+   "summary": "With large pretrained models, existing methods have effectively improved instruction-based video editing. However, most of them rely on an in-place editing assumption. They align the edited video with the given source clip frame by frame over a fixed time span. This pattern fails for open-ended streams, e.g., restyling a live game or applying a camera move to an ongoing shot. In such cases, edits must extend to future frames as they arrive, rather than be applied to a static input clip. In this paper, we study this setting and name it infinite video editing: given a preceding segment and an edit request, a model must generate the next segment that continues the stream while applying the requested edit. This process repeats as an unbounded sequence of edit instructions arrives. This task brings two challenges: the edit must be a faithful continuation rather than a frame-wise rewrite, and generation quality must remain stable as edits accumulate. To address them, we first design a data-collection pipeline for infinite video editing. Based on the collected data, we propose InfinityEdit, a lightweight edit adapter that equips a streaming video generator with unbounded editing ability. The adapter contains three attention modules. History cross-attention guides the denoising frames using the input frames. Temporal causal self-attention keeps temporal cues flowing only from earlier frames to later ones. Edit cross-attention injects the edit request into generation. During inference, the adapter is activated only in the chunk where an edit request arrives. Subsequent chunks are generated by the original model with a reset anchor frame. This scheme applies the edit while preserving the original model's infinite generation ability. Extensive experiments show that InfinityEdit faithfully continues the stream under each edit, and stays stable over unbounded edit sequences.",
+   "published": "2026-08-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.20910"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Propose InfinityEdit, un modèle léger d'adaptation pour l'édition vidéo infinie en streaming, résolvant les limites des méthodes actuelles (alignement frame-by-frame) via un mécanisme d'ignition d'édition et une génération continue des frames futures. Intéressant pour les applications en temps réel et les systèmes interactifs.",
+   "score": 8.2,
+   "deep_analysis": {
+    "probleme": "La publication aborde une limitation majeure des méthodes actuelles d'édition vidéo basées sur l'IA : leur incapacité à traiter des flux vidéo ouverts et continus, comme un direct ou une séquence en temps réel. Les approches existantes reposent sur une hypothèse d'édition *in-place*, c'est-à-dire qu'elles modifient un clip vidéo statique et fixe, ce qui les rend inadaptées pour des scénarios où les instructions d'édition doivent s'appliquer dynamiquement à des frames futures non encore générées ou capturées.",
+    "methode": "Les auteurs proposent *InfinityEdit*, un adaptateur léger conçu pour équiper un générateur vidéo en streaming d'une capacité d'édition illimitée. Leur approche repose sur trois modules d'attention : 1) **History Cross-Attention**, qui guide la génération des frames en cours en s'appuyant sur les frames d'entrée précédentes ; 2) **Temporal Causal Self-Attention**, qui maintient la cohérence temporelle en ne permettant que la propagation des informations des frames antérieures vers les frames postérieures ; 3) **Edit Cross-Attention**, qui injecte l'instruction d'édition dans le processus de génération. Lors de l'inférence, l'adaptateur n'est activé que pour le segment où une instruction d'édition est reçue, tandis que les segments suivants sont générés par le modèle original avec une frame d'ancrage réinitialisée, préservant ainsi la capacité de génération infinie du modèle de base. Une pipeline de collecte de données spécifique a également été conçue pour entraîner ce système.",
+    "resultats": "Les expériences menées montrent qu'*InfinityEdit* parvient à continuer fidèlement un flux vidéo tout en appliquant les éditions demandées, et ce de manière stable même après une séquence illimitée d'instructions d'édition. Aucune métrique quantitative précise (comme des scores FID, CLIP, ou des mesures de cohérence temporelle) n'est cependant fournie dans le résumé disponible pour étayer ces affirmations.",
+    "limites": "Le résumé ne précise pas les détails techniques critiques comme la taille des modèles utilisés, les jeux de données d'entraînement, ou les contraintes matérielles (latence, mémoire). De plus, la stabilité annoncée sur des séquences illimitées d'éditions reste à démontrer en pratique, notamment face à des instructions contradictoires ou des scènes complexes. Enfin, l'absence de benchmarks standardisés pour ce type de tâche rend difficile une comparaison objective avec d'autres méthodes.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante du problème de l'édition vidéo en temps réel et en flux continu, mais ses résultats devront être validés par des évaluations plus rigoureuses et des détails techniques supplémentaires."
+   }
+  },
+  {
+   "id": "d1abaf0670907671",
+   "title": "EviRank: Structured Relevance Evidence for Multimodal Image Re-ranking",
+   "url": "https://huggingface.co/papers/2608.20886",
+   "summary": "Real-world image search queries are multimodal and compositional: ``find this shirt in pink'' specifies an entity to retain, an attribute to modify, and context to ignore. Yet existing re-rankers either compress such multifaceted relevance into an opaque embedding or rely on free-form chain-of-thought that easily omits or hallucinates fine-grained constraints. Drawing on rubric- and checklist-based evaluation from NLP, we recast multimodal image re-ranking as a semantic constraint satisfaction problem and propose EviRank, which parses any query - text-only, image-only, or composed - into a unified evidence package: typed criteria across six semantic slots (e.g., entities, attributes, relations), each labelled required, forbidden, or ignorable. Re-ranking then reduces to evidence-conditioned verification, combining deterministic rubric scoring and evidence-grounded listwise comparison in a single training-free procedure. The explicit evidence can further serve as structured supervision for optionally distilling a lightweight student. Across five benchmarks spanning text-to-image, image-to-image, and composed image retrieval, EviRank achieves state-of-the-art performance, and the distilled student preserves over 90% of the teacher's capability at substantially lower cost.",
+   "published": "2026-08-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.20886"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "rag"
+   ],
+   "tldr": "EviRank reformule le réordonnancement d'images multimodales comme un problème de satisfaction de contraintes sémantiques, en structurant les requêtes en critères typés (entités, attributs, relations) pour une vérification explicite et sans hallucination. Il améliore les performances SOTA sur 5 benchmarks de recherche d'images, avec une approche déterministe et explicable.",
+   "score": 7.3
+  },
+  {
+   "id": "2748cfcc9330c302",
+   "title": "Beyond Correctness: Benchmarking and Aligning Response Behaviors in Hybrid-Thinking MLLMs",
+   "url": "https://huggingface.co/papers/2608.12781",
+   "summary": "Hybrid-thinking multimodal large language models (MLLMs) allow a single model to alternate between deliberative thinking and latency-efficient non-thinking inference. Although these modes differ in reasoning budget, their delivered responses should satisfy the same user-facing standard. Correctness alone may not characterize this response quality; we therefore evaluate task accuracy and response-pattern failures as complementary outcomes. We study this gap through response-pattern alignment: whether thinking and non-thinking interfaces preserve acceptable final-response behavior. We introduce PatternEval, a failure-enriched diagnostic benchmark comprising 2,415 multimodal prompts spanning visual perception and grounding, structured image understanding, and multimodal knowledge reasoning. PatternEval tests four recurrent failures: chain-of-thought leakage, response repetition, logical contradiction, and performative reasoning. Response-pattern failures are widespread across models from different providers, with non-thinking inference exhibiting substantially higher failure rates and thereby creating systematic misalignment between thinking and non-thinking interfaces. Motivated by this diagnosis, we develop PatternRM, a response-level reward model, and PatternRL, which introduces pattern-specific penalties during reinforcement learning. Experiments on Qwen3-VL-4B and Qwen3-VL-8B show that incorporating pattern-specific penalties into reinforcement learning can mitigate cross-mode misalignment while incurring a marginal task performance trade-off. Together, PatternEval and PatternRL provide an evaluation-and-training framework for aligning user-visible response patterns across hybrid-thinking interfaces.",
+   "published": "2026-08-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.12781"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Introduit PatternEval, un benchmark pour évaluer l'alignement des réponses entre modes 'thinking' et 'non-thinking' des MLLMs hybrides, révélant des échecs récurrents (répétition, contradictions) et soulignant l'importance de la cohérence comportementale au-delà de la simple exactitude.",
+   "score": 7.3
+  },
+  {
+   "id": "d5008547bc0cef41",
+   "title": "HarnessRouter/harnessrouter",
+   "url": "https://github.com/HarnessRouter/harnessrouter",
+   "summary": "HarnessRouter Community Edition: the self-hosted, Apache-2.0 edition of the unified interface for agent harnesses. Run Codex, Claude Code, Hermes, and more through one API, with sessions, streaming, files, cancellation, and failure handling. Implements the Unified Harness Protocol (UHP), an open standard. Your keys, your infrastructure.",
+   "published": "2026-08-09T20:19:14Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 558,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "HarnessRouter Community Edition, une interface unifiée (Apache-2.0) pour exécuter des agents (Codex, Claude Code, etc.) via un API standardisé (UHP), avec gestion de sessions et streaming. Utile pour l'orchestration d'agents, mais manque de profondeur technique ou de benchmarks.",
+   "score": 5.3
+  },
+  {
+   "id": "2698a06b54f649e0",
+   "title": "zorost/AI-Engineering-Lab",
+   "url": "https://github.com/zorost/AI-Engineering-Lab",
+   "summary": "A free, self-paced 24-week AI engineering course: Python, machine learning, LLMs, RAG, fine-tuning, agents and MCP, Azure and Vertex and Bedrock, and Databricks. 43 runnable notebooks, one continuous case study. MIT licensed, no signup. By Zorost Intelligence AI Lab.",
+   "published": "2026-08-17T16:34:05Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 110,
+    "language": "Jupyter Notebook"
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "autre"
+   ],
+   "tldr": "Cours auto-rythmé de 24 semaines sur l'ingénierie IA (LLMs, RAG, agents) avec notebooks exécutables, mais sans originalité ni approfondissement technique, et dépendant de frameworks commerciaux (Azure, Vertex).",
+   "score": 4.4
+  }
+ ]
+}
