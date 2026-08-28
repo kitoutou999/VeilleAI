@@ -1,0 +1,727 @@
+{
+ "date": "2026-08-28",
+ "digest": {
+  "headline": "Les frameworks d'agents et la robotique tactile dominent l'actualité IA avec des avancées en auto-amélioration et grounding spatial.",
+  "overview": "Ce 28 août 2026, les travaux marquants se concentrent sur l'optimisation des agents autonomes, avec des méthodes d'auto-évolution en temps réel et des architectures intégrant des feedbacks sensoriels. Les benchmarks révèlent aussi des limites persistantes en grounding multimodal et en modélisation probabiliste des environnements.",
+  "highlights": [
+   {
+    "title": "Auto-amélioration et supervision en temps réel pour agents",
+    "text": "PILOT et CaSKG introduisent des mécanismes d'auto-évolution pour les agents à long horizon, combinant *live steering* et graphes causaux de compétences. Ces approches surpassent les benchmarks existants (ex. +9.8 pts sur Terminal-Bench 2.0) en réduisant la dérive des trajectoires et en améliorant la récupération de compétences via des contre-factuels. Crucial pour les systèmes nécessitant une adaptation dynamique sans réentraînement."
+   },
+   {
+    "title": "Robotique et grounding : intégration de feedbacks tactiles et spatiaux",
+    "text": "TacForcing et UrbanGround explorent l'intégration de signaux sensoriels (tactile, spatial) pour améliorer la précision des actions robotiques. TacForcing utilise une attention adaptée (EATA) pour traiter les feedbacks tactiles en streaming, tandis qu'UrbanGround teste les limites des MLLM dans une réplique 3D de Hong Kong. Ces travaux soulignent l'importance des architectures hybrides pour combler le fossé entre perception et action."
+   },
+   {
+    "title": "Généralisation et données agentiques : vers des systèmes plus robustes",
+    "text": "Zero-WAM et What Makes Good Agentic Data abordent la généralisation des tâches via l'apprentissage *in-context* et la génération de données de qualité. Zero-WAM utilise des vidéos humaines pour entraîner des robots à des tâches non vues, tandis que le cadre ACE formalise les critères (précision, complexité, diversité) pour des données agentiques fiables. Ces contributions répondent au besoin croissant de systèmes capables de s'adapter à des environnements ouverts."
+   },
+   {
+    "title": "Benchmarks critiques : limites des modèles actuels en multimodal et probabiliste",
+    "text": "PAWBench et GUI-Primitives révèlent des lacunes majeures des modèles en grounding spatial et en modélisation probabiliste. PAWBench montre que les *world models* échouent à reproduire des distributions physiques valides, tandis que GUI-Primitives expose des erreurs de 60-92% dans la compréhension des relations spatiales en interfaces graphiques. Ces benchmarks fournissent des outils pour évaluer et améliorer la robustesse des systèmes."
+   },
+   {
+    "title": "Optimisation en temps de test et exploration guidée",
+    "text": "TTPO et CritICL proposent des méthodes pour améliorer les performances des LLM sans réentraînement. TTPO utilise des pseudo-labels asymétriques pour distiller les rollouts corrects, tandis que CritICL exploite les défaillances des modèles faibles pour guider l'inférence. Ces approches réduisent les coûts computationnels tout en maintenant des gains significatifs, notamment en raisonnement mathématique."
+   }
+  ],
+  "trend": "Les avancées convergent vers des architectures d'agents plus autonomes et adaptatifs, intégrant des feedbacks sensoriels et des mécanismes d'auto-amélioration. Cependant, les benchmarks récents rappellent que la robustesse en grounding et en modélisation probabiliste reste un défi clé pour les applications réelles."
+ },
+ "items": [
+  {
+   "id": "adeceb8d41012af7",
+   "title": "TacForcing: Streaming Action Generation with Execution-Time Tactile Feedback",
+   "url": "https://huggingface.co/papers/2608.25798",
+   "summary": "Contact-rich manipulation requires adapting to contact states that can evolve substantially within an action horizon. However, chunk-based vision-language-action models predict complete action chunks from observations collected before execution, leaving tactile conditioning stale during execution. Existing tactile-reactive approaches typically rely on separate high-frequency controllers, which increase both architectural and training complexity. In this paper, we introduce TacForcing, a streaming action-generation framework that effectively incorporates execution-time tactile feedback. Instead of employing a separate reactive controller, TacForcing replaces the standard action expert with a streaming action expert to generate actions conditioned on the evolving tactile observations acquired during execution. TacForcing also introduces Execution-Aware Tactile Attention (EATA), which restricts tactile conditioning to actions nearing execution, thereby reducing the temporal mismatch between tactile acquisition and action execution. Across six simulated UniVTAC tasks and three real-world contact-rich manipulation tasks, TacForcing achieves average success rates of 65% and 69%, respectively, outperforming strong baselines in both settings.",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.25798"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "outils"
+   ],
+   "tldr": "TacForcing introduit un framework de génération d'actions en streaming pour la robotique, intégrant des feedbacks tactiles en temps réel via une attention adaptée (EATA). Résultats solides sur des tâches de manipulation complexe (65-69% de succès). Pertinent pour l'optimisation de l'inférence et les systèmes robotiques tactiles.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "La manipulation riche en contacts en robotique nécessite une adaptation dynamique aux états de contact qui évoluent rapidement pendant l'exécution d'une action. Les modèles actuels de type 'vision-language-action' (VLA) prédisent des séquences d'actions complètes à partir d'observations statiques collectées avant l'exécution, ce qui rend les retours tactiles obsolètes ou inadaptés pendant l'action. Cela limite la réactivité et la précision des robots dans des tâches complexes comme l'assemblage ou la manipulation d'objets déformables.",
+    "methode": "TacForcing propose un cadre de génération d'actions en *streaming* qui intègre en temps réel les retours tactiles pendant l'exécution. Au lieu d'utiliser un contrôleur réactif séparé (comme dans les approches classiques), il remplace l'expert d'action standard par un *streaming action expert* conditionné par les observations tactiles évolutives acquises pendant l'exécution. La méthode introduit également *Execution-Aware Tactile Attention* (EATA), un mécanisme qui limite le conditionnement tactile aux actions proches de leur exécution, réduisant ainsi le décalage temporel entre l'acquisition tactile et l'exécution de l'action. Le modèle est entraîné de bout en bout, évitant la complexité architecturale des solutions multi-contrôleurs.",
+    "resultats": "Sur six tâches simulées UniVTAC et trois tâches réelles de manipulation riche en contacts, TacForcing atteint des taux de succès moyens de 65 % et 69 % respectivement. Ces résultats surpassent ceux des méthodes de référence dans les deux contextes, démontrant une amélioration significative de la réactivité et de la précision grâce à l'intégration du retour tactile en temps réel.",
+    "limites": "Le contenu disponible ne précise pas les détails sur la latence du système, cruciale pour évaluer la faisabilité en temps réel. De plus, la généralisation à des tâches hors du domaine d'entraînement (ex. objets inconnus ou environnements non structurés) n'est pas abordée. Enfin, la robustesse face à des perturbations tactiles bruitées ou imprévisibles reste une zone d'ombre.",
+    "verdict": "TacForcing mérite une attention particulière pour son approche innovante et ses résultats prometteurs, mais son applicabilité industrielle dépendra de tests supplémentaires sur des scénarios plus variés et contraignants."
+   }
+  },
+  {
+   "id": "29e1df500c517d0c",
+   "title": "PILOT in the Loop: Live Self-Improvement for Long-Horizon Agents",
+   "url": "https://huggingface.co/papers/2608.26530",
+   "summary": "Long-horizon agent runs generate experience that can improve both the current run and future work. Most self-improvement methods process this experience only after execution ends, so they cannot redirect the active run or immediately apply and validate lessons learned from it. We argue that self-improvement should instead be live, using emerging experience both to redirect the active run and to update the persistent harness. Existing agent architectures do not fully support this goal. Single-agent self-correction combines task execution and trajectory assessment within one context, while subagent delegation separates execution but typically cannot redirect an active subagent. We present PILOT, a supervisor-worker harness for live self-improvement through two coupled mechanisms: (1) live steering lets a separate supervisor redirect or abort the active worker during execution; and (2) live self-evolution distils procedures and failure modes revealed during execution into reusable skills and memory. Across two frozen backbones and three benchmarks, PILOT ranks first in five of six configurations. On Terminal-Bench 2.0, PILOT outperforms counterpart harnesses by up to 9.8 percentage points. In the self-improvement setting, PILOT gains 14.6 points with GLM-5.1 and 12.4 points with Kimi-K2.6. Mean output tokens fall by 42.9% and 47.4%, while successful evaluations per million output tokens rise by 110.3% and 134.0%, respectively.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 25,
+    "arxiv_id": "2608.26530"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "PILOT introduit un système de supervision pour l'auto-amélioration en temps réel des agents à long horizon, avec 'live steering' et 'live self-evolution'. Surpasse les méthodes existantes sur des benchmarks comme Terminal-Bench 2.0 (+9.8 pts).",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'amélioration autonome des agents d'IA sur des tâches à long horizon (long-horizon tasks). Actuellement, la plupart des méthodes de self-improvement traitent les expériences générées par un agent uniquement après l'exécution complète, ce qui empêche d'ajuster dynamiquement le comportement en cours d'exécution ou de valider immédiatement les leçons apprises. Cela limite l'efficacité et l'adaptabilité des agents dans des environnements complexes ou évolutifs.",
+    "methode": "PILOT propose une architecture superviseur-travailleur (supervisor-worker) pour permettre une amélioration autonome *en direct*. Deux mécanismes clés sont introduits : (1) **Live steering**, où un superviseur distinct peut rediriger ou interrompre le travailleur actif pendant l'exécution, et (2) **Live self-evolution**, qui extrait et distille les procédures et modes de défaillance observés en compétences réutilisables et en mémoire persistante. Contrairement aux architectures existantes (comme le self-correction mono-agent ou la délégation par sous-agents), PILOT sépare explicitement l'exécution et la supervision tout en maintenant une boucle de feedback dynamique. Les expériences sont traitées en temps réel pour ajuster à la fois la trajectoire en cours et les composants persistants de l'agent.",
+    "resultats": "PILOT a été évalué sur deux modèles de base figés (backbones) et trois benchmarks, se classant premier dans cinq des six configurations testées. Sur *Terminal-Bench 2.0*, il surpasse les autres architectures de 9,8 points de pourcentage. Dans un cadre d'auto-amélioration, PILOT améliore ses performances de 14,6 points avec GLM-5.1 et de 12,4 points avec Kimi-K2.6. L'efficacité tokenique est également notable : une réduction de 42,9 % et 47,4 % du nombre moyen de tokens générés, couplée à une augmentation de 110,3 % et 134,0 % des évaluations réussies par million de tokens produits, respectivement.",
+    "limites": "Les détails techniques sur la mise en œuvre concrète des mécanismes de *live steering* et *self-evolution* restent flous (ex. : comment les redirections sont-elles décidées ? Quels critères pour la distillation des compétences ?). De plus, les benchmarks utilisés (dont *Terminal-Bench 2.0*) pourraient ne pas couvrir toute la complexité des tâches réelles à long horizon. Enfin, la dépendance à un superviseur externe introduit un risque de goulot d'étranglement ou de biais dans la prise de décision.",
+    "verdict": "PILOT mérite une attention particulière pour son approche innovante de l'auto-amélioration en temps réel, avec des gains de performance et d'efficacité convaincants, mais son applicabilité à des environnements plus variés et sa robustesse restent à valider."
+   }
+  },
+  {
+   "id": "9e82eb215ab7f43a",
+   "title": "CaSKG: Counterfactual-Causal Skill Graphs for Scalable Agent Skill Retrieval",
+   "url": "https://huggingface.co/papers/2608.25500",
+   "summary": "Reusable skill libraries allow large language model (LLM) agents to reuse procedural knowledge across tasks, but they also turn memory access into a challenging retrieval problem. Full-library prompting preserves coverage at high context cost, vector retrieval returns compact neighborhoods but treats skills as independent text, and graph-based retrieval can recover workflow context only when the edges that carry relevance are reliable. We propose CaSKG, a counterfactual-causal skill graph framework that calibrates procedural relations before retrieval. CaSKG first builds a high-recall directed candidate graph from semantic, lexical, input/output, and structural evidence, with repair evidence and an optional LLM judge further refining candidate scores. It then applies direction-conditioned textual counterfactual probes that remove, substitute, and reorder skill pairs, aggregates the evidence with Bayesian smoothing, and publishes a state-filtered weighted graph for task-conditioned expansion. The graph is constructed offline and used without changing the downstream agent policy or task interface. Across six LLM backbones on ALFWorld ID-140 and ScienceWorld U211, CaSKG achieves the highest task score in all twelve combinations of model and benchmark. Relative to Graph-of-Skills (GoS), it improves the six-model macro-average ScienceWorld score from 72.62 to 80.50 and ALFWorld success from 80.01\\% to 86.79\\%, while reducing mean environment steps on both benchmarks. Qualitative and ablation analyses further show that calibrated edges help retrieval preserve prerequisites, state-changing actions, verification routines, and final completion steps. These results position edge-confidence calibration as an effective route to compact and executable skill retrieval at scaleCode is available at: https://github.com/ZhiyuanLi218/Caskg .",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.25500"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "CaSKG introduit un graphe causal de compétences pour agents LLM, améliorant la récupération de compétences via des contre-factuels et des preuves causales, avec des gains mesurés sur ALFWorld et ScienceWorld.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "La publication aborde le défi de la récupération efficace des compétences dans les bibliothèques de compétences réutilisables pour les agents basés sur les grands modèles de langage (LLM). Ces bibliothèques, bien qu'utiles pour réutiliser des connaissances procédurales, transforment l'accès à la mémoire en un problème complexe de récupération. Les méthodes existantes, comme le *full-library prompting* ou la récupération vectorielle, souffrent soit d'un coût contextuel élevé, soit d'une perte de contexte procédural, limitant leur efficacité à grande échelle.",
+    "methode": "CaSKG propose un cadre de graphe de compétences basé sur des relations *counterfactual-causales* pour calibrer les liens procéduraux avant la récupération. La méthode se décompose en plusieurs étapes : (1) construction d'un graphe candidat à haut rappel en combinant des preuves sémantiques, lexicales, structurelles et d'entrée/sortie, (2) affinement des scores des candidats via des preuves de réparation et un juge LLM optionnel, (3) application de sondes textuelles *counterfactuales* (suppression, substitution, réorganisation de paires de compétences) pour évaluer la robustesse des relations, (4) agrégation des preuves avec un lissage bayésien, et (5) publication d'un graphe pondéré filtré par état, utilisable pour une expansion conditionnée par la tâche. Le graphe est construit hors ligne et n'altère ni la politique de l'agent ni son interface avec la tâche.",
+    "resultats": "CaSKG surpasse les méthodes existantes sur six architectures LLM et deux benchmarks (ALFWorld ID-140 et ScienceWorld U211), avec des améliorations significatives : le score moyen sur ScienceWorld passe de 72,62 (Graph-of-Skills) à 80,50, et le taux de succès sur ALFWorld de 80,01% à 86,79%. La méthode réduit également le nombre moyen d'étapes nécessaires pour accomplir les tâches. Les analyses qualitatives et par ablation confirment que la calibration des arêtes préserve mieux les prérequis, les actions modifiant l'état, les routines de vérification et les étapes finales de complétion.",
+    "limites": "Les détails sur la généralisation à d'autres domaines ou benchmarks non testés (ex. tâches non procédurales) restent flous. La dépendance à un juge LLM optionnel pour l'affinement des scores pourrait introduire des biais ou des coûts computationnels supplémentaires. Enfin, la robustesse des sondes *counterfactuales* face à des tâches très dynamiques ou ambiguës n'est pas explicitement évaluée.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante combinant graphes de compétences et calibration *counterfactual-causale*, offrant une solution prometteuse pour une récupération scalable et contextuellement riche des compétences des agents LLM."
+   }
+  },
+  {
+   "id": "fb6e28ed5bb1f847",
+   "title": "UrbanGround: From Local Perception to Spatial Agency in a Real-Scale City",
+   "url": "https://huggingface.co/papers/2608.27456",
+   "summary": "Multimodal large language models (MLLMs) can interpret a street view, but urban agency depends on whether such local evidence remains useful after the agent starts to move. In this paper, we investigate how far current MLLM agents can turn local urban perception into reliable action in a complicated real-scale city. We propose UrbanGround, the first sandbox to make this question testable in a physically constrained replica of Hong Kong built from territory-wide 3D geospatial data. UrbanGround supports closed-loop interaction from a first-person view and provides an interactive map for navigation. Agents can directly enter the 3D city and explore from a first-person view. Our analysis follows the growth of the spatial problem through three research questions. We first test whether an agent can ground a local scene well enough to answer spatial questions after active observation. Then we ask whether that grounding supports navigation as destinations become farther away and less explicit. Finally, we examine whether the resulting behavior survives changes in route availability and pedestrian motion. Contemporary MLLM agents usually show useful atomic abilities in visual recognition and short-range spatial reasoning, while orientation and pedestrian-aware movement remain unreliable. Their central failure emerges over extended exploration, where local abilities do not compose into sustained goal-directed behavior and errors accumulate without effective correction. We hope UrbanGround will support broader study of how far current MLLM agents can explore reliably in complex, open-ended urban environments.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 67,
+    "arxiv_id": "2608.27456"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "UrbanGround teste la capacité des agents MLLM à transformer des perceptions locales en actions spatiales dans une réplique 3D de Hong Kong, analysant les limites de grounding et de navigation en conditions réelles.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème central abordé par cette publication est l'évaluation de la capacité des modèles multimodaux de langage (MLLMs) à transformer une perception locale d'un environnement urbain en actions fiables et cohérentes dans une ville à échelle réelle. Actuellement, ces modèles excellent dans l'interprétation statique de scènes, mais leur efficacité diminue dès qu'ils doivent agir dynamiquement, comme naviguer ou s'orienter dans un espace complexe et changeant.",
+    "methode": "Les auteurs proposent *UrbanGround*, un environnement sandbox reproduisant fidèlement la ville de Hong Kong à partir de données géospatiales 3D territoriales. Cet outil permet une interaction en boucle fermée avec une vue à la première personne et intègre une carte interactive pour la navigation. Trois questions de recherche structurent l'analyse : (1) la capacité des agents à ancrer une scène locale pour répondre à des questions spatiales après observation active, (2) la robustesse de cette perception pour la navigation vers des destinations éloignées ou implicites, et (3) la résilience des comportements face à des modifications des itinéraires ou des mouvements piétons. Les tests sont réalisés avec des MLLMs contemporains, en évaluant leurs performances sur des tâches atomiques (reconnaissance visuelle, raisonnement spatial court) et des défis étendus (exploration longue, correction d'erreurs).",
+    "resultats": "Les résultats montrent que les MLLMs actuels possèdent des compétences atomiques utiles, comme la reconnaissance visuelle et le raisonnement spatial à courte portée. Cependant, leurs performances se dégradent significativement pour des tâches nécessitant une orientation précise ou une adaptation aux mouvements piétons. Leur principale faiblesse réside dans l'incapacité à composer ces compétences locales en un comportement dirigé vers un objectif sur le long terme, avec une accumulation d'erreurs non corrigées lors de l'exploration prolongée. Aucun chiffre clé précis n'est mentionné dans le résumé disponible.",
+    "limites": "Le contenu disponible ne permet pas d'identifier clairement les limites méthodologiques ou techniques spécifiques, comme la représentativité des données géospatiales utilisées ou les biais potentiels des MLLMs testés. De plus, l'absence de détails sur les métriques quantitatives ou les protocoles d'évaluation exacts rend difficile une appréciation critique approfondie. Enfin, la généralisation des résultats à d'autres environnements urbains ou types d'agents reste une zone d'ombre.",
+    "verdict": "Cette publication mérite l'attention pour son approche innovante et systématique de l'évaluation des MLLMs dans des environnements urbains réalistes, mais ses conclusions doivent être nuancées en l'absence de données quantitatives détaillées et de transparence sur les limites expérimentales."
+   }
+  },
+  {
+   "id": "70796da0d900c073",
+   "title": "Zero-WAM: In-Context World-Action Modeling from Human Videos for Open-Ended Task Generalization",
+   "url": "https://huggingface.co/papers/2608.26103",
+   "summary": "Zero-shot cross-task generalization, where a policy must execute manipulation tasks never seen during training, remains a central challenge in robot learning. In large language models, a novel task can be performed simply by specifying it in the context, without any parameter update. This form of in-context learning (ICL) turns generalization into a problem of task specification. To achieve cross-task generalization, we bring this paradigm to robotic manipulation, and argue that the natural task specification for manipulation is a human video: unlike language, it provides rich visual cues about the intended task evolution. We present Zero-WAM, a causal video-action model that executes unseen tasks by following in-context human video guidance. To address the scarcity of task-rich paired human-robot data, we propose an automatic pipeline that converts task-sampled robot trajectories into semantically matched human videos, yielding HumanGen, a dataset of 74.2K human-robot ICL pairs across 8.6K tasks. For model training, we further introduce an in-context future chunk prediction (IFP) objective that suppresses shortcuts learned from seen tasks and forces the policy to draw task information from the video prompt. On seven unseen tasks in RoboTwin 2.0 simulation, Zero-WAM achieves a 47.0% average success rate, an absolute improvement of 29.5 percentage points over the strongest video-action baseline. In real-world evaluations, it follows human video guidance to generalize to unseen task configurations involving multi-object scenes, long-horizon manipulation, and fine-grained insertion.",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2608.26103"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Zero-WAM généralise des tâches robotiques non vues via l'apprentissage *in-context* à partir de vidéos humaines, avec un nouveau jeu de données (HumanGen) et un objectif de prédiction de chunks futurs pour éviter les raccourcis.",
+   "score": 8.8
+  },
+  {
+   "id": "e5c9ec434d28d276",
+   "title": "What Makes Good Agentic Data? An ACE Lens on Data Generation for LLM Agents",
+   "url": "https://huggingface.co/papers/2608.27260",
+   "summary": "LLM agents increasingly rely on generated interaction data to learn how to interact with external environments. Agentic data generation must maintain consistency among environments, tasks, interactions, and success signals while producing experience that is useful rather than merely abundant. Existing work spans many agent domains, but domain-centered organization and heterogeneous evaluation often obscure common generation mechanisms and conflate candidate construction with verification and selection. This work develops a two-level framework for the field. First, we represent agentic data as a common factorized object (E,q,τ,v), comprising an environment specification, task signal, interaction realization, and optional verifier. We organize generation paradigms by their primary anchor and dependency structure. Second, we formulate generation as constrained distribution design through the Accuracy-Complexity-divErsity (ACE) lens. Accuracy establishes the feasible support of grounded and internally consistent data. Within this support, Complexity places learning mass relative to the capability of a declared learner and execution configuration, while divErsity controls coverage and redundancy of data. Using this framework, we explore how prior work verifies generated experience, constructs and calibrates difficulty, and expands behavioral coverage. The literature reveals a shift toward execution-grounded accuracy, learner-relative complexity, and diversity beyond surface variation or dataset size. We further discuss broader directions and emerging trends in agentic data generation through the ACE lens, including their implications for scaling, data sources, training regimes and adaptive learning. Overall, the central challenge is not simply to generate more data, but to continually allocate valid, informative, and non-redundant experience as agents and environments evolve.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 55,
+    "arxiv_id": "2608.27260"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Ce travail formalise la génération de données pour agents LLM via un cadre ACE (Accuracy-Complexity-divErsity) et un objet factorisé (E,q,τ,v), offrant une taxonomie unifiée des mécanismes de génération. Crucial pour comprendre comment entraîner des agents fiables et efficaces.",
+   "score": 8.8
+  },
+  {
+   "id": "c0c5878d350f4387",
+   "title": "TTPO: Test-Time Policy Optimization",
+   "url": "https://huggingface.co/papers/2608.27448",
+   "summary": "Recent prominent post-training methods, such as Reinforcement Learning (RL) and On-Policy Self-Distillation (OPSD), have driven rapid progress in mathematical reasoning for large language models, yet their reliance on ground-truth labels precludes test-time training (TTT). Replacing ground truth with majority-vote pseudo-labels is a natural alternative, yet it is fragile: an incorrect vote corrupts the teacher and misleads every token. We observe that this failure mode is asymmetric: rollouts that disagree with the pseudo-label are typically wrong regardless of whether the vote itself is correct. Building on this observation, we propose Test-Time Policy Optimization (TTPO), an asymmetric objective that distills agreeing rollouts via OPSD and penalizes disagreeing rollouts with Grouped RL. Token-level selection further refines both branches: distillation down-weights already-converged positions, while RL penalizes only confident errors. Both updates remain well-grounded even under frequent pseudo-label errors, and majority-vote routing yields tighter self-supervision as the model improves. Without any labels, TTPO matches label-supervised OPSD on five competition-level benchmarks, raises Qwen3-1.7B from 38.0% to 45.2% in TTT, yields +25.2% to +36.4% without thinking, and shows strong cross-task generalization.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 61,
+    "arxiv_id": "2608.27448"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "TTPO propose une méthode d'optimisation en temps de test (TTT) pour les LLM en raisonnement mathématique, utilisant des pseudo-labels asymétriques pour distiller les rollouts corrects et pénaliser les erreurs. Sans labels, atteint des performances comparables aux méthodes supervisées.",
+   "score": 8.5
+  },
+  {
+   "id": "5c85645c2628e99d",
+   "title": "Aphanta: Diagnosing Task-Aligned Image-Edited Intermediates for Multimodal Reasoning",
+   "url": "https://huggingface.co/papers/2608.26993",
+   "summary": "Explicit visual intermediates can help multimodal large language models (MLLMs) externalize spatial evidence and updated visual states, but their utility depends on whether an image editor can faithfully realize the required transformation. We introduce Aphanta, an automated task-discovery and closed-loop diagnostic framework for the MLLM -> image editor -> MLLM pipeline. Aphanta evaluates three conditions---direct reasoning, reasoning with an editor-generated intermediate, and reasoning with an idealized reference intermediate---to separate potential visual headroom from the practical utility of current editors. Across 20 candidate tasks and multiple editor--MLLM combinations, we find that utility is strongly task-conditioned. Gains concentrate in visual cue injection, grounding, and counterfactual state realization, whereas intermediates requiring symbol-sensitive construction or structural extrapolation are substantially less reliable. On the selected positive-task subset, our consolidated Qwen pipeline improves the mean task score from 0.343 to 0.445 (+10.2 points; +29.7% relative), while the full study also retains filtered and unsuccessful tasks to expose the boundary. These results position image editing as a specialized visual workspace rather than a universal reasoning mechanism, and establish Aphanta as a reusable protocol for measuring task--representation alignment, editor realization, and downstream pipeline utility.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.26993"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Aphanta propose un cadre diagnostique pour évaluer l'utilité des intermédiaires visuels dans les MLLM, révélant que leur efficacité dépend fortement de la tâche et améliore significativement les performances sur un sous-ensemble de tâches (+29.7% relatif).",
+   "score": 8.5
+  },
+  {
+   "id": "ebb3b3aeae3c7f54",
+   "title": "PAWBench: How Far Are We from Probabilistically Aligned World Modeling?",
+   "url": "https://huggingface.co/papers/2608.27345",
+   "summary": "Recent video generation models are increasingly framed as world models. Many physical processes can unfold in more than one valid way. Therefore, a world model should reproduce not only a plausible trajectory, but also the distribution of possible behaviors under the same initial observation and action. We call this distribution-level requirement probabilistic alignment. However, existing evaluations largely assess individual-video plausibility and do not test whether repeated generations recover the correct distribution. This raises a central question: how far are current video generators from probabilistically aligned world modeling? To answer it, we formalize probabilistic alignment as a distributional criterion for world models and introduce PAWBench, a benchmark for evaluating video generators as stochastic samplers of world dynamics. We further introduce PAWEval, an outcome-level protocol that converts repeated video rollouts into empirical distributions over possible physical behaviors. Across 50 scenarios and eleven current systems, no model consistently matches the reference probabilities while recovering the range of valid behaviors. Having established this gap, we test whether language prompts, initial noise sampling, or model training can reshape the model's predictive distribution. We believe our work can serve as a foundation for future efforts to move towards probabilistically aligned world modeling.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 73,
+    "arxiv_id": "2608.27345"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "benchmark",
+    "vision"
+   ],
+   "tldr": "PAWBench évalue l'alignement probabiliste des *world models* vidéo, révélant que les modèles actuels échouent à reproduire les distributions de comportements physiques valides, malgré des évaluations individuelles plausibles.",
+   "score": 8.5
+  },
+  {
+   "id": "98cf7abc11dbc47d",
+   "title": "GUI-Primitives: Diagnosing Spatial Reasoning Failures in Vision-Language GUI Grounding",
+   "url": "https://huggingface.co/papers/2608.21832",
+   "summary": "Computer-use agents ground natural-language instructions in screenshots to locate interface elements, yet existing benchmarks do not isolate whether models bind relational language to the correct element. We introduce GUI-Primitives, a 994-item benchmark of contrastive instruction pairs over seven spatial relations in graphical user interfaces (left/right, above/below, containment, alignment, proximity, list ordinal, occlusion). Each pair holds the screenshot and anchor fixed while changing the relation expression, so the correct target moves between two designated candidates. Five annotators validate a 196-item subset (κ= 0.94 well-formedness; κ= 0.79 target selection). Nineteen vision-language models reach at most 32% strict point-in-box accuracy. Because models emit unconstrained coordinates, we classify each prediction by the candidate region it falls within. Predictions fall outside both candidates on 60-92% of items. Conditional on falling within a candidate region, target selection reaches 0.82-0.90 for horizontal position, vertical position, proximity, and list ordinal, but does not differ significantly from 0.50 for containment and occlusion: most failures reflect candidate localization rather than relation understanding. Across ten models, benchmark accuracy correlates with ScreenSpot-Pro accuracy (Spearman ρ= +0.74), an exploratory association at this sample size. Marking the two designated candidates raises selection accuracy by 35--57 percentage points, an oracle diagnostic that supplies the candidate set rather than a deployable method. We release the benchmark, predictions, and code.",
+   "published": "2026-08-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.21832"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "GUI-Primitives évalue la capacité des VLMs à comprendre des relations spatiales dans les interfaces graphiques via un benchmark contrastif de 994 items. Montre des lacunes majeures (60-92% d'erreurs hors des zones candidates), révélant des biais dans le grounding spatial.",
+   "score": 8.5
+  },
+  {
+   "id": "23b18ef8b7e245c2",
+   "title": "FIRM-Video: Check Before You Score for Reliable Text-to-Video Reward Modeling",
+   "url": "https://huggingface.co/papers/2608.21839",
+   "summary": "Reliable reward models are essential for text-to-video evaluation and alignment. However, the trade-off between evaluation accuracy and inference efficiency places high demands on the quality of training supervision. Existing approaches often rely on holistic judges with fixed rubrics or open-ended reasoning, leading to incomplete inspection, unfaithful justification, and entangled attribution. We introduce FIRM-Video, a unified checklist-driven data construction framework based on a check-before-score principle: construct dimension-specific checklists, verify each criterion against temporal visual evidence, and aggregate only verified decisions. For Instruction Following, FIRM-Video decomposes prompts into weighted atomic requirements; for World Coherence, it constructs prompt-calibrated, target-specific checks grounded in visible entities and actions; and for Perceptual Quality, it applies a generic taxonomy of visual defects. The verified criteria and scores are further transformed into natural-language analyses for end-to-end reward modeling. Subsequently, we construct FIRM-Video-90K with 88,044 dimension-specific instances from 29,348 videos, and introduce FIRM-Video-Bench with 750 point-wise human annotations across 250 videos. The Qwen3-VL-based FIRM-Video-8B achieves the best overall MAE on FIRM-Video-Bench while consistently delivering the highest VBench Total, Quality, and Semantic Scores in Best-of-8 sampling across three video generators.",
+   "published": "2026-08-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.21839"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "FIRM-Video propose un cadre unifié de modélisation de récompenses pour l'évaluation et l'alignement des modèles text-to-video, basé sur des checklists dimensionnelles vérifiées (Instruction Following, World Coherence, Perceptual Quality) pour améliorer la fiabilité et l'efficacité des juges automatisés.",
+   "score": 8.5
+  },
+  {
+   "id": "2099625cfbdba34a",
+   "title": "CritICL: Inference-Time Weak-to-Strong Generalization from Small Language Model Failure Modes",
+   "url": "https://arxiv.org/abs/2608.27455v1",
+   "summary": "Recent advances in inference-time scaling have significantly improved the reasoning performance of large language models (LLMs). However, these methods typically rely on repeated generation or external verification. To address this limitation, we introduce CritICL, a novel inference-time framework that improves reasoning while maintaining high efficiency. Our key insight is that LLM failure modes exhibit structured patterns across model scales within the same family. Instead of treating failures as undesirable outputs, CritICL leverages them as a source of guidance. Specifically, we utilize failure modes derived from weaker models and incorporate them into inference through critique-based in-context examples. We propose two variants: CritICL-dynamic, which adaptively predicts input-specific failure modes and retrieves critiques, and CritICL-static, which uses a global failure mode profile to provide stable guidance. Experimental results show that CritICL consistently outperforms standard in-context learning and achieves performance competitive with or superior to test-time scaling methods, while requiring significantly fewer generations and lower token cost. Code available at: https://github.com/umwyf/CRITICL",
+   "published": "2026-08-27T17:59:30+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yufan Wu, Yinghui He, Zhengyi Hu, Lang Wei, Ruichen Li, Qifan Yang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "CritICL exploite les motifs de défaillance structurés des modèles faibles pour guider l'inférence des LLM, améliorant les performances en raisonnement avec une efficacité supérieure aux méthodes de scaling en temps d'inférence (test-time scaling) tout en réduisant les coûts de génération et de tokens.",
+   "score": 8.3
+  },
+  {
+   "id": "7b18bb4fa8a9d8e0",
+   "title": "CorporateBench: Large-Scale Q&A Benchmarking with Temporal Knowledge Bases",
+   "url": "https://arxiv.org/abs/2608.27391v1",
+   "summary": "LLMs are increasingly able to answer complex questions about enterprise-scale document collections. But evaluation is hard: companies don't want to share internal communications, and synthetic datasets have been overly simple. We present CorporateBench (CB), a human-validated multi-task Q&A benchmark whose scale approaches the conditions LLMs encounter in corporate communication networks, with evaluation corpora surpassing 230,000 documents. CB evaluates LLMs across two dimensions (information extraction and knowledge base querying) through four synthetically generated firms ranging from 12 to 10,000 employees. Each corpus is sampled from a temporally evolving knowledge base describing a consistent world, guaranteeing cross-document logical consistency even across hundreds of thousands of documents. We evaluate five LLMs on CB, revealing increasingly poor performance as input size approaches realistic scales. CB provides LLM developers a metric for corporate communication reasoning, filling a crucial gap in the benchmarking ecosystem.",
+   "published": "2026-08-27T17:23:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sil Hamilton, Albert Yu Sun, Oscar J. Romero, Carl-Leander Henneking, David Mimno, Bishan Yang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "CorporateBench propose un benchmark Q&A à grande échelle (230k+ documents) simulant des environnements d'entreprise réels avec des bases de connaissances temporelles, révélant des lacunes des LLMs face à des entrées réalistes. Intéressant pour évaluer les capacités de raisonnement sur des données complexes et évolutives.",
+   "score": 8.3
+  },
+  {
+   "id": "08c0ec561a4ab279",
+   "title": "Agentic Game Development as a Verifiable Trajectory Data Engine for Scaling World Models",
+   "url": "https://huggingface.co/papers/2608.25518",
+   "summary": "A common strategy for scaling world models is to train on more crawled video with more compute. We argue that this strategy is inefficient: scaling world models also requires a recursive data engine that offers grounded reward signals. The success of code agents illustrates why this matters. As code is executable, compilers and runtimes can provide high-quality rewards for Reinforcement Learning (RL) post-training of LLMs. By contrast, spatial generation still relies largely on fuzzy proxies such as CLIP scores. These signals are fuzzy and biased, making them hard to support RL post-training. Compared with these, game development provides a missing reward environment for spatial world models. A scene encoded by a game engine is an executable world specification: the engine can efficiently check collision, physics, navigability and bounded playability, while the developer provides the global verification signal by judging whether the scene should be accepted. Game development also provides real-world long-horizon trajectory data for RL post-training. We therefore propose Reinforcement Learning with Human-Engine Verification (RLHEV), a post-training paradigm that combines dense engine signals with implicit human acceptance feedback from the development process.",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 116,
+    "arxiv_id": "2608.25518"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "RLHEV propose d'utiliser le développement de jeux vidéo comme environnement de récompense pour les modèles de monde spatial, combinant vérification humaine et signaux denses du moteur de jeu. Alternative aux proxies flous comme CLIP pour le RL post-entraînement.",
+   "score": 8.2
+  },
+  {
+   "id": "20d1c9bdca0c6827",
+   "title": "GameWAM: A World Action Model for Video Games",
+   "url": "https://huggingface.co/papers/2608.26200",
+   "summary": "Modern video games combine first-person perception, rapid visual changes, persistent world state, and heterogeneous native controls. Existing game agents map visual and task context directly to actions but lack explicit world dynamics modeling, whereas interactive game world models predict visual futures from supplied actions but do not serve as task policies. World-Action Models (WAMs) unify these objectives, but remain largely unexplored under the dynamics and open-ended interaction of video games. We introduce GameWAM, to our knowledge the first WAM for native closed-loop gameplay and GUI control. GameWAM jointly generates future visual observations and executable keyboard-mouse trajectories through parallel visual and action generative processes with block-causal conditioning and flow matching. To support joint world-action learning, we construct synchronized gameplay and GUI trajectories. To handle heterogeneous native control, GameWAM predicts a gameplay/GUI mode at each action step and generates actions with mode-specific prediction distributions and continuous-action normalization. For long-horizon interaction, block-cycle control predicts beyond the committed horizon, executes only a short action prefix, and replans from new observations, while fine-grained within-cycle context and hierarchical cross-cycle history preserve temporal continuity. Experiments demonstrate competitive task success with fewer executed native actions than the compared agents. We further uncover Low-Frequency Action Source Imprinting (LASI), in which low-frequency components of the sampled action source systematically steer coarse generated camera motion under fixed conditioning, revealing a source-sensitivity failure mode in generative control. Project page is available at https://yunncheng.github.io/GameWAM/.",
+   "published": "2026-08-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 37,
+    "arxiv_id": "2608.26200"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "GameWAM introduit un modèle unifié (WAM) pour la génération d'actions et de futurs visuels dans les jeux vidéo, avec un contrôle natif (clavier/souris) et une prédiction en bloc-causal. Première implémentation pour des interactions ouvertes dans les jeux.",
+   "score": 8.2
+  },
+  {
+   "id": "8e4beadd71fd3c48",
+   "title": "Video-IFBench: Evaluating Instruction Following of Multimodal LLMs in Video Understanding Scenarios",
+   "url": "https://huggingface.co/papers/2608.25529",
+   "summary": "Multimodal Large Language Models (MLLMs) have shown strong performance in video understanding. However, their ability to follow instructions in this domain remains under-explored. Real-world video understanding requires models not only to interpret video content correctly, but also to satisfy diverse user-specified constraints. Existing benchmarks focus primarily on task accuracy rather than instruction adherence, leaving this capability insufficiently evaluated. To address this gap, we introduce Video-IFBench, a comprehensive benchmark for evaluating instruction following in video understanding, where models must satisfy diverse user-specified constraints, including those grounded in visual and audio content. We develop an instruction taxonomy with four templates, including single-task, multi-task, selection, and nested instructions, covering 32 task types and 39 manually designed constraint categories spanning both semantic and format requirements. To reduce annotation cost, we build a semi-automatic data construction pipeline that combines MLLMs, programmatic processing, and human verification, resulting in 1.5K samples. We conduct a large-scale evaluation of more than 20 recent MLLMs and show that video instruction following remains challenging for current models, especially for instructions with many constraints, semantic constraints, or complex conditional structures that require selecting the correct branch or path based on video content. We hope our work will facilitate future research on instruction following in video understanding scenarios.",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2608.25529"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Video-IFBench évalue la capacité des MLLMs à suivre des instructions complexes (nested, multi-tâches) dans des vidéos via 1.5K échantillons et 39 catégories de contraintes. Outil clé pour mesurer l'adhérence aux prompts dans des scénarios réalistes.",
+   "score": 8.2
+  },
+  {
+   "id": "7132b5205639cdd2",
+   "title": "Boosting LLM Exploration via Weak-Model Guidance in RLVR",
+   "url": "https://arxiv.org/abs/2608.27420v1",
+   "summary": "Reinforcement Learning with Verifiable Rewards (RLVR) significantly improves LLM reasoning but often causes a drop in policy entropy, leading to narrowed reasoning coverage and degraded pass@$k$ for large $k$. While existing methods mitigate this entropy collapse through algorithmic regularizations, cross-model non-parametric perturbation is also neglected. In this work, we propose a simple yet effective approach to preserve the generative diversity of LLMs during RLVR. Instead of relying solely on internal exploration, we force the target model to generate answers based on partial reasoning trajectories generated by a smaller, weaker language models. These unfamiliar prefixes effectively disrupt over-confidence and encourage the exploration of distinct reasoning paths. We empirically study the potential of outer prefixes, revealing the mechanism of the impact of distributional discrepancy to the exploration dynamics in RLVR training. Experiments across multiple mathematical benchmarks show that our method consistently outperforms vanilla RLVR. Notably, the performance gain becomes increasingly pronounced as $k$ scales up, demonstrating a substantial expansion of reasoning coverage. Furthermore, our approach efficiently mitigates entropy collapse without requiring additional SFT, intricate reward designs, or complex prompting.",
+   "published": "2026-08-27T17:45:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xingyu Shen, Huishuai Zhang, Peng Li, Yinchun Wang, Dongyan Zhao"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Méthode pour améliorer l'exploration des LLM en RLVR via des préfixes générés par des modèles faibles, préservant la diversité des raisonnements. Résultats significatifs sur des benchmarks mathématiques, avec gains croissants pour k élevé, mais dépendance à la qualité des modèles faibles.",
+   "score": 8.0
+  },
+  {
+   "id": "a51ad146dc6b61a7",
+   "title": "GLM-5.3 is now open-weight",
+   "url": "https://huggingface.co/zai-org/GLM-5.3",
+   "summary": "",
+   "published": "2026-08-28T15:20:13Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 328,
+    "comments": 123
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Modèle GLM-5.3 rendu open-weight par Zhipu AI, offrant une alternative open-source aux LLM propriétaires avec des améliorations potentielles en efficacité et architecture.",
+   "score": 8.0
+  },
+  {
+   "id": "916c5c276ab0b5b3",
+   "title": "WikiSkill: Compiling Agent Experience into Persistent Knowledge for Skill Evolution",
+   "url": "https://huggingface.co/papers/2608.27454",
+   "summary": "Agent skills package specialized knowledge and workflows into reusable resources that extend AI agent capabilities. Recent work automatically discovers such skills from agent experience, which enables agents to progressively adapt through interaction. However, the insights that guide skill development typically remain scattered across optimization histories, limiting their systematic reuse across iterations. We introduce WikiSkill, a framework that co-evolves agent skills with a persistent knowledge base (wiki). At a high level, WikiSkill separates raw execution experience, accumulated knowledge, and executable skills, while continuously consolidating experience into the wiki, which subsequent skill updates can build on. Across diverse benchmarks and models, WikiSkill consistently outperforms state-of-the-art skill-evolution methods and improves over no-skill baselines in most model-benchmark settings. We find that skill evolution complements model scaling: larger models generally benefit more from evolved skills, while smaller models with skills can outperform substantially larger models without them. We also find that evolved skills transfer effectively across models and model families, and skills evolved by other models can outperform self-evolved skills. Finally, our ablation studies confirm that persistent knowledge accumulation in the wiki is critical for effective skill evolution. These results demonstrate the benefits of systematically accumulating and refining agent experience for developing reusable and transferable skills.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.27454"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "WikiSkill compile l'expérience des agents en une base de connaissances persistante (*wiki*), améliorant systématiquement les performances via une évolution des compétences qui se transfère entre modèles et tâches.",
+   "score": 7.9
+  },
+  {
+   "id": "7ebecc7b840b011a",
+   "title": "SWE-Prime: Fewer Trajectories, Better Performance",
+   "url": "https://arxiv.org/abs/2608.27449v1",
+   "summary": "To improve large language models' ability to resolve real-world software issues, prior work has focused on constructing large-scale agent trajectory datasets and performing supervised fine-tuning (SFT) on successful trajectories. However, task success does not guarantee high-quality supervision: successful trajectories may still contain ineffective, redundant, or risky steps. Directly using such trajectories for SFT can introduce noisy supervision and encourage models to imitate undesirable problem-solving behaviors. Therefore, we propose SWE-Prime, a multi-granularity, two-stage SFT data selection method that progressively filters training data at the trajectory and segment levels. Specifically, the first stage performs trajectory-level screening based on process quality, result quality, and data representativeness, selecting a high-quality and representative subset of successful trajectories. The second stage performs segment-level selection by grouping consecutive steps into semantic segments and assessing each segment based on its contribution to the final solution, learnability, and potential risks. During SFT, all segments remain in the sequence to preserve context, while only selected segments contribute to the loss computation. Experiments on SWE-Bench Pro and SWE-Bench Verified show that training on the 10% trajectory subset selected by SWE-Prime outperforms training on the full resolved dataset, yielding relative performance gains of up to 12.2% and 24.2%, respectively.",
+   "published": "2026-08-27T17:58:10+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Dewu Zheng, Ruizhe Ye, Yanlin Wang, Yang Ye, Hongyu Zhang, Ensheng Shi"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "SWE-Prime filtre les trajectoires de résolution de bugs logicielles en deux étapes (niveau trajectoire et segment) pour sélectionner des données de fine-tuning de haute qualité, réduisant le bruit et améliorant la performance des LLM sur des tâches de développement logiciel.",
+   "score": 7.7
+  },
+  {
+   "id": "ee2f354e5a9100b5",
+   "title": "LeVJEPA: Efficient & Scalable Video Pretraining without the Heuristics",
+   "url": "https://arxiv.org/abs/2608.27395v1",
+   "summary": "Video carries the temporal structure of the physical world, yet learning representations from it has remained computationally expensive: prevailing self-supervised methods either prevent representation collapse through architectural asymmetries, coupling an exponential-moving-average target encoder, a stop-gradient, and a capacity-limited predictor, or circumvent it by reconstructing masked content in pixel space. We introduce LeVJEPA, the first video encoder trained under LeJEPA's collapse-free objective, which dispenses with both. A single encoder is trained with an invariance loss over global and local views of a clip, regularized by SIGReg, which excludes collapse with a provable guarantee. The architecture reduces to an encoder and a projector, and the objective to a single hyperparameter. This formulation admits two properties. First, the cost of pretraining is governed by the number of tokens the encoder observes; uniform random token dropping renders this number small while simultaneously improving downstream accuracy. At matched epochs on identical data, LeVJEPA matches or surpasses V-JEPA 2 across ViT-S/B/L at 5.6 to 20.8x less pretraining compute, and at matched total FLOPs it exceeds the strongest video baseline by 7.6 points on ImageNet-1K while remaining competitive on motion-centric benchmarks. Second, since no asymmetry between branches is required, the encoder can be trained with block-causal attention at no measurable accuracy cost: temporal ordering becomes a property of the encoder itself. Against a compute-matched DINOv2 trained on frames of the same videos, LeVJEPA approaches the image-pretrained encoder on appearance-centric evaluation while nearly doubling its motion-centric accuracy. These results indicate that, once its computational overhead is removed, video becomes a viable and in several respects preferable substrate for general-purpose visual pretraining.",
+   "published": "2026-08-27T17:26:24+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Lukas Kuhn, Lucas Maes, Giuseppe Serra, Quentin Le Lidec, Yann LeCun, Randall Balestriero"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "LeVJEPA, un encodeur vidéo auto-supervisé sans heuristiques, utilisant SIGReg pour éviter l'effondrement des représentations. Réduction de 5.6 à 20.8x du coût de prétraitement vs V-JEPA 2 avec des performances égales ou supérieures. Pertinent pour l'optimisation des modèles visuels.",
+   "score": 7.7
+  },
+  {
+   "id": "f5ffd422412a2dd6",
+   "title": "Self-OPD: On-Policy Distillation for Flow Matching Models without Teacher",
+   "url": "https://huggingface.co/papers/2608.26872",
+   "summary": "On-policy distillation (OPD), which leverages a pre-trained, specialized teacher model to provide dense supervisory signals, has achieved significant success in Large Language Models (LLMs) and has recently been adapted to flow matching models. However, this paradigm suffers from two major issues: First, training a separate, task-specific teacher for every new objective incurs high computational costs. Second, the discrepancy between teacher and student distributions often leads to compounding errors along the generation trajectory. In this paper, we introduce Self-OPD, a teacher-free OPD framework for flow matching models that turns the student's own self-exploration into step-wise supervision. At each timestep, Self-OPD branches the deterministic next-state prediction into K stochastic SDE candidates, rolls them out with the ODE sampler, and compares their rewards against a deterministic self-reference baseline to obtain normalized advantages. The velocity field is optimized with an all-branch pull-push objective, where high-advantage branches attract the student and low-advantage branches repel it under direction-aware attenuation and SDE-variance normalization. For multi-objective alignment, Self-OPD fuses normalized scores at the reward level, avoiding direct gradient conflict. Experiments on single and mixed reward benchmarks show that Self-OPD outperforms prior RL and OPD methods without task-specific teachers.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 55,
+    "arxiv_id": "2608.26872"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Self-OPD propose une distillation *on-policy* sans enseignant pour les modèles de *flow matching*, utilisant l'auto-exploration de l'étudiant pour générer des signaux de supervision et éviter les erreurs de distribution.",
+   "score": 7.6
+  },
+  {
+   "id": "cc0f5547fd4ae68a",
+   "title": "Understanding Evolution Strategies for LLM Reasoning: Broader Reasoning Coverage than GRPO",
+   "url": "https://huggingface.co/papers/2608.27351",
+   "summary": "Evolution Strategies (ES) have recently emerged as a memory-efficient post-training paradigm for LLM reasoning. However, the optimization behavior of ES remains understudied, making it hard to define its advantage scope compared to mainstream post-training paradigms (e.g., Group Relative Policy Optimization (GRPO)). By systematically investigating ES dynamics and mechanisms, this paper first identifies a performance advantage of ES over GRPO, theoretically and empirically showing that ES can lead to broader reasoning coverage, thereby better exploiting the reasoning capabilities of pretrained LLMs. Theoretically, we show that verifier-projected Jensen-Shannon diversity across the ES population is helpful to higher Pass@K performances. Empirically, unlike GRPO, which exhibits entropy collapse, ES improves Pass@1 while attaining higher Pass@K than GRPO. We further develop a sequential GRPO-ES training strategy that combines GRPO's strength in Pass@1 with ES's gains in Pass@K. Second, we find that despite substantial whole-model parameter drift, the task-performance gains of ES are only contributed to a sparse subset of larger-magnitude updates. This functional sparsity suggests that large parameter movement need not imply widespread functional change, and held-out evaluations further show that it does not necessarily lead to catastrophic forgetting. Finally, we study how hyperparameter design affects the effectiveness of ES, demonstrating that ES requires a smaller population size in a larger LLM. These findings position ES as a distinct reasoning post-training paradigm rather than a less effective, memory-efficient alternative to GRPO.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.27351"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude théorique et empirique montre que les *Evolution Strategies* (ES) offrent une couverture de raisonnement plus large que GRPO, avec une diversité projetée utile pour les performances Pass@K, et une sparsité fonctionnelle dans les mises à jour.",
+   "score": 7.6
+  },
+  {
+   "id": "9fe7e118a97295f9",
+   "title": "Skill Issue: Are Skills Language-Invariant in LLMs?",
+   "url": "https://huggingface.co/papers/2608.25832",
+   "summary": "Large language models access knowledge inconsistently across languages, but to what extent do they differ in their skill sets when interacting with different languages? This work quantifies cross-lingual skill inconsistency orthogonally from knowledge and general benchmark performance. We do this via multilingual self-play: two instances of the same model compete in a text-based game, each interacting through a different language interface. Since the model, opponent, rules, state space, and available actions remain fixed, this setting isolates the effect of language on the model's realized behavior. We build a multilingual extension to TextArena and evaluate three open-weight models across eight languages and six games covering spatial reasoning, imperfect information, resource allocation, and repeated interaction. We find that the same model can exhibit markedly different playing strength across languages, with systematic variation in win--loss margins, invalid actions, and strategic tendencies. Detailed analyses reveal language-specific failures in spatial reasoning, card-conditioned decisions, and optimal move selection. In some settings, changing only the intermediate reasoning language recovers much of the lost performance, suggesting that language can affect different stages of the decision process. These results show that skill discrepancies are a measurable major roadblock in the development of truly multilingual models. Better understanding these discrepancies can help us design models that perform more equitably across languages.",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.25832"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étude sur l'invariance des compétences des LLM selon la langue via un cadre de *self-play* multilingue (TextArena). Montre des différences systématiques de performance (stratégies, erreurs) entre langues, soulignant des limites dans la généralisation des compétences.",
+   "score": 7.6
+  },
+  {
+   "id": "91ff5a2572e3f972",
+   "title": "Rubrics as Visual-Repair Context for Self-Evolving UI-to-Code Generation",
+   "url": "https://huggingface.co/papers/2608.24138",
+   "summary": "Large vision-language models have shown strong progress in UI-to-code generation, yet their test-time self-evolution remains unstable. We first identify a fundamental obstacle, termed visual repair coupling: a local code edit may propagate through layout, style, and component dependencies, correcting one visual mismatch while degrading regions that were previously faithful. To address this issue, we present RubSE, a Rubric-guided Self-Evolution framework that uses rubrics to represent visual feedback as a structured visual-repair context. At each refinement round, RubSE generates typed candidate rubrics, selects one prioritized repair target, and stores previously selected rubrics as history, thereby steering each revision toward a well-scoped visual repair while discouraging repeated or over-broad changes. Evaluations across six VLMs and three UI-to-code benchmarks demonstrate that RubSE substantially outperforms naïve self-evolution in final-round and best-round settings, achieving more stable refinement trajectories and a higher trajectory-level performance ceiling. Further analysis shows that RubSE mitigates trajectory collapse by improving recovery from severe visual regressions, and that stronger rubric generators can transfer effective visual-repair guidance to weaker code improvers.",
+   "published": "2026-08-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2608.24138"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "vision"
+   ],
+   "tldr": "RubSE introduit un mécanisme de rétroaction visuelle structurée (rubrics) pour stabiliser l'auto-évolution des modèles de génération UI-to-code, en évitant les modifications locales propagatrices et en améliorant la cohérence visuelle.",
+   "score": 7.6
+  },
+  {
+   "id": "6f10531ab174fc7a",
+   "title": "VoiceMem: Streaming Dual-Brain Memory for Real-Time Interaction",
+   "url": "https://huggingface.co/papers/2608.26005",
+   "summary": "Conversational systems, such as duplex speech language models (SLMs), still lack a streaming, accurate, and empathetic memory system as their soul. We introduce VoiceMem, a simple memory architecture with a parallel informational left brain, an emotional right brain, and streaming memory I/O mechanisms. We further build a complete pipeline for memory-aware SLM training, long-horizon evaluation, and decoupled deployment with interchangeable memory backends. Experiments and real-world deployment show three advantages: i) Accuracy: under top-5 retrieval, the left brain outperforms classical systems such as Mem0 at top-200 by nearly 30 points; ii) Emotional & Personal: the right brain, with short- and long-horizon affective attribution and dual-node persona modeling, achieves state-of-the-art performance across three persona benchmarks and improves the aggregate score by 4.29 points over the previous best system; and iii) Real-Time & Cheap: VoiceMem completes retrieval in 134 ms, well within standard VAD latency, adding no extra conversational delay while maintaining high accuracy and low cost. These results show that VoiceMem provides a practical memory foundation for real-time, personalized, and emotionally aware speech interaction.",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 163,
+    "arxiv_id": "2608.26005"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "audio"
+   ],
+   "tldr": "VoiceMem présente une architecture de mémoire streaming pour les modèles de langage conversationnels, combinant une mémoire informationnelle (précision) et émotionnelle (personnalisation), avec des performances SOTA en temps réel et faible latence.",
+   "score": 7.6
+  },
+  {
+   "id": "b408838a2d8e9ce8",
+   "title": "WikiSkill: Compiling Agent Experience into Persistent Knowledge for Skill Evolution",
+   "url": "https://arxiv.org/abs/2608.27454v1",
+   "summary": "Agent skills package specialized knowledge and workflows into reusable resources that extend AI agent capabilities. Recent work automatically discovers such skills from agent experience, which enables agents to progressively adapt through interaction. However, the insights that guide skill development typically remain scattered across optimization histories, limiting their systematic reuse across iterations. We introduce WikiSkill, a framework that co-evolves agent skills with a persistent knowledge base (wiki). At a high level, WikiSkill separates raw execution experience, accumulated knowledge, and executable skills, while continuously consolidating experience into the wiki, which subsequent skill updates can build on. Across diverse benchmarks and models, WikiSkill consistently outperforms state-of-the-art skill-evolution methods and improves over no-skill baselines in most model-benchmark settings. We find that skill evolution complements model scaling: larger models generally benefit more from evolved skills, while smaller models with skills can outperform substantially larger models without them. We also find that evolved skills transfer effectively across models and model families, and skills evolved by other models can outperform self-evolved skills. Finally, our ablation studies confirm that persistent knowledge accumulation in the wiki is critical for effective skill evolution. These results demonstrate the benefits of systematically accumulating and refining agent experience for developing reusable and transferable skills.",
+   "published": "2026-08-27T17:59:11+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Liyan Tang, Cyrus Rashtchian, Chun-Sung Ferng, Andrew Tomkins, Da-Cheng Juan, Tu Vu"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "WikiSkill propose une base de connaissances persistante (wiki) pour structurer et réutiliser l'expérience des agents, améliorant leur évolution via des compétences réutilisables et transférables, avec des gains significatifs même pour les petits modèles.",
+   "score": 7.4
+  },
+  {
+   "id": "c6f5aee1594c0503",
+   "title": "RedEvoAgent: Automatic Red-Teaming Agent with Experience-Driven Skill Evolution",
+   "url": "https://arxiv.org/abs/2608.27439v1",
+   "summary": "LLM-based agents are increasingly deployed in product-level execution harnesses, where jailbreaks can trigger harmful tool use and persistent state changes, creating greater risks than unsafe text generation alone. Existing automatic red-teaming methods often rely on fixed attacks, while recent agentic attackers coordinate multiple jailbreak tools and show stronger potential through trajectory-based retrieval. However, such retrieval can reuse misleading experiences due to retrieval bias and unclear tool credit, and full trajectories add context overhead while reducing interpretability. We propose RedEvoAgent, a black-box red-teaming agent that distills cross-case attack trajectories into a concise, human-readable attack skill. The attack skill adaptively evolves through tool-effectiveness profiling and Deciding-Tool Attribution for skill updates, and a validation ratchet that retains only updates improving validation performance. Experiments on multiple benchmarks, target models, and target execution harnesses show that RedEvoAgent outperforms fixed and agentic baselines, improves tool efficiency, and transfers across attacker models and target execution harnesses.",
+   "published": "2026-08-27T17:55:33+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Junjie Zhang, Hui Liu, Kecheng Chen, Xianbo Mo, Changsheng Chen, Haoliang Li"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "RedEvoAgent automatise le red-teaming des agents LLM en distillant des trajectoires d'attaque en compétences concises et évolutives, améliorant l'efficacité des attaques et leur transférabilité entre modèles et environnements.",
+   "score": 7.4
+  },
+  {
+   "id": "a75928fe29375569",
+   "title": "Consolidating RLVR Capabilities Across Domains: A Deep Dive into Fusion Paradigms",
+   "url": "https://arxiv.org/abs/2608.27409v1",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) improves specific capabilities of large language models, but covering multiple capabilities often involves training separate domain experts and subsequently consolidating them. We organize three fusion paradigms by the artefacts they reuse: Merge combines expert task vectors, Mix RL pools their datasets, and multi-teacher on-policy distillation (MOPD) uses both. Because they have largely been studied in isolation, how they compare and how to choose among them remain unclear. We compare all three using shared experts and data across model scales and a multi-domain benchmark suite. Although their average performance differs by at most 1.4 points, the gap reaches 8.6 points on a single benchmark, with domain-level variation tracking cross-domain relations visible in task-vector geometry. Training dynamics expose distinct constraints: Mix RL depends on domain mixture proportions, MOPD remains bounded by its teachers, and Merge compresses all expert updates into one. All three improve single-sample accuracy without measurable gains in solution coverage or losses in held-out capabilities. These results yield a practical guideline: use Merge when experts already exist and cheap fusion is paramount; Mix RL when training a unified model without experts, with domain proportions adjusted for cross-domain transfer; and MOPD when preserving domain-specific gains matters more than surpassing teachers or minimizing end-to-end cost.",
+   "published": "2026-08-27T17:38:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Siye Wu, Kai Yang, Yuchen Cai, Xin Xu, Peng-Yuan Wang, Jiaxuan Wang"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Comparaison de trois paradigmes de fusion (Merge, Mix RL, MOPD) pour consolider les capacités RLVR des LLM. Résultats nuancés : gains moyens limités (1.4 pts) mais écarts jusqu'à 8.6 pts sur certains benchmarks. Analyse fine des dynamiques d'entraînement et des contraintes.",
+   "score": 7.4
+  },
+  {
+   "id": "43ea415f47455e3f",
+   "title": "Puro-2B: Poor Lab's Qwen2-1.5B Trained on RTX 5090 within $5090",
+   "url": "https://arxiv.org/abs/2608.27370v1",
+   "summary": "Language model pretraining has become almost synonymous with prohibitive cost, placing it out of reach for much of the academic and open-source communities. Although strong open-source efforts already exist, including open-weight models and open-source training recipes, a cost-efficient, hardware-accessible, and open-source pretraining recipe has long been missing. Even at a small scale, training Llama-3.2-3B costs over \\$1.5M, and reproducing SmolLM3-3B needs over \\$700K. In this report, we present an open pretraining recipe designed to lower this barrier. Using this recipe, we train a collection of Puro-2B models from scratch on up to 1.4 trillion tokens with FP8 precision on consumer-grade RTX 5090 GPUs. The models in the collection differ in token budgets and selected recipe variants. Our best model is trained at a compute cost of less than \\$6.9K and approaches Qwen2.5-1.5B performance under our evaluation protocol. This cost efficiency is enabled by a combination of approaches, including hardware selection, low-precision training, hyperball optimization, curriculum model averaging, and the data recipe. Beyond the recipe itself, we provide two additional results. First, across the Puro-2B collection, we derive a Puro Cost Scaling Law that relates training cost to average model performance; the fitted law suggests that about \\$4.4K, less than \\$5,090, is sufficient to reach the performance of Qwen2-1.5B. Second, as an end-to-end case study, we examine how pretraining data curricula shape downstream performance after post-training. Such controlled studies are enabled by having access to the full pretraining pipeline rather than model weights alone. We release the full training recipe for Puro-2B, including data, code, and model weights under Apache 2.0 at https://huggingface.co/collections/thu-pacman/puro-2b.",
+   "published": "2026-08-27T17:07:12+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kairong Luo, Jiarui Cui, Yaorui Yin, Shengqi Chen, Yiming Yang, Linxiang Gao"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Puro-2B démontre un entraînement de LLM 2B sur 1.4T tokens en FP8 pour ~6.9k$ sur RTX 5090, approchant Qwen2.5-1.5B. Stratégie clé pour réduire les coûts de pré-entraînement, alignée sur l'optimisation et l'efficience.",
+   "score": 7.4
+  }
+ ]
+}
