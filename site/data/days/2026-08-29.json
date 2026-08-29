@@ -1,0 +1,593 @@
+{
+ "date": "2026-08-29",
+ "digest": {
+  "headline": "Les approches agentiques et l'exploitation des échecs des petits modèles redéfinissent l'efficacité des LLM en temps réel et en production.",
+  "overview": "La veille du 2026-08-29 met en lumière des avancées majeures dans l'optimisation des systèmes d'IA, notamment via des méthodes d'inférence innovantes et des architectures multi-agents. Les travaux sur l'adaptation dynamique des modèles et l'orchestration d'outils open-source dominent, avec des applications concrètes en modélisation 3D, imagerie médicale et production vidéo.",
+  "highlights": [
+   {
+    "title": "CritICL et HAT : optimiser les LLM via les échecs et l'adaptation dynamique",
+    "text": "CritICL utilise les motifs d'échec des petits modèles pour guider les LLM en temps réel via des critiques contextuelles, améliorant les performances sans répétition coûteuse. En parallèle, Harness-Aware Training (HAT) entraîne des modèles compacts à s'adapter aux changements de configuration dans des avatars digitaux, avec un gain de 14.5 points sur des tâches de QA en streaming. Ces approches réduisent les coûts tout en maintenant des performances compétitives face aux méthodes de scaling traditionnelles."
+   },
+   {
+    "title": "DeepSeek Harness et l'écosystème multi-agents open-source",
+    "text": "Le framework DeepSeek Harness propose une orchestration modulaire d'agents via un système de plugins (MCP), aligné sur les besoins croissants en tool use et collaboration multi-agents. Des intégrations comme dsh-im étendent ses capacités aux canaux IM (WeChat, Slack), tandis que FrontierAgent offre une alternative légère pour les architectures ReAct et Team. Ces outils facilitent le déploiement d'agents en production, avec une attention particulière à l'interopérabilité et à la scalabilité."
+   },
+   {
+    "title": "Agents pour la modélisation 3D et l'imagerie médicale",
+    "text": "Procedura introduit un agent LLM générant des objets 3D sous forme de programmes procéduraux paramétriques, avec vérification des contraintes et critique visuelle, surpassant les méthodes natives en précision et éditabilité. Dans le domaine médical, un agent modulaire décompose la vérification spatiale dans les scanners CT en étapes explicites, améliorant la fiabilité des VLMs sur des tâches critiques. Ces travaux illustrent le potentiel des architectures agentiques pour des applications techniques exigeantes."
+   },
+   {
+    "title": "Ressources pratiques et benchmarks pour ingénieurs IA",
+    "text": "Les notebooks ai-engineer-notebooks couvrent RAG, agents, fine-tuning et évaluations, offrant des bonnes pratiques opérationnelles pour les ingénieurs. LibriBrain100, un dataset MEG de 100h, permet d'évaluer des modèles de speech decoding à grande échelle, avec des insights sur l'équilibre entre données intra- et inter-sujet. Neuroarxiv, quant à lui, vérifie les antécédents arXiv pour éviter la redondance dans la conception d'architectures, promouvant une recherche plus reproductible."
+   }
+  ],
+  "trend": "Les architectures agentiques et les méthodes d'inférence optimisées s'imposent comme des leviers clés pour réduire les coûts et améliorer l'efficacité des systèmes d'IA, avec une adoption croissante en production et dans des domaines techniques spécialisés."
+ },
+ "items": [
+  {
+   "id": "dc38210b72551afd",
+   "title": "CritICL: Inference-Time Weak-to-Strong Generalization from Small Language Model Failure Modes",
+   "url": "https://huggingface.co/papers/2608.27455",
+   "summary": "Recent advances in inference-time scaling have significantly improved the reasoning performance of large language models (LLMs). However, these methods typically rely on repeated generation or external verification. To address this limitation, we introduce CritICL, a novel inference-time framework that improves reasoning while maintaining high efficiency. Our key insight is that LLM failure modes exhibit structured patterns across model scales within the same family. Instead of treating failures as undesirable outputs, CritICL leverages them as a source of guidance. Specifically, we utilize failure modes derived from weaker models and incorporate them into inference through critique-based in-context examples. We propose two variants: CritICL-dynamic, which adaptively predicts input-specific failure modes and retrieves critiques, and CritICL-static, which uses a global failure mode profile to provide stable guidance. Experimental results show that CritICL consistently outperforms standard in-context learning and achieves performance competitive with or superior to test-time scaling methods, while requiring significantly fewer generations and lower token cost. Code available at: https://github.com/umwyf/CRITICL",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.27455"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "CritICL exploite les motifs structurés des échecs des petits modèles pour guider les LLM en temps réel via des critiques en contexte, améliorant les performances de raisonnement sans répétition coûteuse. Approche innovante pour l'inférence efficace et l'optimisation des coûts, avec des résultats compétitifs face aux méthodes de scaling test-time.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les méthodes actuelles d'amélioration des performances de raisonnement des grands modèles de langage (LLM) à l'inférence reposent souvent sur des générations répétées ou des vérifications externes, ce qui entraîne une inefficacité computationnelle et une augmentation des coûts en tokens. CritICL vise à résoudre ce problème en proposant une approche plus efficace qui exploite les modes de défaillance des modèles pour guider le raisonnement sans recourir à des scaling excessifs.",
+    "methode": "CritICL introduit un cadre d'inférence novateur qui tire parti des modes de défaillance structurés observés au sein d'une même famille de modèles, en particulier entre versions faibles et fortes. Deux variantes sont proposées : CritICL-dynamic, qui prédit de manière adaptative les modes de défaillance spécifiques à une entrée et récupère des critiques correspondantes, et CritICL-static, qui utilise un profil global de défaillances pour fournir un guidage stable. Les critiques sont intégrées via des exemples en contexte (in-context learning) pour orienter le modèle fort vers une meilleure performance. Cette approche évite les générations multiples coûteuses tout en améliorant la qualité du raisonnement.",
+    "resultats": "Les résultats expérimentaux montrent que CritICL surpasse systématiquement les méthodes standard d'apprentissage en contexte (in-context learning) et atteint des performances comparables, voire supérieures, aux méthodes de scaling à l'inférence, tout en nécessitant significativement moins de générations et un coût en tokens réduit. Les détails quantitatifs précis (scores, benchmarks) ne sont pas fournis dans le résumé disponible.",
+    "limites": "Le résumé ne précise pas les benchmarks utilisés ni la robustesse de l'approche face à des modèles ou des tâches hors distribution. De plus, la dépendance aux modes de défaillance structurés au sein d'une même famille de modèles pourrait limiter la généralisation à des architectures ou des familles de modèles différentes. Enfin, l'efficacité de CritICL-dynamic repose sur la qualité de la prédiction des défaillances, ce qui pourrait introduire une variabilité non maîtrisée.",
+    "verdict": "CritICL mérite une attention particulière pour son approche innovante et économe en ressources, surtout si l'objectif est d'améliorer le raisonnement des LLM sans scaling coûteux, mais une analyse plus approfondie des benchmarks et des limites est nécessaire avant adoption."
+   }
+  },
+  {
+   "id": "3de59224a79d85f8",
+   "title": "Training Agents to Evolve with Their Harness: TaoLive Digital Avatar Agent Technical Report",
+   "url": "https://huggingface.co/papers/2608.15763",
+   "summary": "AI-powered digital avatar streamers must answer product questions, engage viewers, and execute marketing strategies in real time, demanding low latency, frequent strategy updates, and accurate yet effective responses. Evolvable Harnesses, whose Skills, Hooks, prompts, and tools can be updated independently of model weights, enable rapid iteration but expose a trade-off: large models adapt zero-shot yet are too slow, whereas compact models meet latency targets but overfit to fixed Harness configurations. We propose Harness-Aware Training (HAT), which trains compact models to adapt to changing Harnesses. Its key component, Harness-State Augmentation (HSA), applies task-preserving transformations to Skill identifiers and content, tool schemas, prompt structures, and Hook functions. Training proceeds in three stages: HSA-SFT learns reasoning and tool use from strong-model trajectories across diverse environments; General On-Policy Distillation restores generalization lost during SFT; and HSA-RL improves robustness to changing Harnesses through reinforcement learning in augmented environments. Across four evaluation sets, HAT achieves 94.8 on Live-Stream QA (base: 80.3; strongest general LLM: 93.0) and 94.6 on Harness-Variant QA (base: 75.4). Unlike Fixed-Harness SFT, which lowers IFEval by 7.7 points from the base model, HAT avoids this regression and reaches 83.5. On one NVIDIA H20 GPU, the optimized system delivers P50 and P95 latencies of 3.4 s and 8.1 s. Deployed in Taobao Live's digital-avatar service, it also yields positive online A/B test results for GMV and item-page views.",
+   "published": "2026-08-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 43,
+    "arxiv_id": "2608.15763"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "produit"
+   ],
+   "tldr": "Harness-Aware Training (HAT) entraîne des modèles compacts à s'adapter dynamiquement aux changements de configurations (prompts, outils) dans des avatars digitaux interactifs, avec un gain de 14.5 points sur Live-Stream QA. Approche clé pour les systèmes évolutifs en production.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les avatars numériques pilotés par IA dans les environnements de streaming en direct (comme Taobao Live) doivent répondre en temps réel à des questions sur des produits, interagir avec les spectateurs et exécuter des stratégies marketing. Ce contexte exige une faible latence, des mises à jour fréquentes des stratégies et des réponses à la fois précises et efficaces. Cependant, les solutions actuelles peinent à concilier adaptabilité et performance : les grands modèles s'adaptent bien mais sont trop lents, tandis que les modèles compacts répondent aux contraintes de latence mais surapprennent aux configurations fixes des *Harnesses* (cadres modulaires de compétences, outils et prompts).",
+    "methode": {
+     "approche_globale": "L'article propose *Harness-Aware Training* (HAT), une méthode pour entraîner des modèles compacts à s'adapter dynamiquement aux évolutions des *Harnesses* (composés de *Skills*, *Hooks*, prompts, et outils). L'idée centrale est de rendre le modèle robuste aux modifications de son environnement opérationnel sans nécessiter un réentraînement complet.",
+     "composant_cle": "*Harness-State Augmentation* (HSA) applique des transformations préservant la tâche aux identifiants de *Skills*, au contenu, aux schémas d'outils, aux structures de prompts et aux fonctions de *Hooks*. Cela simule des variations réalistes des *Harnesses* pendant l'entraînement.",
+     "etapes_entrainement": [
+      "1. *HSA-SFT* : Apprentissage supervisé à partir de trajectoires générées par des modèles puissants (ex. : grands LLMs) dans des environnements diversifiés, pour maîtriser le raisonnement et l'utilisation d'outils.",
+      "2. *General On-Policy Distillation* : Distillation sur politique pour restaurer la généralisation perdue lors de l'étape SFT, en alignant le comportement du modèle compact sur celui du modèle de référence.",
+      "3. *HSA-RL* : Renforcement par apprentissage par renforcement dans des environnements augmentés par HSA, pour améliorer la robustesse aux changements de *Harnesses*."
+     ],
+     "details_techniques": "Le système optimisé est déployé sur une seule GPU NVIDIA H20, avec des latences mesurées (P50 et P95) compatibles avec les exigences temps réel. Les *Harnesses* sont mis à jour indépendamment des poids du modèle, ce qui permet une itération rapide des stratégies sans réentraînement coûteux."
+    },
+    "resultats": {
+     "performances": "Sur quatre jeux d'évaluation, HAT atteint un score de 94.8 sur *Live-Stream QA* (contre 80.3 pour le modèle de base et 93.0 pour le meilleur LLM généraliste) et 94.6 sur *Harness-Variant QA* (contre 75.4 pour le modèle de base).",
+     "robustesse": "Contrairement à un *Fixed-Harness SFT* (qui dégrade le score IFEval de 7.7 points par rapport au modèle de base), HAT évite cette régression et obtient un score IFEval de 83.5.",
+     "deploiement": "Le système a été déployé dans le service d'avatars numériques de Taobao Live, avec des résultats positifs en A/B testing pour le *GMV* (volume brut de marchandises) et les vues de pages produits."
+    },
+    "limites": {
+     "manque_details": "Le rapport ne précise pas la taille exacte des modèles compacts utilisés, ni les architectures spécifiques des *Harnesses* ou des *Hooks*. Les métriques comme *GMV* ou *item-page views* sont des indicateurs indirects, sans analyse causale approfondie.",
+     "generalisation": "La robustesse aux *Harnesses* variés est démontrée, mais on ignore si HAT fonctionne pour des tâches hors du domaine du e-commerce ou des interactions en streaming. Les transformations HSA pourraient ne pas couvrir tous les cas réels.",
+     "cout_entrainement": "Les étapes de distillation et d'apprentissage par renforcement (HSA-RL) sont probablement coûteuses en calcul, même si le déploiement final est optimisé pour une seule GPU."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante de l'adaptabilité des modèles compacts en production, mais son applicabilité hors du contexte spécifique des avatars numériques pour le e-commerce reste à valider."
+   }
+  },
+  {
+   "id": "889ea1c117f15b31",
+   "title": "deepseek-ai/deepseek-harness",
+   "url": "https://github.com/deepseek-ai/deepseek-harness",
+   "summary": "DeepSeek Harness: Everything is a Plugin.",
+   "published": "2026-08-13T11:56:32Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 202840,
+    "language": "TypeScript"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Framework open-source de DeepSeek pour orchestrer des agents via un système de plugins (MCP), aligné sur les tendances multi-agents et tool use. Très pertinent pour l'écosystème LLM et agents.",
+   "score": 8.6,
+   "deep_analysis": {
+    "probleme": "DeepSeek Harness vise à résoudre la complexité et la fragmentation des frameworks d'évaluation pour les modèles d'IA, notamment les LLM (Large Language Models). Il cherche à unifier et simplifier l'intégration de benchmarks variés, tout en permettant une extensibilité pour des cas d'usage spécifiques ou émergents.",
+    "methode": "L'approche repose sur une architecture modulaire où chaque composant (benchmark, métrique, modèle, etc.) est traité comme un *plugin*. Cela permet une intégration flexible via des interfaces standardisées, facilitant l'ajout de nouveaux tests ou modèles sans modifier le cœur du système. Le dépôt mentionne une compatibilité avec des formats comme OpenAI API, Hugging Face, ou des modèles locaux, ainsi qu'une gestion des dépendances via des conteneurs ou des environnements virtuels. Les détails techniques précis (ex: implémentation des plugins, gestion des flux de données) restent cependant peu documentés dans la description initiale.",
+    "resultats": "Aucun résultat ou chiffre clé n'est fourni dans la description disponible. Le projet semble encore en phase de développement ou de documentation préliminaire, sans évaluation comparative ou benchmark publié pour étayer ses performances ou son efficacité.",
+    "limites": "Les limites incluent un manque de transparence sur les performances réelles du framework, notamment sa scalabilité ou sa robustesse face à des benchmarks complexes. L'absence de résultats concrets ou de retours d'expérience utilisateurs rend difficile l'évaluation de sa maturité. De plus, la documentation technique détaillée semble incomplète, ce qui peut freiner son adoption par des équipes exigeantes.",
+    "verdict": "À surveiller pour son approche modulaire prometteuse, mais trop peu documenté ou testé pour être recommandé sans réserve à ce stade."
+   }
+  },
+  {
+   "id": "ff7532507f1a70de",
+   "title": "Procedura: Agentic 3D Modeling with Procedural Control",
+   "url": "https://huggingface.co/papers/2608.26238",
+   "summary": "Native 3D generators now recover impressive mesh geometry from a single image. However, a dense mesh stays soft where a machined object should be sharp, it carries no part decomposition, and it exposes no parameter a user could edit. To address this, we explore the paradigm of 3D shape as code, leveraging and scaling the coding ability of an LLM for 3D modeling. We introduce Procedura, a novel 3D modeling agent framework that writes an object as a procedural assembly, a parametric program whose named parts are joined by typed, machine-checkable mates. From a text prompt, the agent plans the object as an assembly graph and writes the program part by part, solving each placement from the mated frames rather than guessing it, and admitting a part only once compile, mate, and connectivity checks pass. A decoupled vision critic then refines the assembly one diagnosed fix at a time. Moreover, the same graph carries per-part materials and a simulator-validated articulation. We evaluate on P3D-Bench under its assembly judge, and with the same judge on MechBench-36, our hard-surface benchmark. On both, Procedura outperforms state-of-the-art native 3D generators and every prior 3D-code agent on judged quality, produces the sharpest edges of any method we evaluate, and is the only one whose output is an editable, part-structured program.",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2608.26238"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Procedura utilise un agent LLM pour générer des objets 3D sous forme de programmes procéduraux paramétriques, avec vérification des contraintes (mates, compilation) et critique visuelle. Approche révolutionnaire pour la modélisation 3D éditable et la génération de géométries précises, surpassant les méthodes natives.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Les générateurs 3D natifs actuels produisent des maillages denses impressionnants à partir d'une seule image, mais ces maillages manquent de précision pour les objets manufacturés (arêtes floues), n'offrent aucune décomposition en parties distinctes, et ne permettent pas d'édition paramétrique. Cela limite leur utilité pour des applications industrielles ou interactives nécessitant des modèles modifiables et structurés.",
+    "methode": "Procedura propose un cadre d'agent de modélisation 3D basé sur le paradigme 'forme 3D comme code', exploitant les capacités de génération de code d'un LLM. L'agent conçoit l'objet comme un assemblage procédural : un programme paramétrique où les pièces nommées sont reliées par des liaisons typées et vérifiables par machine. À partir d'une invite textuelle, l'agent planifie l'objet sous forme de graphe d'assemblage, écrit le programme pièce par pièce, et résout chaque placement via les cadres de liaison plutôt que par estimation. Chaque pièce n'est intégrée qu'après validation des étapes de compilation, de vérification des liaisons et de connectivité. Un critique visuel découplé affine ensuite l'assemblage en appliquant des corrections diagnostiquées une par une. Le graphe gère également les matériaux par pièce et une articulation validée par simulateur.",
+    "resultats": "Procedura est évalué sur P3D-Bench avec un juge d'assemblage, ainsi que sur MechBench-36, un benchmark dédié aux objets mécaniques à surfaces dures. Sur ces deux jeux de données, Procedura surpasse les générateurs 3D natifs et les agents de code 3D antérieurs en qualité jugée, produit les arêtes les plus nettes parmi les méthodes évaluées, et est le seul à générer un programme éditable et structuré en parties. Aucune métrique quantitative précise (ex. scores numériques) n'est mentionnée dans le résumé disponible.",
+    "limites": "Le résumé ne détaille pas les limites techniques ou les échecs potentiels de Procedura, comme la robustesse face à des prompts ambigus ou complexes, ou la scalabilité pour des assemblages très détaillés. La dépendance à un LLM pour la génération de code pourrait aussi introduire des biais ou des erreurs difficiles à diagnostiquer sans supervision humaine. Enfin, l'évaluation repose sur des benchmarks spécifiques, dont la représentativité pour des cas d'usage réels reste à démontrer.",
+    "verdict": "Procedura mérite une attention particulière pour son approche innovante combinant génération procédurale, vérification formelle et édition paramétrique, offrant une avancée significative pour la modélisation 3D technique et interactive."
+   }
+  },
+  {
+   "id": "414430a89b4712b6",
+   "title": "A Modular Agent for Reliable and Auditable Spatial Relation Verification in CT Scans",
+   "url": "https://huggingface.co/papers/2608.21140",
+   "summary": "Reliable spatial understanding is an important prerequisite for future medical vision-language systems that aim to support radiological report generation and structured image understanding. While modern vision-language models (VLMs) show promising performance on many medical imaging tasks, recent evidence suggests they remain weak in controlled spatial reasoning and often fail to reliably ground spatial relations in image evidence. Given that radiological reasoning hinges on understanding the relative positions of anatomical structures and findings, this spatial weakness poses risks to diagnostic accuracy. We present a modular medical imaging agent for binary spatial relation verification in axial CT slices. Instead of directly predicting spatial answers end-to-end, the system decomposes the task into explicit stages: language parsing, anatomical localization, and deterministic geometric verification. Natural-language queries are converted into structured relation tuples, queried organs are localized with a YOLO-based detector, and the final spatial decision is computed from object centers using deterministic geometric rules. We evaluate the approach on the held-out MIRP spatial QA benchmark and compare it against representative end-to-end VLM baselines. The best-performing hybrid configuration reaches 94.1% accuracy and 94.2% F1, outperforming direct Qwen2-VL prompting by 42.5 percentage points in accuracy, while preserving interpretable intermediate representations and auditable reasoning stages. The results suggest that explicit modular spatial verification can serve as a promising building block for future report-oriented medical imaging agents.",
+   "published": "2026-08-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.21140"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "agents",
+    "autre"
+   ],
+   "tldr": "Ce travail présente un agent modulaire pour la vérification spatiale dans les scanners CT, décomposant la tâche en étapes explicites (parsing, localisation, vérification géométrique) pour améliorer la fiabilité des VLMs médicaux. Les résultats sur MIRP spatial QA montrent une robustesse supérieure aux approches end-to-end.",
+   "score": 8.5
+  },
+  {
+   "id": "a0b834204cb60c86",
+   "title": "calmrocks/ai-engineer-notebooks",
+   "url": "https://github.com/calmrocks/ai-engineer-notebooks",
+   "summary": "Hands-on, framework-free Colab notebooks for the AI Engineer / Forward Deployed Engineer (FDE) skill set — model APIs, structured output, tool calling, RAG, evals-as-the-spine, agents (loop from scratch, tool design, guardrails, MCP, Skills), fine-tuning vs LoRA, prompt-injection/security, LLMOps, and customer craft. Runs on the free Groq API.",
+   "published": "2026-08-11T23:17:17Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 490,
+    "language": "Jupyter Notebook"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "rag"
+   ],
+   "tldr": "Notebooks pratiques pour ingénieurs IA couvrant RAG, agents, fine-tuning, et évaluations. Excellente ressource pour la veille opérationnelle et technique, avec focus sur les bonnes pratiques.",
+   "score": 8.3
+  },
+  {
+   "id": "b61b57d2ebb050c5",
+   "title": "EditaLive! Unified Character Video Editing for Live Streaming",
+   "url": "https://huggingface.co/papers/2608.27123",
+   "summary": "Conventional video editing primarily focuses on scene-level content, whereas live streaming places greater emphasis on the human subject. However, directly applying existing video-editing methods to human-centric live streaming remains challenging, as they may introduce facial-expression inconsistencies and typically depend on multiple offline inference steps, making them unsuitable for real-time interaction. We propose EditaLive, a novel framework for real-time streaming character video editing. In detail, we start from a pretrained image animation model (Wan-Animate), which naturally decouples appearance from motion, and repurpose it as the base model for instruction-based human-centric video editing by reference frame editing and video reconstruction via the collected CharEdit-50K dataset. Besides, we adapt the model from offline bidirectional to causal streaming generation, and design an aligned self-rollout distillation strategy that compresses the model into a two-step sampler, where fixed RoPE and align forcing reduce training--inference discrepancies, and first-frame preserved sparse attention filters redundant historical information to mitigate appearance drift. Extensive experiments demonstrate that EditaLive delivers state-of-the-art editing performance with faithful preservation of facial expressions and low-latency real-time streaming inference.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.27123"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "produit"
+   ],
+   "tldr": "EditaLive adapte un modèle d'animation d'images pour l'édition vidéo en temps réel de personnages en streaming, avec une distillation causale et une attention sparse pour éviter les dérives d'apparence. Pertinent pour les applications interactives et les pipelines de production vidéo optimisés.",
+   "score": 7.6
+  },
+  {
+   "id": "3417bffb771979bf",
+   "title": "Thinking on Shots: Consistent Multi-Shot Video Editing with Agentic Reasoning",
+   "url": "https://huggingface.co/papers/2608.26809",
+   "summary": "While generative AI has significantly advanced video editing, existing methods primarily focus on single-shot or short video clips. Editing long videos with multiple instructions remains a formidable challenge. Naive chunking strategies, e.g., fixed-duration segmentation, often lead to entity fragmentation, severe editing hallucinations, and disrupted temporal continuity. To bridge this gap, we introduce the Multi-Instruction Multi-Shot Long-Video Editing (MMLVE) task, which is structured around three core objectives: Cross-Shot Editing Consistency (CSEC), Multi-Instruction Decoupling (MID), and Zero-Destruction on Spatiotemporal Structure (ZDSS). To tackle these three unique challenges, we introduce an agentic editing framework that leverages the synergy of Large Language Models (LLMs) and Vision-Language Models (VLMs) to achieve shot-level video decoupling and precise instruction parsing. Furthermore, to comprehensively evaluate this task, we construct MMLVE-Bench, which is an MMLVE-focused dataset characterized by complex real-world spatiotemporal dynamics, high-density heterogeneous instructions, and sparse, random entity distributions. Three MMLVE-focused evaluation metrics are further exploited to assess the quality of the editing results. Extensive experiments demonstrate that our MMLVE-Agent outperforms existing closed-source SOTA approaches (e.g., Seedance 2.0), successfully eliminating editing hallucinations, preserving cross-shot editing consistency, and attaining seamless spatiotemporal transitions.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.26809"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "vision"
+   ],
+   "tldr": "Framework agentique pour l'édition vidéo multi-instructions et multi-plans, résolvant les problèmes de cohérence temporelle et de fragmentation via un découplage shot-par-shot et des métriques dédiées (MMLVE-Bench). Pertinent pour les applications de montage vidéo avancé et les systèmes interactifs.",
+   "score": 7.6
+  },
+  {
+   "id": "059f23cde00dcd03",
+   "title": "Long-Horizon Audio-Visual Generation for Persistent Stories and Interactive Worlds",
+   "url": "https://huggingface.co/papers/2608.23383",
+   "summary": "Video generation is progressing beyond isolated clips toward long-form narratives and interactive worlds, requiring models to preserve identities, follow user controls, and remain stable over extended rollouts. We present JoyAI-Echo-1.5, a unified audio-visual generation system with two purpose-built variants. The long-video variant introduces composable cross-shot memory that aggregates visual evidence across multiple prior shots and speaker cues derived from speech-filtered full-shot audio, enabling persistent character appearance and voice identity across flexible combinations of text, image, and memory conditioning. The world-model variant converts heterogeneous navigation inputs into calibrated metric 6-DoF camera trajectories and injects them through a geometry-aware conditioning pathway, enabling controller-agnostic interaction across flexible viewpoints. To support efficient long-horizon generation, we transform a bidirectional audio-visual backbone into a causal few-step generator using progressive teacher forcing and short- and long-horizon Self-Gradient Forcing on self-generated rollouts. Experiments demonstrate strong performance in both settings. JoyAI-Echo-1.5 achieves improvements over existing long-video baselines in cross-shot consistency, visual quality, text alignment, and speech fidelity. Its world-model variant ranks first on WBench, with an average score of 81.7, and achieves leading visual quality and long-horizon persistence on SANA-WM-Bench. Together, these results indicate that memory, geometric control, and rollout-aware training provide a practical foundation for generating coherent stories and continuously evolving interactive worlds. Project page: https://echo-team-joy-future-academy-jd.github.io/Echo-1.5-Page/.",
+   "published": "2026-08-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2608.23383"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "audio",
+    "autre"
+   ],
+   "tldr": "JoyAI-Echo-1.5 propose un système de génération audio-visuelle unifié pour des récits persistants et des mondes interactifs, avec des mécanismes de mémoire croisée et de contrôle géométrique pour une stabilité à long terme. Les expériences valident son efficacité sur des rollouts étendus.",
+   "score": 7.6
+  },
+  {
+   "id": "cf935b1146d582ac",
+   "title": "ApodexAI/FrontierAgent",
+   "url": "https://github.com/ApodexAI/FrontierAgent",
+   "summary": "🧩 FrontierAgent, our agent framework, open-sourced alongside it — native command-line TUI, ReAct and Agent Team modes, one command on macOS and Linux, no preinstall, no hard Docker dependency.",
+   "published": "2026-08-22T05:07:35Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1252,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Framework d'agents open-source (FrontierAgent) avec modes ReAct et Team, léger et sans dépendances lourdes. Pertinent pour les architectures multi-agents et l'optimisation des workflows.",
+   "score": 7.4
+  },
+  {
+   "id": "7e42a106b0271122",
+   "title": "xmanrui/dsh-im",
+   "url": "https://github.com/xmanrui/dsh-im",
+   "summary": "通过扫码或机器人凭据把IM机器人接入DeepSeek Harness（支持飞书、微信、钉钉、企业微信、QQ、Slack、Telegram、Discord和WhatsApp）。 Connect IM bots to DeepSeek Harness via QR code or credentials (9 channels).",
+   "published": "2026-08-14T20:40:06Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 976,
+    "language": "JavaScript"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Intégration de bots IM (WeChat, Slack, etc.) avec DeepSeek Harness via QR code, étendant les capacités multi-canaux des agents. Pertinent pour l'écosystème LLM et les outils d'orchestration.",
+   "score": 7.4
+  },
+  {
+   "id": "137c8e56261e5f50",
+   "title": "Luce: Relightable Gaussians for 3D Asset Generation",
+   "url": "https://huggingface.co/papers/2608.23943",
+   "summary": "High-fidelity image-to-3D generation requires a 3D representation that captures both geometry and appearance. To support relighting and integration into standard rendering pipelines, the representation should include physically based rendering (PBR) modalities such as albedo, metallic-roughness, and surface normals. We propose Luce, a 3D representation that unifies geometry and PBR materials within a voxelized multimodal Gaussian cloud, using dedicated Gaussian primitives for each modality. A variational autoencoder compresses this representation into a unified material-aware latent space. A rectified-flow transformer generates this latent from a single image, conditioned on multi-layer features from a pretrained image encoder that preserve both semantic context and fine spatial detail. The latent then decodes into relightable PBR Gaussians and an optional textured mesh with a tangent-space normal map. On Toys4K, Luce achieves state-of-the-art single-image-to-3D generation, improving FID by 28% over the strongest baseline. We further introduce a benchmark of AI-generated images, on which Luce improves the CLIP image-alignment score over the best baseline (0.8519 vs. 0.8299). Luce generates relightable, geometrically accurate, and materially faithful assets that preserve fine details such as text, logos, and inscriptions.",
+   "published": "2026-08-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.23943"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Luce propose une représentation 3D unifiée (voxelized multimodal Gaussian cloud) intégrant géométrie et matériaux PBR pour la génération d'assets 3D relightables à partir d'une seule image. Intéressant pour l'optimisation des pipelines de rendu et l'intégration dans des workflows industriels, avec des gains significatifs en qualité (FID +28%) et cohérence visuelle.",
+   "score": 7.3
+  },
+  {
+   "id": "478c6dfd0a6f30b7",
+   "title": "LibriBrain100: One Hundred Hours of Broad and Deep MEG Data for Neural Speech Decoding at Scale",
+   "url": "https://huggingface.co/papers/2608.25204",
+   "summary": "We introduce LibriBrain100, a large-scale MEG dataset for speech decoding designed from the ground up for reproducible, standardised evaluation. LibriBrain100 more than doubles the size of the original LibriBrain release, resulting in over 100 hours of high-quality MEG acquired while subjects listened to naturalistic continuous speech. With sim80 hours from a single subject, LibriBrain100 sets a new record for deep, within-subject neural data (8times more than the next comparable dataset and roughly 80times more than other datasets). To demonstrate the payoff of this depth-first design, we evaluate on a word-classification benchmark---an increasingly well-established stepping stone towards the open challenge of noninvasive brain-to-text decoding. Using an existing decoding model, we achieve state-of-the-art performance---validating both the quality of the recordings and the value of within-subject data at scale. Because collecting 80 hours of data per user is impractical for real-world applications, we also collected sim40 minutes of additional data from each of 32 subjects. Using the same word-classification benchmark, we demonstrate the value of broad multi-subject data: supervised finetuning of a pre-trained model can substantially compensate for limited per-subject data. We provide standard train, validation, and test splits, all reproducible through an open-sourced Python library that supports easy downloading, optional preprocessing, and data loading for common deep learning frameworks. In addition, the dataset and evaluation infrastructure are being released alongside an open machine-learning competition with a public leaderboard for standardised benchmarking. Ultimately, our hope is that LibriBrain100 will accelerate progress towards practical non-invasive brain-computer interfaces, capable of restoring communication to people living with severe paralysis.",
+   "published": "2026-08-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.25204"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "audio",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "LibriBrain100 propose un dataset MEG de 100h pour le décodage de la parole, avec 80h de données intra-sujet pour évaluer des modèles de speech decoding à grande échelle. Les résultats montrent des gains significatifs avec des données profondes, tout en explorant l'équilibre entre données intra- et inter-sujet pour des applications pratiques.",
+   "score": 7.3
+  },
+  {
+   "id": "5730e3e316323dcb",
+   "title": "fuxicodex/Fuxi",
+   "url": "https://github.com/fuxicodex/Fuxi",
+   "summary": "FuXi is a fast, self-contained AI coding agent that lives in your terminal — edit code, run commands, and drive tools, with cost-aware routing across LLM providers.",
+   "published": "2026-08-04T07:32:11Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2679,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Agent IA autonome pour terminal avec routage multi-LLM et exécution d'outils. Intéressant pour l'écosystème agents et l'optimisation des workflows, mais manque de détails techniques profonds.",
+   "score": 7.1
+  },
+  {
+   "id": "51ae69b1e5438b40",
+   "title": "Magpie: Real-Time World Renderer for Interactive Games",
+   "url": "https://huggingface.co/papers/2608.27168",
+   "summary": "Modern game development relies heavily on conventional graphics pipelines. High-quality visual content requires modeling, material authoring, animation, lighting, effects, and runtime optimization, making asset production expensive and extending the development cycle of game prototypes. Recently, video foundation models are beginning to change film and video production, but games differ from linear media, they require not only continuous and realistic imagery, but also stable and reproducible gameplay rules, object states, and interaction outcomes. We present Magpie, a real-time generative world-rendering system for interactive games. Magpie separates gameplay execution from visual generation. Designers define scenes and rules in a game engine. At runtime, the Game Engine resolves player actions and maintains world state, while an independent Render Server generates visual output from white-box frames produced by the engine. Magpie provides a system-level implementation path for applying generative models to real-time game rendering. It preserves gameplay designability and reproducibility, and reduces the dependence of early game prototypes on complete visual assets.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.27168"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "produit"
+   ],
+   "tldr": "Magpie sépare la logique de jeu de la génération visuelle en temps réel via un serveur de rendu génératif, réduisant la dépendance aux assets visuels complets. Pertinent pour l'optimisation des pipelines de développement de jeux et les prototypes interactifs.",
+   "score": 7.0
+  },
+  {
+   "id": "e7f278d8526ff108",
+   "title": "Real-TurnTurk: A Multimodal Turkish Corpus for Turn-Taking Prediction",
+   "url": "https://huggingface.co/papers/2608.22071",
+   "summary": "Turn-taking is a basic organizational feature of human conversation and remains difficult to model in natural, synchronous dialog systems. While existing research has explored multimodal approaches and large language models for turn-ending prediction, there is a lack of naturalistic conversational corpora specifically addressing turn-taking dynamics in Turkish. This study introduces a multimodal Turkish conversational dataset of unscripted dyadic interactions, comprising synchronized front-facing video, per-speaker audio channels that allow overlapping speech to be attributed to individual speakers, and time-aligned transcriptions. Turn-taking prediction is formulated as a binary classification problem, and a Genetic Algorithm (GA) is employed to optimize interpretable decision rules derived from visual, acoustic, and linguistic features. A hybrid AND-OR rule representation is adopted in the proposed framework to represent the alternative cue combinations that precede a turn transition.",
+   "published": "2026-08-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2608.22071"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "autre"
+   ],
+   "tldr": "Real-TurnTurk introduit un corpus multimodal turc pour la prédiction de prise de parole, combinant vidéo, audio et transcriptions pour modéliser les dynamiques de conversation. Un algorithme génétique optimise des règles interprétables basées sur des features multimodales.",
+   "score": 6.7
+  },
+  {
+   "id": "2b0c70fad3475da5",
+   "title": "UditAkhourii/neuroarxiv",
+   "url": "https://github.com/UditAkhourii/neuroarxiv",
+   "summary": "A skill to kill from-scratch coding — Claude checks real arXiv prior art before it designs a new architecture.",
+   "published": "2026-08-05T10:26:26Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 407,
+    "language": "TypeScript"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Outil vérifiant les antécédents arXiv avant conception d'architectures IA. Utile pour éviter le réinventage de la roue et promouvoir la recherche reproductible, mais dépendant de l'intégration avec des modèles externes.",
+   "score": 6.5
+  },
+  {
+   "id": "b5fd68028c4e51a6",
+   "title": "elie222/rakazo",
+   "url": "https://github.com/elie222/rakazo",
+   "summary": "Open-source Grok Bot alternative. Choose your own model and sandbox.",
+   "published": "2026-08-13T06:28:56Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1471,
+    "language": "TypeScript"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Alternative open-source à Grok Bot avec choix de modèle et sandbox. Pertinent pour les agents et l'écosystème LLM, mais approche générique sans innovation majeure.",
+   "score": 6.2
+  },
+  {
+   "id": "9392f5653a1a34dc",
+   "title": "Nanako0129/sepia",
+   "url": "https://github.com/Nanako0129/sepia",
+   "summary": "De-AI writing skill for Claude Code, Codex, Grok Build, and Antigravity — narrative-architecture repair for fiction, venue-matched rules for professional prose. Based on StoryScope (arXiv:2604.03136).",
+   "published": "2026-08-28T05:56:49Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 557,
+    "language": "Shell"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Outil de réparation narrative pour générateurs de code IA basé sur une publication arXiv (2604.03136). Pertinent pour l'interprétabilité et les agents, avec un ancrage académique solide.",
+   "score": 6.2
+  },
+  {
+   "id": "6b1ca39ba85d6f15",
+   "title": "CaRGo-T: Causal Reasoning Graph-of-Thought improves Multimodal Humor Comprehension",
+   "url": "https://huggingface.co/papers/2608.23172",
+   "summary": "Large-scale vision-language models (VLMs) have demonstrated remarkable versatility across a wide range of multimodal tasks. However, understanding humor remains challenging because humorous content often depends on subtle interactions among entities, events, context, and implicit relationships across image and text modalities. These interactions can involve complex chains of reasoning that are difficult to capture through conventional prompting or linear chain-of-thought reasoning. In this work, we propose CaRGo-T (Causal Reasoning Graph-of-Thought), a reasoning framework that represents the causal and contextual relationships underlying multimodal humor as a lightweight graph-based reasoning structure. The graph is serialized into a code-based representation generated by a VLM, which can subsequently be interpreted by the same or a different VLM to produce the final prediction in zero-shot or in-context learning settings. We evaluate CaRGo-T on humor understanding and humor detection across four datasets spanning diverse forms of comedic content, including satire, sarcasm, and memes. Experiments with state-of-the-art commercial and open-source VLMs show that CaRGo-T consistently improves performance over existing reasoning-based baselines, achieving gains of approximately 1-20% on humor understanding and 1-3% on humor detection. Further analysis using mutual information indicates that the reasoning representations produced by CaRGo-T contain more information relevant to the target output than those generated by baseline reasoning approaches. Code is available at https://github.com/abhi1nandy2/CaRGo-T.",
+   "published": "2026-08-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.23172"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "CaRGo-T modélise le raisonnement humoristique multimodal comme un graphe causal pour améliorer la compréhension des VLMs, avec des gains sur des benchmarks dédiés. Intéressant pour l'interprétabilité des modèles multimodaux, mais niche par rapport aux priorités de l'utilisateur.",
+   "score": 6.1
+  },
+  {
+   "id": "21df6740b604a5d0",
+   "title": "yjh051108/dsh-routing-suite",
+   "url": "https://github.com/yjh051108/dsh-routing-suite",
+   "summary": "dsh-routing-suite — injector + router-standard kit: install the runtime injector first, then the task-aware reasoning-mode router preset (measured P1-P23).",
+   "published": "2026-08-14T21:20:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 6939,
+    "language": "JavaScript"
+   },
+   "relevance": 5,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Suite de routage pour agents (dsh-routing-suite) avec des métriques P1-P23, mais documentation floue et manque de transparence sur les benchmarks. Intéressant pour les architectures d'agents mais peu fiable.",
+   "score": 5.0
+  },
+  {
+   "id": "0ee82df3b943cff5",
+   "title": "memorax-ai/memorax-code",
+   "url": "https://github.com/memorax-ai/memorax-code",
+   "summary": "A memory plugin for AI coding that turns engineering experience, repository knowledge, and your way of working into memory that remains useful in future tasks.",
+   "published": "2026-08-01T02:13:37Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1109,
+    "language": "JavaScript"
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "Plugin de mémoire pour le codage (memorax-code) transformant l'expérience en mémoire réutilisable, mais peu de détails techniques et approche marketing floue. Intéressant pour le fine-tuning mais peu fiable.",
+   "score": 4.7
+  },
+  {
+   "id": "c44301835cb94781",
+   "title": "deeplethe/utopia",
+   "url": "https://github.com/deeplethe/utopia",
+   "summary": "World's first open-source enterprise world model.",
+   "published": "2026-08-07T19:33:17Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 646,
+    "language": "Rust"
+   },
+   "relevance": 5,
+   "reliability": 2,
+   "tags": [
+    "architecture",
+    "llm",
+    "autre"
+   ],
+   "tldr": "Claim marketing d'un 'world model' open-source en Rust sans preuve technique ni publication associée. Fiabilité très faible, à ignorer sauf pour un signal anecdotique.",
+   "score": 4.1
+  }
+ ]
+}
