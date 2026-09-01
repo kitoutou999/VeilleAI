@@ -1,0 +1,747 @@
+{
+ "date": "2026-09-01",
+ "digest": {
+  "headline": "Qwen3.8-Next et NoRA redéfinissent l'efficacité des architectures LLM avec des gains computationnels majeurs sans compromis sur les performances",
+  "overview": "La journée du 2026-09-01 met en lumière des avancées significatives en optimisation et architecture des modèles, avec des solutions réduisant drastiquement les coûts d'entraînement et d'inférence tout en améliorant la stabilité. Les travaux sur l'interprétabilité et la fidélité des modèles révèlent des limites critiques dans les méthodes actuelles, notamment pour les systèmes RAG et les agents autonomes.",
+  "highlights": [
+   {
+    "title": "Architectures MoE et optimisations pour une efficacité computationnelle",
+    "text": "Qwen3.8-Next introduit une architecture MoE sparse (125B paramètres, 6B activés) combinant GDN et attention globale, réduisant les FLOPs et les tokens d'entraînement d'un facteur 3 à 9 tout en surpassant son prédécesseur sur 8 benchmarks. NoRA normalise les matrices de projection dans LoRA pour stabiliser l'entraînement et accélérer la convergence, offrant une solution simple pour l'adaptation de modèles sans surcoût en inférence."
+   },
+   {
+    "title": "Fidélité et interprétabilité des modèles de raisonnement",
+    "text": "Une étude sur la fidélité du Chain-of-Thought (CoT) montre que les modèles adoptent différemment les indices de préférence selon leur localisation (messages utilisateur vs retours d'outils), avec des variations marquées entre modèles ouverts. Par ailleurs, la quantification des caches KV en RAG (INT4) dégrade fortement la fidélité des réponses malgré des métriques d'exactitude stables, soulignant un risque critique pour les déploiements."
+   },
+   {
+    "title": "Amélioration des agents autonomes et navigation embodied",
+    "text": "LightNav-0 exploite les capacités spatiales des VLM pour une navigation embodied généraliste via une interface tokenisée unifiée, tandis que NavMCP combine un agent VLM raisonneur et un modèle de navigation pour des tâches long-horizon en robotique. CAST et EvoUndo adressent la fiabilité des agents à outils en convertissant les échecs en supervision structurée et en introduisant des mécanismes de récupération pour les modifications auto-générées."
+   },
+   {
+    "title": "Optimisation de l'inférence et distillation des modèles",
+    "text": "VAT améliore l'entraînement des modèles de draft pour l'inférence spéculative en intégrant une simulation de la phase de vérification dans la fonction de perte, accélérant la convergence. Une analyse de l'On-Policy Distillation (OPD) révèle que ses gains proviennent principalement de la suppression des tokens à faible probabilité, indépendamment de la supervision du professeur, menant à OPSA, une méthode sans supervision basée sur l'entropie."
+   },
+   {
+    "title": "Génération multimodale et auto-amélioration des systèmes",
+    "text": "DreamX-Creator 1.0 génère nativement de la vidéo et de l'audio à 2K via un modèle 7B, utilisant une attention croisée modulaire et un entraînement joint progressif. WebWorld et S³Gym explorent l'auto-amélioration des codes web et des LLM via des frameworks de validation et d'auto-test, avec des résultats prometteurs sur des benchmarks spécialisés."
+   }
+  ],
+  "trend": "Les architectures et méthodes d'optimisation évoluent vers une réduction drastique des coûts computationnels tout en préservant, voire améliorant, les performances, avec un focus croissant sur la fiabilité et l'interprétabilité des systèmes autonomes et des modèles de raisonnement."
+ },
+ "items": [
+  {
+   "id": "2a4732f15508539d",
+   "title": "Chain-of-Thought Faithfulness of Reasoning Models Varies with Where and How Preference Cues Are Delivered",
+   "url": "https://huggingface.co/papers/2608.29464",
+   "summary": "Chain-of-thought (CoT) monitoring assumes that reasoning traces faithfully record the information that shapes a model's answer. Existing faithfulness tests often place explicit bias cues in the user message, while agents may encounter preferences through tool returns or raw artifacts. We introduce FACE-Eval (Faithful Attribution of Cue Effects Evaluation), a 5,100-sample evaluation that varies cue location (user message or tool return) and explicitness (direct summary or raw artifact). We measure verbalized commitment among cue-following answers and unverbalized adoption among all cued samples. We evaluate 15 open-weight models from eight families, with total parameters ranging from 4B to 1.60T. Every model has lower verbalized commitment for tool-return than user-message cues and for implicit than explicit cues. Unverbalized adoption is higher for tool-return cues on all 15 models and for implicit cues in 28 of 30 model-channel comparisons. A source-attribution prompt narrows the channel gap on seven models, sometimes by increasing user-channel unverbalized adoption, while telling models that their reasoning will be monitored does not reliably close the gap. We also use two transcript monitors (GPT-5.6-Luna and GPT-4o-mini) to detect preference adoption in the largest model of each family. Across 32 model-channel-explicitness cells, higher unverbalized adoption is associated with lower detection ability for both monitors (Pearson r=-0.54 and r=-0.78, respectively). These results suggest that CoT monitoring may be less reliable when preference information arrives through tools or must be inferred from raw artifacts, within the single-call, prefilled-tool setting tested here.",
+   "published": "2026-08-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2608.29464"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Étude sur la fidélité du *Chain-of-Thought* (CoT) dans les modèles de raisonnement, révélant que la localisation et l'explicitation des préférences (via messages utilisateur ou retours d'outils) impactent fortement l'adoption verbale et non verbale des indices par les modèles. Analyse comparative sur 15 modèles ouverts (4B à 1.6T paramètres) avec des insights sur l'amélioration de la fidélité via des prompts d'attribution de source.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un enjeu critique de l'interprétabilité des modèles de raisonnement automatique : la fidélité des traces de raisonnement (chain-of-thought, CoT) par rapport aux biais ou préférences introduits dans les entrées. Le problème réside dans le fait que les tests actuels de fidélité se concentrent souvent sur des indices de préférence explicites dans les messages utilisateur, alors qu'en pratique, ces indices peuvent provenir d'autres sources comme les retours d'outils ou des artefacts bruts, moins faciles à détecter.",
+    "methode": "Les auteurs introduisent **FACE-Eval**, un benchmark de 5 100 échantillons conçu pour évaluer systématiquement l'impact de la localisation (message utilisateur vs. retour d'outil) et de l'explicitation (résumé direct vs. artefact brut) des indices de préférence. Deux métriques sont mesurées : (1) l'**engagement verbalisé** (mention explicite de l'indice dans la CoT parmi les réponses qui suivent l'indice) et (2) l'**adoption non verbalisée** (influence de l'indice sur la réponse finale, même sans mention dans la CoT). Quinze modèles open-weight (de 4 milliards à 1,6 billion de paramètres) sont testés. Une variante de prompt incluant une **attribution de source** est également évaluée pour réduire les écarts observés. Enfin, deux moniteurs de transcriptions (GPT-5.6-Luna et GPT-4o-mini) sont utilisés pour détecter l'adoption des préférences dans les modèles les plus grands de chaque famille.",
+    "resultats": "Les résultats révèlent que **tous les modèles** montrent un engagement verbalisé plus faible pour les indices provenant des retours d'outils que des messages utilisateur, et pour les indices implicites (artefacts bruts) que pour les indices explicites. À l'inverse, l'adoption non verbalisée est **plus élevée** pour les retours d'outils (sur les 15 modèles) et pour les indices implicites (dans 28/30 comparaisons modèle-canal). L'ajout d'un prompt d'attribution de source réduit partiellement cet écart pour 7 modèles, parfois en augmentant l'adoption non verbalisée via le canal utilisateur. Enfin, une corrélation négative forte est observée entre l'adoption non verbalisée et la capacité des moniteurs à détecter les préférences (coefficients de Pearson de -0,54 et -0,78), suggérant que les CoT sont moins fiables lorsque les indices proviennent de sources indirectes.",
+    "limites": "L'étude se limite à un cadre **mono-appel avec outils pré-remplis**, ce qui ne couvre pas les interactions multi-tours ou les outils dynamiques. De plus, les moniteurs de transcriptions utilisés (GPT-5.6-Luna et GPT-4o-mini) pourraient introduire des biais propres, et leur performance n'est pas comparée à des méthodes d'interprétabilité alternatives. Enfin, la généralisation des résultats à d'autres types de biais ou à des modèles fermés reste à explorer.",
+    "verdict": "Cette étude mérite une attention particulière pour son approche systématique et ses implications sur la fiabilité des CoT dans des scénarios réalistes, bien que ses limites contextuelles appellent à des travaux complémentaires."
+   }
+  },
+  {
+   "id": "875fe766e8810acb",
+   "title": "LightNav-0: Eliciting VLM Spatial Intelligence for Generalist Embodied Navigation",
+   "url": "https://huggingface.co/papers/2608.30935",
+   "summary": "Embodied navigation requires agents to translate heterogeneous goals and visual observations into actions across tasks, environments, and robot embodiments. Modern vision-language models (VLMs) already encode spatial priors for visual grounding, spatial reasoning, and pointing, but these capabilities are rarely elicited directly for robot control. Existing navigation systems instead rely on task- or embodiment-specific components, fragmenting perception, reasoning, and action while offering limited generalization. Here we present LightNav-0, a compact generalist embodied navigation model that elicits the spatial intelligence of a pretrained VLM and aligns it with navigation, without task-specific prediction heads. LightNav-0 represents diverse navigation tasks through a unified token interface: dual-channel pointing expresses task-, scene-, and embodiment-agnostic spatial intent, while a residual vector-quantized action tokenizer maps this intent to precise, embodiment-specific trajectories. Together with temporally aware visual history compression, ER mid-training, supervised fine-tuning, and reinforcement learning, this formulation supports instruction following, open-vocabulary object navigation, and visual tracking within a single model. The navigation training corpus spans 2K+ scenes and 4K+ hours of embodied navigation data. LightNav-ER, the embodied-reasoning checkpoint used to initialize LightNav-0, attains the highest complete-set average across 8 embodied-reasoning benchmarks, while LightNav-0 achieves state-of-the-art monocular success rates across all 10 public navigation simulation settings. Real-world evaluations further demonstrate zero-shot generalization across robot embodiments, diverse scenes, and static and dynamic targets. These results establish compact VLMs as a unified and transferable backbone for generalist embodied navigation.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2608.30935"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Modèle *LightNav-0* pour la navigation embodied généraliste, exploitant les capacités spatiales d'un VLM pré-entraîné via une interface tokenisée unifiée (intent spatial + tokenizer d'actions VQ), avec entraînement RL et SFT pour une généralisation multi-tâches et multi-embodiments.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La navigation incarnée (embodied navigation) nécessite que les agents robotiques interprètent des objectifs hétérogènes et des observations visuelles pour agir de manière cohérente dans des tâches, environnements et formes robotiques variés. Les systèmes actuels reposent souvent sur des composants spécifiques à une tâche ou à une embodiment, limitant ainsi la généralisation et fragmentant les processus de perception, de raisonnement et d'action.",
+    "methode": "LightNav-0 exploite les capacités spatiales pré-entraînées d'un modèle vision-langage (VLM) pour la navigation incarnée, sans recourir à des têtes de prédiction spécifiques à une tâche. Il utilise une interface unifiée basée sur des tokens : un mécanisme de *dual-channel pointing* pour exprimer une intention spatiale agnostique à la tâche, à la scène et à l'embodiment, couplé à un *residual vector-quantized action tokenizer* pour traduire cette intention en trajectoires précises adaptées à l'embodiment. Le modèle intègre également une compression temporelle de l'historique visuel, un entraînement intermédiaire (*ER mid-training*), un fine-tuning supervisé et de l'apprentissage par renforcement. Le corpus d'entraînement couvre plus de 2 000 scènes et 4 000 heures de données de navigation incarnée.",
+    "resultats": "LightNav-ER, le checkpoint de raisonnement incarné utilisé pour initialiser LightNav-0, obtient la meilleure moyenne sur l'ensemble complet de 8 benchmarks de raisonnement incarné. LightNav-0 atteint des taux de succès monoscopiques à l'état de l'art sur les 10 configurations publiques de simulation de navigation. Les évaluations en conditions réelles démontrent une généralisation *zero-shot* à travers différents embodiments robotiques, scènes variées et cibles statiques ou dynamiques.",
+    "limites": "Le document ne précise pas les détails techniques sur les architectures exactes des composants clés (ex. : *residual vector-quantized action tokenizer*), ni les métriques précises pour chaque benchmark. La robustesse face à des environnements bruités ou des scénarios hors distribution reste à explorer. Enfin, la dépendance aux VLMs pré-entraînés pourrait limiter l'adaptabilité à des domaines très spécifiques.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche unifiée et généraliste de la navigation incarnée, mais son applicabilité réelle nécessitera des validations supplémentaires sur des cas d'usage concrets et variés."
+   }
+  },
+  {
+   "id": "2a8199a691f272a5",
+   "title": "Normalized Low-Rank Adaptation",
+   "url": "https://huggingface.co/papers/2608.31036",
+   "summary": "While low-rank adaptation (LoRA) is widely used for parameter-efficient model adaptation, how to regularize its training dynamics for stable and effective optimization remains underexplored. Because LoRA initializes the up-projection to zero, its early optimization dynamics are largely governed by the down-projection. Building on this observation, we introduce Normalized Low-Rank Adaptation (NoRA), a simple yet effective method that normalizes the down-projection matrices during training. We further show that the same normalization can be applied only at initialization, improving standard LoRA without requiring repeated normalization throughout training. Across pretraining, supervised finetuning, and reinforcement learning, NoRA consistently accelerates convergence, improves performance and training stability, and mitigates catastrophic forgetting. These benefits require neither additional trainable parameters nor inference-time computation, making NoRA a simple and broadly applicable enhancement to LoRA.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2608.31036"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "NoRA normalise les matrices de projection dans LoRA pour stabiliser l'entraînement et accélérer la convergence, améliorant les performances sans coût supplémentaire en inférence. Solution simple et efficace pour l'adaptation de modèles, validée sur des tâches variées (pretraining, SFT, RL).",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "LoRA (Low-Rank Adaptation) est une méthode largement utilisée pour adapter les modèles de manière paramétriquement efficace, mais ses dynamiques d'entraînement manquent de régularisation, ce qui peut entraîner une optimisation instable ou sous-optimale. En particulier, l'initialisation à zéro de la projection montante (up-projection) rend les premières étapes de l'optimisation dépendantes uniquement de la projection descendante (down-projection), limitant ainsi l'efficacité et la stabilité de l'entraînement.",
+    "methode": "Normalized Low-Rank Adaptation (NoRA) propose une solution simple en normalisant les matrices de projection descendante (down-projection) pendant l'entraînement. Cette normalisation peut être appliquée soit dynamiquement durant tout l'entraînement, soit uniquement à l'initialisation, ce qui améliore LoRA sans nécessiter de calculs supplémentaires lors de l'inférence. NoRA repose sur l'observation que les dynamiques précoces de LoRA sont dominées par la down-projection, et sa normalisation permet d'équilibrer les contributions des deux projections (montante et descendante) dès le début de l'entraînement.",
+    "resultats": "NoRA accélère systématiquement la convergence, améliore les performances et la stabilité de l'entraînement, tout en atténuant le phénomène d'oubli catastrophique (catastrophic forgetting). Ces bénéfices sont observés dans divers contextes : pré-entraînement, fine-tuning supervisé et apprentissage par renforcement. Aucun paramètre supplémentaire n'est requis, et l'inférence reste inchangée en termes de coût computationnel.",
+    "limites": "Le contenu disponible ne précise pas les détails quantitatifs des améliorations (ex. : gains en précision ou réduction du temps d'entraînement), ce qui limite l'évaluation de l'ampleur réelle des bénéfices. De plus, l'impact de NoRA sur des architectures très spécifiques ou des tâches hors des domaines testés (pré-entraînement, fine-tuning, RL) reste à explorer.",
+    "verdict": "NoRA mérite une attention particulière pour son approche minimaliste et ses promesses d'amélioration de LoRA sans surcoût, mais une validation plus poussée avec des benchmarks détaillés serait nécessaire pour en confirmer la généralisabilité."
+   }
+  },
+  {
+   "id": "084233a1027cb632",
+   "title": "On the Design of Qwen3.8-Next Architecture: Evaluation, Efficiency, and Training Stability",
+   "url": "https://huggingface.co/papers/2608.30320",
+   "summary": "We describe the architecture and ablations of Qwen3.8-Flash-Next, a sparse mixture-of-experts model with 125B parameters, 6B activated per token, and additional 51B parameters of n-gram embedding tables held off the accelerator. On fourteen pre-training benchmarks the model leads the 397B-A17B predecessor on eight and trails it on the rest by at most 2.6 points, at 1/3 the activated parameters, 1/3 the training tokens, and roughly 1/9 the training FLOPs. Token mixing uses a layer-wise hybrid of Gated DeltaNet (GDN) and global attention, with one full-attention layer in every four; at continued-pretraining time those full-attention layers are replaced by Qwen Sparse Attention (QSA), which scores context at micro-block granularity with a compressed lightweight indexer. The residual stream is widened to four branches and read through an elementwise gate, a design we call the Gated Residual (GR). Capacity is added outside the backbone by a single n-gram embedding layer whose tables are prefetched from host memory. We evaluate every candidate change along three axes: loss together with downstream benchmarks; the cost of the change in training, prefill and decode; and its effect on the optimal hyperparameters and training stability. Loss and downstream accuracy do not always move together: enlarging the n-gram vocabulary lowers loss monotonically while downstream accuracy saturates. The architecture and the Muon optimizer together shift the optimal learning rate and batch size upwards, render batch-size warmup unnecessary, and substantially improve stability under stress tests. Loss, benchmarks, efficiency and stability form one design problem. Solved jointly, they yield a recipe that is simultaneously more efficient, more capable and more stable.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2608.30320"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Qwen3.8-Next introduit une architecture MoE sparse (125B params, 6B activés) avec un mélange hybride GDN/attention globale, des couches QSA pour le contexte, et des tables d'embeddings n-gram externalisées. Le modèle surpasse son prédécesseur sur 8/14 benchmarks avec 1/3 des paramètres activés, 1/3 des tokens d'entraînement et 1/9 des FLOPs, démontrant une efficacité computationnelle et une stabilité d'entraînement remarquables.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Ce travail vise à résoudre trois défis majeurs dans la conception de grands modèles de langage (LLM) : réduire les coûts computationnels et énergétiques tout en maintenant des performances élevées, améliorer la stabilité de l'entraînement face à des hyperparamètres agressifs, et optimiser l'efficacité des phases de pré-remplissage (prefill) et de décodage (decode) sans sacrifier la précision sur des benchmarks variés.",
+    "methode": {
+     "architecture": "Qwen3.8-Flash-Next est un modèle *sparse mixture-of-experts* (MoE) avec 125 milliards de paramètres totaux, dont seulement 6 milliards sont activés par token. Il intègre une hybridation de couches : 75% des couches utilisent *Gated DeltaNet* (GDN), une variante efficace de l'attention locale, tandis que 25% (une couche sur quatre) emploient une attention globale classique. Lors du *continued pretraining*, ces couches d'attention globale sont remplacées par *Qwen Sparse Attention* (QSA), qui optimise le scoring du contexte via des micro-blocs et un indexeur compressé pour réduire la mémoire.",
+     "residual_stream": "Le flux résiduel est élargi en quatre branches parallèles, lues via une *Gated Residual* (GR), une porte élémentaire qui combine dynamiquement les sorties. Cette approche vise à améliorer la capacité de représentation sans augmenter linéairement les coûts computationnels.",
+     "n-gram_embeddings": "Une couche d'embeddings n-gram (51 milliards de paramètres) est ajoutée *hors du backbone* principal, avec des tables préchargées depuis la mémoire hôte pour éviter de surcharger les accélérateurs (GPU/TPU). Cela permet d'enrichir la modélisation des séquences sans impacter directement le calcul dense.",
+     "optimisation": "Le modèle utilise l'optimiseur *Muon*, conçu pour stabiliser l'entraînement avec des taux d'apprentissage et tailles de batch plus élevés, tout en éliminant le besoin de *batch-size warmup*. Les ablations systématiques évaluent chaque modification selon trois axes : perte d'entraînement et performances sur benchmarks, coût computationnel (FLOPs, mémoire), et stabilité (tolérance aux hyperparamètres extrêmes).",
+     "evaluation": "Les choix architecturaux sont validés sur 14 benchmarks de pré-entraînement, avec une analyse fine de leur impact sur la perte, la précision en aval, et l'efficacité (latence, FLOPs). Par exemple, l'élargissement du vocabulaire n-gram réduit la perte de manière monotone, mais la précision sur les tâches en aval atteint un plateau."
+    },
+    "resultats": {
+     "performances": "Qwen3.8-Flash-Next surpasse son prédécesseur (397 milliards de paramètres, 17 milliards activés par token) sur 8 des 14 benchmarks, avec un écart maximal de 2,6 points en défaveur sur les autres. Ces résultats sont obtenus avec seulement 1/3 des paramètres activés, 1/3 des tokens d'entraînement, et environ 1/9 des FLOPs totaux.",
+     "efficacite": "Le modèle réduit significativement les coûts : le *prefill* et le *decode* sont optimisés grâce à l'attention sparse (QSA) et à l'hybridation GDN/attention globale. Les embeddings n-gram, bien que volumineux, sont gérés hors accélérateur pour limiter l'empreinte mémoire sur GPU.",
+     "stabilite": "L'architecture et l'optimiseur Muon permettent d'utiliser des hyperparamètres plus agressifs (taux d'apprentissage élevé, batch size large) sans instabilité, tout en supprimant le besoin de *warmup* progressif. Les tests de stress confirment une robustesse accrue."
+    },
+    "limites": {
+     "complexite_architecturale": "L'hybridation GDN/attention globale et la gestion des embeddings n-gram ajoutent une complexité technique qui pourrait compliquer le déploiement ou la maintenance, notamment pour des équipes sans expertise pointue en optimisation de MoE.",
+     "trade-offs_non_intuitifs": "Les résultats montrent que la réduction de la perte ne se traduit pas toujours par une amélioration des performances en aval (ex. : saturation de la précision malgré une perte plus faible avec les n-grams). Cela suggère que les benchmarks actuels ne capturent pas entièrement l'impact des modifications architecturales.",
+     "generalisation": "Les gains en efficacité et stabilité sont démontrés dans un cadre spécifique (modèles Qwen, optimiseur Muon). Leur transférabilité à d'autres architectures (ex. : Llama, Mistral) ou optimiseurs (AdamW) reste à valider."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique et ses gains concrets en efficacité et stabilité, mais son adoption nécessitera une évaluation rigoureuse des compromis et de la complexité ajoutée, surtout pour des cas d'usage hors du cadre des benchmarks présentés."
+   }
+  },
+  {
+   "id": "e895216e40613c72",
+   "title": "Does On-Policy Distillation Really Distill? From Noisy Teacher to Self-Improvement",
+   "url": "https://huggingface.co/papers/2608.31046",
+   "summary": "On-policy distillation (OPD) offers dense token-level supervision as an alternative to the sparse outcome-level advantages of reinforcement learning with verifiable rewards (RLVR). However, the teacher scores student-generated trajectories that are inherently off-policy for it, so the reliability of its supervision, and hence the source of the student's improvement, remains unclear. We quantitatively analyze teacher supervision during OPD training and find substantial noise whose prevalence increases with teacher scale. Surprisingly, the student policy is insensitive to such noise, converging to comparable performance regardless of whether noisy supervision is retained or removed. Does OPD distill at all? By analyzing what drives its gains, we find that learning concentrates on low log-probability tokens, and using a single fixed negative advantage matches the performance of teacher-provided ones. This suggests that OPD works largely by suppressing low log-probability tokens, which requires no teacher. These findings motivate On-Policy Self-Adaptation (OPSA), a supervision-free method using entropy-adaptive negative advantages. It assigns stronger learning signals to high-entropy positions, suppressing tail tokens, and evenly redistributing probability mass among head tokens. Compared with the base Qwen3-1.7B, OPSA improves Avg@32 by 35.41 points on AIME24, corresponding to a 263\\% relative gain, and more than doubles Pass@32 across all three benchmarks. It also outperforms OPD by 16.77 points in Avg@32 on AIME24. Extensive experiments and analyses across model families and tasks further demonstrate its effectiveness and generalizability.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 65,
+    "arxiv_id": "2608.31046"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "L'étude démontre que l'On-Policy Distillation (OPD) améliore les modèles principalement en supprimant les tokens à faible probabilité, indépendamment de la supervision bruitée du professeur. Elle propose OPSA, une méthode sans supervision basée sur des avantages négatifs adaptatifs à l'entropie, plus efficace que les approches traditionnelles.",
+   "score": 9.1
+  },
+  {
+   "id": "1aa41a062bea8e62",
+   "title": "DreamX-Creator: Democratizing Native Audio-Video Generation at 2K Resolution",
+   "url": "https://huggingface.co/papers/2608.31106",
+   "summary": "Recent video generators often omit audio or synthesize it in a separate stage, limiting reciprocal modeling of visual dynamics and acoustic events. We present DreamX-Creator 1.0, a compact native joint audio-video generation system centered on a 7B generator. Conditioned on a first frame and a text prompt, the generator jointly denoises modality-specialized audio and video streams. The streams are processed independently in the first half of the network and coupled in the latter half through Gated Cross-Modal Attention, whose token- and head-wise output gates modulate each active cross-modal attention-head output. A unified Audio-Video Data System constructs and filters temporally coherent clips, produces structured multimodal annotations, and organizes clips into capability-oriented data pools. Progressive Joint Training comprises two audio-video pre-training stages followed by High-Quality Finetuning. Audio-Video Reinforcement Learning further post-trains the generator with Modality-Aware Multimodal Feedback that routes video-, audio-, and cross-modal feedback to the corresponding streams. For high-resolution output, our Autoregressive 1-Step 2K Refinement pipeline adapts a bidirectional multi-step teacher into an autoregressive multi-step refiner and distills it into a student requiring one denoising evaluation per temporal chunk. Overall, DreamX-Creator 1.0 achieves native, synchronized audio-video generation with performance competitive with state-of-the-art open-source systems. By releasing our compact 7B generator and 2K Refiner, we seek to democratize native audio-video generation and provide an accessible foundation for future research in unified audio-video generative modeling.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 74,
+    "arxiv_id": "2608.31106"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "audio",
+    "architecture"
+   ],
+   "tldr": "Système *DreamX-Creator 1.0* générant nativement de la vidéo et de l'audio à 2K de résolution via un modèle 7B, utilisant une attention croisée modulaire et un entraînement joint progressif (pré-entraînement + RL multimodal), avec une pipeline de raffinement 1-étape pour la haute résolution.",
+   "score": 8.8
+  },
+  {
+   "id": "54034b8f85b36285",
+   "title": "Super Library Agent: Joint Generation and Maintenance of Multiple Applications Beyond the Single Codebase",
+   "url": "https://huggingface.co/papers/2608.29310",
+   "summary": "Organizations often develop and maintain portfolios of related applications: independently deployable codebases that share substantial domain logic, interface patterns, or operational conventions. As LLM coding agents are increasingly used to generate and maintain such software, a naive application-by-application workflow duplicates shared logic across codebases and allows prolonged agentic maintenance to accumulate verbosity, dead code, and structural erosion. We introduce the Super Library Agent problem, where an agent sequentially generates a portfolio of N related applications while maintaining a shared Super Library of reusable cross-application components. A minimal sequential scaffold can in principle extract shared code and migrate applications to the evolving library, but in practice suffers from low extraction recall and fragile dependency migration. We address these failures with candidate-guided extraction over code chunk summaries, pre-extraction codebase consolidation, and context-aware migration using extraction traces and call-graph information. Across WebGen-Bench and PaperBench, our method preserves application functionality while significantly reducing redundancy and token footprint (verbosity, token length) over zero-shot, and avoiding the structural erosion introduced by naive library construction, with additional reductions in LOC and MDL. Our code is available at https://github.com/sbigstar0310/super-library-agent.",
+   "published": "2026-08-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2608.29310"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils",
+    "optimisation"
+   ],
+   "tldr": "Problème du *Super Library Agent* pour générer et maintenir plusieurs applications partageant une logique commune via un *Super Library* partagé, avec une méthode (extraction guidée par candidats, migration contextuelle) réduisant la redondance et préservant la fonctionnalité, évaluée sur *WebGen-Bench* et *PaperBench*.",
+   "score": 8.8
+  },
+  {
+   "id": "b27b160965dc3300",
+   "title": "Verification-Aware Training for Speculative Decoding",
+   "url": "https://huggingface.co/papers/2608.30135",
+   "summary": "Speculative decoding accelerates large language model inference by using a draft model to generate candidate tokens, which are verified by the target model in a single forward pass. Verification proceeds sequentially and discards every position from the first rejection onward, yet existing draft training relies on token-level imitation of the target with a fixed per-position weighting that reflects neither property. We introduce Verification-Aware Training (VAT), a plug-in framework that simulates verification at every training step and turns the resulting accept and reject patterns into supervision. VAT consists of two components: (i) a verification head, a lightweight jointly trained binary classifier that supervises the draft model on whether each position survives sequential verification; (ii) verification-adaptive weighting, which replaces the fixed weighting schedule by keeping full weight up to each sample's first rejection point and re-anchoring the decay to start there. VAT modifies only the training objective, so it can be layered on top of existing methods without changing the draft architecture, the target model, or the inference procedure. Applied to EAGLE-3 and DFlash on Qwen3-4B, Qwen3-8B, and LLaMA-3.1-8B, VAT improves average acceptance length by up to 11.4% and wall-clock speedup by up to 8.7%, with consistent gains across math, code, and chat benchmarks. Code will be available at https://github.com/naver-ai/vat",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.30135"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "VAT améliore l'entraînement des modèles de draft pour l'inférence spéculative en intégrant une simulation de la phase de vérification dans l'objectif de perte, accélérant la convergence et la qualité des prédictions. Méthode générique et prometteuse pour l'optimisation de l'inférence LLM, validée sur EAGLE-3 et DFlash.",
+   "score": 8.8
+  },
+  {
+   "id": "61a2cdf3e0d10964",
+   "title": "CAST: Critique-Aware Supervision for Training Reliable Long-Horizon Tool-Calling Agents",
+   "url": "https://huggingface.co/papers/2608.30147",
+   "summary": "Large language model (LLM) agents are increasingly deployed in long-horizon, interactive, and stateful environments. In these settings, a single wrong action, such as refunding the wrong purchase, can cause irreversible task failure and must be intercepted before execution. Such failures may not appear in every single run, but can emerge across repeated trials, making reliability across steps and trials critical. However, ensuring agentic reliability is challenging: even frontier LLMs struggle to explain why an action may be wrong, especially in long, intertwined trajectories governed by domain-specific policies. Much recent work relies on prompt-based critique agents, while optimization-based methods lack a systematic way to produce rich verification rationales for training. We address this gap with CAST, a critique-aware training framework that converts sparse task outcomes into action-level supervision for critique learning and policy optimization. CAST analyzes agent trajectories to synthesize structured rationales explaining action validity under partial observability. The resulting critique model is used to construct critique-aware training data for optimizing the policy model. Fine-tuning Qwen3-family models on dynamic tool-calling benchmarks, CAST improves reliability across domains, outperforming GPT-OSS-120B by over 10% pass^4 on Retail tasks and yielding an additional 9% improvement on Telehealth in an out-of-domain setting. These results demonstrate that critique-aware training improves the robustness of LLM agents in realistic dynamic environments.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.30147"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "CAST introduit un cadre d'entraînement critique-aware pour les agents à outils long-horizon, convertissant les échecs en supervision structurée pour optimiser à la fois le modèle de critique et la politique. Le framework génère des rationales actionnables pour éviter les erreurs irréversibles (ex: remboursements incorrects) et améliore la fiabilité des trajectoires complexes.",
+   "score": 8.8
+  },
+  {
+   "id": "e91105b0a605baa5",
+   "title": "EvoUndo: Recoverability-Constrained Self-Evolution for LLM Agent Harnesses",
+   "url": "https://huggingface.co/papers/2608.28363",
+   "summary": "LLM agents increasingly modify their own prompts, tools, middleware, resources, and execution harnesses at runtime. Such self-evolution can improve capability, but a successful mutation may leave persistent effects that cannot be safely reversed in states different from the one in which it was created. We introduce EvoUndo, a framework for representing, synthesizing, diagnosing, and independently verifying recoverability of model-generated self-modifications across counterfactual states. Across 600 unseen one-shot self-evolution tasks, we identify 197 capability-improving mutations that fail recoverability verification. Under the original recovery representation, conventional repair strategies recover 0/197 of these natural failures. Deterministic oracle analysis recovers 48/197 under the original recovery language L0, while the extended recovery calculus increases empirical oracle recovery to 191/197. A protocol-locked 2x2 grounding-by-expressivity intervention then separates two bottlenecks: exact state-address grounding increases successful recovery from 0/48 to 38/48 (79.2%) when the original language is sufficient, while extending the recovery language enables recovery on 142/143 (99.3%) failures in the oracle-defined S1 stratum. On the primary gpt-oss-120b backbone, adding exact-address diagnostics to the richer language reduces recovery to 133/143 (93.0%); a Qwen3.8-27B replication preserves the grounding and expressivity effects but not this negative interaction, indicating that the latter is model-dependent. These results indicate that reliable agent self-evolution requires co-designing verification, state grounding, witness semantics, and recovery-language expressivity rather than relying on iterative prompting alone.",
+   "published": "2026-08-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2608.28363"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "EvoUndo propose un cadre pour diagnostiquer et réparer les modifications auto-générées par des agents LLM, identifiant des mutations améliorant les capacités mais non réversibles, et introduisant des mécanismes de récupération robustes (jusqu'à 191/197 cas résolus).",
+   "score": 8.8
+  },
+  {
+   "id": "549b2447ea79baa1",
+   "title": "Sliding-window beats linear attention",
+   "url": "https://huggingface.co/papers/2608.28444",
+   "summary": "Due to the nature of quadratic attention, Large Language Models (LLMs) consume a lot of memory and energy. Every new token costs more than the previous one. For each additional token, the keys and values must be stored in memory indefinitely, which is unsustainable. Several alternatives have been proposed to fix the quadratic scaling problem, one of which is retrofitting LLMs to use Linear Attention. This idea has attracted a lot of attention, given its promise to solve the quadratic scaling problem with state-of-the-art performance at low cost. However, this line of research has not been properly compared to simpler baselines. In this work, we show that Sliding Window Attention (SWA) with sinks performs as well or better than post-trained Linear Attention models. We observe this across multiple LLMs on various downstream tasks. For long-context reasoning tasks (Needle-in-a-Haystack and BABILong), SWA achieves massively higher performance (2 to 10 times higher than linear attention). SWA requires no post-training, is extremely fast, and requires low memory; therefore, making it an extremely cheap and reliable solution. To reduce inference memory cost, we strongly recommend switching to SWA instead of post-training linear models. Linear attention models may have shown some promise, but they likely require to be trained from scratch or extensive post-training in order to even match SWA.",
+   "published": "2026-08-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2608.28444"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "L'attention par fenêtre glissante (SWA) surpasse l'attention linéaire post-entraînée pour les modèles de langage, offrant des performances égales ou supérieures avec une complexité mémoire et computationnelle réduite, sans besoin de post-entraînement.",
+   "score": 8.8
+  },
+  {
+   "id": "d8f83b7a45f23cae",
+   "title": "Universal Transformers for Circuit Computations: Perfect Length Generalization in Tiny Transformers",
+   "url": "https://arxiv.org/abs/2608.31067v1",
+   "summary": "Learning generalizable algorithmic computations remains a challenge for neural networks, as reflected in persistent failures on compositional and length generalization benchmarks. We present a provably correct, transformer parameterization (with only 280 learnable parameters for Boolean algebra tasks) capable of learning and evaluating problems of any depth or length. We assume inputs are fully parenthesized, well-formed expressions. Our approach conceptualizes algorithmic tasks as circuit models embedded in transformers, enabling depth-1 circuit reduction in a single forward pass. To achieve depth generalization, we introduce a positional encoding that tracks each gate's depth within the circuit, enabling the model to identify evaluable subexpressions at each iteration via masked hard attention, with $O(n)$ per-iteration complexity via linear attention. Combined with an autonomous halting criterion, the model terminates after $d$ iterations for problems of depth $d$, yielding $O(n \\cdot d)$ total complexity. We show that training on shallow problem instances (depth 1 and depth 2) effectively recovers interpretable parameters that {\\em snap} into place, resulting in exact length generalization. Though we establish that our construction provably evaluates Boolean expressions -- a universal symbolic computation -- of arbitrary length perfectly, in other experiments we also demonstrate that our transformer variant can learn and generalize perfectly (100% accuracy) on other common length generalization benchmarks, including modular arithmetic and ListOps.",
+   "published": "2026-08-31T16:42:11+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Takuya Ito, Ruchir Puri, Murray Campbell, Parikshit Ram"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Ce papier propose une paramétrisation des transformers garantissant une généralisation parfaite en profondeur pour des tâches algorithmiques (ex: algèbre booléenne), via une modélisation en circuits et une encodage de position basé sur la profondeur. Intéressant pour l'interprétabilité et la généralisation des LLM sur des tâches structurées.",
+   "score": 8.6
+  },
+  {
+   "id": "7fc658c4fc6ff621",
+   "title": "Faithfulness Is Not Free: Auditing Offline KV-Cache Quantization in Retrieval-Augmented Generation",
+   "url": "https://arxiv.org/abs/2608.30996v1",
+   "summary": "Retrieval-augmented generation systems can precompute and store key-value caches of retrieved documents to avoid re-encoding context at every query. Quantizing these caches further reduces storage, but no prior work asks whether compression damages faithfulness, whether responses remain grounded in the retrieved evidence. Faithfulness and accuracy are not equivalent: a model can produce a correct answer that is no longer supported by the context it was given. We evaluate Qwen2.5-7B-Instruct under INT8 and INT4 quantization on RGB and HotpotQA, measuring both accuracy and faithfulness with a hallucination detector, NLI entailment, and an LLM judge. INT8 is near-lossless across both metrics. INT4 reduces accuracy and, more critically, even among answers that remain factually correct, over 90% of faithfulness changes are negative, i.e., accuracy metrics are blind to this regression. The harm grows under noisy retrieval and with more retrieved chunks. Faithfulness must be audited before compressed caches are deployed.",
+   "published": "2026-08-31T15:47:23+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Atta Ul Asad, Ahsan Bilal, Muhammad Ali, Muhammad Haseeb, Dean F. Hougen"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "rag",
+    "llm"
+   ],
+   "tldr": "Audit de l'impact de la quantification (INT8/INT4) des caches clé-valeur dans les systèmes RAG (Qwen2.5-7B-Instruct) sur la fidélité des réponses. La quantification INT4 réduit fortement la fidélité (90% de régressions) malgré des métriques d'exactitude stables, soulignant l'importance d'évaluer la fidélité avant déploiement.",
+   "score": 8.6
+  },
+  {
+   "id": "676144f2179f2b61",
+   "title": "Stick to What You Know: A Study of Knowledge-Aligned Supervised Fine-Tuning",
+   "url": "https://arxiv.org/abs/2608.30987v1",
+   "summary": "Supervised fine-tuning (SFT) trains a base language model to imitate target responses, and these targets may require knowledge the base model has not robustly internalized. We study this as a source of hallucinations and frame a group of mitigation methods as \\emph{knowledge-aligned SFT}: constraining SFT training targets to the base model's parametric knowledge. Under a unified setup, we compare existing generation-based and estimation-based knowledge-alignment methods and introduce two new variants: Evidence Rewrite, which verifies base-model generations using external evidence, and Recall Rewrite, which retains claims only when they can be consistently recalled by the base model. Experiments with Qwen 3 4B and OLMo 3 7B show that knowledge-aligned SFT can reduce factual hallucinations on WildHalu and Biography while largely preserving general capabilities. Recall Rewrite yields the strongest factuality gains and improves refusal behavior on UnknownBench. It thereby confirms that SFT targets beyond the base model's knowledge drive hallucination behavior.",
+   "published": "2026-08-31T15:43:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Arthur Becker, Jakob Kemmler, David Thulke, Christine Schäfer, Christian Dugast, Hermann Ney"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Proposition de méthodes de fine-tuning aligné sur la connaissance (Recall Rewrite, Evidence Rewrite) pour réduire les hallucinations factuelles en SFT, en contraignant les cibles d'entraînement aux connaissances internes du modèle. Les résultats montrent une réduction des hallucinations sur WildHalu et Biography, avec un impact minimal sur les capacités générales.",
+   "score": 8.6
+  },
+  {
+   "id": "1d18bea75eafe2de",
+   "title": "WebWorld: The Browser as a World Model for Self-Improving Web Code",
+   "url": "https://huggingface.co/papers/2608.30530",
+   "summary": "VLM-driven self-improvement of web code has a structural flaw: the model that proposes the repair is the model that judges it, and visual plausibility under that judge is a poor proxy for whether the page actually works. What the loop is missing is a counterparty the VLM cannot fool, and the browser already is that counterparty: a deterministic, executable simulator of how an HTML artifact behaves under user actions, and in everything but name a world model for web code. We present WebWorld, the interface that lets a VLM prior interact with this browser-as-world-model autonomously and decides which interactions become supervision. Each round, the VLM emits a critique that the planner compiles into a typed interaction contract; the browser re-executes the candidate and issues an acceptance certificate only when both target progress and preservation of every previously verified capability hold; certified transitions accumulate as a quality ratchet that is the only thing the SFT export ever sees. Under matched training, WebWorld-27B improves Raw-27B by 5.3 points on HTMLBench-400 and 14.9 points on MiniAppBench-Val, and reaches the level of strong frontier systems such as Kimi-K2.6 and GPT-5.4 on interactive HTML generation. Equal-size ablations show that browser-backed admission carries the gain: without the certificate, the matched 9B lift nearly disappears.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.30530"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Framework *WebWorld* pour l'auto-amélioration des codes web via un navigateur comme *world model*, où le navigateur valide les modifications proposées par un VLM via des interactions typées et un certificat d'acceptation, améliorant *HTMLBench-400* de 5.3 points et atteignant le niveau de modèles frontaliers comme Kimi-K2.6.",
+   "score": 8.5
+  },
+  {
+   "id": "900b622ab45ffe1d",
+   "title": "Lies We Can See: Joint Verbal and Non-Verbal Deception by VLM Agents in Embodied Social Interactions",
+   "url": "https://huggingface.co/papers/2608.30428",
+   "summary": "Strategic deception by LLM and VLM agents has emerged as a central AI alignment and safety concern. Social-deduction games (where each player holds a hidden role and communicates with others to deduce identities) serve as the canonical testbed, particularly in multi-agent settings. Existing testbeds, however, are text-only and run on a single fixed agent configuration, missing the non-verbal sensorimotor channels treated as core by deception taxonomies and leaving it ambiguous whether an observed behavior reflects the underlying model or the surrounding harness. We introduce MineAmongUs, a 3D multimodal Among Us sandbox where imposter agents must deceive crewmates through joint verbal and non-verbal action. We also propose ARIA, a configurable VLM-agent harness that exposes five cognitive-component ablation axes; and an atom- and arc-level annotation scheme grounded in deception taxonomies and operationalized at scale by an LLM-as-a-Judge reaching near-human atom-labeling agreement. Empirical results show that VLM agents pursue imposter wins through joint verbal and non-verbal deception, with non-verbal channels emerging as the more decisive winning contributors across both harness ablation and cross-VLM evaluation. Taken together, our work opens a new path for embodied VLM-agent alignment research.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2608.30428"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "MineAmongUs et ARIA explorent la détection de tromperie multimodale (verbale/non-verbale) par des agents VLM dans des jeux sociaux, révélant que les canaux non-verbaux sont décisifs pour la victoire. Travail innovant pour l'alignement et la sécurité des agents, mais limité par un sandbox spécifique (Among Us) et une annotation semi-automatisée.",
+   "score": 8.5
+  },
+  {
+   "id": "b99ffd7e752c855c",
+   "title": "Scaffolding Foundation Models into Physical-World Agents Pushes the Frontier of Long-Horizon Navigation",
+   "url": "https://huggingface.co/papers/2608.30396",
+   "summary": "Long-horizon physical-world agents must reason over distant goals while grounding decisions in reliable closed-loop behavior. Today's foundation models split these capabilities: vision-language models (VLMs) infer missing information and adapt high-level plans but remain brittle and inefficient at repeated navigation grounding, while navigation foundation models (NFMs) robustly execute semantic goals but operate as bounded episodes without persistent task-level reasoning. We introduce NavMCP, an agentic scaffolding framework that couples a VLM reasoning agent with an NFM executor for long-horizon exploration. The VLM decides what evidence to seek, where to search, and when to stop, while the NFM grounds each semantic sub-goal into closed-loop navigation. Three channels structure their collaboration: intent translates evidence needs into navigation calls, observation converts rollouts into source-grounded trajectory evidence, and memory accumulates findings, negative evidence, and unresolved goals across calls. This design turns isolated navigation rollouts into persistent embodied interaction without retraining either model. On Embodied Question Answering, NavMCP achieves state-of-the-art results on HM-EQA, MT-HM3D, and EXPRESS-Bench. Under matched agent and executor backbones, it outperforms an episodic interface by 14.9 percentage points on HM-EQA. On a Unitree Go2, NavMCP reaches 78.3% success, with its margin over the strongest baseline growing from 10 to 45 points as the task horizon increases. These results demonstrate the potential of scaffolding complementary foundation models into long-horizon physical-world agents.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.30396"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "robotique"
+   ],
+   "tldr": "NavMCP combine un agent VLM raisonneur et un modèle de navigation (NFM) pour des tâches long-horizon en robotique, structurant leur collaboration via des canaux d'intention, d'observation et de mémoire. Le framework atteint un état de l'art sur Embodied Question Answering sans réentraînement, démontrant une synergie efficace entre planification sémantique et exécution robuste.",
+   "score": 8.5
+  },
+  {
+   "id": "e3664323bda211c4",
+   "title": "DIASENTINEL: An Auditable Multi-Agent System for Guideline-Grounded Diabetes Risk Screening",
+   "url": "https://arxiv.org/abs/2608.31128v1",
+   "summary": "Large language models (LLMs) offer promising clinical decision support but remain vulnerable to hallucinated facts, unsupported recommendations, and citation errors. We present DIASENTINEL, a fully on-premise multi-agent system for one-year type 2 diabetes mellitus (T2DM) risk screening and guideline-grounded report generation from electronic health records (EHRs). The system integrates calibrated risk prediction, deterministic clinical signal extraction, Reciprocal Rank Fusion over American Diabetes Association (ADA) guidelines, and a hybrid verification layer combining rule-based checks with LLM entailment. The demonstration provides a real-time batch-screening dashboard and an interactive patient report interface with cited recommendations, verification results, and raw EHR comparison. DIASENTINEL demonstrates a practical framework for reliable, auditable, and privacy-preserving LLM-based clinical decision support.",
+   "published": "2026-08-31T17:40:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yung Wei Shueh, Zhi-Jie Chen, Chia-Hsuan Hsu, Hsin-Ling Hsu, Donghua Zhang, Chenwei Wu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "regulation"
+   ],
+   "tldr": "DIASENTINEL est un système multi-agents auditable pour le dépistage du diabète de type 2, combinant prédiction de risque, extraction de signaux cliniques et vérification hybride pour des recommandations fiables et traçables.",
+   "score": 8.3
+  },
+  {
+   "id": "abb3fb0e65dc3293",
+   "title": "S3Gym: Can LLMs Turn Self-Testing and Self-Judging into Self-Improvement?",
+   "url": "https://arxiv.org/abs/2608.31100v1",
+   "summary": "Large language models (LLMs) increasingly interact with external environments and accumulate substantial behavioral experience, yet existing agent benchmarks largely evaluate them as fixed policies. It therefore remains unclear whether an agent can actively test its behavior, judge the resulting experience, and use that experience to improve future decisions. We introduce \\textbf{S\\textsuperscript{3}Gym}, an interactive benchmark for evaluating LLM self-improvement through three coupled capabilities: \\textbf{Self-Testing}, \\textbf{Self-Judging}, and \\textbf{Self-Improvement}. S$^3$Gym separates permissive exploration from strict held-out evaluation and instantiates this protocol in seven text-based games with executable environment verifiers. We evaluate three pathways for incorporating interaction experience: direct History ICL, score-conditioned Summary Memory, and parameter Training. Our experiments reveal that self-improvement is neither automatic nor uniform. Context-level experience improves performance for several model--game pairs, but the most effective pathway depends strongly on the task structure: summaries are beneficial when experience can be compressed into reusable strategic rules, yet often underperform raw history when success depends on precise, state-contingent information. Parameter training produces substantial gains on some tasks, but also exhibits unstable improvement and severe negative transfer on others. These findings show that recognizing successful actions is insufficient; agents must also transform feedback into executable and transferable policies. S$^3$Gym provides a unified framework for diagnosing this process and identifying the bottlenecks that prevent agents from translating interaction experience into reliable self-improvement.",
+   "published": "2026-08-31T17:05:41+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiajun Shi, Siyuan Tao, Yuhao Wu, Zexuan Wang, Jingyuan Zhang, Jiaheng Liu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark S³Gym évalue l'auto-amélioration des LLM via l'auto-test, l'auto-évaluation et l'auto-entraînement, révélant que l'efficacité dépend fortement de la structure de la tâche et du chemin d'incorporation de l'expérience.",
+   "score": 8.3
+  },
+  {
+   "id": "d7dddcb94f28846a",
+   "title": "Does On-Policy Distillation Really Distill? From Noisy Teacher to Self-Improvement",
+   "url": "https://arxiv.org/abs/2608.31046v1",
+   "summary": "On-policy distillation (OPD) offers dense token-level supervision as an alternative to the sparse outcome-level advantages of reinforcement learning with verifiable rewards (RLVR). However, the teacher scores student-generated trajectories that are inherently off-policy for it, so the reliability of its supervision, and hence the source of the student's improvement, remains unclear. We quantitatively analyze teacher supervision during OPD training and find substantial noise whose prevalence increases with teacher scale. Surprisingly, the student policy is insensitive to such noise, converging to comparable performance regardless of whether noisy supervision is retained or removed. Does OPD distill at all? By analyzing what drives its gains, we find that learning concentrates on low log-probability tokens, and using a single fixed negative advantage matches the performance of teacher-provided ones. This suggests that OPD works largely by suppressing low log-probability tokens, which requires no teacher. These findings motivate On-Policy Self-Adaptation (OPSA), a supervision-free method using entropy-adaptive negative advantages. It assigns stronger learning signals to high-entropy positions, suppressing tail tokens, and evenly redistributing probability mass among head tokens. Compared with the base \\texttt{Qwen3-1.7B}, OPSA improves Avg@32 by 35.41 points on AIME24, corresponding to a 263\\% relative gain, and more than doubles Pass@32 across all three benchmarks. It also outperforms OPD by 16.77 points in Avg@32 on AIME24. Extensive experiments and analyses across model families and tasks further demonstrate its effectiveness and generalizability.",
+   "published": "2026-08-31T16:22:10+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yi Ding, Ruqi Zhang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Analyse critique de la distillation sur politique (OPD), révélant que ses gains proviennent principalement de la suppression des tokens à faible probabilité, sans besoin d'un enseignant bruyant. Propose OPSA, une méthode sans supervision basée sur l'entropie.",
+   "score": 8.3
+  },
+  {
+   "id": "1c808538f236bb68",
+   "title": "EvoGenUI-Bench: Evaluating LLMs as Multi-Turn Generative UI Assistants",
+   "url": "https://huggingface.co/papers/2608.29387",
+   "summary": "Large language models can generate interactive web interfaces, but reliable generative UI requires maintaining an executable artifact as user requests evolve. We introduce EvoGenUI-Bench, a benchmark for multi-turn interface maintenance comprising 150 five-turn tasks and 750 turns across three scenarios: information presentation, executable interaction, and tool-grounded external state. We execute generated artifacts in a browser and evaluate them using screenshots, source and DOM evidence, actor traces, and runtime logs. Beyond turn-level and episode-level success, we measure cross-turn retention with Adjacent Pass Retention. Across eight models, even the strongest achieves 74.9% Turn Pass while completing only 37.3% of five-turn episodes; APR further falls to 52.4% on tool-grounded tasks. Diagnostic analysis shows that presentation failures center on information architecture, interaction failures on derived-state propagation and affordance binding, and tool-grounded failures additionally involve external-state grounding and requirement decomposition. These results reframe generative UI evaluation from judging isolated outputs to testing whether interface behavior, derived state, external state, and assistant claims remain synchronized as the artifact evolves.",
+   "published": "2026-08-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2608.29387"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark *EvoGenUI-Bench* évaluant les LLMs comme assistants génératifs d'interfaces utilisateur multi-tours (150 tâches, 750 tours), révélant des limites critiques en rétention inter-tours (52.4% en moyenne) et en gestion des états externes, avec des diagnostics par type d'échec (architecture, interaction, outils).",
+   "score": 8.2
+  },
+  {
+   "id": "29c3429c0f12d22f",
+   "title": "Evaluating the Hidden Costs of Personalization in Large Language Models",
+   "url": "https://huggingface.co/papers/2608.28833",
+   "summary": "While Large language models (LLMs) incorporate user personalization signals to improve usability and helpfulness, they increasingly shift from providing balanced, informative responses toward optimizing for user satisfaction when conditioned on personal context such as conversation history, inferred preferences, and user profiles. Specifically, we identify three emerging risks: (1) irrelevant personalization, where models reference personal information in unnecessary contexts; (2) preference narrowing, where models reinforce informational echo chambers; and (3) sycophantic bias, where models agree excessively with user opinions. As a result, models may reference personal information in contexts where it is unnecessary, inadvertently collapse response diversity, or agree excessively with user opinions. Despite the growing use of personalization in AI assistants, there has been limited systematic evaluation of its potential side effects. To bridge this gap, we propose PRISK, a dynamic evaluation framework with automated data generation and tailored metrics that uncovers systematic limitations in current LLM personalization and how personalized information shapes its responses. Our empirical analysis across 13 LLMs demonstrates the presence of user profiles and retrieved memories consistently exacerbates biases, resulting in an average drop of 45.9% in irrelevant personalization, 41.7% in preference narrowing and 61.7% in sycophantic bias.",
+   "published": "2026-08-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.28833"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "regulation"
+   ],
+   "tldr": "Cadre d'évaluation *PRISK* pour analyser les risques de la personnalisation des LLMs (informations personnelles superflues, écho des préférences, biais sycophantique), révélant des biais systémiques via des métriques dynamiques et des données générées automatiquement.",
+   "score": 8.2
+  },
+  {
+   "id": "9b4931db813171ee",
+   "title": "Lucida: Parse, Generate, and Place for Composable Real-to-Sim Scene Modeling",
+   "url": "https://huggingface.co/papers/2608.30821",
+   "summary": "Composable scene modeling aims to recover a real indoor scene as complete, editable object assets arranged as observed, giving robot simulation and embodied AI a simulation-ready replica of the real environment whose objects can be manipulated individually. Existing pipelines decompose the task into three steps---parse the observations into instances, generate an asset for each, and place each asset back---but every step presumes an input that a cluttered capture rarely provides: accurate instance geometry, unoccluded views, and assets that accurately match the observations. We propose Lucida, which keeps this order but redistributes the requirements, so each step consumes only what a real capture reliably provides and precision is reached at the end of the pipeline rather than demanded at its start. Lucida parses the video into a scene graph whose nodes carry per-instance multi-view evidence, generates a complete asset for each instance from its evidence, and places assets with GizmoAct, a VLM policy that casts placement as multi-turn GUI interaction, manipulating the object's gizmo in a closed loop and deciding itself when alignment is reached. Across scene-level 3D object detection, object pose estimation, and scene reconstruction, Lucida improves mAP over Boxer by 69% on R2S-Scene, raises ADD-SB@0.05 from 57.8% to 83.4% on CA-1M, and increases scene F-Score from 0.794 for SAM3D to 0.924.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 46,
+    "arxiv_id": "2608.30821"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "vision",
+    "outils"
+   ],
+   "tldr": "Lucida propose un pipeline de modélisation 3D composable pour la robotique, décomposant la tâche en parsing vidéo en graphe de scène, génération d'assets par instance, et placement interactif via un VLM (GizmoAct). La méthode réduit les exigences en entrée (géométries précises, vues non occultées) en redistribuant la précision à la fin du pipeline, améliorant la robustesse des environnements simulés pour l'IA incarnée.",
+   "score": 8.2
+  },
+  {
+   "id": "d6db106b89ef4bbf",
+   "title": "PaperGym: Rubric-Centered Evolution for Research-Plan Generation",
+   "url": "https://huggingface.co/papers/2608.31119",
+   "summary": "Research planning is the decisive capability of AI scientists. Yet a research plan admits no verifiable answer, so reinforcement learning lacks the environment it requires: tasks paired with a critic. Rubrics extracted from scientific papers can supply the critic. Existing pipelines, however, draw the question and the criteria from the same content, so the reward can be earned by paraphrase. The rubric is further compressed into a single scalar per rollout. We introduce PaperGym, a unified framework that turns each research paper into a complete training environment. PaperGym exploits the structure of a paper: the question is synthesized from the research goal and background, while the criteria are derived from the method and experiments. The criteria span methodological innovation and experimental design, and criterion leakage falls to 3.7%, versus 11.90% to 34.10% in existing datasets. Training uses the rubric twice: first as privileged context for OPSD's self-teacher, then as the reward for GRPO. Across Qwen3-1.7B/4B/8B, this schedule outperforms supervised fine-tuning, either stage alone, and the reverse ordering, improving five-benchmark averages by +5.6, +5.0, and +4.8 points. With the recipe held fixed, models trained on PaperGym-20k win 58.1% of three-way comparisons, against 28.2% for RubricHub Science. The trained Qwen3-8B reaches 73.48 on ResearchQA, above the far larger Kimi K2.6. We release the pipeline, the 20,000-instance corpus PaperGym-20k, and the benchmarks PaperGym-Innov and PaperGym-Design.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2608.31119"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "PaperGym introduit un cadre unifié pour générer des plans de recherche en exploitant des rubriques structurées extraites d'articles scientifiques, réduisant la fuite de critères et améliorant les performances de modèles comme Qwen3 via un entraînement en deux étapes (OPSD + GRPO).",
+   "score": 8.2
+  },
+  {
+   "id": "dded5d8622dc9afd",
+   "title": "Acquire, Repair, Preserve: A Diagnosis-Guided Post-Training Recipe for Small-Model Dialogue Game Agents",
+   "url": "https://huggingface.co/papers/2608.28458",
+   "summary": "Interactive dialogue games test a capability that static benchmarks largely leave implicit: a model must carry state across turns, interpret feedback, and choose valid actions under changing constraints. We study this setting in the LM Playschool Challenge with a 2B open-weight model, and find that many failures are not only broad knowledge failures but also local decision failures: repeated guesses, malformed actions, and violations of feedback that the model has just seen. These diagnostics motivate a training recipe organized around three steps: acquire broad game participation through supervised fine-tuning, repair mechanically verifiable failures within one targeted dialogue-game family using turn-local preference pairs, and preserve general capabilities beyond these dialogue games. In the official final evaluation, our submission improves public clemscore from 10.67 to 38.92 and closed in-domain score from 13.41 to 41.17, while approximately preserving aggregate static performance (44.14 vs. 44.24 for the baseline). Out-of-domain clemscore remains low at 7.88, with the largest gains concentrated in unseen variants of the targeted family. Our results suggest that broad SFT brings most of the model's capability improvement; turn-local supervision can be effective when failure detection is precise, with observed transfer concentrated primarily within-family.",
+   "published": "2026-08-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.28458"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "EvoUndo propose un cadre pour diagnostiquer et réparer les modifications auto-générées par des agents LLM, identifiant des mutations améliorant les capacités mais non réversibles, et introduisant des mécanismes de récupération robustes (jusqu'à 191/197 cas résolus).",
+   "score": 8.2
+  },
+  {
+   "id": "6a71b49a657c04aa",
+   "title": "SUN: Persistent Programs For Language-Grounded Control-to-Learning-to-Real Policies",
+   "url": "https://arxiv.org/abs/2608.31167v1",
+   "summary": "Bridging model-based control and learned policies in long-horizon manipulation has harbored a silent disagreement: control executes specified objectives, learning amortizes that behavior into a reactive policy, yet existing protocols discard task semantics, leaving rewards hand-crafted and behavior drifting from what control verified.We introduce Semantically UNified (SUN) Programs, typed executables where geometric and contact relations are defined once and compiled into aligned Model Predictive Control (MPC) costs, satisfaction predicates, RL rewards, transition guards, and diagnostics. Our system, Kuafu, driven by large vision language systems, automatically synthesizes SUN Programs from language and scene semantics, screens feasibility via MPC, and retains semantics while training stage-conditioned policies. Across nine tasks, Kuafu achieves 82.03% macro-success, outperforming sparse-reward (35.67%) and Stage-BC (24.75%) baselines. At 8192-way scale, it generates 10.57x the successful trajectory time per hour of human teleoperation. With 500 trajectories per task, Kuafu data trains DP3 policies to 46.0% simulation success (vs. 22.4% for alternatives) and 34.7% on physical Franka and Kinova robots. These results establish that simulation-screened task semantics can effectively amortize control into robust policies, without demonstrations or manual dense rewards, unifying symbolic planning and data-driven execution.",
+   "published": "2026-08-31T17:59:16+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Weiqi Wang, Zhi Li, Yudong Lei, David Martinez, Xiaofeng Gao, Yuxin Jiang"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "SUN Programs unifie contrôle par modèle (MPC) et apprentissage (RL) pour la robotique en compilant des relations sémantiques en coûts, récompenses et gardes, améliorant significativement le succès en manipulation long-horizon.",
+   "score": 8.0
+  },
+  {
+   "id": "8c622da212b17378",
+   "title": "PaperGym: Rubric-Centered Evolution for Research-Plan Generation",
+   "url": "https://arxiv.org/abs/2608.31119v1",
+   "summary": "Research planning is the decisive capability of AI scientists. Yet a research plan admits no verifiable answer, so reinforcement learning lacks the environment it requires: tasks paired with a critic. Rubrics extracted from scientific papers can supply the critic. Existing pipelines, however, draw the question and the criteria from the same content, so the reward can be earned by paraphrase. The rubric is further compressed into a single scalar per rollout. We introduce PaperGym, a unified framework that turns each research paper into a complete training environment. PaperGym exploits the structure of a paper: the question is synthesized from the research goal and background, while the criteria are derived from the method and experiments. The criteria span methodological innovation and experimental design, and criterion leakage falls to 3.7%, versus 11.90% to 34.10% in existing datasets. Training uses the rubric twice: first as privileged context for OPSD's self-teacher, then as the reward for GRPO. Across Qwen3-1.7B/4B/8B, this schedule outperforms supervised fine-tuning, either stage alone, and the reverse ordering, improving five-benchmark averages by +5.6, +5.0, and +4.8 points. With the recipe held fixed, models trained on PaperGym-20k win 58.1% of three-way comparisons, against 28.2% for RubricHub Science. The trained Qwen3-8B reaches 73.48 on ResearchQA, above the far larger Kimi K2.6. We release the pipeline, the 20,000-instance corpus PaperGym-20k, and the benchmarks PaperGym-Innov and PaperGym-Design.",
+   "published": "2026-08-31T17:31:18+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yuhan Wang, Zhengxi Lu, Yuchen Yan, Kaitao Song, Wenqi Zhang, Weiming Lu"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "PaperGym propose un cadre unifié pour générer des plans de recherche en exploitant les rubriques des articles scientifiques comme critères de récompense, réduisant ainsi les fuites de critères et améliorant les performances des modèles (Qwen3) de +4.8 à +5.6 points sur 5 benchmarks par rapport au fine-tuning supervisé.",
+   "score": 8.0
+  },
+  {
+   "id": "ede0944a25b96813",
+   "title": "Token-Efficient Data Reasoning Agents via Adaptive Structuring of Unstructured Data",
+   "url": "https://arxiv.org/abs/2608.31082v1",
+   "summary": "Valuable data remains embedded in unstructured sources: web pages, reports, contracts, filings, earnings calls, and PDFs. The big bet in enterprise AI is deploying LLM agents that reason over this data to answer complex questions for every knowledge worker. Agents can do this today, but at prohibitive cost. Each question repeatedly opens large documents to recover scattered evidence, consuming up to a million tokens. However, if the data were already structured, the same question would reduce to a cheap database lookup. For example, on FanOutQA benchmark, reasoning over an ideal pre-structured store is 28X cheaper, and the gap grows to orders of magnitude as questions fan out over more documents. Yet structuring everything in advance is not viable: documents hold vastly more possible structure than any workload will use, and the useful structure and documents are unknown until queries arrive. We propose agentic data cracking, a method that structures unstructured data adaptively and speculatively as a byproduct of reasoning itself. Structuring is adaptive because observed queries decide when it happens and what matters, and speculative because it goes beyond the current question. Whenever the agent opens a document to answer, a cracking sub-agent forks from the already-loaded context at marginal cost and extracts grounded structure likely to serve related future queries. Over time, an increasing share of queries is fully covered by structured data and answered without opening a document, keeping agentic accuracy at close to RAG cost. On FanOutQA, extended with merely one related question per test question, cracking cuts cost by 53% while preserving accuracy. Agentic data cracking is a first step toward next-generation data infrastructure for agentic reasoning over unstructured data: a shared substrate beneath the model where knowledge that reasoning already paid to uncover accumulates.",
+   "published": "2026-08-31T16:53:45+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Milad Rezaei Hajidehi, Qitong Wang, Stratos Idreos"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Proposition d'une méthode (*agentic data cracking*) pour structurer dynamiquement des données non structurées (PDFs, rapports) *à la volée* pendant le raisonnement des agents, réduisant jusqu'à 28x le coût tokenique par rapport à une approche naïve. Une solution clé pour l'efficacité des agents en entreprise.",
+   "score": 8.0
+  },
+  {
+   "id": "c32269eda805681d",
+   "title": "Reconciling Process Supervision with Outcome-Based Credit in Agentic Policy Optimization",
+   "url": "https://arxiv.org/abs/2608.31077v1",
+   "summary": "Outcome-based reinforcement learning provides verified feedback for language-model agents, but assigns trajectory-level advantage uniformly to all decisions, yielding coarse credit over long-horizon interactions. On-policy self-distillation offers finer supervision by re-evaluating sampled behavior with privileged information (PI) available only during training. However, fine-grained supervision is not necessarily fine-grained credit: PI-induced likelihood changes describe how additional information alters policy preference, but do not directly determine how an executable action should inherit the verified task outcome. This creates a supervision-credit gap. Privileged signals may be irrelevant to the current interaction state, operate at a token granularity misaligned with executable decisions, and lack the outcome semantics required for reinforcement. We introduce TASPO, which converts privileged supervision into outcome-grounded action credit. TASPO constructs decision-applicable PI from verified successful experience, aggregates PI-induced likelihood shifts at the executable-action level, and converts relative action support into positive, bounded, mean-preserving weights on the original trajectory advantage. Thus, the verified outcome determines the update direction and average scale, while PI only redistributes credit across actions. Across three agentic benchmarks, TASPO improves over GRPO by 10.6\\% and generalizes better to unseen tasks. Further analysis indicates that TASPO reduces supervision mismatch and that action-level assignment stabilizes the policy optimization process. These findings offer the community another interesting perspective.",
+   "published": "2026-08-31T16:51:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jingxiao Yang, Wangjie Gan, Yingxuan Zhuang, Wenqi Zhang, Jintao Chen, Xuhong Zhang"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Introduction de *TASPO*, une méthode pour réconcilier supervision par processus et crédits basés sur les résultats dans l'optimisation de politiques agentiques. Elle convertit des signaux privilégiés en crédits actionnables, comblant le *supervision-credit gap* pour des agents plus robustes.",
+   "score": 8.0
+  },
+  {
+   "id": "ddcf82e26042e304",
+   "title": "Normalized Low-Rank Adaptation",
+   "url": "https://arxiv.org/abs/2608.31036v1",
+   "summary": "While low-rank adaptation (LoRA) is widely used for parameter-efficient model adaptation, how to regularize its training dynamics for stable and effective optimization remains underexplored. Because LoRA initializes the up-projection to zero, its early optimization dynamics are largely governed by the down-projection. Building on this observation, we introduce Normalized Low-Rank Adaptation (NoRA), a simple yet effective method that normalizes the down-projection matrices during training. We further show that the same normalization can be applied only at initialization, improving standard LoRA without requiring repeated normalization throughout training. Across pretraining, supervised finetuning, and reinforcement learning, NoRA consistently accelerates convergence, improves performance and training stability, and mitigates catastrophic forgetting. These benefits require neither additional trainable parameters nor inference-time computation, making NoRA a simple and broadly applicable enhancement to LoRA.",
+   "published": "2026-08-31T16:15:36+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiale Kang, Ziyin Yue, Zheng Zhan, Yangyi Huang, Weiyang Liu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "NoRA améliore LoRA en normalisant les matrices de projection descendante, accélérant la convergence et stabilisant l'optimisation sans surcoût paramétrique ou computationnel. Pertinent pour le fine-tuning efficace et l'optimisation des LLM.",
+   "score": 8.0
+  }
+ ]
+}
