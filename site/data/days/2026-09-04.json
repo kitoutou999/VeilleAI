@@ -1,0 +1,719 @@
+{
+ "date": "2026-09-04",
+ "digest": {
+  "headline": "La quantification 4-bit des couches Gated DeltaNet dans les LLM hybrides prouve sa robustesse sans perte de performance, ouvrant la voie à des optimisations matérielles agressives",
+  "overview": "Les avancées du jour se concentrent sur l'optimisation des LLM, avec des percées en quantification, compression de contexte et efficacité des mécanismes d'attention. Les travaux sur les architectures hybrides et les méthodes de post-entraînement révèlent des gains significatifs en vitesse et en mémoire, tout en soulevant des questions sur la fiabilité des évaluations automatisées.",
+  "highlights": [
+   {
+    "title": "Quantification 4-bit des LLM hybrides : robustesse des Gated DeltaNet",
+    "text": "Les couches Gated DeltaNet (GDN) d'un LLM hybride de 27B résistent à une quantification NVFP4 W4A4 (poids et activations en 4-bit) sans dégradation de performance. Cette approche réduit la taille du modèle à 17,5 GiB et améliore la vitesse de préfill de 14-19%, grâce à la robustesse des mécanismes de *gating* malgré leur apparente fragilité. Une avancée clé pour l'optimisation matérielle des architectures hybrides."
+   },
+   {
+    "title": "Optimisation des caches KV et compression de contexte",
+    "text": "Deux méthodes distinctes améliorent l'efficacité des LLM en inférence : *Random Attention* montre que l'éviction aléatoire du cache KV rivalise avec les méthodes sophistiquées (+32-43% de débit), tandis que *LatentPress* introduit une compression de contexte via des tokens mémoriels continus (4-16x), lus directement par le décodeur sans reconstruction textuelle. Ces approches réduisent les coûts computationnels sans sacrifier la performance."
+   },
+   {
+    "title": "Fiabilité des évaluations automatisées et limites des LLM judges",
+    "text": "Un audit preregistré révèle une instabilité critique des *LLM judges* : une répétabilité faible (Spearman 0.400) due à des biais de mapping et des variations de classements pour des entrées identiques. Cette étude souligne les limites fondamentales des évaluations automatisées, remettant en question leur utilisation pour des benchmarks rigoureux."
+   },
+   {
+    "title": "Architectures et raisonnement spatial : nouvelles perspectives",
+    "text": "*Autoregressive Mosaics* (AM-Bench) évalue la capacité des LLMs textuels à raisonner spatialement en 2D, révélant des différences de performance selon la représentation interne (code vs SVG). Parallèlement, *The Head Complexity of Boolean Functions* établit une hiérarchie théorique du nombre minimal de heads d'attention pour calculer des fonctions booléennes, apportant des éclairages sur l'interprétabilité des transformers."
+   },
+   {
+    "title": "Optimisation post-entraînement et agents autonomes",
+    "text": "La méthode *OPD-then-RL* combine distillation on-policy et RL de manière séquentielle, surpassant les approches jointes pour l'optimisation des LLM. Dans le domaine des agents, *Terminal-Universe* propose un framework pour transformer des trajectoires en environnements scalables, tandis que *PatchBench* évalue les agents de correction de vulnérabilités logicielles, mettant en lumière des biais de mémorisation."
+   },
+   {
+    "title": "Efficacité matérielle et FlashAttention-4 en FP4",
+    "text": "*FlashAttention-4* optimise l'inférence et l'entraînement des modèles d'attention en FP4 via des chemins causaux et *Direct-P*, atteignant jusqu'à 2,13× de débit en forward sur GB200. Cette avancée, couplée à des travaux sur la sélection intelligente de tokens visuels (*Select, Compress, Reinvest*), renforce l'efficacité des architectures pour les vidéos longues et les MLLMs."
+   }
+  ],
+  "trend": "Les optimisations matérielles et algorithmiques des LLM convergent vers des architectures hybrides et des méthodes de quantification agressive, tout en révélant des limites dans l'évaluation automatisée. La recherche se tourne vers des solutions plus robustes pour les agents autonomes et les systèmes de mémoire latente, avec un accent croissant sur l'interprétabilité et la fiabilité."
+ },
+ "items": [
+  {
+   "id": "046bc345e306254f",
+   "title": "Why Gated DeltaNet Survives 4-Bit Quantization: NVFP4 W4A4 for the Recurrent Half of a Hybrid 27B LLM",
+   "url": "https://huggingface.co/papers/2609.04098",
+   "summary": "Hybrid LLMs pair softmax attention with linear-attention layers such as Gated DeltaNet (GDN), whose recurrent state summarizes the context in fixed size. Early community 4-bit quantizations of Qwen3.8-27B (48 GDN layers, 16 attention layers) left the GDN block in 8- or 16-bit precision -- especially its decay and write-strength gates -- on the intuition that errors in a recurrence accumulate over long contexts. We test that intuition by building Minima: NVFP4 W4A4 on all 496 linear layers, GDN included. Across perplexity at 4K/32K, MMLU-Pro, GSM8K, AIME'25, GPQA-Diamond, LiveCodeBench, and RULER retrieval to 64K, Minima matches BF16 within seed noise (5-task average -0.52) while being the smallest (17.5 GiB) and fastest-prefill (+14-19%) recipe we compare, and its 32K perplexity gap shrinks with position. A four-part mechanism study explains why: (i) NVFP4's 16-element block scaling localizes the residual stream's extreme outliers, equalizing activation error across layer roles; (ii) the supposedly fragile gate projections are the least sensitive -- softplus/exponential and sigmoid parameterizations compress ~11% GEMM error to ~2% output error; (iii) the delta-rule recurrence holds injected noise at a flat plateau over 32K tokens and forgets a state impulse within hundreds of steps, because each write overwrites the state along the current key direction; (iv) the per-token quantization cost washes out with context instead of compounding. We also repair a global-scale mismatch that arises when per-module-calibrated NVFP4 checkpoints are served by kernels that fuse those modules into one GEMM, and show calibrated FP8 KV-cache scales are performance-free. The result: a practical recipe -- quantize everything, ship KV scales -- and a mechanistic account of why the recurrent half of a hybrid LLM is the easy half to quantize. Checkpoint: https://huggingface.co/minima-ai/mnma_qwen3.8_27b_nvfp4",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 53,
+    "arxiv_id": "2609.04098"
+   },
+   "relevance": 10,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Minima démontre que les couches Gated DeltaNet (GDN) d'un LLM hybride 27B peuvent être quantifiées en 4-bit (NVFP4 W4A4) sans perte de performance, avec gains de vitesse (+14-19% en préfill) et réduction de taille (17.5 GiB). Analyse mécanistique expliquant la robustesse des gates malgré leur apparente fragilité.",
+   "score": 9.7,
+   "deep_analysis": {
+    "probleme": "Le document aborde la difficulté de quantifier en 4 bits les modèles hybrides de grands langages (LLM) combinant attention softmax et couches à attention linéaire récurrente comme Gated DeltaNet (GDN). L'intuition initiale suggérait que les erreurs de quantification dans les composants récurrents s'accumulent sur de longs contextes, rendant leur compression en 4 bits risquée, d'où leur maintien en 8 ou 16 bits dans les premières tentatives.",
+    "methode": "Les auteurs proposent *Minima*, une implémentation de quantification NVFP4 W4A4 (poids et activations en 4 bits) appliquée à l'intégralité des 496 couches linéaires du modèle Qwen3.8-27B, y compris les couches GDN. Ils utilisent un scaling par blocs de 16 éléments pour gérer les valeurs aberrantes du flux résiduel. Une étude mécanistique en quatre parties analyse la robustesse des projections de portes (softplus/exponentielle et sigmoïde), la stabilité de la récurrence basée sur la règle delta, et l'impact des erreurs de quantification par jeton. Ils corrigent également un désalignement d'échelle global lors de la fusion des modules en un seul GEMM et valident l'utilisation de FP8 pour les échelles du cache KV.",
+    "resultats": "Minima atteint des performances comparables au BF16 (écart moyen de -0,52 sur 5 tâches) tout en réduisant la taille du modèle à 17,5 Gio et en améliorant la vitesse de pré-remplissage de 14 à 19%. La perplexité sur 32K tokens se rapproche de celle du BF16 avec l'augmentation de la position. Les tests couvrent des benchmarks variés (MMLU-Pro, GSM8K, AIME'25, GPQA-Diamond, LiveCodeBench, RULER jusqu'à 64K). Les mécanismes identifiés expliquent pourquoi les couches récursives résistent mieux à la quantification que prévu.",
+    "limites": "Les résultats reposent sur un seul modèle (Qwen3.8-27B) et une architecture spécifique (GDN), limitant leur généralisation. L'étude mécanistique, bien que détaillée, ne couvre pas tous les scénarios possibles (ex. : comportements extrêmes ou données hors distribution). La correction du désalignement d'échelle suggère aussi que des optimisations logicielles supplémentaires pourraient être nécessaires pour d'autres configurations.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique de la quantification 4 bits des LLM hybrides, offrant des preuves solides que les couches récursives ne sont pas un goulot d'étranglement, mais sa portée reste à valider sur d'autres architectures."
+   }
+  },
+  {
+   "id": "3a1794a30a35b572",
+   "title": "Random Attention: Rethinking KV Cache Eviction for Efficient Reasoning",
+   "url": "https://huggingface.co/papers/2609.03430",
+   "summary": "Large language models achieve superior performance on tasks that require extended reasoning, but long chains of thought make the KV cache a severe memory bottleneck. Existing KV cache compression methods share one paradigm: score each cached token by some estimate of how much it will matter later, and keep the top-scoring ones. We show that the selection signal contributes almost nothing. Random Attention keeps the prompt and evicts uniformly at random within each attention head, computing no score at all; across four models and six reasoning tasks it matches the strongest prior evictor while serving 32-43% higher throughput than it in vLLM deployment. Controlled experiments explain this by showing that 1) the prompt is the fragile part of the cache, and most of the gap between selectors is just whether their selection signal happened to keep it; 2) the reasoning trace protects itself against eviction with redundancy at two levels, in the text (the model restates what it still needs as it works) and across attention heads (each keeps its own copy of the trace), so once the prompt is safe, a random draw retains enough copies of what the model still needs, and no score is required to pick them. Our code is publicly available at https://github.com/SalesforceAIResearch/Random-Attention.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 54,
+    "arxiv_id": "2609.03430"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Démontre que l'éviction aléatoire du cache KV (Random Attention) rivalise avec les méthodes sophistiquées de scoring pour l'inférence efficace des LLM, avec un gain de débit de 32-43%. Une avancée majeure pour l'optimisation des LLM en inférence.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le goulot d'étranglement mémoire causé par le cache KV (Key-Value) dans les grands modèles de langage (LLM) lors de tâches nécessitant un raisonnement étendu. La croissance exponentielle de la mémoire requise pour stocker les paires clé-valeur pendant les longues chaînes de pensée limite l'efficacité et la scalabilité des modèles.",
+    "methode": "Les auteurs proposent *Random Attention*, une méthode de compression du cache KV qui évince les tokens de manière uniformément aléatoire au sein de chaque tête d'attention, sans calculer de score d'importance. Contrairement aux approches existantes (comme H2O ou StreamingLLM), qui évaluent et conservent les tokens jugés les plus pertinents, cette méthode se base sur deux observations : (1) le *prompt* initial est la partie la plus fragile du cache et doit être préservé, et (2) les traces de raisonnement sont redondantes à deux niveaux (dans le texte généré et entre les têtes d'attention), ce qui permet une éviction aléatoire sans perte critique d'information. La méthode évite ainsi le coût computationnel des scores tout en maintenant les performances.",
+    "resultats": "Les expériences menées sur quatre modèles et six tâches de raisonnement montrent que *Random Attention* obtient des performances comparables aux meilleures méthodes d'éviction existantes, tout en améliorant le débit de 32 à 43 % lors du déploiement avec vLLM. Les auteurs démontrent que la majorité des écarts entre sélecteurs de tokens provient de leur capacité (ou non) à préserver le prompt, et non de la qualité de leur signal de sélection. Une fois le prompt sécurisé, l'éviction aléatoire suffit à conserver suffisamment de copies redondantes des informations nécessaires.",
+    "limites": "Le contenu disponible ne précise pas si la méthode est robuste à des tâches où la redondance naturelle des traces de raisonnement est faible ou absente. De plus, l'hypothèse selon laquelle les têtes d'attention conservent des copies indépendantes des informations critiques mériterait une validation plus approfondie, notamment pour des architectures ou des tâches atypiques. Enfin, l'absence de score pourrait limiter l'adaptabilité à des scénarios où une sélection fine est indispensable.",
+    "verdict": "Cette approche mérite une attention particulière pour son audace technique et ses gains en efficacité, mais son applicabilité universelle reste à prouver au-delà des tâches de raisonnement redondantes."
+   }
+  },
+  {
+   "id": "8f89fe7534746311",
+   "title": "LatentPress: Context Compression Beyond Text and Vision",
+   "url": "https://huggingface.co/papers/2609.01507",
+   "summary": "Compressed context is usually carried as human-readable text or as rendered images that must be decoded, even when its consumer is a language model. We introduce LatentPress, which writes conversational histories and long documents into a third representation: continuous memory tokens that a frozen decoder reads directly through its input-embedding interface, with no text reconstruction at inference. A small reader-matched writer compresses 4-16times while training only an adapter (4.2M-26.2M parameters, sim!0.1% of the decoder). On LongMemEval, LatentPress reaches 0.504 accuracy at 7.70times compression versus 0.490 for uncompressed evidence, outperforming text summaries (0.184) and OCR-based compression (0.426 to 0.312). On LongBench-QA, in-domain writers match or exceed raw-context reading at 4-8times compression, while 16times trails raw. Writing takes 43ms per conversation, roughly an order of magnitude faster than text summarization or OCR reconstruction, and reading is 5-9times faster than raw context or cached OCR. We validate the interface under two transfer settings, zero-shot from UltraChat to LongMemEval memory QA and from LongMemEval-derived QA to unseen LongBench document domains, establishing direct soft tokens as a practical machine-facing context interface beyond text and vision. The implementation of the experiments could be found at: https://github.com/xuyd16ai/context_softtoken_compress .",
+   "published": "2026-08-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 56,
+    "arxiv_id": "2609.01507"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "LatentPress introduit une compression de contexte innovante pour les LLM via des tokens mémoriels continus (4-16x compression), lus directement par le décodeur sans reconstruction textuelle. Méthode efficace (4-8x compression sans perte de performance) et rapide (43ms par conversation), surpassant les résumés textuels et l'OCR.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé par LatentPress est l'inefficacité des représentations traditionnelles du contexte (texte lisible par l'humain ou images rendues) pour les modèles de langage. Ces formats nécessitent un décodage coûteux en calcul, même lorsque le consommateur final est une IA, ce qui limite la compression et la vitesse de traitement des longues conversations ou documents.",
+    "methode": "LatentPress introduit une troisième représentation du contexte : des *tokens mémoire continus* (soft tokens) directement lisibles par un décodeur gelé via son interface d'embeddings d'entrée, sans reconstruction textuelle. Un petit encodeur (*writer*), adapté au décodeur cible, compresse le contexte en tokens latents avec un ratio de 4 à 16 fois. Seuls des adaptateurs légers (4,2M à 26,2M paramètres, soit ~0,1% du décodeur) sont entraînés, préservant les capacités du modèle de base. La méthode évite les étapes intermédiaires comme la génération de résumés textuels ou l'OCR, réduisant la latence. Deux configurations de transfert sont testées : *zero-shot* entre domaines (UltraChat → LongMemEval) et adaptation à de nouveaux domaines documentaires (LongMemEval → LongBench).",
+    "resultats": "Sur LongMemEval, LatentPress atteint une précision de 0,504 à 7,7× de compression, surpassant le contexte non compressé (0,490) et les méthodes concurrentes (résumés textuels : 0,184 ; OCR : 0,426 à 0,312). Sur LongBench-QA, les encodeurs *in-domain* égalent ou dépassent la lecture de contexte brut à 4-8× de compression, tandis qu'à 16×, les performances restent légèrement inférieures. L'écriture d'un contexte prend 43 ms par conversation, soit 10× plus rapide que les résumés textuels ou l'OCR, et la lecture est 5 à 9× plus rapide que le traitement de contexte brut ou d'OCR mis en cache.",
+    "limites": "Les performances à très haute compression (16×) restent en deçà du contexte brut sur certains benchmarks, suggérant une perte d'information non négligeable. La généralisation *zero-shot* à des domaines non vus (ex. : LongBench) n'est pas quantifiée précisément, laissant planer un doute sur la robustesse hors distribution. Enfin, l'approche repose sur un décodeur gelé, ce qui pourrait limiter son applicabilité à des architectures ou tâches nécessitant des ajustements fins du modèle de base.",
+    "verdict": "LatentPress mérite une attention particulière pour son innovation en compression de contexte *machine-facing*, alliant efficacité computationnelle et préservation des performances, mais son adoption dépendra de sa capacité à généraliser à des cas d'usage variés et à des ratios de compression extrêmes."
+   }
+  },
+  {
+   "id": "015296e1043a5580",
+   "title": "Knowing When Not to Reuse: Conditional Experience Transfer in Autonomous LLM Post-Training",
+   "url": "https://huggingface.co/papers/2608.26730",
+   "summary": "Large language models offer broad capabilities, but adapting them to evolving domains, tools, and requirements often entails repeated post-training. Autonomous systems automate parts of this process by proposing updates, training candidates, and using evaluation feedback to select subsequent proposals. As evidence accumulates, a central problem emerges: which past update evidence remains actionable after subsequent training has changed the parent model? An update's effect depends on its parent, data, and training stage. Treating past success as context-free permission can waste compute. If the resulting child is promoted, it can also degrade the subsequent training trajectory. We formulate this problem as conditional experience transfer and introduce Boundary-Calibrated Intervention Transfer (BCIT), a method that authorizes experience reuse before weight-changing training. BCIT binds an observed effect to its source context, checks applicability conditions, vetoes candidates with named hard conflicts, and obtains current-state evidence through a bounded training trial when needed. Fully trained candidates still face a shared adoption rule, and only observed events extend memory. On one 4B model adapted across finance reasoning, text-to-SQL, and function calling, candidate updates exhibit heterogeneous target and retention effects across the evaluated contexts. Under matched candidates, evidence, and compute, BCIT authorizes fewer harmful updates and attains higher equal-budget final-model quality than the evaluated alternatives. These results support treating experience authorization as a distinct problem in autonomous post-training.",
+   "published": "2026-08-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2608.26730"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "BCIT formalise le problème de réutilisation conditionnelle d'expériences en post-entraînement d'LLM, évitant les conflits de poids et optimisant les mises à jour via des vérifications contextuelles et des essais bornés, améliorant l'efficacité des systèmes autonomes.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'adaptation continue des grands modèles de langage (LLM) via des mises à jour post-entraînement dans des systèmes autonomes. Chaque mise à jour dépend de l'état du modèle parent, des données utilisées et de l'étape d'entraînement, rendant difficile la réutilisation efficace des expériences passées. Réutiliser aveuglément des mises à jour réussies peut gaspiller des ressources computationnelles et dégrader la trajectoire d'entraînement future du modèle.",
+    "methode": "Les auteurs formulent ce problème comme un *transfert d'expérience conditionnel* et proposent *Boundary-Calibrated Intervention Transfer* (BCIT), une méthode qui évalue la réutilisabilité des expériences passées avant d'effectuer un entraînement modifiant les poids. BCIT lie l'effet observé d'une mise à jour à son contexte source, vérifie des conditions d'applicabilité, bloque les candidats présentant des conflits explicites, et utilise des essais d'entraînement limités pour obtenir des preuves sur l'état actuel du modèle. Les candidats entièrement entraînés sont ensuite soumis à une règle d'adoption commune, et seules les observations validées étendent la mémoire du système.",
+    "resultats": "Sur un modèle de 4 milliards de paramètres adapté à des tâches de raisonnement financier, de conversion texte-SQL et d'appel de fonctions, les mises à jour candidates montrent des effets hétérogènes sur les cibles et la rétention des performances selon les contextes. Avec des candidats, des preuves et un budget computationnel équivalents, BCIT autorise moins de mises à jour nuisibles et atteint une qualité finale supérieure à celle des alternatives évaluées, confirmant l'intérêt de traiter l'autorisation d'expérience comme un problème distinct en post-entraînement autonome.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques des *conditions d'applicabilité* ou des *conflits explicites* utilisés par BCIT, ni la robustesse de la méthode face à des scénarios de transfert plus complexes (ex. : données bruitées ou modèles très dynamiques). De plus, les résultats se limitent à un seul modèle (4B) et à trois domaines, ce qui peut restreindre la généralisabilité des conclusions.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche systématique du transfert d'expérience en post-entraînement autonome, bien que des validations supplémentaires sur des modèles et tâches variés soient nécessaires pour en confirmer la portée."
+   }
+  },
+  {
+   "id": "93d9f85c41caa84f",
+   "title": "Terminal-Universe: Turning Agent Trajectories into Scalable Terminal Environments",
+   "url": "https://huggingface.co/papers/2609.04148",
+   "summary": "As terminal-based code agents become prevalent, agent trajectories have accumulated at scale, while realistic, executable environments remain scarce. However, environments are what agent post-training actually requires: each can be re-queried into many verifiable tasks and provides execution feedback, whereas a trajectory is a single frozen demonstration. Rather than generating environments from scratch, we observe that the tool-execution history in existing trajectories exposes the structure and contents of the environments in which they ran, making it possible to reconstruct those environments from the trajectories themselves. Thus, we introduce Terminal-Universe, a framework which turns each trajectory into a reusable environment and explores it for synthesizing new tasks and continued interactions. Specifically, Terminal-Universe replays the file operations recorded in a trajectory to restore each file before the agent modified it, yielding a partial workspace; a completion agent then supplies the missing files and dependencies. On this recovered workspace, we both reconstruct the original intent task and synthesize entirely new ones. Besides, we also scale the tasks along two complementary axes: breadth and depth. For breadth, we mine directional dependency relations between related environments and synthesize cross-workspace queries spanning multiple codebases, as developers routinely do in real-world development. For depth, we extend the initial single-turn query into a multi-round session that captures iterative user feedback and requirement refinement via a user agent. Applied to public terminal agent trajectories, Terminal-Universe produces 37.3k task-sufficient environments. Supervised fine-tuning of Qwen3.5-27B on this corpus improves single-round performance on Terminal-Bench 2.1 by 11.9 points and multi-round performance on EvoCode-Bench v2 MT@4 by 13.8 points.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 98,
+    "arxiv_id": "2609.04148"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Propose Terminal-Universe, un framework pour transformer des trajectoires d'agents en environnements réutilisables et scalables, permettant la génération de tâches vérifiables et l'interaction continue. Innovation majeure pour l'entraînement des agents terminaux.",
+   "score": 8.8
+  },
+  {
+   "id": "3d03668f06e23cda",
+   "title": "Debias-SparseGPT: Bias-Aware Pruning for Large Language Models",
+   "url": "https://huggingface.co/papers/2609.02496",
+   "summary": "Model compression techniques such as pruning and quantization facilitate the efficient deployment and acceleration of Large Language Models (LLMs). However, recent studies show that weight sparsification methods, such as SparseGPT, can amplify existing biases in models, with outputs varying significantly depending on persona cues in the prompt. In this paper, we introduce Debias-SparseGPT, a post-training pruning method incorporating representational debiasing using a second-order term defined over demographically contrasting inputs. We perform empirical validation of our method over a wide range of generative LLMs. Across models and sparsity regimes (25%, 50%, and structured 2:4 sparsity), Debias-SparseGPT consistently reduces pruning-induced bias compared to SparseGPT while preserving model perplexity and zero-shot accuracy. Under the most restrictive 2:4 structured sparsity pattern, which most aggressively degrades model quality, augmenting the calibration set with long-context, content-rich examples further improves both downstream performance and fairness. Overall, Debias-SparseGPT advances the bias-performance trade-off while preserving the computational efficiency of sparse models.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.02496"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Debias-SparseGPT intègre un terme de débiaisage dans la pruning post-entraînement (SparseGPT) pour réduire les biais amplifiés par la sparsification, tout en préservant la perplexité et la précision. Améliore le compromis biais-performance, notamment en sparsité structurée 2:4.",
+   "score": 8.8
+  },
+  {
+   "id": "f43f6b81d8da7a12",
+   "title": "Autoregressive Mosaics: Probing 2D Spatial Reasoning in Text-Only Language Models",
+   "url": "https://huggingface.co/papers/2608.30751",
+   "summary": "Large language models (LLMs) trained only on text and code can sometimes generate programs that draw recognizable images. However, it is unclear whether this reflects an internal representation of 2D spatial layout or simply the ability to translate spatial descriptions into code. We introduce Autoregressive Mosaics (AM-Bench), a benchmark that separates these factors: First, a translation task gives a model a fully specified geometry of a picture in words as a prompt and asks for the code that produces it. Second, a layout task requires the model to compose an image from an underspecified prompt. Across eight open-weight text-and-code-only models, all models reliably translate specified geometry into code, but their open-ended layout performance differs substantially, indicating that these differences are not explained by code-generation ability alone. An output-medium ablation further shows that the interface or medium of expression that the model uses matters: replacing procedural code with raw SVG improves layout scores across all models. Finally, probing model activations shows that a coarse layout plan is present before generation, but reflects only the layout implied by the prompt. During generation, models track the evolving geometric state instead of executing an initially fixed plan. Overall, these results show that 2D spatial performance in text-only LLMs depends on both the model and the output medium, and is not explained by code-generation ability alone.",
+   "published": "2026-08-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.30751"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "AM-Bench évalue la capacité des LLMs textuels à raisonner spatialement en 2D via des tâches de traduction et de composition d'images, révélant des différences de performance liées à la représentation interne et au médium de sortie (code vs SVG). Clé pour comprendre les limites des LLMs en raisonnement spatial non visuel.",
+   "score": 8.8
+  },
+  {
+   "id": "75afc6b7941cf742",
+   "title": "Clean Engineering, Unstable Measurement: A Preregistered Reliability Failure of Black-Box LLM Observers on Shared Endpoints",
+   "url": "https://arxiv.org/abs/2609.04198v1",
+   "summary": "Language-model judges now gate training data, score generations, and drive leaderboards. The judge is then a measurement instrument, resting on one rarely stated assumption: the same request, sent to the same model name, reads the same tomorrow. We audited that assumption in two preregistered campaigns with every threshold fixed in advance; neither got past validating its instrument. Across 52,988 audited request attempts, same-window repeat rankings agreed at Spearman 0.400 against a required 0.90, and byte-identical next-day replays agreed at 0.78 against a required 0.99, each time with the execution record at ceiling. Three mechanisms explain the gap: a label-to-meaning mapping that biased readouts as strongly as the signal; candidate gaps seven orders of magnitude below the instrument's own noise floor; and byte-identical inputs returning different rankings, a noise that exact-permutation readouts compound. Neither metric substitution nor sampling repaired it on the tested grid. Preregistered follow-ups bound the problem: waiting did not help on the days sampled (0.805 versus 0.800, replicated over five further days); switching providers did not help (four providers share the floor, medians 0.74 to 0.88, predicted by none of the metadata fields they expose); self-hosting on batch-invariant kernels helped only while the server was quiet; and on constructed errors with known gaps, the readout's separation tracks error type, not size. We distill the evidence into a three-level snapshot-identity ladder, eight design rules, and a reporting checklist; a pilot at roughly 2% of the study's call volume would have exposed both unreachable gates in advance. All results concern externally measured behaviour on shared serving infrastructure. On a shared endpoint, a model name is not a frozen instrument; a preregistered evaluation must measure its instrument before freezing any gate on it.",
+   "published": "2026-09-03T17:59:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Haoyaun Zhu, Jie Zhang"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Audit preregistré révélant une instabilité critique des juges LLM (LLM judges) : répétabilité faible (Spearman 0.400 vs 0.90 requis) due à des biais de mapping, des écarts de candidats et des variations de classements malgré des entrées identiques. Met en lumière des limites fondamentales pour l'évaluation automatisée.",
+   "score": 8.6
+  },
+  {
+   "id": "b38298ad6f701f6b",
+   "title": "The Head Complexity of Boolean Functions in Single-Layer Attention",
+   "url": "https://arxiv.org/abs/2609.04046v1",
+   "summary": "What can a single layer of self-attention compute? We study head complexity: the minimum number of attention heads required to compute a function in a one-layer attention-only model. We establish an exact hierarchy under this measure: $k$ heads compute $k$-bit parity but cannot compute $(k+1)$-bit parity. The lower bound is unconditional in the two resources a transformer might otherwise exploit; it holds at unbounded embedding dimension and unbounded numerical precision. The proof rests on an alternating-sum obstruction: after clearing the softmax denominators, every monomial in the resulting decision polynomial omits at least one of the $k+1$ input bits, forcing its correlation with parity to vanish. The same obstruction yields lower bounds for related tasks, including the well-studied multi-hop induction-head task. We also establish compactness bounds for embedding dimension and numerical precision. Specifically, a compactness theorem shows that any function computable at all can be computed with embedding dimension and precision bounded by the discrete data of the task, namely, head count, alphabet size, and length. Thus, potentially unbounded dimension or precision provably cannot substitute for heads. Finally, we derive nearly matching universal bounds for general binary functions: $2^n$ heads suffice to compute every $n$-bit binary function, with one head per monomial in its multilinear expansion, while a counting argument shows almost all such functions require $Ω(2^n/n^2)$ heads. This lower bound matches the upper bound to within a $\\operatorname{poly}(n)$ factor, even when dimension and precision are unbounded. Together, these results characterize head requirements for Boolean computation in this model.",
+   "published": "2026-09-03T16:22:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Rajmohan Rajaraman, Ravi Sundaram, Amanuel Tesfaye"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Cet article démontre une hiérarchie exacte du nombre minimal de heads d'attention nécessaires pour calculer des fonctions booléennes dans un modèle à une couche d'attention pure, avec des preuves théoriques solides et des implications pour l'interprétabilité des transformers.",
+   "score": 8.6
+  },
+  {
+   "id": "815caee1d7129d91",
+   "title": "Select, Compress, Reinvest: A Controlled Study of Visual-Token Allocation in Long-Video MLLMs",
+   "url": "https://huggingface.co/papers/2609.03820",
+   "summary": "Long-video language models cannot look at every frame: an hour sampled once per second is 3,600 images, and a system keeps only a small fixed slice of that pool. Which frames survive that slice is usually treated as a preprocessing detail; we test whether it should be. Published selectors make the comparison hard because they change the frame scorer, the prompt boundary, the resolution policy, and the answering model all at once. We hold each fixed and vary one decision at a time: selection, spatial compression, and reinvestment of the savings, across six training-free selection rules, three long-video benchmarks, and two answering models. Selection is the largest single lever: on LongVideoBench's hour-long bin, eight query-selected frames beat sixteen uniformly spaced ones by 6.9 points, and Orthogonal Matching Pursuit, an unmodified decades-old sparse-approximation algorithm, matches or comes within a point of every purpose-built selector we compare it against, across all three benchmarks. Compression is close to free: halving each frame's spatial budget at fixed timestamps costs at most 0.44 points. Reinvestment is where that budget turns back into accuracy: spending the freed tokens on twice as many compressed frames, at a measured cost no higher than the original eight, returns a further two to three points; compression only pays off once its savings are spent this way. Along the way, an implementation bug in our own AKS baseline and a 0.07 to 3.74 point gap between two harnesses running the same published rules at the same budget show why these comparisons need to happen inside one controlled harness rather than across papers.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.03820"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Cette étude analyse systématiquement l'impact de la sélection, de la compression et de la réallocation des tokens visuels dans les MLLMs pour vidéos longues, démontrant que la sélection intelligente des frames (ex. OMP) améliore significativement les performances (+6.9 points) sans surcoût, et que la compression spatiale est quasi-gratuite.",
+   "score": 8.5
+  },
+  {
+   "id": "b0f53a0a4ecb5052",
+   "title": "Beyond Visual Similarity: Entity-Aligned Retrieval for Knowledge-Based Visual Question Answering",
+   "url": "https://huggingface.co/papers/2608.21450",
+   "summary": "Knowledge-Based Visual Question Answering (KB-VQA) relies on retrieving external information to answer queries involving long-tail entities. However, existing retrieval pipelines predominantly employ CLIP-style dual encoders, which prioritize surface-level visual similarity over entity-level semantic alignment. This paradigm often fails when semantically identical concepts exhibit large visual variations or when distinct entities appear visually similar. To address this, we propose KBMR, the first MLLM-based embedding retriever tailored for KB-VQA. Leveraging the robust autoregressive capabilities of MLLMs, KBMR maps images into a semantic space that better preserves concept identity. To tackle the challenge of noisy supervision in Wikipedia-scale retrieval, we introduce an MLLM-based semantic discriminator that generates continuous entity-consistency weights. These weights guide a novel continuous semantic distillation objective, enabling effective hard negative sampling and soft supervision beyond rigid binary labels. Extensive experiments demonstrate that KBMR significantly outperforms CLIP baselines, yielding up to a 14.7% improvement in retrieval Recall@1 and a 9.4% gain in end-to-end VQA accuracy. Code is available at https://github.com/realHarryX/KBMR.",
+   "published": "2026-08-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 26,
+    "arxiv_id": "2608.21450"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "rag",
+    "architecture"
+   ],
+   "tldr": "KBMR, un nouveau modèle MLLM pour le retrieval en VQA basé sur la sémantique des entités plutôt que la similarité visuelle, améliore significativement les performances (jusqu'à +14.7% en Recall@1) grâce à une distillation sémantique continue et un discriminateur MLLM. Pertinent pour l'amélioration des pipelines RAG et la vision par IA.",
+   "score": 8.5
+  },
+  {
+   "id": "5208647c122ffc48",
+   "title": "Rethinking On-Policy Distillation of Large Language Models II: One Training Example",
+   "url": "https://arxiv.org/abs/2609.04172v1",
+   "summary": "On-policy distillation (OPD) combines student-generated rollouts with dense token-level supervision from a teacher. Existing work has mainly studied its algorithmic behavior, leaving the role of training data unclear. We examine this role at the data-minimal limit by training on a single query. One-shot OPD keeps improving for hundreds of steps and recovers most of full-data OPD's gain across task domains and model families. We explain this result through the states visited during training and the rate at which the student aligns with the teacher. We measure \\emph{state coverage}, the fraction of the states full-data OPD visits that a query set's rollouts reach. A single query already reaches \\(71.5\\%\\), most of it within the first 100 steps. Adding semantically distinct queries raises coverage and validation accuracy together, until 16 queries reach \\(98.9\\%\\) and match full-data training. Yet alignment slows at a similar pace whether OPD trains on one query or the whole dataset, and even a fixed set of states takes hundreds of steps to absorb. OPD is therefore data-overfed but algorithm-starved. Its rollouts quickly expose broad supervision, while the student absorbs that supervision increasingly slowly. The state-coverage result extends to multi-teacher OPD, where 16 semantically diverse queries per domain match full-data MOPD. As a further stress test, content-light templates and off-domain WildChat queries also approach the real-query baseline. Task content and induced state coverage can therefore come apart. We hope these findings direct future work toward the step efficiency of OPD, and prompt a re-examination of the data and the mechanisms behind its recent successes in frontier post-training.",
+   "published": "2026-09-03T17:54:38+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zixuan Fu, Bingxiang He, Yuxin Zuo, Haohuan Huang, Jinqian Zhang, Ruhang Xiao"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "L'article démontre que la distillation on-policy (OPD) peut être efficace avec un seul exemple d'entraînement, révélant que l'algorithme est sous-exploité plutôt que limité par les données. Les résultats montrent une couverture d'états élevée dès les premières étapes, avec une amélioration continue sur des centaines d'itérations.",
+   "score": 8.3
+  },
+  {
+   "id": "094356004d626a85",
+   "title": "From Deceptive Outputs to Deceptive Mechanisms: A Causal Framework for Language-Model Deception Research",
+   "url": "https://arxiv.org/abs/2609.04166v1",
+   "summary": "Research and news coverage of language-model deception increasingly attributes human-like mental-state concepts to language models. Such claims can blur the distinction between behavior that looks deceptive and a mechanism that is actually deceptive. We introduce a causal taxonomy separating prior commitment from retrospective report, model preference from realized output, false preference from sensitivity to the utility of misleading a recipient, and deceptive behavior from the provenance of the objective or strategy producing it. We test these distinctions in two open-weight model families. Across controlled guessing-game and stock-trading experiments, we find that deceptive-looking behavior can arise without the corresponding proposed mechanism, while other interventions provide direct evidence that recipient information state can causally affect deceptive preference. These results show that deceptive behavior can provide evidence for a deceptive mechanism. But even evidence for such a mechanism does not establish model agency in the deception.",
+   "published": "2026-09-03T17:52:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yakov Pyotr Shkolnikov"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cadre causal pour distinguer les comportements trompeurs des mécanismes de tromperie dans les LLM, montrant que des comportements déceptifs peuvent émerger sans mécanisme sous-jacent correspondant, et inversement.",
+   "score": 8.3
+  },
+  {
+   "id": "2b22265a995f243b",
+   "title": "Sequential Beats Joint: On the Interplay between On-Policy Distillation and RLVR",
+   "url": "https://arxiv.org/abs/2609.04108v1",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) and on-policy distillation (OPD) have emerged as two dominant methods for post-training reasoning LLMs. Prior work uses OPD's dense token-level supervision to complement the sparse RL reward, fusing the two signals within a single step: either as a \\emph{weighted-additive combination} or a \\emph{teacher-modulated rescaling} of the RL advantage. In this paper, we show that a simple two-stage scheme, OPD-then-RL, consistently outperforms pure OPD, pure RLVR, and all such joint baselines across logic and math reasoning benchmarks. Beyond the empirical results, we further provide a systematic understanding of this through pass@$k$ behavior, learning dynamics, and parameter updates, yielding a consistent explanation: OPD expands the student's coverage of teacher-supported solutions and RL sharpens within that support, while jointly optimizing the two signals causes them to interfere.To provide a practical recipe, we find that the OPD validation score is the key signal for when to switch to RL, and that OPD is a better cold start for RL than SFT. Together, our results establish OPD-then-RL as a simple yet strong way to combine the two methods, turning two entangled signals into complementary stages.",
+   "published": "2026-09-03T17:14:27+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Boyan Li, Bingsen Chen, Chenghao Yang, Ping Nie, Chen Zhao, Xi Ye"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "La méthode *OPD-then-RL* combine distillation on-policy et RL de manière séquentielle, surpassant les approches jointes sur des benchmarks de raisonnement. Stratégie pratique pour l'optimisation post-entraînement des LLM.",
+   "score": 8.3
+  },
+  {
+   "id": "e9d00ce85990feae",
+   "title": "Hardware-Aware FP4 FlashAttention-4",
+   "url": "https://arxiv.org/abs/2609.04105v1",
+   "summary": "Blackwell's 4-bit floating-point (FP4) tensor cores do not automatically make attention faster because softmax conversion and on-chip dependencies dominate once its matrix products shrink. We address this with \\emph{Direct-P} for noncausal inference and a causal path that passes the forward quantization directly into backward. Direct-P maps scores directly to FP4 probabilities and reaches up to 2.13$\\times$ the bfloat16 (BF16) forward throughput on an NVIDIA GB200. The causal path reconstructs probabilities from saved quantized queries and keys and uses 8-bit floating-point (FP8) gradient operands, accelerating a complete single-GPU 8-billion-parameter update by up to 1.14$\\times$. Matched distributed training retains FP8 probabilities and values; every tested MXFP4 probability/value training trajectory diverges.",
+   "published": "2026-09-03T17:12:35+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Robert Hu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "produit"
+   ],
+   "tldr": "*FlashAttention-4* en FP4 optimise l'inférence et l'entraînement des modèles d'attention via *Direct-P* et des chemins causaux, atteignant jusqu'à 2.13× de débit en forward sur GB200. Avancée majeure pour l'efficacité matérielle des LLM.",
+   "score": 8.3
+  },
+  {
+   "id": "ca8629aac39e7d1e",
+   "title": "Why Gated DeltaNet Survives 4-Bit Quantization: NVFP4 W4A4 for the Recurrent Half of a Hybrid 27B LLM",
+   "url": "https://arxiv.org/abs/2609.04098v1",
+   "summary": "Hybrid LLMs pair softmax attention with linear-attention layers such as Gated DeltaNet (GDN), whose recurrent state summarizes the context in fixed size. Early community 4-bit quantizations of Qwen3.8-27B (48 GDN layers, 16 attention layers) left the GDN block in 8- or 16-bit precision -- especially its decay and write-strength gates -- on the intuition that errors in a recurrence accumulate over long contexts. We test that intuition by building Minima: NVFP4 W4A4 on all 496 linear layers, GDN included. Across perplexity at 4K/32K, MMLU-Pro, GSM8K, AIME'25, GPQA-Diamond, LiveCodeBench, and RULER retrieval to 64K, Minima matches BF16 within seed noise (5-task average -0.52) while being the smallest (17.5 GiB) and fastest-prefill (+14-19%) recipe we compare, and its 32K perplexity gap shrinks with position. A four-part mechanism study explains why: (i) NVFP4's 16-element block scaling localizes the residual stream's extreme outliers, equalizing activation error across layer roles; (ii) the supposedly fragile gate projections are the least sensitive -- softplus/exponential and sigmoid parameterizations compress ~11% GEMM error to ~2% output error; (iii) the delta-rule recurrence holds injected noise at a flat plateau over 32K tokens and forgets a state impulse within hundreds of steps, because each write overwrites the state along the current key direction; (iv) the per-token quantization cost washes out with context instead of compounding. We also repair a global-scale mismatch that arises when per-module-calibrated NVFP4 checkpoints are served by kernels that fuse those modules into one GEMM, and show calibrated FP8 KV-cache scales are performance-free. The result: a practical recipe -- quantize everything, ship KV scales -- and a mechanistic account of why the recurrent half of a hybrid LLM is the easy half to quantize. Checkpoint: https://huggingface.co/minima-ai/mnma_qwen3.8_27b_nvfp4",
+   "published": "2026-09-03T17:04:26+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sergii Kozyrev, Davyd Maiboroda"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "La quantification NVFP4 W4A4 de *Gated DeltaNet* dans un LLM hybride de 27B montre que les couches récurrentes survivent à une quantification agressive sans perte de performance, avec un gain en vitesse de préfill. Preuve que les architectures hybrides optimisent l'efficacité.",
+   "score": 8.3
+  },
+  {
+   "id": "8fa7aacd2174979d",
+   "title": "PatchBench: Evaluating AI Agents for Vulnerability Patching",
+   "url": "https://arxiv.org/abs/2609.04075v1",
+   "summary": "AI agents have recently demonstrated strong performance in automated vulnerability patching. However, existing evaluations often validate a patch only by testing whether the provided Proof-of-Concept (PoC) input still triggers a crash. This leaves two key threats to validity: agents may reproduce memorized historical developer patches, or they may generate surface-level fixes that only suppress the reported crash. We study these concerns for C/C++ vulnerability patching. We introduce a patch similarity metric to detect memorized patches. On average, 25% of the agent patches exhibit substantial similarity to historical developer patches, indicating that patch memorization is a real threat to the validity of vulnerability patching evaluations. Meanwhile, agents also frequently exploit benchmark structures to pass patch validation by patching on the crash stack trace to suppress the crash, rather than localizing and fixing the root cause of the vulnerabilities. To handle these issues, we propose PatchBench, a new benchmark for evaluating AI agents on realistic vulnerability patching tasks. PatchBench selects vulnerabilities whose ground-truth fixes lie outside the crash stack and uses vulnerability transplant and code mutations to migrate historical vulnerabilities into new repository contexts, reducing the risks of surface-level fixes and patch memorization. We develop new patch validation methods that thoroughly evaluate both security and semantic correctness of agent patches. Across 11 state-of-the-art agents, including the top three AIxCC agents, the original PoC-only validation inflates the patching task solve rate of agents by 1.83$\\times$ on average. Our results reveal key limitations of current patching agents and point to future research directions for more reliable vulnerability repair.",
+   "published": "2026-09-03T16:44:22+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chihao Shen, Jiacheng Li, Aastha Mahajan, Jeffery Siyuan Tian, Yonghwi Kwon, Yizheng Chen"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Benchmark PatchBench pour évaluer les agents d'IA dans la correction de vulnérabilités logicielles, révélant des biais de mémorisation et de corrections superficielles. Propose une métrique de similarité et une méthodologie robuste pour des évaluations réalistes. Essentiel pour l'évaluation des agents de sécurité.",
+   "score": 8.3
+  },
+  {
+   "id": "0876c9c2b39765c7",
+   "title": "CopilotKit/OpenBot",
+   "url": "https://github.com/CopilotKit/OpenBot",
+   "summary": "Open-source AI coworkers that each get a computer of their own: a browser, files and tools, with every action decided before it happens and recorded after. Bring any AG-UI agent.",
+   "published": "2026-08-17T00:44:59Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 4195,
+    "language": "TypeScript"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Framework open-source pour déployer des 'coworkers IA' autonomes (navigateur, fichiers, outils) avec traçabilité des actions. Solution robuste pour les agents multi-outils, alignée avec les tendances actuelles.",
+   "score": 8.3
+  },
+  {
+   "id": "5fc417b1e8393d2f",
+   "title": "Compile by Training: Turning Natural-Language Specifications into Local Neural Functions",
+   "url": "https://huggingface.co/papers/2609.04199",
+   "summary": "Many recurring text functions are easy to describe but difficult to implement with rules, while calling a large remote model for every input introduces repeated cost, latency, and dependency on a provider. We present compile by training, which turns a natural-language specification into a reusable neural function. At compile time, teacher models generate task-specific examples that are used to train a small adapter for a compact interpreter. The resulting function runs without the teachers and can be stored, versioned, and composed like ordinary software. On FuzzyBench-Hard, a subset on which the Program-as-Weights fast compiler produced no exact matches, compile by training reaches 83.6% semantic accuracy. This higher accuracy comes with a higher compile-time cost: roughly a minute rather than seconds for the fast compiler. We deploy the compiler in a public interactive service and demonstrate compiled functions in a multi-site website helper, a language-controlled 3D avatar, and a bidirectional English-Claudish translator.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 29,
+    "arxiv_id": "2609.04199"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Compile by Training transforme des spécifications en langage naturel en fonctions neurales réutilisables via un petit adaptateur entraîné sur des exemples générés par des modèles enseignants, atteignant 83.6% de précision sémantique sur FuzzyBench-Hard avec un coût de compilation modéré.",
+   "score": 8.2
+  },
+  {
+   "id": "8991bfa34cdb5491",
+   "title": "Beyond Retrieval: Progressive Latent Memory Evolution for Streaming Video Understanding",
+   "url": "https://huggingface.co/papers/2609.04131",
+   "summary": "Streaming video understanding requires multimodal large language models (MLLMs) to process continuous visual inputs and respond to user queries under strict causality and bounded memory. Existing approaches typically compress historical observations into an external memory bank and retrieve query-relevant evidence as additional visual context. Though effective, this store-and-retrieve paradigm keeps historical evidence as external visual context, preventing it from being internalized into a compact, evolving latent memory that can continuously guide streaming reasoning. To bridge this gap, we introduce LatentStream, a progressive latent working memory framework that shifts streaming memory from store-and-retrieve to retrieve-and-internalize. Specifically, LatentStream comprises three coordinated components. First, Query-agnostic Hierarchical Streaming Memory organizes visual history into short-, mid-, and long-term levels under a fixed memory budget through Jenks-guided adaptive consolidation. Once a query arrives, Hierarchical Latent Memory Evolution equips groups of latent memory tokens with progressively expanding memory receptive fields, enabling them to iteratively retrieve historical evidence from their corresponding scopes and internalize it into a compact, fixed-length latent memory. Finally, Progressive Confidence-guided Latent Memory Optimization constructs a hierarchical progression reward from group-wise predictive entropy and jointly refines the latent memory tokens and retrieved evidence, encouraging increasingly confident streaming reasoning. Extensive experiments demonstrate that LatentStream achieves new state-of-the-art results on existing online and offline video benchmarks.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2609.04131"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "LatentStream remplace le paradigme classique de mémoire externe par une mémoire latente évolutive et progressive pour la compréhension vidéo en streaming, améliorant l'efficacité et la pertinence des tokens mémorisés via une consolidation hiérarchique et des champs réceptifs adaptatifs.",
+   "score": 8.2
+  },
+  {
+   "id": "35dc4c3f47946008",
+   "title": "Rethinking On-Policy Distillation of Large Language Models II: One Training Example",
+   "url": "https://huggingface.co/papers/2609.04172",
+   "summary": "On-policy distillation (OPD) combines student-generated rollouts with dense token-level supervision from a teacher. Existing work has mainly studied its algorithmic behavior, leaving the role of training data unclear. We examine this role at the data-minimal limit by training on a single query. One-shot OPD keeps improving for hundreds of steps and recovers most of full-data OPD's gain across task domains and model families. We explain this result through the states visited during training and the rate at which the student aligns with the teacher. We measure state coverage, the fraction of the states full-data OPD visits that a query set's rollouts reach. A single query already reaches \\(71.5\\%\\), most of it within the first 100 steps. Adding semantically distinct queries raises coverage and validation accuracy together, until 16 queries reach \\(98.9\\%\\) and match full-data training. Yet alignment slows at a similar pace whether OPD trains on one query or the whole dataset, and even a fixed set of states takes hundreds of steps to absorb. OPD is therefore data-overfed but algorithm-starved. Its rollouts quickly expose broad supervision, while the student absorbs that supervision increasingly slowly. The state-coverage result extends to multi-teacher OPD, where 16 semantically diverse queries per domain match full-data MOPD. As a further stress test, content-light templates and off-domain WildChat queries also approach the real-query baseline. Task content and induced state coverage can therefore come apart. We hope these findings direct future work toward the step efficiency of OPD, and prompt a re-examination of the data and the mechanisms behind its recent successes in frontier post-training.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 49,
+    "arxiv_id": "2609.04172"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Montre que la distillation on-policy (OPD) peut être efficace avec un seul exemple d'entraînement, révélant un déséquilibre entre données et algorithme. Implications fortes pour l'efficacité des méthodes de distillation et fine-tuning.",
+   "score": 8.2
+  },
+  {
+   "id": "96c13b08df993f0f",
+   "title": "Sparse Readout Prism: Explaining Logit-Lens Scores in Features Instead of Tokens",
+   "url": "https://huggingface.co/papers/2609.01936",
+   "summary": "A language model's prediction of its next token develops across layers, and lens methods track this process by decoding intermediate hidden states into tokens. But a lens reading reflects both the hidden state and the readout (the unembedding matrix) used to decode it. Many lenses are fit on a corpus, and we show that two lenses differing only in their fitting corpus can report different tokens for the same hidden states. We call this dependence corpus conditionality. To examine readout structure independently of the fitting corpus, we introduce Sparse Readout Prism (SRP), which decomposes the readout using only its weights and expresses any token logit or logit difference as a sum of contributions from sparse readout features. This reveals readout features as a new unit of analysis for lens readings, exposing structure that token identities can obscure and enabling comparisons across tokens, contexts, layers, and lenses. Replacing the original readout with SRP's sparse approximation reconstructs 8.9-17.3 percentage points more of the tested logit differences than the strongest of six baselines built on geometric relations among readout rows. Ablating features shifts logit differences in proportion to their SRP contributions. Although token readings vary with the fitting corpus, the dominant readout feature remains stable. Because SRP uses no corpus in its construction, it provides a control independent of the fitting corpus for lens analyses.",
+   "published": "2026-08-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.01936"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "llm"
+   ],
+   "tldr": "Sparse Readout Prism (SRP) propose une méthode pour décomposer la matrice de readout des LLM en features éparses, réduisant la dépendance au corpus d'entraînement des lenses (corpus conditionality). Meilleure reconstruction des différences de logits (8.9-17.3pp) et nouvelle unité d'analyse pour l'interprétabilité.",
+   "score": 8.2
+  },
+  {
+   "id": "63cb4d70b31cb8b8",
+   "title": "WHALE: A Simple Recipe for Joint Harness-Weight Optimization",
+   "url": "https://huggingface.co/papers/2609.00196",
+   "summary": "Agent performance depends jointly on the model parameters and the executable harness code that manages context and control flow. Optimizing either component in isolation can leave the system bottlenecked by its frozen counterpart: weight updates can change which harness is effective, while harness updates can change which model capabilities are exposed. Existing joint-adaptation methods optimize weights and textual prompts but leave the broader harness fixed. We propose Weight-Harness Alternating LEarning (WHALE), a simple recipe that alternates two phases: updating the model under the current harness, then searching for a better harness under the updated model. We instantiate these two phases with online rejection-sampling fine-tuning and Meta-Harness, respectively. When to switch is a key design choice: to separate real improvements from noise without over-optimizing against a changing counterpart, WHALE uses either fixed phase durations or an adaptive patience rule over training signals. Using Qwen3.5-2B/4B agents across three domains (search question answering, mathematical reasoning, and chess puzzles), WHALE outperforms weight-only, harness-only, and Fast-Slow Training by 4.15-24.38 percentage points in best mean@8 accuracy. Either component can be the bottleneck: harness search matches peak weight-only accuracy with far fewer rollouts in SearchQA, but improves math accuracy only after a weight update. Small interleaved updates also outperform stagewise weight-then-harness optimization in accuracy and rollout cost. The code is available at https://github.com/krafton-ai/WHALE.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 29,
+    "arxiv_id": "2609.00196"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "WHALE (Weight-Harness Alternating LEarning) optimise conjointement les poids d'un modèle et son harness (code exécutable) via un entraînement alterné. Surpasse les méthodes existantes (4.1pp d'amélioration) sur des agents Qwen3.5-2B/4B dans 3 domaines (QA, raisonnement, échecs).",
+   "score": 8.2
+  },
+  {
+   "id": "c50ff71a2f3fac2b",
+   "title": "Environment Evolution for Terminal Agents",
+   "url": "https://arxiv.org/abs/2609.04128v1",
+   "summary": "Scaling interactive and verifiable environments is critical for training terminal agents. As frontier models become more capable, environments synthesized from scratch become less challenging and thus provide limited learning signals. Recent co-evolution methods iteratively synthesize environments near the model's learnable frontier based on weaknesses exposed during rollouts. However, their dependence on on-policy rollouts limits generalization and the continuous provision of learning signals as the model becomes stronger. In this paper, we propose environment evolution, which incrementally increases environment difficulty off-policy and schedules the evolved environments generation by generation during training to provide continuous learning signals. We derive three evolution directions that influence environment difficulty from the multi-turn learning objective and then implement evolution along these directions through a loop-engineered multi-agent harness. Quantitative rollout experiments with Hy4 preview, Claude Opus 5, and GPT-5.6 Sol show that environment evolution consistently produces more difficult environments. We validate its effectiveness on Qwen3.6-27B and Qwen3.6-35B-A3B through simple long-horizon RL training, improving their performance by 14.4 and 18.0 percentage points on Terminal-Bench 2.1, respectively.",
+   "published": "2026-09-03T17:26:33+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhiyuan Fan, Tinghao Yu, Yuanjun Cai, Jiang Zhou, Jiangtao Guan, Jincheng Liu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "L'*environment evolution* génère des environnements progressively plus difficiles pour entraîner des agents terminaux, en combinant co-évolution et génération hors-policy. Méthode prometteuse pour le *scaling* des agents et l'évaluation robuste.",
+   "score": 8.0
+  },
+  {
+   "id": "fc50f6c0dd88a594",
+   "title": "CORE: Improving Compositional Reasoning in MLLM Embedding via Reranker Distillation",
+   "url": "https://arxiv.org/abs/2609.04083v1",
+   "summary": "MLLM-based embedding models remain limited in compositional retrieval, often failing to distinguish scenes containing the same concepts but different attribute-object bindings. Yet the same backbone can resolve such distinctions when used as a cross-attentive reranker, motivating us to distill its compositional judgments into the embedding model. We propose CORE, which synthesizes candidate lists spanning five compositional matching levels and introduces a Rank-KL objective that trains the embedding model to reproduce the reranker's fine-grained ranking. We further introduce a graded evaluation protocol and compare contrastive learning, pairwise CoSENT, and listwise Rank-KL under the same data and tuning budget. Our comparison shows that both CoSENT and Rank-KL use the multi-level supervision more effectively than contrastive learning, with Rank-KL achieving the strongest overall performance. Across three compositional reasoning benchmarks (COLA, SUGARCREPE++, NEGBENCH), CORE-RERANKER-8B achieves an 82.7% total average, outperforming Jina-Reranker by 10.7 points, while CORE-EMBED-8B achieves the best total average (0.666) among all evaluated embedding models. The improvements transfer to the MCMR benchmark without sacrificing retrieval performance on COCO and Flickr30K.",
+   "published": "2026-09-03T16:50:29+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Tingyu Song, Mingxin Li, Yanzhao Zhang, Dingkun Long, Chu Liu, Pengjun Xie"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "rag",
+    "benchmark"
+   ],
+   "tldr": "Méthode CORE pour améliorer le raisonnement compositionnel des modèles d'embeddings MLLM via distillation d'un reranker, avec un protocole d'évaluation gradué et des gains significatifs (jusqu'à +10.7 points) sur des benchmarks de compositionnalité. Pertinent pour l'optimisation des embeddings et l'amélioration des systèmes RAG.",
+   "score": 8.0
+  },
+  {
+   "id": "b88589846d06e4fd",
+   "title": "Unlocking Lossless Speedups in LLMs via Discrete Diffusion",
+   "url": "https://arxiv.org/abs/2609.04010v1",
+   "summary": "Large Language Models (LLMs) owe much of their success to next-token prediction (NTP), but their autoregressive (AR) structure requires slow, sequential token generation. To overcome this bottleneck, we introduce diffusion-augmented LLMs, a new class of models that defines an AR model distribution while using diffusion to draw multiple tokens in parallel from that distribution. We decouple the parameters of these models into two sets: AR weights, trained using the standard NTP objective, and lightweight diffusion weights, trained to generate multiple tokens simultaneously. The diffusion weights are learned through a simple Diffusion Distillation phase that adds negligible overhead to existing LLM training pipelines. We also introduce $Ψ$-Spec, a family of samplers that enables lossless acceleration and inference-time scaling at a fixed context length. Unlike speculative decoding, our method requires no separate draft model. Unlike diffusion LLMs (d-LLMs), it accelerates generation without sacrificing the quality of the underlying AR model. The resulting models, called Uno, can be trained from scratch or built by augmenting existing open-weight AR LLMs. Uno achieves higher throughput than leading speculative-decoding methods at every evaluated batch size and delivers up to $3\\times$ speedups over the base AR model, including at the largest batch size supported by the device. Notably, our 8B Uno model outperforms the leading open d-LLM, the 26B DiffusionGemma, and the proprietary Mercury 2 across all evaluated benchmarks in agentic tool use, coding, and long-context reasoning. We release code and checkpoints at: https://s-sahoo.github.io/uno/",
+   "published": "2026-09-03T15:48:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Subham Sekhar Sahoo, Lingjie Chen, Khiem Pham, Jonathan Geuter, Chaitanya Dwivedi, Varad Pimpalkhute"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Méthode 'Uno' combinant modèles autorégressifs (NTP) et diffusion discrète pour générer plusieurs tokens en parallèle sans perte de qualité, accélérant l'inférence des LLM via une distillation légère et un échantillonnage scalable (Ψ-Spec), compatible avec des modèles existants.",
+   "score": 8.0
+  },
+  {
+   "id": "d2fa86bec9633948",
+   "title": "Environment Evolution for Terminal Agents",
+   "url": "https://huggingface.co/papers/2609.04128",
+   "summary": "Scaling interactive and verifiable environments is critical for training terminal agents. As frontier models become more capable, environments synthesized from scratch become less challenging and thus provide limited learning signals. Recent co-evolution methods iteratively synthesize environments near the model's learnable frontier based on weaknesses exposed during rollouts. However, their dependence on on-policy rollouts limits generalization and the continuous provision of learning signals as the model becomes stronger. In this paper, we propose environment evolution, which incrementally increases environment difficulty off-policy and schedules the evolved environments generation by generation during training to provide continuous learning signals. We derive three evolution directions that influence environment difficulty from the multi-turn learning objective and then implement evolution along these directions through a loop-engineered multi-agent harness. Quantitative rollout experiments with Hy4 preview, Claude Opus 5, and GPT-5.6 Sol show that environment evolution consistently produces more difficult environments. We validate its effectiveness on Qwen3.6-27B and Qwen3.6-35B-A3B through simple long-horizon RL training, improving their performance by 14.4 and 18.0 percentage points on Terminal-Bench 2.1, respectively.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.04128"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Présente l'évolution d'environnements (Environment Evolution) pour agents terminaux, générant des environnements plus difficiles hors-policy pour un apprentissage continu. Méthode clé pour le scaling des agents interactifs.",
+   "score": 7.9
+  },
+  {
+   "id": "7633419dd00c95c8",
+   "title": "ZipTok3D: High-Fidelity 3D Tokenization with Compact Token Prefixes",
+   "url": "https://huggingface.co/papers/2609.01740",
+   "summary": "Compact token sequences are essential for efficient 3D generation. However, existing 3D tokenizers typically organize latent representations either over spatial regions or as fixed-size sets of global tokens, both suffering sharp reconstruction degradation when compressed to extremely low token budgets. In this paper, we present ZipTok3D, a 3D tokenizer designed for high-fidelity reconstruction from extremely short token sequences. Its key idea is to organize object geometry into progressively informative global-token prefixes and unfold these compact representations through iterative decoding. Specifically, nested dropout randomly truncates the latent sequence after encoding during training and requires each retained prefix to reconstruct the complete object, thereby prioritizing essential geometric information in the leading tokens. The decoder then repeatedly applies a parameter-shared Transformer block to recover fine-grained geometry from each prefix without a separate generative sampling stage. With the same token dimension, ZipTok3D achieves reconstruction quality comparable to the 32-token COD-VAE baseline using only one token on ShapeNet and four on TRELLIS, yielding 32times and 8times shorter token sequences, respectively.",
+   "published": "2026-08-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2609.01740"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "ZipTok3D introduit une tokenisation 3D compacte avec des préfixes globaux itératifs et une reconstruction haute fidélité à partir de très courts séquences de tokens, réduisant drastiquement le budget tokenique sans perte de qualité. Pertinent pour l'optimisation des modèles de génération 3D.",
+   "score": 7.9
+  },
+  {
+   "id": "5ac6737397a7d65c",
+   "title": "Compile by Training: Turning Natural-Language Specifications into Local Neural Functions",
+   "url": "https://arxiv.org/abs/2609.04199v1",
+   "summary": "Many recurring text functions are easy to describe but difficult to implement with rules, while calling a large remote model for every input introduces repeated cost, latency, and dependency on a provider. We present compile by training, which turns a natural-language specification into a reusable neural function. At compile time, teacher models generate task-specific examples that are used to train a small adapter for a compact interpreter. The resulting function runs without the teachers and can be stored, versioned, and composed like ordinary software. On FuzzyBench-Hard, a subset on which the Program-as-Weights fast compiler produced no exact matches, compile by training reaches 83.6% semantic accuracy. This higher accuracy comes with a higher compile-time cost: roughly a minute rather than seconds for the fast compiler. We deploy the compiler in a public interactive service and demonstrate compiled functions in a multi-site website helper, a language-controlled 3D avatar, and a bidirectional English-Claudish translator.",
+   "published": "2026-09-03T17:59:49+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yuntian Deng, Pengyu Nie, Stuart Shieber"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils",
+    "optimisation"
+   ],
+   "tldr": "Méthode 'compile by training' transformant des spécifications en langage naturel en fonctions neuronales réutilisables via un petit adaptateur entraîné sur des exemples générés par des modèles enseignants. Permet une exécution locale sans dépendance externe, avec gains de précision (83.6% sur FuzzyBench-Hard) mais coût de compilation accru (~1 min).",
+   "score": 7.7
+  },
+  {
+   "id": "ca41ad6246e0df05",
+   "title": "Legibility is Not Interpretability: Comparing Judged and Actual Importance in Chain-Of-Thought Reasoning",
+   "url": "https://arxiv.org/abs/2609.04194v1",
+   "summary": "Reasoning traces from chain-of-thought models appear to offer a legible window into how a model arrives at its answer. A growing body of work treats them as such, using LLM judges to diagnose errors, evaluate faithfulness, and provide step-level supervision via process reward models and generative critics. These practices rely on the text of a reasoning step carrying information about its functional role. But does the text actually encode information about which reasoning steps matter? We operationalize the importance of a reasoning step as its advantage: the change in expected reward, e.g., producing the correct final answer, from including that step, estimated via Monte Carlo rollouts. Basing ground truth on these estimates, we evaluate whether LLM judges can identify high-advantage steps and find that sufficiently capable LLMs can outperform a prevalence baseline but fall well short of a noise ceiling. Fine-tuning a model as a step-level critic yields strong improvement for incorrect responses but remains distant from ceiling for correct responses, suggesting that step importance is only partially recoverable from the text of the reasoning trace. Our findings contribute to a growing body of chain-of-thought faithfulness work that cautions against treating the legibility of reasoning traces as interpretability, especially with implications for process reward modeling.",
+   "published": "2026-09-03T17:59:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kevin Du, Alexander Hoyle, Laura Ruis, Acyr Locatelli"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Étude démontrant que l'importance fonctionnelle des étapes de raisonnement (CoT) n'est que partiellement récupérable via le texte seul. Les juges LLM atteignent des performances limitées (inférieures au plafond de bruit) malgré des capacités suffisantes, soulignant les limites des méthodes d'interprétabilité basées sur le texte.",
+   "score": 7.7
+  }
+ ]
+}
