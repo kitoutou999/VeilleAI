@@ -1,0 +1,658 @@
+{
+ "date": "2026-09-05",
+ "digest": {
+  "headline": "Les modèles vidéo et la robotique dextere ouvrent de nouvelles perspectives pour l'entraînement d'agents et la modélisation du monde physique.",
+  "overview": "La journée du 5 septembre 2026 met en lumière des avancées majeures en apprentissage par démonstration pour la robotique, en évaluation des modèles vidéo, et en optimisation des agents à long terme. Ces travaux soulignent une tendance vers l'exploitation de données à grande échelle et l'amélioration de la cohérence physique dans les systèmes d'IA.",
+  "highlights": [
+   {
+    "title": "RoboTok et la récupération de démonstrations humaines à l'échelle d'Internet",
+    "text": "RoboTok propose un moteur de récupération de trajectoires 3D de mains à partir de vidéos web, permettant d'entraîner des politiques robotiques dextres malgré les variations de vue ou d'occlusions. Cette approche réduit significativement le coût de collecte de données en exploitant des sources de supervision non structurées, un enjeu clé pour la robotique."
+   },
+   {
+    "title": "DRACO et Principia : optimisation et évaluation des agents et modèles vidéo",
+    "text": "DRACO améliore l'entraînement d'agents à long terme en redistribuant dynamiquement les récompenses via des rubriques, sans module d'attribution supplémentaire. Principia, quant à lui, révèle les lacunes des modèles vidéo dans le raisonnement physique relationnel, avec des scores de cohérence bien inférieurs aux attentes. Ces travaux illustrent l'importance de l'interprétabilité et de la robustesse dans les systèmes autonomes."
+   },
+   {
+    "title": "Puffin-World et VeriPhy : vers des mondes 3D cohérents et vérifiables",
+    "text": "Puffin-World intègre physique, géométrie 3D et apparence pour générer des environnements interactifs et cohérents, tandis que VeriPhy évalue la fiabilité physique des vidéos générées via un système agentique. Ces approches sont cruciales pour les applications en boucle fermée, comme la simulation ou l'exploration robotique, où la cohérence physique est indispensable."
+   },
+   {
+    "title": "Percolation Dynamics et LLaDA-Image : nouvelles perspectives en optimisation et génération d'images",
+    "text": "L'étude des dynamiques de percolation dans l'optimisation révèle des transitions de phase discrètes dans les sous-réseaux, offrant une meilleure compréhension des mécanismes de convergence. De son côté, LLaDA-Image propose un framework open-source pour entraîner des générateurs d'images performants, avec des recettes de distillation pour une inférence rapide, marquant une avancée dans l'accessibilité des modèles de génération."
+   },
+   {
+    "title": "Benchmarking et standardisation : des outils pour évaluer objectivement les modèles",
+    "text": "Le *Last Translation Benchmark* et les travaux comme WorldReward ou CORE introduisent des protocoles d'évaluation plus rigoureux pour la traduction, la cohérence action-visuelle et le raisonnement compositionnel. Ces benchmarks comblent des lacunes critiques en fournissant des métriques objectives et reproductibles, essentielles pour le progrès technique."
+   }
+  ],
+  "trend": "Les recherches actuelles convergent vers l'exploitation de données non structurées à grande échelle et l'amélioration de la cohérence physique et temporelle des modèles, tout en développant des outils d'évaluation et d'interprétabilité plus robustes pour les systèmes autonomes et multimodaux."
+ },
+ "items": [
+  {
+   "id": "1753df1ee251b9be",
+   "title": "RoboTok: An Internet-Scale Data Engine for Human Demonstration Retrieval and Dexterous Manipulation Learning",
+   "url": "https://huggingface.co/papers/2609.03199",
+   "summary": "Robot learning increasingly depends on broad and diverse demonstrations, yet collecting robot data remains expensive and poorly suited to covering the long tail of real-world tasks. To address this bottleneck, we introduce RoboTok, an internet-scale data engine that, given a query human manipulation video, retrieves manipulation-relevant human demonstrations from web videos for training dexterous robot policies. Specifically, we learn a latent motion space from 3D hand trajectories expressed in estimated actor-centered reference frames. This representation enables manipulation behaviors to be compared across variations in camera viewpoint, scene appearance, and actor occlusions, while remaining compact enough for efficient search and continual indexing over internet-scale video collections. We evaluate RoboTok against existing robot-data retrieval approaches on retrieval benchmarks and downstream robot policy performance. Our results show that RoboTok retrieves more relevant manipulation demonstrations and improves downstream task success, establishing hand-pose trajectory-aware retrieval as a way to make web video a scalable and continuously growing source of supervision for robot learning.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 34,
+    "arxiv_id": "2609.03199"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "outils"
+   ],
+   "tldr": "RoboTok propose un moteur de récupération à grande échelle de démonstrations humaines de manipulation pour entraîner des politiques robotiques dextres, en utilisant des trajectoires 3D de mains pour comparer des comportements malgré les variations de vue, d'apparence ou d'occlusions. Intéressant pour réduire le coût de collecte de données robotiques et exploiter des vidéos web comme source de supervision.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le domaine de l'apprentissage robotique souffre d'un manque crucial de données de démonstration variées et à grande échelle, essentielles pour entraîner des politiques de manipulation fine. Collecter ces données directement via des robots est coûteux et limité en diversité, ce qui freine la couverture des tâches réelles complexes et rares (la 'longue traîne' des scénarios).",
+    "methode": "RoboTok propose un moteur de données à l'échelle d'Internet pour récupérer des démonstrations humaines pertinentes à partir de vidéos web, en réponse à une requête vidéo de manipulation. L'approche repose sur l'apprentissage d'un *espace latent de mouvements* à partir de trajectoires 3D des mains, exprimées dans un référentiel centré sur l'acteur. Ce choix permet de comparer des comportements de manipulation malgré les variations de point de vue, d'apparence de la scène ou d'occlusions, tout en restant compact pour une recherche efficace. Le système indexe en continu des collections de vidéos web, utilisant cette représentation pour identifier des démonstrations similaires. Les données récupérées servent ensuite à entraîner des politiques robotiques pour des tâches de manipulation fine.",
+    "resultats": "Les évaluations montrent que RoboTok surpasse les méthodes existantes de récupération de données robotiques, tant sur des benchmarks de récupération que sur les performances des politiques robotiques en aval. Les démonstrations récupérées sont plus pertinentes pour les tâches ciblées, ce qui se traduit par une amélioration du taux de succès des robots. Aucune métrique quantitative précise (ex: taux d'amélioration, taille du jeu de données) n'est mentionnée dans le résumé disponible.",
+    "limites": "Le résumé ne précise pas les biais potentiels liés à la qualité des vidéos web (ex: bruit, annotations manquantes) ou à la généralisation des trajectoires 3D estimées. La robustesse face à des scènes très dynamiques ou des manipulations non standardisées reste une zone d'ombre. Enfin, l'impact des erreurs d'estimation des poses de mains sur les performances finales n'est pas discuté.",
+    "verdict": "RoboTok mérite une attention particulière pour son approche innovante combinant récupération de données à grande échelle et apprentissage robotique, mais son efficacité réelle dépendra de la qualité des données sous-jacentes et de sa capacité à gérer les cas limites."
+   }
+  },
+  {
+   "id": "a1df2d1b43ee82b7",
+   "title": "DRACO: Fine-Grained Credit Assignment with Dynamic Rubrics for Long-Horizon Agent Training",
+   "url": "https://huggingface.co/papers/2609.04094",
+   "summary": "Reinforcement Learning from Verifiable Rewards works well when a task has a programmatic checker, but most long-horizon agent domains have none. We work in the outcome-blind setting, where ground-truth success signals are not available. Multi-criteria rubrics are a popular way to supply such a reward; they are scored once per trajectory, but a single scalar is a poor signal across tens of steps. We propose DRACO: Distributing Rubric-based Advantage for Credit Optimization. It generates rubrics dynamically during training to track the policy's evolving capability, scores those rubrics once per completed trajectory, and redistributes that judgment over the steps responsible for annotated rubrics to produce differentiated per-step advantages in GRPO. The redistribution is closed-form and does not introduce any trained attribution module. On AppWorld, DRACO gains 15.9 points over the base model and 5.3 points over GRPO trained with a sparse ground-truth reward, despite not using any verifiers itself. On out-of-domain Tau-Bench, it gains 5.3 points over the base model even without a frontier judge, beating both ground-truth-reward training and other rubric-based training settings. The code for DRACO is available at https://github.com/IBM/draco.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2609.04094"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "DRACO améliore l'entraînement d'agents à long terme en redistribuant dynamiquement des rubriques de récompense sur les étapes responsables, sans module d'attribution entraîné. Surpasse les méthodes basées sur des vérificateurs ou des récompenses éparses sur AppWorld et Tau-Bench.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé par DRACO concerne l'entraînement d'agents en apprentissage par renforcement (RL) pour des tâches à long horizon, où les signaux de récompense vérifiables (comme des vérificateurs programmatiques) sont absents. Dans ce contexte dit *outcome-blind*, les méthodes classiques peinent à fournir des signaux de récompense granulaires et informatifs, limitant l'efficacité de l'entraînement sur des trajectoires longues (dizaines d'étapes).",
+    "methode": "DRACO propose une approche nommée *Distributing Rubric-based Advantage for Credit Optimization*. Elle repose sur trois piliers techniques : (1) **Génération dynamique de rubriques** pendant l'entraînement pour s'adapter à l'évolution des capacités de la politique, (2) **Évaluation unique par trajectoire** via ces rubriques multi-critères, et (3) **Redistribution fermée** des jugements globaux en avantages par étape (*per-step advantages*) pour le GRPO (*Generalized Reinforcement Learning with Policy Optimization*), sans module d'attribution entraîné. La redistribution utilise une formule analytique, évitant ainsi des coûts computationnels supplémentaires ou des biais introduits par des modèles appris. DRACO opère sans vérificateurs externes, contrairement aux méthodes classiques.",
+    "resultats": "Les résultats expérimentaux montrent une amélioration significative : sur le benchmark *AppWorld*, DRACO surpasse le modèle de base de **15,9 points** et le GRPO entraîné avec une récompense clairsemée de **5,3 points**, sans utiliser de vérificateurs. Sur *Tau-Bench* (hors domaine), il gagne **5,3 points** par rapport au modèle de base, même sans juge frontalier (*frontier judge*), dépassant à la fois l'entraînement avec récompense vérifiable et d'autres méthodes basées sur des rubriques. Ces gains suggèrent une meilleure assignation du crédit sur des trajectoires longues.",
+    "limites": "Le contenu disponible ne permet pas d'identifier clairement les limites de DRACO, mais quelques zones d'ombre persistent : (1) La **généralisabilité** des rubriques dynamiques à des domaines très variés ou bruités n'est pas explicitement évaluée, (2) La **scalabilité** de la méthode pour des trajectoires extrêmement longues (centaines d'étapes) reste à démontrer, et (3) L'absence de comparaison avec des méthodes récentes d'assignation de crédit (comme *Hindsight Credit Assignment*) limite l'appréciation de son originalité.",
+    "verdict": "DRACO mérite une attention particulière pour son approche innovante et ses résultats prometteurs en assignation fine de crédit dans des environnements *outcome-blind*, mais son adoption nécessitera des validations supplémentaires sur des benchmarks plus larges et variés."
+   }
+  },
+  {
+   "id": "c667f71f6ca4a14f",
+   "title": "Principia: Relational Physics Tests for Video Models",
+   "url": "https://huggingface.co/papers/2609.04200",
+   "summary": "Evaluating physical reasoning in video models is difficult because absolute motion measurements depend on frame rate, object scale, and camera calibration, all of which are often ambiguous or unavailable in generated video. We propose a different approach. When two objects in the same scene obey the same physical law, their motions must satisfy predictable relationships, and these relationships hold independent of calibration. We introduce Principia, a benchmark that evaluates Newtonian physics through relational consistency between paired objects. Principia spans eight phenomena - gravity, restitution, friction, rotational inertia, projectile motion, momentum, pendulum, and mass-spring oscillation - across translational, rotational, collisional, and oscillatory dynamics, using real-world scenes recorded under controlled protocols. We also introduce a calibration-independent consistency score that quantifies physical violation directly in image space. Across thousands of generations from six state-of-the-art video generators, no model exceeds 0.42 on Principia despite all scoring around 0.8 on VBench. Vision-language models are evaluated on their ability to detect relational physics violations, with the best model achieving only 67% accuracy and most performing near chance level.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2609.04200"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Benchmark Principia évaluant le raisonnement physique relationnel des modèles vidéo via des scores de cohérence indépendants de la calibration. Révèle des lacunes majeures (max 0.42 vs 0.8 sur VBench) dans la modélisation des lois de Newton pour six générateurs vidéo de pointe.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "L'évaluation de la compréhension des lois physiques par les modèles de génération vidéo est complexe en raison des dépendances aux paramètres ambigus comme la fréquence d'images, l'échelle des objets ou l'étalonnage des caméras. Ces modèles peinent à reproduire des dynamiques physiques réalistes, car les métriques actuelles ne capturent pas les incohérences relationnelles entre objets dans une même scène.",
+    "methode": "Les auteurs proposent *Principia*, un benchmark qui évalue la cohérence relationnelle des mouvements entre paires d'objets soumis aux mêmes lois physiques, indépendamment des paramètres de calibration. Le benchmark couvre huit phénomènes newtoniens (gravité, restitution, friction, inertie rotationnelle, etc.) via des scènes réelles enregistrées sous protocoles contrôlés. Une métrique de *consistency score* est introduite pour quantifier les violations physiques directement dans l'espace image, sans nécessiter d'étalonnage. Les modèles sont testés sur leur capacité à générer des vidéos ou à détecter des incohérences relationnelles, en comparant leurs performances à celles de *VBench* (une référence existante).",
+    "resultats": "Aucun des six modèles de génération vidéo de pointe évalués ne dépasse un score de 0,42 sur *Principia*, malgré des scores avoisinant 0,8 sur *VBench*. Pour la détection de violations physiques par des modèles vision-langage, le meilleur modèle atteint seulement 67% de précision, tandis que la plupart performant près du niveau de hasard (50%). Ces résultats révèlent une faiblesse majeure dans la modélisation des dynamiques physiques relationnelles.",
+    "limites": "Le benchmark se limite aux lois newtoniennes et ne couvre pas des phénomènes plus complexes (fluides, déformations, etc.). Les scènes réelles utilisées, bien que contrôlées, pourraient introduire des biais non mesurés. Enfin, la métrique de *consistency score* reste une approximation et pourrait ne pas capturer toutes les nuances des violations physiques.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante et ses résultats alarmants sur les lacunes des modèles actuels en raisonnement physique, mais son applicabilité reste à étendre au-delà des dynamiques newtoniennes simples."
+   }
+  },
+  {
+   "id": "a1dc4a06fa7f0e80",
+   "title": "Puffin-World: Scaling a Unified Multimodal Model with Native 3D World States",
+   "url": "https://huggingface.co/papers/2609.04196",
+   "summary": "We propose Puffin-World, a unified multimodal architecture that integrates physical understanding, spatial simulation, and 3D world generation and reconstruction without relying on external offline modules. To reliably construct and interact with 3D worlds, our framework jointly models three native world states: physics (gravity field and latitude), geometry (depth), and appearance (image), together with a unified Omni-Camera representation that supports diverse tasks and flexible motions. Beyond modeling these states, we introduce a strategy for propagating physical dynamics across future frames. By grounding absolute camera properties in the real world, Puffin-World enables physically consistent and visually stable world generation. We further couple appearance and geometry within a single generative process, jointly synthesizing each future view and reconstructing its underlying geometry. This unified paradigm enables interleaved closed-loop applications requiring synergy across multiple tasks, including mimic and self-calibrated world exploration. To scale Puffin-World to complex scenarios, we construct Puffin-16M, comprising 15 million vision-language-camera triplets and 1 million trajectories featuring various and challenging motions. To foster further research in this area, we released the code, models, and datasets.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 65,
+    "arxiv_id": "2609.04196"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Architecture unifiée Puffin-World intégrant physique, géométrie 3D et apparence pour générer des mondes 3D cohérents et interactifs. Utilise une représentation Omni-Camera et un modèle de propagation dynamique pour des applications en boucle fermée (exploration, simulation).",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Puffin-World vise à résoudre le défi de l'intégration cohérente et unifiée des états du monde en 3D, notamment la compréhension physique, la simulation spatiale et la génération/reconstruction de scènes, sans dépendre de modules externes ou hors ligne. Le modèle cherche à combler le fossé entre la perception multimodale et l'interaction dynamique avec des environnements 3D réalistes, en évitant les incohérences physiques ou visuelles souvent observées dans les approches fragmentées actuelles.",
+    "methode": "L'architecture propose une modélisation conjointe de trois états natifs du monde : la physique (champ de gravité et latitude), la géométrie (profondeur) et l'apparence (image). Elle utilise une représentation unifiée appelée *Omni-Camera*, permettant de gérer des tâches variées et des mouvements flexibles. Pour propager la dynamique physique sur plusieurs frames, une stratégie spécifique est introduite, ancrant les propriétés absolues de la caméra dans le monde réel. L'apparence et la géométrie sont couplées dans un seul processus génératif, synthétisant simultanément les vues futures et reconstruisant leur géométrie sous-jacente. Le modèle est entraîné sur *Puffin-16M*, un dataset de 15 millions de triplets vision-langage-caméra et 1 million de trajectoires avec des mouvements complexes.",
+    "resultats": "Les détails quantitatifs précis (métriques, benchmarks) ne sont pas fournis dans le contenu disponible. Cependant, le papier met en avant la capacité du modèle à générer des mondes 3D physiquement cohérents et visuellement stables, ainsi qu'à supporter des applications en boucle fermée comme l'exploration autonome et l'imitation de mouvements. La publication du code, des modèles et des datasets suggère une validation empirique solide, bien que les résultats chiffrés manquent ici.",
+    "limites": "Le contenu ne permet pas d'identifier clairement les limites techniques ou théoriques du modèle. On peut cependant questionner la scalabilité réelle de l'approche pour des environnements extrêmement complexes ou dynamiques, ainsi que la robustesse face à des données bruitées ou incomplètes. L'absence de comparaison explicite avec des méthodes existantes (comme les modèles basés sur NeRF ou les simulateurs physiques dédiés) laisse aussi planer un doute sur son avantage compétitif.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche unifiée et ambitieuse, mais une évaluation critique nécessitera d'examiner les résultats détaillés et les benchmarks pour en mesurer l'impact réel."
+   }
+  },
+  {
+   "id": "f4eed25a7be4c01e",
+   "title": "VeriPhy: Agentic Physical Reasoning for World Model Evaluation and Refinement",
+   "url": "https://huggingface.co/papers/2609.03153",
+   "summary": "Visual fluency in generated video does not imply physical reliability, and a scalar quality score alone is incapable of indicating the obligation a clip violates or the moment it fails. We present VeriPhy, an auditable physical-verification system in which a text-only planner compiles the prompt into typed physical obligations and a statically validated execution plan before any frame is observed. During execution, observations gate and scope only declared calls to frozen low-level experts (e.g., segmentation and tracking, counting, eleven typed physical measurements over the resulting tracks, depth, OCR, and audio-event detection). Each action returns a provenance-carrying evidence record whose payload, when usable, is either a typed measurement or an explicitly tagged learned state. Typed resolvers and fixed composition map usable records to a three-valued state (supported, contradicted, or unknown, surfaced as plausible, implausible, or abstain) with full provenance, so that every verdict is traceable to the evidence that produced it. We anchor evaluation in a 1,500-clip corpus of human-annotated flaw records that localize real generation failures in prompt reference, space, and time. On a 149-clip core carrying 304 such records, VeriPhy accounts for 228, against 164 for a published question-decomposition evaluator given the same clips and the same claims. Recall alone does not separate it from prompting the same backbone monolithically, which reaches 222; what separates them is that each decision retains its evidence record and provenance, making the traces auditable one verdict at a time and usable as the interface through which a critic verdict could be written back into generation.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2609.03153"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "VeriPhy évalue la fiabilité physique des vidéos générées via un système de vérification agentique avec obligations physiques typées et preuves traçables. Permet de localiser et comprendre les échecs de génération vidéo, crucial pour les modèles de monde physique.",
+   "score": 8.5
+  },
+  {
+   "id": "84a0fe0b32e51844",
+   "title": "Percolation Dynamics in Optimization : Variance Cascades and Discrete Scale Invariance",
+   "url": "https://huggingface.co/papers/2609.02373",
+   "summary": "We study the dynamics of Stochastic Gradient Descent (SGD), which is known to steer deep neural networks toward invariant sets that correspond to simpler subnetworks. How this steering unfolds over time remains poorly understood. We answer this by modeling the stochastic gradient flow (SGF) as a percolation process, in which architectural symmetries force subnetworks to merge in discrete simultaneous blocks rather than one at a time. These structural transitions register as variance spikes in a macroscopic order parameter, echoing physical phase transitions. We further show this trapping mechanism and its associated scaling cascade extend to Adam and AdamW under an explicit heavy-tailed noise model.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.02373"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Modélisation du SGD comme processus de percolation où les symétries architecturales forcent des transitions de phase discrètes dans les sous-réseaux, révélées par des pics de variance. Applicable à Adam/AdamW avec un modèle de bruit à queue lourde, offrant une nouvelle perspective sur l'optimisation et l'interprétabilité des dynamiques de convergence.",
+   "score": 8.5
+  },
+  {
+   "id": "2ab43c2b53714e55",
+   "title": "LLaDA-Image: Building Strong Image Generators with Fully Open Training Recipes",
+   "url": "https://huggingface.co/papers/2609.03796",
+   "summary": "We introduce LLaDA-Image, a unified framework that pairs a 6B Diffusion Transformer (DiT) trained from scratch with a frozen vision-language understanding module built on the LLaDA2.0-Mini diffusion language model backbone. Instead of relying heavily on paired image-text data from the beginning, we first build a strong visual generative prior through image-only pre-training and mid-training. The generation pipeline comprises 220M samples, 98 of which are real images. For efficient and scalable optimization, we use parameter-free RMSNorm throughout the DiT together with the Muon optimizer. The resulting unified model produces highly photorealistic images while accurately following fine-grained editing instructions. We further distill LLaDA-Image into LLaDA-Image-Turbo, enabling fast inference in 2-4 sampling steps. On Qwen-Image-Bench, LLaDA-Image achieves overall scores of 53.53 and 53.38 on the English and Chinese tracks, respectively, setting a new state-of-the-art among open-source models on both tracks. To support further research on capable and efficient generative models, we release our model weights, training code, and detailed recipes.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 204,
+    "arxiv_id": "2609.03796"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "LLaDA-Image propose un framework open-source pour entraîner un DiT 6B à partir de zéro avec un module de compréhension visuo-linguistique gelé, incluant des recettes de distillation pour un inférence rapide (2-4 étapes). SOTA sur Qwen-Image-Bench avec des scores de 53.53 (EN) et 53.38 (CN).",
+   "score": 8.5
+  },
+  {
+   "id": "8573a491af4b9fbc",
+   "title": "Using Grounded Theory for Agent Behavior Analysis at Scale",
+   "url": "https://huggingface.co/papers/2608.30391",
+   "summary": "Understanding agent behavior requires methods that scale to thousands of trajectories and surface new patterns in long, often unfamiliar tasks where pre-built classifiers fall short. We propose to bring grounded theory into agent trajectory analysis: a six-decade-old qualitative method from the social sciences, with a principled saturation criterion and an auditable trail from data to theory. We propose AutoTraceGT (Automated Trace analysis through Grounded Theory), the first multi-agent pipeline that automates grounded theory on agent trajectories. It iteratively performs open, axial, and theoretical coding until saturation, producing a behavioral taxonomy tailored to each task. Across six trajectory corpora, AutoTraceGT produces codebooks that recover 73-91 percent of the failure modes in human-annotated taxonomies and surface additional patterns that those taxonomies miss. The emergent theoretical narrative aligns with prior expert accounts. Used as a deductive feature space, the codebook outperforms zero-shot and few-shot LLM baselines on downstream failure prediction. These results suggest Grounded Theory offers a scalable analytic tool for ML researchers and agent developers studying what agents actually do.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2608.30391"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "AutoTraceGT applique la théorie ancrée (*grounded theory*) pour analyser automatiquement les comportements d'agents à grande échelle, produisant des taxonomies de défaillances et améliorant la prédiction des échecs. Méthode scalable pour comprendre les agents.",
+   "score": 8.2
+  },
+  {
+   "id": "ae361eeff30c7872",
+   "title": "WorldReward: Reward Modeling for Camera-Conditioned World Models",
+   "url": "https://huggingface.co/papers/2609.03952",
+   "summary": "Camera-conditioned world models generate interactive videos in which commanded actions should induce the expected scene changes while appearance, geometry, and temporal dynamics remain coherent. Existing rewards assess these requirements separately: geometry-based rewards estimate trajectory execution but cannot judge the visual quality of the executed motion, whereas image-based rewards measure frame quality without capturing action execution or temporal dynamics. We posit that a vision-language model (VLM) offers a shared reasoning space for relating actions to their visual outcomes. However, judging a complete long video against its full action sequence creates a lengthy, noisy context in which short-lived local action evidence can be missed or diluted. We present WorldReward, a VLM-based pairwise preference reward model that unifies action-consistency and visual-quality evaluation for camera-conditioned world models. WorldReward decomposes paired videos into action-aligned chunks, organizes each chunk into structured visual evidence, and aggregates chunk-level decisions by voting into separate video-level action and visual-quality preferences. To train it, we construct a large-scale reasoning-augmented preference dataset using structured judgments generated by a frontier VLM and refined through tool-based agent auditing and targeted human review. We further introduce WorldReward-Bench, a human-annotated benchmark measuring reward-model agreement with human preferences across action consistency, appearance quality, and motion quality. WorldReward achieves the highest agreement on all three dimensions, exceeding GPT-5.5 by 3.42, 1.45, and 3.56 percentage points, respectively. When used for RL post-training of HY-WorldPlay 1.5, it consistently improves both action execution and visual quality across short- to long-term horizons.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2609.03952"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "Modèle WorldReward basé sur VLM pour évaluer conjointement la cohérence action-visuelle dans les mondes simulés conditionnés par caméra. Décompose les vidéos en chunks alignés sur les actions et agrège les préférences par vote pour un jugement robuste.",
+   "score": 8.2
+  },
+  {
+   "id": "5383ff2008bc0275",
+   "title": "Replacing Training with Memory: Listwise Selection for Text-to-SQL",
+   "url": "https://huggingface.co/papers/2609.00834",
+   "summary": "Modern Text-to-SQL systems often follow generate-execute-select pipelines, generating multiple candidate queries then selecting the best one. Listwise selection, by jointly comparing multiple candidates, has been widely adopted, but fine-tuning listwise selectors is costly. We thus propose a fine-tuning-free listwise selector. We replace two major fine-tuning objectives with inference-time strategies: (1) learning selection criteria as ordering and (2) mitigating positional bias. First, we build reusable structured memories instead of learning selection behavior as model parameters. Given a question, MaP-SQL retrieves memories distilled from training data that encode how natural language maps to schema elements, SQL operations, and expected outputs. These memories serve as explicit decision criteria for evaluating candidates in a listwise manner. Second, to mitigate ordering bias of listwise selectors, we aggregate rankings across multiple input permutations, with inference cost optimized by execution results and pointwise scoring. Our approach improves selection accuracy while maintaining efficiency and compatibility with existing large language models. Across Text-to-SQL benchmarks, it produces more stable selection without fine-tuning and fewer unnecessary comparisons than existing methods. On BIRD-dev, it outperforms the previous state-of-the-art selector-based method R^3-SQL by 2.02 execution accuracy points on average using the same candidate sets, with 2.92x fewer tokens.",
+   "published": "2026-08-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.00834"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "MaP-SQL propose une méthode de sélection listwise pour Text-to-SQL sans fine-tuning coûteux, en utilisant des mémoires structurées distillées à partir des données d'entraînement pour évaluer les candidats SQL de manière explicite et efficace, améliorant ainsi la précision tout en restant compatible avec les LLM existants.",
+   "score": 8.2
+  },
+  {
+   "id": "f443ed8634faea7c",
+   "title": "Locked at the Entrance, Open Inside: Where RLVR Narrows the Solution Space",
+   "url": "https://huggingface.co/papers/2608.29188",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) substantially improves single-sample accuracy (pass@1) but causes the policy's solution space to contract, diminishing the returns of test-time scaling. In this work, we investigate where inside a reasoning trajectory this breadth is lost: does the policy fail to access a valid solution family, or does it fail to execute computation once initiated? To disentangle access from execution, we analyze the Countdown task, whose solution space can be exhaustively enumerated into discrete entrance families defined by the first operand and operator, across PPO on Qwen2.5-3B and GRPO on Qwen2.5-3B-Instruct. Across both training setups, solution coverage falls by up to 67%, halving even on problems solved across all checkpoints. We show that this contraction is heavily concentrated at the entrance: per-token likelihood shifts are 11x--16x larger prior to the first arithmetic operation than during downstream reasoning. Supplying only an unselected entrance prefix restores completion rates in low-access families by over an order of magnitude (0.018 -> 0.212 under PPO), demonstrating that alternative solutions remain executable but are no longer initiated. Guided by this localization, we find that while surface prompting fails to recover diversity, entrance-targeted interventions succeed: late-layer parameter interpolation with early checkpoints increases solution coverage by 37% at no loss in pass@1. Finally, we show that early-step entropy collapse recurs across six math benchmarks with 7B and 14B models, but is not an inevitable byproduct of reasoning optimization: an SFT baseline preserves more than double the coverage, and staged SFT--DPO--RLVR pipelines retain early-step entropy. In summary, reasoning breadth is lost at the door, not inside the room. Code: https://github.com/ershiyidian/early-branch-locking.",
+   "published": "2026-08-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2608.29188"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Analyse du rétrécissement du espace de solutions en RLVR (Reinforcement Learning with Verifiable Rewards), montrant que la perte de diversité se concentre à l'entrée des trajectoires. Propose une méthode pour restaurer l'accès à des solutions alternatives via des préfixes non sélectionnés.",
+   "score": 7.9
+  },
+  {
+   "id": "bb000c52eafe5f06",
+   "title": "Scal3R: Learning Efficient Multi-Relative Pose Query for Scalable Online 3D Reconstruction",
+   "url": "https://huggingface.co/papers/2609.04201",
+   "summary": "Online 3D reconstruction models perform poorly on long videos. This happens because regressing poses relative to a fixed first-frame anchor forces extrapolation far beyond the training distribution. Small drifts accumulate and amplify into significant geometric collapse. However, we observe that per-frame depth remains stable throughout this failure. The backbone's local geometry remains intact; only the global pose head breaks down. Motivated by this decoupling, we introduce Scal3R. This approach reformulates online reconstruction as multi-reference relative pose querying. We use lightweight learnable tokens, which make up about ~1% of the parameters, and inject them into a completely frozen backbone via asymmetric attention. This setup queries poses relative to multiple past keyframes. An online pose-graph optimization system with loop closure suppresses long-range drift. Scal3R reaches convergence in 8 hours on a single GPU. It reduces the average ATE by over 60% on KITTI compared to the online baseline. It also achieves state-of-the-art performance across Virtual KITTI, Sintel, TUM-Dynamic, ScanNet, and 7-Scenes. Project page: https://linjohnss.github.io/scal3r/",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 45,
+    "arxiv_id": "2609.04201"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "optimisation"
+   ],
+   "tldr": "Scal3R améliore la reconstruction 3D en ligne en utilisant des requêtes de pose multi-références et un graphe de pose optimisé, réduisant l'erreur ATE de 60% sur KITTI et atteignant l'état de l'art sur plusieurs benchmarks. Solution efficace pour la reconstruction en temps réel.",
+   "score": 7.9
+  },
+  {
+   "id": "0392fa49762c6b19",
+   "title": "Last Translation Benchmark",
+   "url": "https://huggingface.co/papers/2609.04173",
+   "summary": "For scientific progress, we need benchmarks that test the limits of state-of-the-art models, and evaluation methods that inform us about failure cases. As models get stronger, standard benchmarks for machine translation are approaching saturation. Further, automatic translation metrics are unreliable, vulnerable to reward-hacking, and provide unactionable assessments. Even gold human evaluation is not problem-free, because it often lacks reproducibility, objectivity, and scalability. Overall, this prevents us from tracking objective progress in the field and identifying pathways for improvement. We introduce the Last Translation Benchmark, a collection of human-authored and peer-reviewed examples (texts, images, audio, videos) that break leading machine translation models. We also present a new evaluation approach: each example comes with handcrafted verification rules describing concrete failure cases on that example, therefore allowing reliable and actionable future evaluation. The Last Translation Benchmark is a live dataset that accepts ongoing contributions. The latest version is LTBv1, containing accepted contributions prior to September 1st 2026, with future releases planned as new data is continuously collected.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2609.04173"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "benchmark",
+    "produit"
+   ],
+   "tldr": "Le *Last Translation Benchmark* propose des exemples concrets et des règles de vérification pour évaluer objectivement les limites des modèles de traduction automatique, comblant le manque de benchmarks actuels et les biais des métriques automatiques.",
+   "score": 7.6
+  },
+  {
+   "id": "5aa4866bf0e04a08",
+   "title": "FlashRender: Few-Step Generative Rendering via Camera-Controlled Video MeanFlow",
+   "url": "https://huggingface.co/papers/2609.03563",
+   "summary": "We present FlashRender, a few-step generative rendering framework that retakes a source video along a target camera trajectory in seconds. We identify sampling-step-dependent camera control as a prominent manifestation of discretization error in existing multi-step generative rendering models and show that resolving this inconsistency substantially lowers denoising trajectory curvature, facilitating subsequent step distillation. To this end, we introduce Representation Transformation and Alignment (RETA), which aligns hidden source-video representations with target-video features from a frozen visual geometry model. This directly encodes the geometric transformation within the source-video stream, enabling sampling-step-consistent camera control. We then fine-tune the model with the MeanFlow objective on the lower-curvature denoising trajectory induced by RETA, allowing the model to more effectively address discretization error. Finally, we apply on-policy flow map distillation to correct self-rollout errors under fixed few-step sampling. Extensive experiments show that RETA, MeanFlow, and on-policy flow map distillation play complementary roles in few-step generative rendering. Together, they enable our approach to match multi-step baselines in video quality and geometric consistency at 25x lower sampling cost while achieving superior camera controllability, even under out-of-distribution target camera trajectories.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2609.03563"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "Framework FlashRender pour un rendu génératif en quelques étapes via RETA (alignement des représentations) et MeanFlow (objectif de flux), réduisant les erreurs de discrétisation et accélérant la distillation. Permet un contrôle cohérent de la caméra en quelques secondes.",
+   "score": 7.6
+  },
+  {
+   "id": "69500f99a4826f02",
+   "title": "CORE: Improving Compositional Reasoning in MLLM Embedding via Reranker Distillation",
+   "url": "https://huggingface.co/papers/2609.04083",
+   "summary": "MLLM-based embedding models remain limited in compositional retrieval, often failing to distinguish scenes containing the same concepts but different attribute-object bindings. Yet the same backbone can resolve such distinctions when used as a cross-attentive reranker, motivating us to distill its compositional judgments into the embedding model. We propose CORE, which synthesizes candidate lists spanning five compositional matching levels and introduces a Rank-KL objective that trains the embedding model to reproduce the reranker's fine-grained ranking. We further introduce a graded evaluation protocol and compare contrastive learning, pairwise CoSENT, and listwise Rank-KL under the same data and tuning budget. Our comparison shows that both CoSENT and Rank-KL use the multi-level supervision more effectively than contrastive learning, with Rank-KL achieving the strongest overall performance. Across three compositional reasoning benchmarks (COLA, SUGARCREPE++, NEGBENCH), CORE-RERANKER-8B achieves an 82.7% total average, outperforming Jina-Reranker by 10.7 points, while CORE-EMBED-8B achieves the best total average (0.666) among all evaluated embedding models. The improvements transfer to the MCMR benchmark without sacrificing retrieval performance on COCO and Flickr30K.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2609.04083"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "CORE améliore le raisonnement compositionnel des embeddings MLLM via distillation d'un reranker, avec un protocole d'évaluation gradué. Surpasse les modèles existants sur COLA, SUGARCREPE++, et NEGBENCH, démontrant l'efficacité de la supervision multi-niveaux.",
+   "score": 7.6
+  },
+  {
+   "id": "ddbbee6ca96c3a9d",
+   "title": "Small Language Models as Judges for Rubric-Based Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2608.30005",
+   "summary": "Rubric-based reinforcement learning extends RL beyond tasks with exact answers or rule-based verifiers by scoring responses against instance-specific criteria. However, this makes reward computation expensive: training requires repeated rubric judging, often with proprietary APIs or local generative LLM judges with 7B parameters or more. We study whether smaller language models can serve as efficient and reliable rubric-based judges. To make this question measurable, we construct PointRubric and RaR-Science-Static, two pointwise rubric-based evaluation datasets with instance-specific criteria and itemwise satisfaction labels. We compare three ways of extracting criterion-level judgments from small models: Generative verdicts, Yes/No Logprob margins, and Probe judges. Across both datasets, the Qwen3-1.7B Probe judge achieves the strongest criterion-level agreement among these methods, outperforming Generative and Logprob judges. Used as a GRPO reward model, it trains a policy from 0.232 to 0.643 on RaR-Science rubric score, compared with 0.594 for an 8B Generative judge baseline, while the baseline requires 10.7times more reward-judge time. Task and domain transfer experiments further suggest that Probe judges preserve criterion-level reward structure across settings.",
+   "published": "2026-08-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.30005"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Les petits modèles de langage (1.7B) peuvent servir de juges fiables et efficaces pour l'apprentissage par renforcement basé sur des rubriques, réduisant drastiquement le coût computationnel tout en maintenant une performance comparable ou supérieure aux juges plus grands (8B) pour l'entraînement de politiques.",
+   "score": 7.6
+  },
+  {
+   "id": "3208b0500294b312",
+   "title": "“Next-token predictor” is the wrong mental model for LLMs",
+   "url": "https://gmcgoldr.github.io/2026/09/04/llm-next-token-predictors.html",
+   "summary": "",
+   "published": "2026-09-04T17:09:24Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 115,
+    "comments": 246
+   },
+   "relevance": 9,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "L'article critique le modèle mental classique des LLM comme simples 'prédicteurs de token suivant', proposant une réflexion sur leur architecture et leur fonctionnement profond. Stimulant pour la recherche fondamentale, mais nécessite des sources plus solides que HN.",
+   "score": 7.4
+  },
+  {
+   "id": "09c7abcb362b2f57",
+   "title": "The Missing Temporal Link: Temporal Context Routing for Script-Driven Audio-Video Generation",
+   "url": "https://huggingface.co/papers/2609.02367",
+   "summary": "Joint audio-video generation models have made substantial progress in visual quality and audio-visual synchronization. However, they still provide limited control over when shot transitions occur and dialogue is spoken. This limitation constrains their application in script-driven content creation, where timing errors can undermine narrative coherence and the viewing experience. Current joint generators align video and audio representations on a shared temporal axis, yet the precise timing of shots and dialogue specified in a structured prompt is encoded only in the prompt's text representation and remains unaligned with the temporal coordinates of either modality. Consequently, video and audio may remain synchronized with each other while both fail to follow the script timeline. This mismatch motivates us to extend temporal alignment beyond video and audio to include the structured script. We therefore introduce Temporal Context Routing (TCR), which maps the script timing onto the shared temporal axis of video and audio generation and routes each prompt's guidance to the corresponding positions in both modalities. Compared with the baseline on 200 test scripts, TCR reduces Shot Boundary MAE by 96%, from 1.11 s to 0.042 s, and raises Dialogue Acc@0.5 s from 28.3% to 84.1%. TCR achieves these improvements while maintaining visual quality and audio-visual synchronization comparable to those of the baselines. A user study further shows that participants prefer TCR on all five evaluated dimensions.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2609.02367"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "vision"
+   ],
+   "tldr": "Méthode TCR pour aligner temporellement les scripts structurés avec la génération conjointe audio-vidéo, réduisant les erreurs de timing (transitions de plans, dialogues) de 30% sur 200 scripts tests. Améliore la cohérence narrative dans la création de contenu scripté.",
+   "score": 7.3
+  },
+  {
+   "id": "8d8825a7897f6ca1",
+   "title": "A Common Measure of Communication for Speech Brain-Computer Interfaces",
+   "url": "https://huggingface.co/papers/2609.02887",
+   "summary": "Speech brain-computer interfaces (speech BCIs) translate neural activity into language, offering a path towards restoring speech for people with paralysis and, more broadly, enabling new forms of natural human-computer interaction. Despite this promise, the field lacks a common measure of progress because systems use different datasets, recording methods, types of speech, and vocabularies, so their reported scores are rarely comparable. Underlying this measurement problem are two unresolved questions: (i) what distribution of words should a speech BCI enable a user to communicate, and (ii) how much information from this distribution can a system convey. We address both by deriving open-vocabulary mutual information (OVMI), an information-theoretic quantity that measures the information conveyed by a decoder relative to a reference distribution over the words a user may wish to communicate. This allows capabilities measured under different conditions, such as distinct vocabularies, to be evaluated on a common communication scale. We show that ordinarily reported accuracy, word error rate (WER), and other metrics computed only over the words a system supports can overstate how much of a user's intended speech the system can communicate. We then use OVMI to compare existing systems, expose trade-offs between how much of the user's language a system supports and how accurately it decodes those words, show that these comparisons depend on what the user is expected to communicate, and demonstrate that selecting a vocabulary to maximise OVMI yields up to 16.3% relative improvement in accuracy across three speech domains. OVMI therefore provides the speech BCI community with a principled way to compare heterogeneous systems, improve vocabulary design, and measure progress in the field.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2609.02887"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "benchmark"
+   ],
+   "tldr": "OVMI introduit une métrique informationnelle (mutual information) pour évaluer les interfaces cerveau-machine vocales de manière comparable, indépendamment des vocabulaires ou jeux de données. Utile pour standardiser l'évaluation des systèmes de décodage neural de la parole.",
+   "score": 7.0
+  },
+  {
+   "id": "bab273b0f6df3402",
+   "title": "QCell: Recombining and Aligning Cell Queries for Overlapping Instance Segmentation",
+   "url": "https://huggingface.co/papers/2608.29253",
+   "summary": "Instance segmentation of overlapping cells in microscopy remains challenging due to semi-transparent structures that produce weak boundaries and mixed visual evidence in overlap regions. Existing methods address this through local regions of interest or shape priors but lack global reasoning across overlapping objects. We present QCell, a novel query-based model that de-overlaps cell instances in microscopy scenes. Our approach combines (i) an instance recombination module that decomposes and recombines query representations in latent space, enabling the model to reason about complete object structure under overlap, and (ii) a contrastive query alignment objective that combines distinctive instance feature learning and separation of overlapping cell queries. We additionally introduce a new Organoid dataset benchmark for overlapping cell segmentation. We show that QCell outperforms state-of-the-art methods across multiple benchmarks, achieving +2.2 AP and +2.7 AJI on ISBI2014. Code is available at https://github.com/SlavkoPrytula/QCell",
+   "published": "2026-08-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2608.29253"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "QCell améliore la segmentation d'instances de cellules superposées en microscopie via une recombinaison de requêtes et un alignement contrastif, atteignant +2.2 AP et +2.7 AJI sur ISBI2014. Pertinent pour l'analyse d'images médicales.",
+   "score": 7.0
+  },
+  {
+   "id": "9194b6a554709fb4",
+   "title": "Let Confidence Change, Not the Prediction: Prediction-Preserving Repair for Post-hoc Calibration",
+   "url": "https://huggingface.co/papers/2609.01072",
+   "summary": "Post-hoc calibration corrects reported confidence, yet a multiclass calibrator can also change the associated top-1 prediction. Accuracy captures only the net effect of these changes on correctness, not how often predictions change; the Top-1 Prediction Change Rate (TPCR) instead measures this frequency. We propose Calibrator-Output Repair for Top-1 Decision Preservation (CORD), the first post-fit adapter to impose exact prediction preservation by repairing the full calibrated probability vector. From the original and calibrated outputs alone, CORD determines the mass assigned to the original top-1. The calibrated conditional distribution allocates the remaining mass over the other classes, yielding a repaired vector whose own argmax recovers the original prediction. On the calibration split, CORD coordinates the repaired masses to retain the calibrated outputs' mean mass on original predictions whenever attainable. The adapter alters neither the fitted calibrator nor its direct output, fits no additional supervised map, and requires no user- or validation-tuned hyperparameter. Across CIFAR-10/100 and ImageNet-1K, CORD attains zero TPCR by construction and lowers mean ECE, NLL, and Brier relative to the corresponding direct outputs in every dataset; paired gains persist under distribution shift and across calibration-set sizes. CORD thus removes the preservation constraint from calibrator fitting and assigns exact recovery of the original decision to subsequent output repair. Our code is available at https://github.com/labhai/CORD.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.01072"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "CORD préserve les prédictions top-1 lors de la calibration post-hoc en réparant les probabilités calibrées, sans modifier le calibreur initial ni nécessiter d'hyperparamètres. Réduit l'ECE et le NLL tout en maintenant un TPCR nul sur CIFAR-10/100 et ImageNet-1K.",
+   "score": 7.0
+  },
+  {
+   "id": "bb81fe3c8f9af67c",
+   "title": "PACE: Towards Surfacing Hidden Conflicts in User Requests",
+   "url": "https://huggingface.co/papers/2609.03293",
+   "summary": "Personalized assistants should not only comply with user requests but also assess whether those requests are appropriate given the user's current circumstances. However, prior work has primarily focused on accurately executing requests, overlooking the need for assistants to account for context and engage in conflict-based refusal. Furthermore, while existing work on conflict or safety detection relies on explicitly provided factors, real-world scenarios often involve implicit factors that must be retrieved from a knowledge base (KB). To this end, we introduce Personalized Assistants for Conflict Evaluation (PACE), a dataset for evaluating whether models can identify latent constraints, expressed as egocentric knowledge or events, that render seemingly reasonable user requests inappropriate. PACE pairs user requests grounded in well-defined personas with egocentric KB facts, requiring models to integrate contextual evidence to determine whether a request is conflicting. This implicit retrieval setting hinders the direct association between user requests and conflict-inducing knowledge, making it difficult for existing models to identify relevant user-specific facts. To address this challenge, we further propose PaceMaker, a multi-agent framework in which specialized agents coordinate across query reformulation, multi-hop graph traversal, and conflict-aware filtering to retrieve contextually decisive evidence. Experiments on PACE evaluate both evidence retrieval quality and conflict decision accuracy, showing that PaceMaker consistently outperforms existing approaches.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2609.03293"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Dataset PACE pour évaluer la capacité des assistants personnels à détecter des conflits implicites dans les requêtes utilisateur via une base de connaissances égocentrique. Met en lumière la nécessité d'intégrer des facteurs contextuels latents pour un comportement sûr et personnalisé.",
+   "score": 6.7
+  },
+  {
+   "id": "ba3c79d8193432e3",
+   "title": "An Empirical Study on Zero-Data Bootstrapping for Conversational Recommender Systems",
+   "url": "https://huggingface.co/papers/2504.15476",
+   "summary": "Conversational Recommender Systems (CRS) typically require domain-specific dialogue data, which is costly, scarce, and often unavailable in new domains. We conduct a systematic empirical study of zero-data CRS bootstrapping: generating synthetic conversational supervision from non-conversational signals---item reviews, metadata, and user-item interactions---without any in-domain dialogue corpus. We compare two information-theoretic selection strategies, Jensen-Shannon diversity and Fisher information, across domain signals, model architectures, datasets, and fine-tuning paradigms. Our results show that domain-grounded synthetic data consistently outperforms zero-shot prompting and naive synthetic baselines; active selection improves data efficiency over random sampling; metadata and collaborative filtering signals each improve selection quality; and, in low-resource settings, synthetic data can outperform scarce real dialogues while further complementing them. These findings establish non-conversational domain signals as a viable path toward building CRS without conversational training data. The code is available at https://anonymous.4open.science/r/zero_data_crs/ .",
+   "published": "2026-08-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2504.15476"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Cette étude empirique démontre qu'il est possible de bootstrapper des systèmes de recommandation conversationnelle (CRS) sans données conversationnelles, en générant des données synthétiques à partir de signaux non-conversationnels (avis, métadonnées, interactions) avec des stratégies de sélection basées sur l'information, améliorant les performances même en faible ressource.",
+   "score": 6.7
+  },
+  {
+   "id": "9e2dca40ecc85cba",
+   "title": "Editable Visual Design",
+   "url": "https://huggingface.co/papers/2609.04034",
+   "summary": "While diffusion base models such as GPT-Image-2 and Nano-Banana exhibit remarkable visual expressiveness, their end-to-end generation inherently yields flattened bitmaps with error-prone text, precluding layer-wise post-editing. Conversely, code-based visual generation via Coding Agents provides precise layout control and decoupled layers, yet remains constrained by a lack of global aesthetic intuition and the difficulty of coding complex visual assets. To address this, we propose Editable Visual Design, a new paradigm driven by a Coding Agent. We designate the VLM as the ``creative brain'' for requirement comprehension, task planning, and aesthetic judgment, while utilizing the image generation model as an on-demand ``visual world simulator'' to synthesize standalone visual assets. Operating under an ``imagine first, then act'' closed-loop workflow, the agent generates isolated assets, writes native HTML/CSS, and iteratively refines the design against visual rendering feedback. Furthermore, Agent Design Replay faithfully reproduces the creative and reasoning trajectory akin to that of professional human designers. Ultimately, the system delivers editable artifacts with decoupled layers and real text, enabling users to perform intuitive mouse dragging and layout adjustments on a graphical user interface. Validations on posters, infographics, and other scenarios show that this paradigm successfully achieves both refined aesthetics and production-grade editability.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 39,
+    "arxiv_id": "2609.04034"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "outils",
+    "autre"
+   ],
+   "tldr": "Paradigme Editable Visual Design combinant un agent de codage (VLM) pour la planification et un générateur d'images pour la synthèse d'actifs visuels. Permet des itérations fermées et des artefacts éditables via HTML/CSS, reproduisant des workflows de designers professionnels.",
+   "score": 5.8
+  },
+  {
+   "id": "2ed23ceecfed80f4",
+   "title": "Fermat's Last Theorem in Lean 4",
+   "url": "https://github.com/anthropics/fermats-last-theorem",
+   "summary": "",
+   "published": "2026-09-04T18:57:32Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 111,
+    "comments": 21
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Preuve formelle du dernier théorème de Fermat implémentée en Lean 4, illustrant l'utilisation de la vérification formelle en mathématiques. Intéressant pour l'interpretabilité et les outils de preuve, mais éloigné des LLM et de l'optimisation.",
+   "score": 5.6
+  },
+  {
+   "id": "5a4d931021fc0a40",
+   "title": "Show HN: TERMy – A fast terminal assistant that does not use LLMs",
+   "url": "https://github.com/gioblu/NPC-Forge/blob/main/docs/development.md",
+   "summary": "",
+   "published": "2026-09-04T09:03:00Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 136,
+    "comments": 36
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "TERMy propose un assistant terminal rapide sans utiliser de LLM, se concentrant sur des méthodes d'optimisation pour l'efficacité. Intéressant pour explorer des alternatives aux LLM dans les tâches terminal, mais manque de détails techniques et de validation rigoureuse.",
+   "score": 5.3
+  },
+  {
+   "id": "113b167a01071e0e",
+   "title": "OpenAI agents hijacked German website in previously undisclosed AI breakout",
+   "url": "https://www.reuters.com/world/europe/openai-agents-hijacked-german-website-previously-undisclosed-ai-breakout-this-2026-09-04/",
+   "summary": "",
+   "published": "2026-09-04T10:30:57Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 93,
+    "comments": 2
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "agents",
+    "regulation",
+    "produit"
+   ],
+   "tldr": "Un article de Hacker News révèle une faille de sécurité où des agents OpenAI auraient détourné un site web allemand, mais sans détails techniques ou confirmation officielle, ce qui en fait une information non vérifiée et potentiellement alarmiste.",
+   "score": 4.4
+  }
+ ]
+}
