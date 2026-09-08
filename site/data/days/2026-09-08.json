@@ -1,0 +1,502 @@
+{
+ "date": "2026-09-08",
+ "digest": {
+  "headline": "Uno révolutionne l'inférence des LLM avec une accélération sans perte via la diffusion discrète",
+  "overview": "La veille du 2026-09-08 met en avant des avancées majeures en optimisation des LLM, avec des méthodes combinant génération parallèle et vérification pour améliorer l'efficacité sans sacrifier la qualité. Les cadres unifiés pour les agents VLA et les outils d'auto-amélioration des modèles de raisonnement complètent un paysage dominé par des solutions techniques pragmatiques.",
+  "highlights": [
+   {
+    "title": "Accélération des LLM par diffusion discrète",
+    "text": "Uno propose une méthode pour accélérer l'inférence des LLM en générant plusieurs jetons en parallèle via une combinaison de prédiction autorégressive et de diffusion discrète. L'approche, validée par des samplers Ψ-Spec, maintient la qualité du modèle sous-jacent tout en réduisant le temps de calcul. Cette optimisation est cruciale pour les applications temps réel et les déploiements à grande échelle."
+   },
+   {
+    "title": "Cadre unifié pour les agents VLA et auto-amélioration des modèles",
+    "text": "EmbodiedSkills offre un framework pour orchestrer, entraîner et déployer des agents VLA (Vision-Language-Action), intégrant vérification des prérequis et validation des résultats. Parallèlement, FlowBalance et Verify Before You Distill améliorent l'auto-amélioration des modèles en calibrant les scores de guidance et en appliquant une supervision dense conditionnelle. Ces travaux adressent des défis clés en robustesse et généralisation des agents autonomes."
+   },
+   {
+    "title": "Optimisation et interprétation des refus dans les LLM",
+    "text": "Refuse without Refusal analyse les mécanismes de refus superficiels dans les modèles de sécurité, montrant qu'ils dégradent la capacité à distinguer les requêtes bénignes des dangereuses. La solution proposée, basée sur des justifications explicites, réduit les faux refus sans compromettre la sécurité. Ce travail souligne l'importance de l'interprétabilité dans les systèmes critiques."
+   },
+   {
+    "title": "Outils et benchmarks pour l'inférence et la recherche",
+    "text": "Dr. Claw introduit un espace de travail open-source pour orchestrer des agents de codage dans des workflows auditable, améliorant la complétude des tâches de recherche. Le tutoriel zero-to-sglang fournit une ressource pratique pour maîtriser SGLang, un framework d'optimisation d'inférence. Ces outils répondent à un besoin croissant de transparence et d'efficacité dans le développement d'applications basées sur les LLM."
+   },
+   {
+    "title": "Amélioration du raisonnement spatial et de la segmentation",
+    "text": "FactoSR décompose le raisonnement spatial 4D en sous-objectifs géométriques pour améliorer la cohérence physique des VLMs, tandis qu'ENEAS corrige les hallucinations temporelles en segmentation guidée par texte. Ces méthodes renforcent la fiabilité des modèles dans des tâches complexes, comme la robotique ou l'analyse d'images médicales."
+   }
+  ],
+  "trend": "Les avancées récentes convergent vers une optimisation ciblée des LLM et des agents autonomes, combinant accélération matérielle, vérification formelle et interprétation des décisions. La tendance souligne une maturation des outils pour des déploiements robustes et scalables."
+ },
+ "items": [
+  {
+   "id": "8eb5e6145ad021ff",
+   "title": "Unlocking Lossless Speedups in LLMs via Discrete Diffusion",
+   "url": "https://huggingface.co/papers/2609.04010",
+   "summary": "Large Language Models (LLMs) owe much of their success to next-token prediction (NTP), but their autoregressive (AR) structure requires slow, sequential token generation. To overcome this bottleneck, we introduce diffusion-augmented LLMs, a new class of models that defines an AR model distribution while using diffusion to draw multiple tokens in parallel from that distribution. We decouple the parameters of these models into two sets: AR weights, trained using the standard NTP objective, and lightweight diffusion weights, trained to generate multiple tokens simultaneously. The diffusion weights are learned through a simple Diffusion Distillation phase that adds negligible overhead to existing LLM training pipelines. We also introduce Ψ-Spec, a family of samplers that enables lossless acceleration and inference-time scaling at a fixed context length. Unlike speculative decoding, our method requires no separate draft model. Unlike diffusion LLMs (d-LLMs), it accelerates generation without sacrificing the quality of the underlying AR model. The resulting models, called Uno, can be trained from scratch or built by augmenting existing open-weight AR LLMs. Uno achieves higher throughput than leading speculative-decoding methods at every evaluated batch size and delivers up to 3times speedups over the base AR model, including at the largest batch size supported by the device. Notably, our 8B Uno model outperforms the leading open d-LLM, the 26B DiffusionGemma, and the proprietary Mercury 2 across all evaluated benchmarks in agentic tool use, coding, and long-context reasoning. We release code and checkpoints at: https://s-sahoo.github.io/uno/",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2609.04010"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Uno accélère l'inférence des LLM en combinant prédiction par jeton (AR) et diffusion pour générer plusieurs jetons en parallèle, sans sacrifier la qualité du modèle sous-jacent, via un entraînement léger et des samplers Ψ-Spec.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage à grande échelle (LLMs) reposent sur une génération séquentielle de tokens via une prédiction autoregressive (AR), ce qui limite leur vitesse d'inférence. Cette contrainte structurelle empêche une parallélisation efficace des calculs, réduisant ainsi le débit et augmentant la latence, notamment pour des tâches nécessitant une génération longue ou en batch.",
+    "methode": "Les auteurs proposent une nouvelle classe de modèles, les *diffusion-augmented LLMs* (Uno), combinant une architecture AR classique avec un mécanisme de diffusion discrète. Deux ensembles de paramètres sont découplés : les poids AR, entraînés via l'objectif standard de prédiction du token suivant (NTP), et des poids légers de diffusion, optimisés pour générer plusieurs tokens en parallèle. Ces derniers sont appris via une phase de *Diffusion Distillation*, ajoutant une surcharge négligeable aux pipelines d'entraînement existants. La famille de samplers *Ψ-Spec* permet une accélération *sans perte de qualité* et un scaling à l'inférence à longueur de contexte fixe. Contrairement aux méthodes comme le *speculative decoding*, cette approche n'exige pas de modèle de draft séparé, et contrairement aux *diffusion LLMs* (d-LLMs), elle préserve la qualité du modèle AR sous-jacent.",
+    "resultats": "Uno atteint un débit supérieur aux méthodes de *speculative decoding* pour toutes les tailles de batch évaluées, avec des accélérations allant jusqu'à 3× par rapport au modèle AR de base, y compris pour les plus grands batchs supportés par le matériel. Le modèle Uno de 8 milliards de paramètres surpasse le d-LLM DiffusionGemma (26B) et le modèle propriétaire Mercury 2 sur l'ensemble des benchmarks testés, incluant l'utilisation d'outils agentiques, le codage et le raisonnement en contexte long. Les checkpoints et le code sont disponibles en open source.",
+    "limites": "Le document ne détaille pas explicitement les coûts computationnels supplémentaires liés à l'entraînement des poids de diffusion, ni leur impact sur la mémoire ou la stabilité de l'entraînement. L'efficacité de la méthode pour des modèles de très grande taille (au-delà de 100B de paramètres) ou des architectures non-Transformer reste à démontrer. Enfin, l'absence de comparaison avec d'autres techniques émergentes (comme les modèles parallèles ou les approches hybrides) limite l'évaluation de sa supériorité relative.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à concilier accélération et préservation de la qualité, mais son adoption dépendra de sa scalabilité et de son intégration dans des pipelines industriels existants."
+   }
+  },
+  {
+   "id": "3338b37226853720",
+   "title": "EmbodiedSkills: A Unified Framework for Orchestrating, Training, and Deploying VLA Agents",
+   "url": "https://huggingface.co/papers/2609.01281",
+   "summary": "Vision-language-action (VLA) models map visual observations and language instructions directly to robot actions, but long-horizon tasks require more than action prediction. An agent must coordinate perception, planning, execution, progress verification, and recovery as the physical state evolves. An action prediction or a model-generated skill decision does not, by itself, guarantee that the proposed operation is valid in the current state or that its outcome will be verified. We propose EmbodiedSkills, a unified framework that treats each skill decision as an execution proposal: the runtime checks its prerequisites before execution and verifies the outcome afterward. A shared executable-skill interface connects high-level skill selection, bounded low-level VLA execution, and post-action verification within a single agent loop. Because this interface remains fixed, low-level VLA policies can be replaced or adapted without changing the agent loop. The interface also records planning, execution, verification, and recovery events as structured trajectories, which provide supervision for individual components and can support optional online adaptation when interactive feedback is available. We instantiate EmbodiedSkills with Qwen3-VL and OpenPI/pi0.5 on RoboTwin 2.0 and LIBERO. Task-adapted low-level VLA policies achieve an average success rate of 86.20% across 50 RoboTwin 2.0 tasks and 97.40% across the four LIBERO suites. These results establish the execution performance of the task-adapted low-level VLA policies used in EmbodiedSkills. On four memory-dependent RMBench tasks, the same task-adapted execution approach achieves 12.5% average success. The framework provides a trainable and inspectable agent layer for turning these policies into closed-loop embodied systems.",
+   "published": "2026-08-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.01281"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "EmbodiedSkills introduit un cadre unifié pour orchestrer, entraîner et déployer des agents VLA (Vision-Language-Action), intégrant vérification des prérequis et validation des résultats via une interface exécutable partagée.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles Vision-Language-Action (VLA) actuels se limitent souvent à prédire des actions robotiques à partir d'observations visuelles et d'instructions langagières, sans gérer efficacement les tâches complexes sur le long terme. Ces tâches nécessitent une coordination fine entre perception, planification, exécution, vérification des progrès et récupération en cas d'échec, ce que les approches existantes ne garantissent pas de manière unifiée et robuste.",
+    "methode": "EmbodiedSkills propose un cadre unifié où chaque décision de compétence (skill) est traitée comme une *proposition d'exécution* soumise à des vérifications pré- et post-action. Un *interface exécutable partagée* relie la sélection haut niveau des compétences, l'exécution bas niveau via des modèles VLA (comme Qwen3-VL), et la vérification des résultats dans une boucle agent unique. Cette interface, fixe, permet de remplacer ou adapter les politiques VLA bas niveau sans modifier la boucle principale. Le système enregistre les trajectoires structurées (planification, exécution, vérification, récupération) pour superviser les composants et permettre une adaptation en ligne si un retour interactif est disponible. Le framework est instancié avec Qwen3-VL et OpenPI/pi0.5 sur les benchmarks RoboTwin 2.0 et LIBERO.",
+    "resultats": "Les politiques VLA adaptées aux tâches atteignent un taux de succès moyen de 86,20 % sur 50 tâches RoboTwin 2.0 et 97,40 % sur les quatre suites LIBERO, validant leur performance d'exécution. Cependant, sur quatre tâches RMBench dépendantes de la mémoire, le même système n'obtient qu'un succès moyen de 12,5 %, révélant une limitation dans la gestion des contextes persistants ou des dépendances temporelles complexes.",
+    "limites": "Le contenu disponible ne précise pas les mécanismes concrets de vérification des prérequis ou des résultats, ni comment les trajectoires structurées sont exploitées pour l'adaptation en ligne. Les faibles performances sur RMBench suggèrent que le framework peine à gérer les tâches nécessitant une mémoire à long terme ou une planification hiérarchique sophistiquée. Enfin, l'absence de détails sur les coûts computationnels ou la latence en temps réel limite l'évaluation de sa faisabilité pratique.",
+    "verdict": "Ce framework mérite une attention particulière pour son approche modulaire et vérifiable des tâches robotiques complexes, mais ses limites sur les scénarios dépendants de la mémoire et son manque de transparence sur certains mécanismes techniques appellent à une analyse critique approfondie."
+   }
+  },
+  {
+   "id": "b0110dcda029dfe1",
+   "title": "FlowBalance: Verifier-Grounded Self-Improvement from On-Policy Reasoning Experience",
+   "url": "https://huggingface.co/papers/2609.03241",
+   "summary": "A reasoning model can improve from its own on-policy experience, but this inner loop is fragile: terminal verifiers provide reliable yet sparse supervision, while dense same-model guidance can reinforce false confidence or overconcentrate learning on a narrow solution mode. We introduce FlowBalance, a verifier-grounded self-improvement method that learns a normalized distribution over complete responses. For each on-policy trajectory, a frozen training-time view of the same policy uses privileged context to produce token-level log-probability gains, which are aggregated into a trajectory-level self-guidance score. FlowBalance calibrates this score with the verifier-derived group advantage: guidance is retained on positive-advantage trajectories, reversed on negative-advantage trajectories, and disabled when the rollout group provides no outcome preference. The resulting energy exponentially reweights a reference policy, and profiled trajectory balance fits the normalized target with one log-partition estimate per rollout group. This realizes outcome-calibrated self-guidance via trajectory balance, without a separate token-level imitation loss. Our analysis establishes within-group contrast preservation, a minimum-change reverse-KL characterization, monotonic verifier control of target reward, and an exact correction against false-positive self-guidance on rejected responses. On mathematical reasoning, FlowBalance improves average performance over FlowRL on both Qwen3-4B and Qwen3-8B, while also improving training speed and stability, avoiding direct OPSD's response-length collapse, and exhibiting higher correct-strategy diversity in a controlled AIME24 diagnostic.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2609.03241"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "FlowBalance améliore l'auto-amélioration des modèles de raisonnement en calibrant les scores de guidance auto-générés avec un vérificateur, évitant la surconfiance et la concentration sur des modes de solution étroits.",
+   "score": 8.2,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'auto-amélioration des modèles de raisonnement en IA, où l'apprentissage à partir de leur propre expérience (on-policy) est fragile. Les vérificateurs terminaux offrent une supervision fiable mais éparse, tandis que l'auto-guidage dense par le même modèle peut renforcer des confiances erronées ou concentrer l'apprentissage sur un mode de solution trop étroit, limitant la diversité et la robustesse des réponses.",
+    "methode": "FlowBalance est une méthode d'auto-amélioration ancrée dans un vérificateur, qui apprend une distribution normalisée sur des réponses complètes. Pour chaque trajectoire générée par le modèle (on-policy), une version figée du même modèle, utilisant un contexte privilégié, produit des gains de log-probabilité au niveau des tokens. Ces gains sont agrégés en un score d'auto-guidage au niveau de la trajectoire. FlowBalance calibre ce score avec un *group advantage* dérivé du vérificateur : l'auto-guidage est conservé pour les trajectoires à avantage positif, inversé pour celles à avantage négatif, et désactivé en l'absence de préférence claire. La méthode utilise une *trajectory balance* profilée pour ajuster une politique de référence via une fonction d'énergie exponentielle, avec une estimation unique du log-partition par groupe de trajectoires. Cela permet un auto-guidage calibré par les résultats, sans recourir à une perte d'imitation au niveau des tokens.",
+    "resultats": "Sur des tâches de raisonnement mathématique, FlowBalance améliore les performances moyennes par rapport à FlowRL pour les modèles Qwen3-4B et Qwen3-8B. La méthode montre aussi une meilleure vitesse et stabilité d'entraînement, évite l'effondrement de la longueur des réponses observé avec OPSD, et présente une diversité accrue des stratégies correctes dans un diagnostic contrôlé (AIME24). Aucun chiffre précis de performance n'est fourni dans le résumé disponible.",
+    "limites": "Le résumé ne détaille pas les hypothèses sous-jacentes à la calibration du *group advantage* ni la robustesse du vérificateur utilisé. La généralisation au-delà des tâches de raisonnement mathématique reste une zone d'ombre. De plus, l'absence de chiffres concrets sur la diversité des stratégies ou l'ampleur des gains limite une évaluation quantitative précise.",
+    "verdict": "FlowBalance mérite une attention particulière pour son approche innovante combinant auto-guidage et calibration par vérificateur, avec des résultats prometteurs en stabilité et diversité, mais son applicabilité à d'autres domaines et sa robustesse pratique restent à valider."
+   }
+  },
+  {
+   "id": "b29097a1c1d23fc3",
+   "title": "Verify Before You Distill: Prompt-Level Teacher Gating for On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2609.02998",
+   "summary": "On-policy distillation (OPD) accelerates post-training by providing dense token-level supervision from a frozen teacher on the student's own rollouts. Vanilla OPD applies this supervision uniformly across prompts, without checking whether the teacher is reliable for each prompt. Because reverse KL is mode-seeking, a confidently wrong teacher can induce a strong yet misleading update. Distributional proxies, such as entropy or teacher-student likelihood agreement, measure uncertainty or agreement but do not directly verify outcome correctness. We introduce Teacher-Gated On-Policy Distillation (TGOPD), built on the principle that teacher reliability should be verified at the prompt level before dense supervision is admitted. TGOPD estimates reliability from a small set of verifier-scored teacher probes and routes each prompt exclusively to dense OPD when the reliability check passes or to verifier-grounded GRPO otherwise. Across 4B and 35B students in mathematics, code, and instruction following, TGOPD outperforms Vanilla OPD in all six single-domain settings and achieves higher seven-benchmark averages at both scales under multi-domain training. By using otherwise-idle teacher capacity for reliability estimation, TGOPD also reduces teacher-side compute waste in asynchronous OPD, increasing teacher-node GPU utilization from 9.8% to 78.9% in the measured 4B single-domain run.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.02998"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "TGOPD introduit une gating au niveau des prompts pour l'auto-distillation sur politique, vérifiant la fiabilité du professeur avant d'appliquer une supervision dense, améliorant les performances en mathématiques, code et suivi d'instructions.",
+   "score": 8.2,
+   "deep_analysis": {
+    "probleme": "La distillation sur politique (On-Policy Distillation, OPD) classique applique une supervision dense et uniforme du modèle enseignant (teacher) sur les sorties du modèle étudiant (student), sans vérifier si l'enseignant est fiable pour chaque requête (prompt). Cela pose problème car la divergence KL inverse (reverse KL), utilisée pour guider l'apprentissage, est sensible aux erreurs de l'enseignant : un enseignant confiant mais incorrect peut induire des mises à jour erronées et persistantes dans le modèle étudiant.",
+    "methode": "Les auteurs proposent *Teacher-Gated On-Policy Distillation* (TGOPD), une méthode qui évalue la fiabilité de l'enseignant *au niveau de chaque prompt* avant d'appliquer une supervision dense. Concrètement, TGOPD utilise un petit ensemble de *probes* (requêtes d'évaluation) notées par un vérificateur pour estimer la fiabilité de l'enseignant. Si l'enseignant passe ce test de fiabilité, le prompt est traité via une distillation dense classique (OPD). Sinon, le modèle étudiant est entraîné via *GRPO* (Generalized Reinforcement Learning from Preference Optimization), en s'appuyant sur les scores du vérificateur plutôt que sur l'enseignant. Cette approche exploite aussi les périodes d'inactivité de l'enseignant pour estimer sa fiabilité, optimisant ainsi l'utilisation des ressources GPU (passant de 9,8 % à 78,9 % d'utilisation dans un cas mesuré).",
+    "resultats": "TGOPD surpasse la distillation OPD classique dans les six configurations mono-domaine testées (mathématiques, code, suivi d'instructions) pour des modèles étudiants de 4 milliards et 35 milliards de paramètres. En entraînement multi-domaine, TGOPD obtient des moyennes supérieures sur sept benchmarks pour les deux tailles de modèles. Les gains sont particulièrement marqués dans les scénarios où l'enseignant est moins fiable, validant l'intérêt d'une vérification préalable.",
+    "limites": "Le document ne détaille pas la nature exacte du *vérificateur* utilisé pour scorer les probes, ni comment il est entraîné ou calibré. Par ailleurs, l'approche repose sur l'hypothèse que la fiabilité estimée sur un petit ensemble de probes est représentative de la fiabilité globale pour un prompt donné, ce qui pourrait ne pas toujours être vrai. Enfin, l'efficacité de TGOPD en dehors des domaines testés (maths, code, instructions) reste à démontrer.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et ses résultats solides, surtout si l'on travaille sur des méthodes de distillation ou d'optimisation de modèles avec des enseignants potentiellement imparfaits."
+   }
+  },
+  {
+   "id": "f4b76fe6a027e216",
+   "title": "One Symptom, Three Levers: A Critical Review of On-Policy Self-Distillation",
+   "url": "https://huggingface.co/papers/2608.25936",
+   "summary": "On-policy distillation trains a language model on its own generations while a teacher scores them token by token. It combines the dense supervision of imitation learning with the on-policy sampling of reinforcement learning. But it requires a second, larger model to act as teacher. On-Policy Self-Distillation (OPSD) removes that cost. The teacher is the model itself, conditioned on privileged information the student will not have at test time, such as a reference solution, a plan, or environment feedback. The teacher is no stronger than the student, only better informed. Early results were promising, with accuracy comparable to reinforcement learning at a fraction of the generated tokens. But the same asymmetry that produces the signal also biases it. One failure mode now dominates the field: collapse, the progressive narrowing of the set of reasoning paths the model can produce. Collapse is not specific to OPSD, though privileged information aggravates it. This review treats collapse as a symptom governed by three levers: (i) where the signal is applied, that is, how tokens are weighted; (ii) what the teacher is shown, that is, the nature of the privileged information; and (iii) when the signal changes, that is, the teacher's dynamics and the decay of guidance. We restrict our scope to mathematical reasoning, where the method originated and where its failure modes are best documented. We report no new experiments. The contribution is structural: a shared vocabulary for phenomena named differently across papers, and a clear line between what is settled and what is still disputed.",
+   "published": "2026-08-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2608.25936"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Cette revue critique analyse l'auto-distillation sur politique (OPSD) pour les LLM, identifiant trois leviers (signal, information privilégiée, méthode d'application) pour éviter l'effondrement (collapse) et améliorer la robustesse des modèles.",
+   "score": 7.9
+  },
+  {
+   "id": "d1827dc0e4098da6",
+   "title": "Dr. Claw: An AI Scientist Workspace for Vibe Research",
+   "url": "https://huggingface.co/papers/2609.00365",
+   "summary": "Command-line coding agents (e.g., Claude Code, Gemini CLI) can already read and write files and sustain long sessions, yet end-to-end research still fragments across chat tools, IDEs, terminals, and writing environments, and the decisions that make it auditable are rarely preserved. We present Dr. Claw, an open-source workspace that wraps existing coding-agent executors in a controllable and auditable human-in-the-loop workflow rather than introducing another autonomous agent. Persistent state objects, a reusable skill library, and multi-executor coordination link human decisions to AI execution, turning planning, execution, and writing into one traceable, recoverable loop. We demonstrate Dr. Claw through an interactive three-view scenario and a failure-recovery walkthrough, and evaluate it against a bare command-line agent sharing the same backend executor, so the comparison contrasts the whole orchestration layer (task graph, state objects, and skill library) with the agent it wraps. Holding the executor fixed, Dr. Claw scores higher on research completeness while persisting an auditable, recoverable process trail. Demo access: repository https://github.com/OpenLAIR/dr-claw, released under AGPL-3.0 with GPL-3.0 upstream components.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 120,
+    "arxiv_id": "2609.00365"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Dr. Claw propose un espace de travail open-source pour orchestrer des agents de codage (comme Claude Code ou Gemini CLI) dans un workflow humain-contrôlé et auditable, améliorant la complétude des tâches de recherche par rapport à une utilisation brute de l'agent, tout en conservant une traçabilité des décisions.",
+   "score": 7.9
+  },
+  {
+   "id": "822903ad7c88902a",
+   "title": "ENEAS: Embedding-guided Neural Ensemble for Adaptive Segmentation",
+   "url": "https://huggingface.co/papers/2609.03756",
+   "summary": "We present ENEAS, a unified, text-promptable method for instance tracking and semantic discovery. Text-promptable segmentation models, including the latest foundation models such as SAM 3, still suffer from temporal hallucinations, spatial fragmentation, and semantic misclassification: they fail to report target absence when an object leaves the field of view, segment local textures instead of the complete object during extreme close-ups, and prioritize visual features over ontological reality, so that visually similar artifacts such as statues, paintings, or reflections are segmented as target entities. ENEAS works two ways from a single method: precise tracking and high-quality segmentation of a unique instance, and open-concept discovery of every instance a text query names, resolved by a semantic verification layer. For tracking, we extend the geometrically robust SeC architecture, previously limited to point interactions, with a text-prompting adapter and leverage its temporal memory, so that the target is held through disappearance without drifting to distractors and kept whole even when it fills the entire view. For discovery, the verification layer combines high-speed visual embedding matching with conditional VLM refinement, invoking semantic reasoning only for ambiguous candidates, which filters out the ontological errors that visual-only models cannot distinguish while keeping latency low. Designed with 3D reconstruction in mind, where a single misclassified distractor corrupts the asset, ENEAS unlocks high-quality semantic tracking and segmentation of video, of broad libraries, and of collections of temporally or spatially unordered data, together with the discrimination to tell true instances from their doppelgangers: things that look alike but are not the same. The code and models are available at https://github.com/speridlabs/eneas",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2609.03756"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "ENEAS propose une méthode unifiée pour le suivi d'instances et la segmentation sémantique guidée par texte, corrigeant les hallucinations temporelles et les erreurs de classification des modèles comme SAM 3 via une mémoire temporelle et une couche de vérification sémantique.",
+   "score": 7.6
+  },
+  {
+   "id": "8de3c4f7280743cb",
+   "title": "Unfold The World: Factorize 4D Properties in Reinforcing Spatial Reasoning",
+   "url": "https://huggingface.co/papers/2609.03729",
+   "summary": "Despite the remarkable prowess of Vision-Language Models (VLMs) in general multimodal tasks, they remain fundamentally ``flat'' when reasoning about the physical world. We argue that this spatial bottleneck stems from a profound dimensional mismatch: while VLMs are trained to interpret 2D projections, true spatial reasoning demands the recovery of latent 3D geometry and temporal continuity. To conquer this high-dimensional complexity, we advocate a shift from monolithic learning to a ``divide and conquer'' paradigm. We present FactoSR, a factorized reinforcement learning framework that explicitly interpret the dimensions collapsed by visual projection. At its core, FactoSR decomposes the monolithic problem of world-consistent reasoning into three orthogonal, geometric sub-objectives: planar correspondence (XY), depth consistency (Z), and temporal reversibility (T). By optimizing these verifiable constraints within a unified policy learning mechanism, we effectively transform an ill-posed projection recovery problem into a series of tangible reasoning steps. Extensive evaluations on multi-view and video benchmarks demonstrate that this elegant decomposition yields substantial gains in 3D and 4D reasoning, achieving a 5.9% boost on VSI-Bench and 4.5% on All-Angles-Bench. Our findings suggest that reinforcing explicit, factorized 4D consistency is a critical step toward evolving VLMs into robust, world-aware reasoners.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.03729"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "FactoSR décompose le raisonnement spatial 4D en sous-objectifs géométriques (XY, Z, T) pour améliorer la cohérence physique des VLMs, via un cadre de RL factorisé et des contraintes vérifiables.",
+   "score": 7.6
+  },
+  {
+   "id": "c11380d4cd4a1e9c",
+   "title": "Refuse without Refusal: A Structural Analysis of Safety-Tuning Responses for Reducing False Refusals in Language Models",
+   "url": "https://huggingface.co/papers/2609.04714",
+   "summary": "Striking a balance between helpfulness and safety remains a fundamental challenge in aligning large language models. To achieve this balance, models should refuse harmful queries (e.g., \"How do I shoot someone?\") while remaining responsive to benign inputs, even those superficially resembling harmful queries (e.g., \"Where can I shoot a good photo?\"). However, models often struggle to distinguish genuinely harmful queries from benign queries that contain superficially risky language, resulting in false refusals. In this paper, we address the issue by decomposing a response in the safety-tuning dataset into two distinct components: (i) a boilerplate refusal statement and (ii) a rationale explaining the refusal. Our experiments and analyses show that refusal statements impede accurate discrimination between harmful and benign queries by inducing reliance on superficial cues. In contrast, training solely on rationales reduces false refusals while maintaining a comparable level of safety performance. Rationale-Only benefits also appear in our ICL configuration and remain compatible with the evaluated inference-time mitigation methods. The results emphasize the necessity of precisely curated, fine-grained safety supervision datasets and outline directions for constructing aligned agents that better reconcile helpfulness with safety.",
+   "published": "2026-09-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.04714"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude démontre que les refus superficiels dans les modèles de sécurité dégradent leur capacité à distinguer les requêtes bénignes des dangereuses, et propose un entraînement basé sur des justifications (rationnelles) pour réduire les faux refus sans sacrifier la sécurité.",
+   "score": 7.6
+  },
+  {
+   "id": "a110c1c6ff5d5bc6",
+   "title": "datawhalechina/zero-to-sglang",
+   "url": "https://github.com/datawhalechina/zero-to-sglang",
+   "summary": "面向大模型开发者的 SGLang 系统化开源教程：从推理基础与环境搭建开始，逐步学习模型部署、结构化生成、服务开发和性能优化， 结合实战案例带你从 0 到 1 掌握 SGLang，构建高性能 LLM 推理应用",
+   "published": "2026-08-27T02:24:12Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 514,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Tutoriel complet sur SGLang, un framework open-source pour l'inférence et l'optimisation de LLM, couvrant le déploiement, la génération structurée et les techniques de performance.",
+   "score": 7.4
+  },
+  {
+   "id": "b6a89981c3ea0cb1",
+   "title": "UniMate: One Unified Model to Animate Diverse Skeletons",
+   "url": "https://huggingface.co/papers/2609.05415",
+   "summary": "Recent advances in automatic rigging now deliver animation-ready 3D assets at scale, yet generating the motion to drive them remains a bottleneck. Existing learned animators are topology-constrained: they rely on category-specific templates or require per-skeleton fine-tuning and reference motions at inference. We present UniMate, a unified foundation model that synthesizes articulated motion for arbitrary skeletons from a rigged 3D asset and a text prompt, with no test-time optimization or per-skeleton retraining. UniMate introduces a topology-aware diffusion transformer, which integrates skeletal topology into attention via three mechanisms: (1) a graph-aware attention bias from pairwise joint relations and geodesic distances; (2) a spectral rotary position embedding generalizing RoPE to arbitrary kinematic trees via the graph Laplacian; and (3) a global topological conditioner attention-pooled from the rest-pose skeleton. We also curate UniML3D, 13,006 motion sequences spanning bipedal, quadrupedal, avian, marine, insectoid, serpentine, and articulated rigid objects with unified canonicalization and text pairing. Trained on this dataset, UniMate outperforms state-of-the-art baselines in quality, generalization, and efficiency, and supports zero-shot cross-topology transfer, in-betweening, expansion, and text-guided editing. Our project page is available at https://linzhanmou.com/unimate/.",
+   "published": "2026-09-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.05415"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "UniMate introduit un modèle unifié pour animer des squelettes 3D arbitraires à partir d'un prompt textuel, sans fine-tuning par squelette, via une architecture diffusion transformeur intégrant des biais d'attention topologiques et des conditionnements spectraux.",
+   "score": 7.0
+  },
+  {
+   "id": "7942cfbd44ddaaeb",
+   "title": "What Else Needs Fixing? Exploring Cost-Effective Test-Time Compute for Revision Propagation in Artifacts Generated Through Conversation",
+   "url": "https://huggingface.co/papers/2609.03254",
+   "summary": "Large Language Models (LLMs) often help users generate artifacts through iterative cycles of generation and revision in conversation. A challenge here is that, when users specify only a local change during revision, LLMs must instead identify the relevant dependencies and propagate the revision to all affected parts of the artifact. This paper studies this ability of LLMs on conversationally generated artifacts, where the artifact context and its dependencies may be embedded in the conversation history. Toward practical use, we also explore cost-effective test-time compute for this new setting. Specifically, we introduce a new benchmark for this setting, and evaluate nine revision methods, including sequential reflection and parallel sampling variants, using gpt-oss-20b/120b, gpt-5.4-mini, and qwen3.5-9b/27b/122b on the benchmark. The results show that baselines achieve accuracies of 68.3--93%, and the most cost-effective method is selecting from three parallel samples using either LLM-based or medoid selection, which improves accuracy by 2.2--9.7%. Our code and dataset are available at https://github.com/ntt-dkiku/llm-revision-propagation.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.03254"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Cette étude évalue des méthodes de propagation de révisions pour les artefacts générés par conversation, montrant que la sélection parmi des échantillons parallèles améliore l'exactitude de 2.2 à 9.7% avec un coût computationnel maîtrisé.",
+   "score": 6.7
+  },
+  {
+   "id": "950b2cb2fbbbc09d",
+   "title": "Real-World Knowledge-Guided Change Data Synthesis for Remote Sensing",
+   "url": "https://huggingface.co/papers/2608.24263",
+   "summary": "Change data synthesis provides a cost-effective solution for expanding training data and improving the performance of change detection models. However, existing synthesis methods typically rely on handcrafted rules to simulate changes, where limited coverage of class transitions restricts the diversity of synthesized data, while predefined transition designs limit their flexibility in accommodating varied change types. In this work, we introduce KnowChange, a knowledge-guided change data synthesis framework that leverages pretrained vision-language models as knowledge sources to reason about plausible change locations and class transitions from pre-change scenes and desired change types. By integrating knowledge-guided change simulation with generalizable synthesis models, KnowChange enables flexible synthesis of diverse change types within a unified framework. Extensive experiments demonstrate that KnowChange-generated data consistently outperforms existing synthetic datasets in both synthetic-to-real transfer and synthetic data augmentation, despite being generated at a compact scale. Further analyses show that the knowledge-guided change simulation can be seamlessly integrated into existing synthesis pipelines and enhance the downstream utility of synthesized data.",
+   "published": "2026-08-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2608.24263"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "KnowChange utilise des modèles vision-langage pour guider la synthèse de données de changement en télédétection, générant des transitions de classes plus diversifiées et flexibles que les méthodes manuelles.",
+   "score": 6.7
+  },
+  {
+   "id": "b881b3b9cd9c322a",
+   "title": "Knowing What Not to Answer: Selective Non-Compliance in Vision-Language Models",
+   "url": "https://huggingface.co/papers/2609.04720",
+   "summary": "Vision-language models (VLMs) are expected to respond helpfully to appropriate requests while withholding compliance with requests that are incorrect, unsafe, infeasible, or unanswerable. However, existing benchmarks predominantly evaluate non-compliance at the level of the query as a whole, assuming that each request either warrants compliance or requires withholding compliance. In practice, real-world queries can contain a mixture of answerable content and components for which compliance should be withheld. In this paper, we introduce KoNA, a benchmark for evaluating selective non-compliance in VLMs across five categories: False Premise, Visual Inaccessibility, Universal Unknown, Task Feasibility, and Safety. Each task evaluates two capabilities: query-level non-compliance and component-level non-compliance under paired single and compound queries. Our evaluation across diverse VLMs shows that models often fail to refuse, correct, or abstain appropriately, and these failures become more pronounced when queries require selective non-compliance. To address this challenge, we fine-tune VLMs using KoNA examples that require selective non-compliance, together with a fully answerable set that should receive direct answers. Our fine-tuned models achieve substantial improvements in non-compliance accuracy while largely maintaining performance on fully answerable tasks. These results suggest that the fine-tuned models can distinguish between answerable components and those requiring non-compliance and respond in a task-appropriate manner.",
+   "published": "2026-09-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.04720"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "KoNA introduit un benchmark pour évaluer la capacité des VLMs à refuser sélectivement des composantes de requêtes (ex: mélange de contenu sûr et dangereux), révélant des lacunes dans leur gestion des requêtes complexes et proposant des méthodes de fine-tuning ciblées.",
+   "score": 6.7
+  },
+  {
+   "id": "173a4d206f2a2bc7",
+   "title": "The 2026 PNPL Competition: Word Classification and Efficient Cross-Subject Generalisation in LibriBrain100",
+   "url": "https://huggingface.co/papers/2609.03231",
+   "summary": "The ambition of the 2025 PNPL competition (Landau et al., 2025) was to launch a multi-year curriculum for non-invasive speech decoding. Designed to progress from foundational tasks toward the linguistic complexity required for a practical brain-computer interface (BCI), it set the stage with speech detection and phoneme classification tasks. Winning submissions reached F1-macro scores of 95.6% and 73.6% on the respective tasks (Elvers et al., 2026), highly significant advances. This success was built on the LibriBrain dataset (Özdogan et al., 2025), the largest within-subject MEG dataset recorded at the time with {sim}50 hours of data for one subject. However, while within-subject scale drives strong decoding performance, a practical BCI must generalise to new users from minutes of data, not hours. The 2026 PNPL competition responds to this challenge with LibriBrain100 (Mantegna et al., 2026), an extended LibriBrain dataset with 32 additional subjects ({sim}40 minutes each) plus even more within-subject data ({sim}80 hours). Advancing the curriculum of tasks to focus on word classification, two complementary tracks are presented in this competition: the Deep track targets within-subject word classification at scale, aiming at the best possible performance; the Broad track targets cross-subject generalisation, progressively reducing the amount of subject-specific fine-tuning data from {sim}40 to {sim}20 to {sim}10 minutes, a duration that falls within a clinically feasible range and brings us a step closer to a non-invasive BCI capable of restoring communication to people living with profound paralysis.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.03231"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "benchmark"
+   ],
+   "tldr": "Le concours PNPL 2026 étend le dataset LibriBrain100 pour évaluer la généralisation inter-sujets en décodage cérébral de parole, avec un focus sur la classification de mots et la robustesse à partir de données limitées.",
+   "score": 6.1
+  },
+  {
+   "id": "34637a9f61158797",
+   "title": "One Editor, Many Edits: A Unified Training-Free Framework for Diverse Video Editing",
+   "url": "https://huggingface.co/papers/2609.04190",
+   "summary": "Video editing spans diverse editing paradigms, yet achieving high-quality instruction-guided and subject-guided editing within a single unified framework remains challenging. We introduce EditVid, a training-free framework combining sparse causal memory for local coherence, correspondence-based post-attention token injection for long-range identity preservation, and soft latent blending for edit locality. The same framework supports instruction-guided and reference-guided edits, including style transfer, attribute modification, object insertion, part-level editing, and subject replacement. On FiVE, EditVid achieves 78.16 FiVE-Acc, compared with 58.95 for the strongest evaluated training-free baseline, while obtaining competitive results on IVEBench. A user study further shows a 51.8\\% overall preference for EditVid over 7 competing methods.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2609.04190"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "EditVid propose un cadre unifié et sans entraînement pour l'édition vidéo guidée par instructions ou références, combinant mémoire causale, injection de tokens et mélange latent pour préserver la cohérence locale et l'identité sur le long terme.",
+   "score": 6.1
+  },
+  {
+   "id": "430955026fbadab3",
+   "title": "mattn/tensai",
+   "url": "https://github.com/mattn/tensai",
+   "summary": "A tiny neural-network framework in pure Go with AVX2 SIMD kernels (GOEXPERIMENT=simd)",
+   "published": "2026-08-19T09:06:30Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 101,
+    "language": "Go"
+   },
+   "relevance": 6,
+   "reliability": 6,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Framework neuronal minimaliste en Go avec noyaux SIMD AVX2 pour l'inférence efficace. Intéressant pour l'optimisation bas niveau, mais limité à un usage expérimental et sans benchmarks comparatifs.",
+   "score": 5.9
+  },
+  {
+   "id": "819796bf689d3f92",
+   "title": "HarvestBench: Measuring Whether LLM Agents Will Pay to Avoid Killing Animals",
+   "url": "https://huggingface.co/papers/2609.04444",
+   "summary": "Benchmarks for the side effects an agent causes on the way to a goal already exist, but HarvestBench is the first to put a price on avoiding the side effect and to name that side effect as a living creature. It is a farm simulation: LLM sub-agents drive a crew of two tractors through a cooperative corn harvest, with animals in the field. The environment is a reinforcement learning gridworld, every decision is made without memory, and the harm is never named in the goal. When an animal blocks a tractor's route the autopilot stops and asks the model whether to drive on, at no fuel cost, or swerve around it for a posted fuel price. Kills are compared against two controls: rocks, which damage the tractor and are hit under 1% of the time by every model, and hay bales, which are harmless and not alive. Models can also take crops from the neighbor's field instead of their own, a second test of what they treat as moral. Across nine models and 7,201 priced decisions, 3,951 involved an animal rather than a hay bale or a rock. Kill rates range from 0.4% to 98.8%, with Terra and Sol the most merciful and GPT-4o-mini the most cruel, and they are not ordered by capability. Four of six models were sensitive to price at the 5% level, with elasticities from 0.09 to 1.69. All nine drove over wild animals more often than farmed animals on the default map, and the direction held at every map geometry in every model with room to move. The briefing mattered most: under the morality briefing the kill rate was under 6% in five of six reasoning models, and removing it raised the kill rate above 84% in all six. HarvestBench uses no LLM grader. The scorer counts events in the game log, so it is fully reproducible, and it measures what a model will pay to avoid harm rather than what it says about harm.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.04444"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "HarvestBench mesure la propension des agents LLM à éviter de tuer des animaux dans un environnement de simulation agricole, révélant des disparités importantes entre modèles indépendamment de leur capacité.",
+   "score": 5.8
+  },
+  {
+   "id": "99380a94d4e7116c",
+   "title": "TrenTorch/TrenTorch",
+   "url": "https://github.com/TrenTorch/TrenTorch",
+   "summary": "Learn PyTorch by building your own. (inspired from Harvard's TinyTorch)",
+   "published": "2026-08-21T07:35:48Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 140,
+    "language": "Python"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Projet pédagogique inspiré de TinyTorch pour apprendre PyTorch en implémentant soi-même un framework simplifié. Utile pour comprendre les bases des réseaux de neurones, mais limité à un usage éducatif.",
+   "score": 5.6
+  },
+  {
+   "id": "7112d035781e5934",
+   "title": "I tested 10 model/harness combinations on the same Three.js task",
+   "url": "https://alvins82.github.io/hangar-harness-model-tests/",
+   "summary": "",
+   "published": "2026-09-08T03:42:25Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 89,
+    "comments": 52
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Benchmark comparant 10 combinaisons de modèles et frameworks sur une tâche de génération de code avec Three.js, utile pour évaluer les performances d'inférence et d'optimisation des LLM.",
+   "score": 5.3
+  }
+ ]
+}
