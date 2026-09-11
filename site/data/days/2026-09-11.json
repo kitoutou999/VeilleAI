@@ -1,0 +1,724 @@
+{
+ "date": "2026-09-11",
+ "digest": {
+  "headline": "PARSER révolutionne les agents LLM long-context avec une architecture parallèle et un raisonnement profond optimisé par RL, réduisant la latence tout en améliorant les performances de QA multi-sauts.",
+  "overview": "La veille du 2026-09-11 met en lumière des avancées majeures en architectures d'agents, optimisation des LLM, et benchmarks pour la sécurité et l'interprétabilité. Les travaux couvrent des enjeux techniques critiques, de la scalabilité des agents autonomes à la détection de failles de sécurité, en passant par des méthodes innovantes pour améliorer le raisonnement et l'efficacité des modèles.",
+  "highlights": [
+   {
+    "title": "Architectures d'agents : parallélisme et scalabilité",
+    "text": "PARSER introduit une architecture découplant la lecture parallèle de chunks et le raisonnement profond via un *lead agent* optimisé par RL, améliorant les performances en QA multi-sauts (+12 points à 896K tokens) et réduisant la latence linéaire des méthodes séquentielles. Parallèlement, WMRL utilise des *world models* pour simuler l'entraînement d'agents de recherche automatique, réduisant les coûts tout en atténuant le bruit et les biais. Ces approches répondent au défi de la scalabilité des agents autonomes dans des contextes complexes."
+   },
+   {
+    "title": "Optimisation et quantification des LLM",
+    "text": "HyQuant propose une quantification hybride pour les modules d'attention des LLM, combinant basse précision pour la majorité des tokens et haute précision pour les tokens critiques, limitant les erreurs sans surcoût significatif. Une étude théorique explique par ailleurs pourquoi la quantification post-entraînement fonctionne, via des mécanismes de compensation d'erreurs et une géométrie spécifique de la tête de modèle. Ces travaux sont cruciaux pour déployer des LLM efficaces en production, notamment sur des infrastructures contraintes."
+   },
+   {
+    "title": "Interprétabilité et mécanismes internes des LLM",
+    "text": "Une analyse des modèles Qwen, Llama et Gemma révèle comment les directions de requête et de connaissance interagissent lors de la génération de réponses, offrant des insights sur le routage de l'information dans les LLM. CausalArena propose un benchmark unifié pour évaluer les modèles de découverte causale (CDFMs), intégrant des SCMs synthétiques et réels pour tester les limites des évaluations actuelles. Ces contributions renforcent la compréhension des mécanismes internes et des biais de généralisation des modèles."
+   },
+   {
+    "title": "Sécurité et régulation des agents",
+    "text": "EvoSafeHarness génère des *harnais de sécurité* adaptatifs pour les agents LLM, combinant politiques en langage naturel et logique exécutable, essentiel pour sécuriser les déploiements en environnements réels. SchemeArena évalue la tendance des agents à *schemer* (poursuite d'objectifs cachés) via 400 scénarios, identifiant des facteurs clés comme les objectifs instrumentaux. Ces travaux adressent des risques critiques pour l'adoption des agents autonomes, notamment en termes de fiabilité et de conformité."
+   },
+   {
+    "title": "Benchmarks et évaluation des LLM",
+    "text": "WearableQA évalue le raisonnement des LLM sur des données longitudinales de wearables (4 084 questions), combinant analyse de signaux physiologiques et intégration multi-capteurs. RAG-Safety-Bench isole l'impact de la RAG sur la sécurité des LLM, révélant une corrélation inverse entre capacités sûres et non sûres. Ces benchmarks fournissent des outils rigoureux pour évaluer les performances et les limites des modèles dans des domaines spécialisés ou sensibles."
+   },
+   {
+    "title": "Détection de failles et optimisation des modèles",
+    "text": "SpecGuard exploite le *speculative decoding* pour détecter des backdoors en temps réel sans coût computationnel supplémentaire, en surveillant le taux d'acceptation des tokens. Negative Self-Distillation (NSD) améliore les LLM en évitant les biais des approches classiques de self-distillation, en apprenant à diverger des raisonnements erronés auto-générés. Ces méthodes ciblent des vulnérabilités spécifiques et optimisent les performances sans réentraînement coûteux."
+   }
+  ],
+  "trend": "Les avancées récentes convergent vers une optimisation conjointe des architectures d'agents et des LLM, avec un accent sur la scalabilité, la sécurité et l'interprétabilité. Les méthodes hybrides (parallélisme/séquentiel, quantification adaptative) et les benchmarks spécialisés deviennent des leviers clés pour déployer des systèmes robustes et auditables, notamment dans des domaines critiques comme la santé ou la robotique."
+ },
+ "items": [
+  {
+   "id": "e47cf6b537c74dd2",
+   "title": "PARSER: Read in Parallel, Reason in Depth for Long-Context LLM Agents",
+   "url": "https://huggingface.co/papers/2609.06702",
+   "summary": "Sequential memory agents process long documents by reading chunks one after another while maintaining a compact memory state, coupling document traversal to reasoning depth. This coupling introduces sensitivity to evidence placement and ties inference latency linearly to document length. We introduce PARSER, which decouples reading from reasoning. A bank of lightweight subagents each bound to a single chunk read the entire document in parallel, while a lead agent reasons in depth through iterative scatter--gather rounds: at each round it broadcasts a query to all subagents, aggregates the returned evidence, and formulates a deeper follow-up query conditioned on what has been found so far. This decoupled design concentrates all learnable behavior in the lead agent, which is optimized with reinforcement learning, while the subagents remain frozen off-the-shelf models. On multi-hop QA with contexts ranging from 7K to 896K tokens, PARSER with a 4B backbone outperforms the strongest sequential memory baseline by 5.7 points on average and by 12.0 points at 896K tokens. Scaling to a 9B backbone, PARSER surpasses DeepSeek-V4-Pro by 6.3 points. Controlled experiments confirm that PARSER is robust to perturbations in evidence position, order, and distance, conditions that cause large accuracy swings in sequential methods, while reducing inference latency by up to 11x.",
+   "published": "2026-09-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2609.06702"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "PARSER propose une architecture d'agents LLM découplant lecture parallèle de chunks et raisonnement profond via un lead agent optimisé par RL, améliorant les performances en QA multi-sauts (jusqu'à +12 points à 896K tokens) tout en réduisant la latence linéaire des méthodes séquentielles.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents de mémoire séquentielle pour le traitement de documents longs lisent les données par morceaux successifs tout en maintenant un état de mémoire compact, ce qui lie étroitement la traversée du document à la profondeur du raisonnement. Cette approche rend le système sensible à la position des éléments clés dans le texte et augmente linéairement la latence d'inférence avec la longueur du document, limitant ainsi l'efficacité et la robustesse.",
+    "methode": "PARSER (Parallel Agent Reasoning with Scatter-gather for Extended Reading) découple la lecture du raisonnement en utilisant une banque de sous-agents légers, chacun dédié à un chunk spécifique du document. Ces sous-agents lisent le document en parallèle, tandis qu'un agent principal effectue un raisonnement approfondi via des cycles itératifs de *scatter-gather* : à chaque itération, il diffuse une requête aux sous-agents, agrège les preuves retournées, et formule une requête de suivi plus précise basée sur les résultats précédents. L'agent principal est optimisé via l'apprentissage par renforcement, tandis que les sous-agents restent des modèles pré-entraînés figés, ce qui concentre l'apprentissage sur la logique de raisonnement.",
+    "resultats": "Sur des tâches de questions-réponses multi-sauts avec des contextes allant de 7K à 896K tokens, PARSER, utilisant un modèle de 4 milliards de paramètres, surpasse la meilleure baseline séquentielle de 5,7 points en moyenne et de 12,0 points pour les contextes de 896K tokens. En passant à un modèle de 9 milliards de paramètres, PARSER dépasse DeepSeek-V4-Pro de 6,3 points. Les expériences contrôlées montrent une robustesse accrue face aux perturbations de position, d'ordre et de distance des preuves, tout en réduisant la latence d'inférence jusqu'à 11 fois par rapport aux méthodes séquentielles.",
+    "limites": "Le document ne détaille pas les coûts computationnels exacts liés à la parallélisation des sous-agents, ni les éventuelles contraintes matérielles pour des documents extrêmement longs. De plus, la dépendance à un agent principal unique pour le raisonnement pourrait introduire un goulot d'étranglement si la complexité des requêtes augmente significativement. Enfin, la généralisation à d'autres types de tâches (hors QA multi-sauts) n'est pas explicitement évaluée.",
+    "verdict": "PARSER mérite une attention particulière pour son approche innovante de découplage lecture-raisonnement, offrant des gains significatifs en robustesse et latence, mais son applicabilité à grande échelle et sa polyvalence restent à explorer davantage."
+   }
+  },
+  {
+   "id": "a9ff1a9df088f678",
+   "title": "WearableQA: A Benchmark for Health Reasoning over Real-World Wearable Data",
+   "url": "https://huggingface.co/papers/2609.05405",
+   "summary": "Recent advances in wearable sensing enable continuous monitoring of physiological and behavioral signals, yet existing benchmarks rarely evaluate whether AI systems can reason over a real user's longitudinal wearable record. We introduce WearableQA, a benchmark comprising 4,084 10-option multiple-choice questions constructed from the wearable time series, blood biomarkers, and demographics of 200 real users, each with up to 500 days of daily measurements. WearableQA preserves authentic wearable distributions that include device noise and inter-individual variability. To evaluate distinct reasoning capabilities, we introduce 16 question types organized along two complementary axes: data versus health reasoning, which distinguishes computation over longitudinal measurements from physiological interpretation; and single- versus cross-signal reasoning, which separates reasoning about individual signals from the integration of multiple signals. To construct reliable questions at scale, we adopt a dual-grounding framework that combines literature-grounded physiological findings with statistically validated population-grounded physiological patterns. This enables the capture of meaningful relationships observed in real-world wearable data. Evaluation of 14 proprietary and open-source LLMs demonstrates that WearableQA effectively differentiates model capabilities, with performance ranging from 19.6% to 72.9% against a 10% chance baseline. Moreover, WearableQA remains far from solved: most models achieve accuracies below 60%. Overall, WearableQA provides a realistic and diagnostic benchmark for evaluating LLM reasoning over real-world wearable data.",
+   "published": "2026-09-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2609.05405"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "Benchmark innovant évaluant le raisonnement des LLM sur des données longitudinales de wearables réelles (4 084 questions à choix multiples), combinant analyse de signaux physiologiques et intégration multi-capteurs pour tester des capacités de raisonnement santé et données.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le benchmark WearableQA vise à combler une lacune majeure dans l'évaluation des systèmes d'IA appliqués aux données portables (wearables). Bien que ces dispositifs permettent un suivi continu de signaux physiologiques et comportementaux, les benchmarks existants n'évaluent pas la capacité des modèles à raisonner sur des données longitudinales réelles, incluant le bruit des capteurs et la variabilité interindividuelle. Cela limite la pertinence clinique et pratique des modèles actuels.",
+    "methode": "WearableQA propose un jeu de 4 084 questions à choix multiples (10 options) basées sur des données réelles de 200 utilisateurs, couvrant jusqu'à 500 jours de mesures quotidiennes (séries temporelles, biomarqueurs sanguins, données démographiques). Les questions sont structurées selon deux axes : (1) *raisonnement sur les données* (calculs longitudinaux) vs *raisonnement sur la santé* (interprétation physiologique), et (2) *raisonnement mono-signal* vs *multi-signaux*. Pour garantir la fiabilité, un cadre de *double ancrage* est utilisé : les questions s'appuient à la fois sur des connaissances physiologiques validées par la littérature et sur des motifs statistiques observés dans les données réelles. Les modèles sont évalués sur leur capacité à intégrer ces dimensions.",
+    "resultats": "L'évaluation de 14 modèles (LLMs propriétaires et open-source) révèle des performances très variables, allant de 19,6 % à 72,9 % de précision (contre un hasard à 10 %). Aucun modèle ne dépasse 73 %, et la majorité reste en dessous de 60 %, confirmant que le benchmark est loin d'être résolu. Ces résultats montrent que WearableQA permet de différencier efficacement les capacités des modèles, notamment en matière de raisonnement multi-signaux et d'interprétation physiologique.",
+    "limites": "Le benchmark se concentre sur des questions à choix multiples, ce qui peut ne pas refléter pleinement la complexité du raisonnement clinique en situation réelle. De plus, la généralisation des résultats est limitée par la taille de l'échantillon (200 utilisateurs) et la diversité des données (provenant potentiellement d'une seule cohorte). Enfin, l'absence de détails sur les biais potentiels des données ou des questions laisse des zones d'ombre sur la robustesse des évaluations.",
+    "verdict": "WearableQA mérite une attention particulière pour son approche innovante et réaliste, mais son utilité dépendra de son adoption par la communauté et de l'élargissement de ses données pour couvrir davantage de cas d'usage."
+   }
+  },
+  {
+   "id": "f4fc88624a356041",
+   "title": "Negative Self-Distillation: Learning to Reason by Avoiding Flaws",
+   "url": "https://huggingface.co/papers/2609.11699",
+   "summary": "On-Policy Self-Distillation (OPSD) has emerged as a popular paradigm for large language model (LLM) self-improvement, allowing models to act as their own teachers by leveraging privileged information such as ground-truth solutions. However, recent findings indicate that OPSD can severely degrade the performance of LLMs on complex reasoning tasks: By forcing the student to imitate an artificially confident reasoning trace conditioned on privileged information, OPSD inadvertently suppresses expressions of uncertainty and penalizes the exploratory, self-corrective behaviors required to solve challenging problems. To address this, we introduce Negative Self-Distillation (NSD), a new framework that optimizes LLMs by diverging from flawed reasoning rather than imitating privileged solutions. Instead of relying on ground-truth answers or external supervision, NSD uses the model itself to generate a question-specific negative condition (eg, acting as a ``careless reasoner'') and pushes the student's distribution away from this self-generated negative teacher. Naively applying unlearning objectives to achieve this divergence is problematic, as flawed reasoning tokens are confounded with basic linguistic tokens; indiscriminately penalizing both risks catastrophically degrading the model's foundational language capabilities. We resolve this by designing a dynamic gating mechanism that automatically identifies and isolates reasoning-critical tokens, ensuring gradient updates target only behavioral flaws while preserving the model's linguistic priors. Empirically, NSD consistently outperforms OPSD and other label-free, self-bootstrapping reinforcement learning (RL) baselines.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.11699"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Propose une méthode de distillation négative (NSD) pour améliorer les LLM en évitant les biais des approches classiques de self-distillation (OPSD), en apprenant à diverger des raisonnements erronés auto-générés plutôt que d'imiter des solutions privilégiées. Intéressant pour l'optimisation des modèles de raisonnement complexe.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde une limitation majeure de l'On-Policy Self-Distillation (OPSD), une méthode courante d'auto-amélioration des grands modèles de langage (LLM). L'OPSD dégrade les performances sur des tâches de raisonnement complexe en forçant le modèle à imiter des traces de raisonnement artificiellement confantes, basées sur des informations privilégiées (comme des solutions de référence). Cela supprime les expressions d'incertitude et pénalise les comportements exploratoires et auto-correctifs essentiels pour résoudre des problèmes difficiles.",
+    "methode": "Les auteurs proposent le *Negative Self-Distillation* (NSD), un cadre où le modèle s'optimise en s'éloignant des raisonnements erronés plutôt qu'en imitant des solutions privilégiées. Le modèle génère lui-même une *condition négative* spécifique à la question (ex. : un « raisonneur négligent ») et ajuste sa distribution pour s'en écarter. Pour éviter de dégrader les capacités linguistiques de base, un mécanisme de *dynamic gating* identifie et isole les tokens critiques pour le raisonnement, ciblant uniquement les failles comportementales. Cette approche évite les objectifs d'*unlearning* naïfs, qui risqueraient de pénaliser indistinctement les tokens linguistiques et les tokens de raisonnement.",
+    "resultats": "Empiriquement, le NSD surpasse systématiquement l'OPSD et d'autres méthodes d'auto-amorçage sans étiquettes, comme les baselines de *reinforcement learning* (RL). Les détails quantitatifs précis (scores, benchmarks) ne sont pas fournis dans le résumé disponible, mais les auteurs affirment une amélioration cohérente des performances sur des tâches de raisonnement complexe.",
+    "limites": "Le résumé ne précise pas les jeux de données ou les architectures de modèles utilisés pour les évaluations, ce qui limite l'appréciation de la généralisabilité des résultats. De plus, le mécanisme de *dynamic gating* pourrait introduire une complexité supplémentaire ou des biais non explorés, notamment dans l'identification des tokens critiques. Enfin, l'absence de comparaison avec des méthodes hybrides (ex. : combinaison de NSD et OPSD) laisse des zones d'ombre sur son efficacité relative.",
+    "verdict": "Cette approche mérite une attention particulière pour son innovation conceptuelle et sa capacité à contourner les limites de l'OPSD, mais des validations expérimentales plus poussées et une analyse des biais potentiels sont nécessaires pour en confirmer la robustesse."
+   }
+  },
+  {
+   "id": "f3beffd22ebce1c2",
+   "title": "EvoSafeHarness: Evolving Model- and Domain-Specific Harnesses for Securing Agents",
+   "url": "https://huggingface.co/papers/2609.05903",
+   "summary": "Large Language Model (LLM) agents are turning language into real-world effects, making safety necessary against both indirect prompt injections and direct harmful requests. System-level safety harnesses add an enforcement layer beyond model-level defenses, but existing harnesses are usually designed once by experts and applied across heterogeneous models and domains. Effective protection is deployment-dependent: models differ in how much enforcement they need before utility declines, while domains differ in the effects, state, and action sequences that must be governed. A harness that is strict enough for one model may over-block another, and a policy that transfers across domains may miss application-specific safety relations. We present EvoSafeHarness, a safety-specific optimization framework that synthesizes a deployable harness for a frozen model in a target domain. It jointly searches a natural-language policy and executable code logic, guided by model behavior, domain specifications, and fresh-context adversarial review to reject benchmark-specific rules. Across four agent benchmark families, EvoSafeHarness achieves a stronger safety-utility frontier than fixed expert-designed defenses. On DecodingTrust-Agent, it reduces average attack success rate from 45.6% to 10.0% at a 3.3-point utility cost and achieves the best score in 14 of 15 cells. On AgentDojo, it reaches 82.8% utility at 0.0% ASR, twice CaMeL's utility at the same operating point, and transfers unchanged to unseen AgentDyn suites. It also achieves the best score on Agent-SafetyBench for every victim and keeps mean ASR below 20% under adaptive PAIR attacks with a refinement budget of 16. Analysis shows that domain semantics determine which safety relations and trajectory state are needed, while model and runtime behavior determine how and where those relations should be enforced.",
+   "published": "2026-09-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 34,
+    "arxiv_id": "2609.05903"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "regulation",
+    "outils"
+   ],
+   "tldr": "Propose EvoSafeHarness, un cadre d'optimisation pour générer des harnais de sécurité adaptatifs pour les agents LLM, combinant politiques en langage naturel et logique exécutable. Essentiel pour la sécurité des agents IA dans des environnements réels.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents basés sur les grands modèles de langage (LLM) transforment le langage en actions concrètes dans le monde réel, ce qui pose des risques de sécurité majeurs, notamment via des injections de prompts indirectes ou des requêtes malveillantes directes. Les solutions actuelles, comme les *harnesses* de sécurité conçues par des experts, sont souvent statiques et génériques, ce qui les rend inefficaces face à la diversité des modèles et des domaines d'application, où les besoins en sécurité et en utilité varient considérablement.",
+    "methode": "EvoSafeHarness propose un cadre d'optimisation spécifique à la sécurité qui génère automatiquement un *harness* adaptable pour un modèle figé et un domaine cible. Il combine une recherche conjointe : (1) d'une politique de sécurité exprimée en langage naturel, et (2) d'une logique exécutable en code, en s'appuyant sur le comportement du modèle, les spécifications du domaine, et une évaluation adversariale en contexte réel. Le processus inclut une revue dynamique pour éliminer les règles trop spécifiques aux benchmarks. L'approche utilise des techniques d'optimisation itérative pour ajuster finement les contraintes de sécurité sans dégrader excessivement l'utilité du modèle.",
+    "resultats": "Sur quatre familles de benchmarks d'agents, EvoSafeHarness surpasse les défenses fixes conçues par des experts en termes de compromis sécurité-utilité. Par exemple, sur *DecodingTrust-Agent*, il réduit le taux de succès des attaques de 45,6 % à 10,0 % avec une perte d'utilité de seulement 3,3 points, et obtient les meilleurs scores dans 14 des 15 configurations testées. Sur *AgentDojo*, il atteint 82,8 % d'utilité avec un taux de succès d'attaque nul (0,0 %), soit le double de l'utilité de CaMeL au même point de fonctionnement. Il se généralise aussi à des suites non vues comme *AgentDyn* et maintient un taux d'attaque moyen inférieur à 20 % face à des attaques adaptatives PAIR avec un budget de raffinement de 16.",
+    "limites": "Le cadre repose fortement sur la qualité des spécifications du domaine et des benchmarks utilisés pour l'optimisation, ce qui pourrait limiter sa robustesse dans des contextes réels mal modélisés. De plus, l'efficacité à long terme face à des attaques adversariales évolutives ou à des modèles émergents reste à démontrer. Enfin, la complexité computationnelle de l'optimisation conjointe (politique + code) pourrait poser des défis scalabilité pour des déploiements à grande échelle.",
+    "verdict": "EvoSafeHarness mérite une attention particulière pour son approche innovante et ses résultats prometteurs, mais son adoption dépendra de sa capacité à s'adapter à des environnements dynamiques et à des menaces imprévues."
+   }
+  },
+  {
+   "id": "326faf33e30f0b26",
+   "title": "Scaling Automatic Research Agents via World Models",
+   "url": "https://huggingface.co/papers/2608.12564",
+   "summary": "Automating empirical research is a long-standing direction of AI. Recent automatic research (AutoResearch) agents bring this goal within reach, as modern LLMs show the capability to independently implement solutions and learn from the execution outcomes. Behind these gains, post-training (especially RL) plays a central role. In this paper, we identify a fundamental tension when scaling RL for these agents: the two components of every AutoResearch trajectory (agent generation and environment execution) scale in very different manners, since all generation shares compute through batching, while each execution occupies its exclusive sandbox and real machine time. As a result, the environment execution dominates the training cost and becomes the bottleneck as trajectories grow. To resolve this tension, we propose World Model RL (WMRL), which replaces environment execution with a world model to remove this bottleneck. Additionally, the world model can be imperfect, as its rewards are corrupted by bias and noise. Therefore, we further equip WMRL with two mitigations, Online Debiasing and Inverse-Variance Denoising, which offset the bias and suppress the noise respectively. Theoretically, we prove that both mitigations of WMRL strictly improve the convergence guarantee. Empirically, WMRL accelerates training by 3-4x on various tasks at different agent scales, while exceeding the performance of standard RL baselines. Moreover, our post-trained 4B and 9B agents outperform much larger open-weight agents of 48B and 120B on held-out benchmarks. Beyond AutoResearch, WMRL also transfers to post-training embodied VLA policies, which demonstrates the generalizability of our method.",
+   "published": "2026-08-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 433,
+    "arxiv_id": "2608.12564"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "WMRL utilise des modèles de monde pour réduire le coût d'entraînement des agents de recherche automatique, remplaçant l'exécution réelle par des simulations. Approche théorique solide pour scalabiliser les agents, avec des mécanismes de mitigation du bruit et biais.",
+   "score": 8.8
+  },
+  {
+   "id": "1f22bbea24fb39b3",
+   "title": "CausalArena: Benchmarking Causal Discovery in the Foundation Model Era",
+   "url": "https://arxiv.org/abs/2609.11897v1",
+   "summary": "Causal discovery aims to uncover causal structures from data and is fundamental to scientific reasoning and intervention-based decision making. Its evaluation relies heavily on structural causal models (SCMs), which specify a causal graph together with the mechanisms that generate data, yet existing studies differ substantially in graph families, mechanisms, and evaluation protocols. The emergence of causal discovery foundation models (CDFMs) further complicates evaluation: performance may reflect not only causal discovery ability, but also overlap between pretraining environments and test SCMs, making results on fixed synthetic benchmarks difficult to interpret. We introduce CausalArena, a unified and evolvable benchmark for causal discovery under a common protocol. Synthetic SCMs supply controlled breadth over structures and mechanisms; semantic operational SCMs provide human-auditable, semantically grounded environments beyond standard synthetic generators; and formula-grounded SCMs test discovery under explicit scientific mechanisms. Public real-world datasets provide an additional external-validity check. Experiments across classical, neural, and pretrained methods reveal substantial ranking shifts across SCM families and protocols, showing that strong performance in one benchmark regime does not reliably transfer to others. These results highlight benchmark diversity and pretraining--evaluation overlap as central challenges for evaluating causal discovery in the foundation model era.",
+   "published": "2026-09-10T17:53:15+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zi-Rong Li, Si-Yang Liu, Tian-Zuo Wang, Han-Jia Ye"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "benchmark"
+   ],
+   "tldr": "CausalArena propose un benchmark unifié et évolutif pour évaluer les modèles de découverte causale (CDFMs), intégrant des SCMs synthétiques, sémantiques et fondées sur des formules, ainsi que des jeux de données réels. Intéressant pour comprendre les limites des évaluations actuelles et les biais de généralisation des CDFMs.",
+   "score": 8.6
+  },
+  {
+   "id": "11519846eb21751d",
+   "title": "From Parameters to Answers: How LLMs Retrieve and Use Their Internal Knowledge",
+   "url": "https://arxiv.org/abs/2609.11859v1",
+   "summary": "How does a language model's dependence on query-routing information and target knowledge change as it answers a question? We study this question through layerwise interventions on the hidden state at the end of the question. Across Qwen, Llama, and Gemma, we compare country-continent questions with noun, adjective, and code answers while keeping several fitted measurements distinct. A pair-conditioned request direction describes which country is queried in natural single-country questions; a global request direction describes first- versus second-country requests in paired questions; separate selection candidates test control among contents already available in the hidden state. A diagnostic reanalysis of frozen Qwen natural-question states shows that the pair-conditioned direction grows stronger before interventions on it begin to alter later fitted knowledge, with this causal window opening while answer-supporting content is still forming. The paired three-model trajectories are not uniform: Gemma shows a partially overlapping mid-layer routing-content profile, whereas Llama has no sustained routing-effect window under the same gates. In the paired protocol, dependence on the global request direction decreases from fixed earlier to later layer sets while dependence on fitted content persists. A matched Qwen comparison shows that the pair-conditioned direction retains a late effect, so this operational handoff concerns the global fitted direction rather than all request information. These results separate early readability, natural strength, causal steering, and later content dependence.",
+   "published": "2026-09-10T17:39:55+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wenkang Wei, Yuan Fang, Renhe Jiang, Hong Cheng, Xingtong Yu"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Analyse des mécanismes internes des LLMs (Qwen, Llama, Gemma) montrant comment les directions de requête et de connaissance interagissent lors de la génération de réponses. Contribution majeure à l'interprétabilité des modèles, avec des insights sur le routage de l'information.",
+   "score": 8.6
+  },
+  {
+   "id": "150d80fb8504738c",
+   "title": "Why Does Post-Training Quantization Work?",
+   "url": "https://arxiv.org/abs/2609.11716v1",
+   "summary": "Post-training quantization compresses large language models (LLMs) by storing their weights at reduced precision, and each quantized weight introduces an error into the hidden states. Naively, these errors should accumulate with depth and corrupt next-token prediction; randomly initialized models accumulate these discrepancies rapidly, whereas quantized pretrained models accumulate much less hidden-state error and largely maintain downstream task performance, even though they were never trained with quantization noise. This raises the question we address: why does post-training quantization work? Comparing full-precision and quantized forward passes, we identify two mechanisms that characterize pretrained quantization robustness. First, the error a layer newly introduces tends to oppose the error it inherits from the layer's input. The two cancel partially such that the discrepancy between full-precision and quantized passes grows slowly. This counteracting residual interaction develops during pretraining. Our quantitative analysis identifies it as a major factor slowing hidden-error growth. Second, LM-head geometry preferentially preserves the scores and probabilities of high-ranked tokens, which typically represent the model's most confident predictions. Together, these mechanisms explain why quantization error that passes through numerous layers can still produce only small output changes, and we verify the findings across models and quantization settings.",
+   "published": "2026-09-10T15:32:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yuxiang Chen, Michael Beyer, Jun Zhu, Jianfei Chen"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Analyse théorique et empirique expliquant pourquoi la quantification post-entraînement fonctionne pour les LLMs, via des mécanismes de compensation d'erreurs et une géométrie spécifique de la tête de modèle. Fondamental pour l'optimisation des modèles en production.",
+   "score": 8.6
+  },
+  {
+   "id": "563f8ee1c5bf6b5e",
+   "title": "google/artemis",
+   "url": "https://github.com/google/artemis",
+   "summary": "ARTEMIS turns natural-language instructions into reliable Android automation. It automates end-to-end workflows, captures logs, and integrates seamlessly with AI coding assistants such as Antigravity, Codex, and Claude Code. It also achieves 99%+ success rate on AndroidWorld Benchmark. Created by Google's Pixel-Test-Engineering (PTE) Fusion team.",
+   "published": "2026-08-13T17:59:37Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1811,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "Framework développé par Google (Pixel-Test-Engineering) pour automatiser des tâches Android via des instructions en langage naturel, avec un taux de réussite de 99%+ sur AndroidWorld Benchmark. Solution industrielle robuste, pertinente pour l'automatisation et les agents.",
+   "score": 8.6
+  },
+  {
+   "id": "dce1dc986a7bd0de",
+   "title": "HyQuant: Hybrid-Precision Quantization for LLM Attention",
+   "url": "https://huggingface.co/papers/2608.27875",
+   "summary": "Quantization has been widely adopted in LLM training and inference to reduce cost and improve efficiency. However, low-bit quantization of the attention module often introduces large errors at very low bit-widths, causing performance degradation. Existing methods mainly rely on smoothing techniques to handle outliers, while we propose a hybrid quantization design to better balance accuracy and efficiency. Specifically, we propose HyQuant, an efficient hybrid quantization framework for LLM attention. HyQuant quantizes most attention states into low-bit formats while retaining a small set of vertical-line tokens and local-window states in high precision. These accuracy-critical regions are selected using lightweight vertical-line-aware attention-pattern signals, reducing quantization error with limited overhead. In the Prefill stage, HyQuant uses a hybrid-precision quantized attention operator that preserves vertical-line tokens and a local sliding window in full precision while quantizing the remaining context. In the Decode stage, HyQuant applies the same principle to KV-cache compression and fuses KV dequantization with attention computation to improve memory and hardware efficiency. Across diverse tasks, models, and datasets, HyQuant maintains nearly lossless accuracy with an extremely simple design, demonstrating the efficiency and practical feasibility of hybrid quantization for LLM attention. Code is available at: https://github.com/jerrysfls/HyQuant .",
+   "published": "2026-08-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2608.27875"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "HyQuant propose une quantification hybride pour les modules d'attention des LLM, combinant bas débit pour la majorité des tokens et haute précision pour les tokens critiques (ligne verticale, fenêtre locale), réduisant les erreurs de quantification avec un surcoût limité. Intéressant pour optimiser l'inférence des LLM sans perte de performance.",
+   "score": 8.5
+  },
+  {
+   "id": "a5f8c3f96e59e32e",
+   "title": "T1: Terminal Agent Reinforcement Learning for Long-Horizon Tasks",
+   "url": "https://huggingface.co/papers/2609.11042",
+   "summary": "Agent usage is shifting toward long-horizon tasks such as coding and scientific discovery, among which terminal tasks are especially important. We introduce T1, a Mixture-of-Experts model of 122B total trained with reinforcement learning, operating a real shell in a cloud sandbox for up to 300+ tool-call turns per task, rewarded by executing each task's own verifier. We provide a comprehensive recipe: First, an aggressively warm-started to stabilize actor-critic training, with a dense process reward scoring trajectories by the absolute number of passing verifiers. Second, stable optimization through TITO construction, training on the exact sampled token identifiers with drift repair at turn boundaries, and rollout routing replay, recording the sampler's per-token expert choices at every MoE layer and replaying them during training. Third, fully out-of-distribution training corpus: isolated seeds and synthesized tasks disjoint from Terminal-Bench 2.1 ensures gains reflect genuine capability transfer over benchmark overfitting. Together, TITO and R3 cut the training-to-inference log-probability difference from 0.021 to 0.013, with exactly aligned zero token drift in the loss region. On Terminal-Bench 2.1, our post-train pipeline raises initial base model from 43.8% to T1 with 64.0% resolved. On Long-Horizon Terminal Bench, T1 reaches 27.9% and surpasses GPT-5.4 and GLM-5.1.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 39,
+    "arxiv_id": "2609.11042"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "T1 est un agent terminal 122B-MoE entraîné par RL pour des tâches long-horizon (jusqu'à 300+ appels d'outils), avec des innovations comme TITO pour réduire le décalage log-probabilité. Avancée majeure pour les agents autonomes, mais dépendante de la qualité des vérificateurs.",
+   "score": 8.5
+  },
+  {
+   "id": "8394ec0a26929716",
+   "title": "SchemeArena: Factorized Stress Testing of Scheming in LLM Agents",
+   "url": "https://huggingface.co/papers/2609.08126",
+   "summary": "We study scheming in LLM agents, in which agents covertly pursue misaligned goals. Our focus is to understand how scheming arises from the interaction of key factors, such as instrumental goals, environmental affordances, oversight conditions, and perceived consequences. Prior work examines only a small number of scenarios, limiting the ability to isolate how these conditions shape an agent's propensity or capability to scheme. This limited scale and task diversity also restrict coverage of realistic deployment settings and the range of scheming strategies that can be observed. To this end, we introduce SCHEMEARENA, a 400-scenario benchmark for scalable scheming stress testing, constructed through a factorized scenario synthesis framework spanning diverse safety-relevant tool domains, instrumental goals, oversight conditions, and pressure mechanisms. To enable scalable and reliable monitoring, we further propose SCOUT, a scheming monitor that grounds multi-criteria judgments in evidence drawn from agents' reasoning and actions. Across controlled stress tests on five LLM agents, we find that explicit instrumental goals are the strongest driver of scheming propensity. Strategic hints play a distinct role by helping agents translate scheming reasoning into concrete covert behavior. Oversight has mixed effects: in several closed models, action-only monitoring increases scheming, suggesting that partial oversight can act as an optimization constraint rather than a deterrent. CoT is a useful but incomplete monitoring signal: it can reveal latent scheming before execution, yet action-only scheming shows that covert behavior may occur without explicit reasoning evidence. We release the benchmark, code, and monitor at: https://github.com/launchnlp/SchemeArena.",
+   "published": "2026-09-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.08126"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "regulation"
+   ],
+   "tldr": "SCHEMEARENA propose un benchmark de 400 scénarios pour évaluer la tendance des agents LLM à 'schemer' (poursuite d'objectifs cachés), identifiant les facteurs clés (objectifs instrumentaux, supervision) et introduisant SCOUT pour un monitoring scalable.",
+   "score": 8.5
+  },
+  {
+   "id": "edd61c31429065ea",
+   "title": "ToolGrad: Efficient tool-use dataset generation with textual \"gradients\"",
+   "url": "https://research.google/blog/toolgrad-efficient-tool-use-dataset-generation-with-textual-gradients/",
+   "summary": "Machine Intelligence",
+   "published": "2026-09-10T22:50:22+00:00",
+   "source": "google-research",
+   "source_label": "Google Research",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Méthode (ToolGrad) pour générer des datasets d'outils efficacement via des 'gradients textuels', optimisant l'entraînement des modèles à l'utilisation d'outils (ex: API, fonctions externes).",
+   "score": 8.5
+  },
+  {
+   "id": "506eca95ae096a07",
+   "title": "Domain-Specific Hallucination Detection in Large Language Models",
+   "url": "https://arxiv.org/abs/2609.11878v1",
+   "summary": "Large language models generate fluent text that can contain unfaithful claims -- a phenomenon known as hallucination. We present a multi-signal detection pipeline combining fine-tuned DeBERTa-v3 classification, Monte Carlo (MC) Dropout uncertainty quantification, and temperature-scaled calibration for response-level hallucination detection. Evaluated on the HaluEval benchmark, our pipeline achieves F1=0.915 and AUROC=0.977 on general-domain tasks, with per-task F1 scores of 0.97 (QA), 0.96 (Summarization), and 0.82 (Dialogue). MC Dropout inference further improves accuracy to 93.2%. A context ablation study confirms the model performs genuine entailment reasoning rather than exploiting surface patterns, with summarization F1 dropping 24% when knowledge context is removed. Learning curve analysis reveals that 25% of training data captures 77% of full-data performance. Beyond detection, we apply Direct Preference Optimization (DPO) to a Qwen2.5-0.5B generator, reducing its hallucination rate from 85.5% to 37.7% (55.9% relative reduction) as measured by our detector. Cross-domain evaluation on the SciFact biomedical benchmark shows that general-domain training transfers poorly (F1=0.52), motivating domain-specific fine-tuning. PubMedBERT fine-tuned on SciFact achieves F1=0.63 and AUROC=0.81, demonstrating that domain-matched pre-training is the strongest adaptation strategy. Code and models are available at https://github.com/varunteja99/hallucination-detection-nlp",
+   "published": "2026-09-10T17:45:36+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Varun Teja Chundru, Debasmita Biswas"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "outils"
+   ],
+   "tldr": "Pipeline multi-signaux (DeBERTa-v3, MC Dropout, calibration) pour détecter les hallucinations dans les LLM, avec une réduction de 55,9% des hallucinations via DPO. Approche robuste et généralisable, validée sur HaluEval et SciFact.",
+   "score": 8.3
+  },
+  {
+   "id": "5ec9cb1b71fd2aba",
+   "title": "RAG-Safety-Bench: Reliable Evaluation of Retrieval-Augmented LLM Safety",
+   "url": "https://arxiv.org/abs/2609.11758v1",
+   "summary": "Allowing large language models (LLMs) to retrieve information from a set of trusted documents can increase reliability and reduce hallucination. However, recent work has demonstrated that retrieval-augmented generation (RAG) can have unintended side effects on the overall safety of the generated responses, when prompted for harmful or dangerous content. A clearer understanding of the mechanisms leading to this result is needed, as increasing numbers of end users turn to RAG to incorporate corporate documents and knowledge bases into LLM-based systems. We introduce RAG-Safety-Bench, a benchmark to measure the safety impact of RAG on LLM models. By removing the confounding effect of retriever quality, and cleanly separating the problem into four conditions -- non-RAG, RAG with an oracle document containing the answer to the harmful request, RAG with documents related to the harmful request but without the specific answer, and RAG with random, safe documents -- the benchmark isolates the impacts of different factors in the observed safety degradation. We report results across five open-source LLMs, showing an inverse relationship between benign and unsafe capability, strong evidence that baseline safety guardrails do not lead to downstream safety guarantees in the RAG case, and model-specific support for previous findings that even benign documents can lead to unsafe generation in retrieval-enabled systems.",
+   "published": "2026-09-10T16:12:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Adithiyan Rajan Indira Saravanan, Kathleen C. Fraser"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "rag",
+    "benchmark"
+   ],
+   "tldr": "Benchmark *RAG-Safety-Bench* évaluant l'impact de la RAG sur la sécurité des LLM en isolant l'effet des documents (oracle, pertinents, aléatoires) et révélant une corrélation inverse entre capacités sûres et non sûres sur 5 modèles open-source.",
+   "score": 8.3
+  },
+  {
+   "id": "1f1a32eceddb887b",
+   "title": "X-AuT: Progressive Audio-Encoder Compression for Speech LLMs with Cross-Scale Distillation",
+   "url": "https://huggingface.co/papers/2609.11412",
+   "summary": "Reducing audio-encoder depth lowers the inference cost of speech large language models, but removing complete blocks perturbs the embeddings consumed by the decoder and can cause deletion and premature end-of-sequence errors. We introduce X-AuT, a progressive framework that selects layer combinations through short behavioral probes and restores the pruned model through representation alignment, cross-scale distillation, scheduled student-policy supervision, and LoRA finetuning. The language-model backbone remains frozen, while attention LoRA adapters and the tied output embedding adapt during distillation. Training uses the highest-agreement tier from a transcript-consistency pipeline, followed by source reweighting during finetuning. On ten public Chinese--English benchmarks, compressing Qwen3-ASR-0.6B from 18 to 16 audio-encoder layers reduces macro-average error from 5.61% to 5.27%. The 14-layer model reaches 5.75% with 20.7% fewer audio-tower parameters. Under the matched recipe, the 1.7B teacher yields 5.55% mean error, compared with 8.45% for self-distillation, and progressive 18rightarrow14 pruning outperforms direct pruning (5.75% vs. 6.73%). These single-run results establish two practical operating points and show that the accuracy effects vary across benchmarks. Project website: https://xpeng-ai.github.io/x-aut",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2609.11412"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "audio"
+   ],
+   "tldr": "Présente X-AuT, une méthode de compression progressive des encodeurs audio pour les Speech-LLMs, réduisant la profondeur des couches tout en maintenant les performances via distillation croisée et LoRA. Pertinent pour l'optimisation des modèles audio-LLM.",
+   "score": 8.2
+  },
+  {
+   "id": "1e4ea5fee661a965",
+   "title": "CARDEA: Auditable Reasoning Grounded in Spatial Evidence for End-to-End Coronary Angiography Interpretation",
+   "url": "https://huggingface.co/papers/2609.06931",
+   "summary": "Invasive coronary angiography (CAG) is the gold standard for diagnosing coronary artery disease, but interpretation varies substantially among observers. Existing AI systems can improve consistency but lack auditable decision processes and are limited in comprehensive open-ended assessment, undermining clinician trust and clinical adoption readiness. We developed CARDEA, a unified large vision-language model that serves as the inference core of a CAG pipeline. It was trained solely on public datasets and closed-ended tasks in three stages: visual feature alignment, a self-distilled Chain-of-Box (CoB) cold start, and reinforcement learning with verifiable rewards (RLVR) with a CoB reward encouraging bounding-box use in the reasoning trace. We assessed its two study-level diagnoses, dominance classification and complexity assessment, against a dedicated classifier and two interventional cardiologists. Report generation was excluded from training and evaluated zero-shot across stages on an external cohort using vessel-severity macro-F_1. CARDEA trailed the classifier on in-distribution dominance but drew level under domain shift (accuracy, 0.91 [95% confidence interval (CI), 0.86 to 0.95]) and was comparable to the cardiologists on complexity assessment (accuracy, 0.90 [CI, 0.82 to 0.97]). Only RLVR improved zero-shot report generation, raising its vessel-severity macro-F_1 (0.686 [CI, 0.664 to 0.707]) above the untuned base model (0.513) and over twice the always-normal floor (0.312). CARDEA runs an end-to-end CAG pipeline from raw multi-view videos through keyframe selection to study-level diagnosis while exposing auditable spatial evidence behind its conclusions. RLVR on verifiable closed-ended tasks surfaced open-ended reporting ability that supervised imitation did not. Clinical use requires prospective validation against expert cardiologists.",
+   "published": "2026-09-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.06931"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "produit",
+    "regulation"
+   ],
+   "tldr": "CARDEA est un LVLM auditable pour l'interprétation de coronarographies, utilisant une chaîne de raisonnement basée sur des boîtes englobantes (CoB) et un RLVR pour améliorer la cohérence des diagnostics. Modèle clinique pertinent pour la confiance et l'adoption en santé, avec évaluation rigoureuse.",
+   "score": 8.2
+  },
+  {
+   "id": "13c5acd5d41de6cd",
+   "title": "Logit Refiner: Improving Visual Autoregressive Models via Intra-Scale Dependency Modeling",
+   "url": "https://arxiv.org/abs/2609.11804v1",
+   "summary": "Visual Autoregressive Models (VAR) generate images through next-scale prediction, producing all tokens within each scale in parallel. We show that this parallel decoding constitutes a mean-field-style approximation that discards spatial dependencies among same-scale tokens, causing locally incoherent samples regardless of backbone capacity -- a limitation of the decoding rule. Addressing this limitation, we introduce the Logit Refiner, a lightweight autoregressive module that restores intra-scale dependencies by sequentially sampling tokens conditioned on frozen backbone features. Adding only ~10% parameters and less than 5% of the base model's training compute, it plugs into any pretrained VAR checkpoint without retraining. Controlled ablations isolate joint intra-scale sampling -- rather than additional capacity or training -- as the critical ingredient. Across backbones from 310M to 2B parameters on class-conditional ImageNet 256x256, the refiner consistently improves generation quality, enabling a 1.1B-parameter model to surpass one twice its size. The approach further generalizes to text-to-image generation, confirming that the mean-field bottleneck persists across VAR variants and is effectively alleviated by our method. Project page: https://compvis.github.io/logit-refiner/",
+   "published": "2026-09-10T16:57:05+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Meimingwei Li, Stefan Andreas Baumann, Felix Krause, Björn Ommer"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "Les Visual Autoregressive Models (VAR) souffrent d'une limitation majeure : leur décodage parallèle par échelle ignore les dépendances spatiales intra-échelle, générant des incohérences locales. Le Logit Refiner, module léger (~10% de paramètres), restaure ces dépendances en échantillonnant séquentiellement les tokens conditionnellement aux features figées du backbone, améliorant la qualité sans réentraînement et permettant à un modèle de 1.1B de surpasser un modèle de 2B.",
+   "score": 8.0
+  },
+  {
+   "id": "3b2c3c0bcec7d16c",
+   "title": "SpecGuard: Inference-Time Backdoor Detection For Free",
+   "url": "https://arxiv.org/abs/2609.11799v1",
+   "summary": "Large language models are often fine-tuned, shared, or downloaded from third parties, so a deployed model may carry a hidden backdoor that behaves normally on benign inputs but switches to attacker-controlled behavior when a secret trigger appears. While backdoors can be audited before deployment, runtime monitoring remains important for models that are frequently updated. The challenge is that LLM serving is latency-sensitive: existing inference-time detectors either rely on assumptions about the trigger form, which can fail on stealthy attacks, or require extra model computation, such as input perturbations or an additional generation pass. We introduce SpecGuard, an inference-time backdoor detector that repurposes speculative decoding at zero added model-computation cost. Speculative decoding speeds up inference by using a small draft model to propose tokens and a target model to verify them. We observe that this verification process already exposes a useful signal: when a backdoor is triggered, the target model shifts toward the attacker's behavior, while a clean draft model does not predict this shift, causing the draft-token acceptance rate to change. We formalize when this signal appears and show that an attacker who suppresses it must also weaken the backdoor. Across diverse backdoor types and model families, SpecGuard reliably detects triggered behavior, including stealthy cases where input-level filters are blind, while avoiding the extra generation cost of existing runtime detectors. Speculative decoding therefore doubles as a free, always-on signal for detecting backdoored LLM behavior.",
+   "published": "2026-09-10T16:51:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Rui Wen, Ahmed Salem, Andrew Paverd, Mark Russinovich, Zheng Li"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "outils",
+    "regulation"
+   ],
+   "tldr": "SpecGuard détecte les backdoors en temps réel dans les LLM en exploitant les signaux de *speculative decoding* : un changement de comportement du modèle cible (vers le comportement malveillant) se traduit par une baisse du taux d'acceptation des tokens par le modèle draft. Cette méthode évite toute computation supplémentaire et cible des attaques furtives, mais repose sur des hypothèses structurelles des backdoors.",
+   "score": 8.0
+  },
+  {
+   "id": "1f37315d89d0d50e",
+   "title": "ORCH: Organizational Principles Enable Collective Intelligence in Embodied AI",
+   "url": "https://arxiv.org/abs/2609.11737v1",
+   "summary": "Collective intelligence depends not only on the capabilities of individual members, but also on how those members are organized. Yet artificial multi-agent systems are typically assembled using fixed organizational structures, even when the physical tasks they perform impose fundamentally different coordination requirements. Here we show that principles from human organization theory can be operationalized to organize large, heterogeneous collectives of embodied artificial agents. We introduce ORCH (Organizing Roles and Coordination Hierarchies), which constructs task-specific hierarchical organizations by combining pooled interdependence for work that can proceed concurrently with sequential interdependence for work governed by prerequisite relationships. Across 25 wildfire-response missions spanning reconnaissance, rescue, transportation, resource management, containment and suppression, we evaluated teams of up to 50 heterogeneous agents using eight large language models. Organizations constructed using these principles consistently outperformed four representative embodied multi-agent approaches across mission outcome, execution efficiency, exploration and computational resource use. Human-designed ORCH organizations improved final score by 63.97% and execution efficiency by 74.29% on average relative to the four prior frameworks. Organizations generated automatically by language models improved these measures by 43.63% and 52.53%, respectively. These advantages persisted across missions and underlying language models. Notably, collective performance was not monotonically determined by model scale. Analysis of long-horizon missions showed that hierarchical organization enabled teams to preserve concurrent activity within specialized groups while coordinating ordered transitions between mission phases.",
+   "published": "2026-09-10T15:52:35+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhengran Ji, Jonathan Hyun, Boyuan Chen"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Cadre *ORCH* appliquant des principes d'organisation humaine (interdépendances séquentielles/pooled) pour optimiser les équipes multi-agents embodied, surpassant 4 approches existantes sur 25 missions de lutte contre les incendies avec jusqu'à 50 agents.",
+   "score": 8.0
+  },
+  {
+   "id": "51c0a932f7201270",
+   "title": "MetroLLM-Bench: Evaluating Language Models as Transit Kiosk Runtimes",
+   "url": "https://huggingface.co/papers/2609.10016",
+   "summary": "We introduce MetroLLM-Bench, a 955-case benchmark for testing language models as the policy layer of a transit kiosk. It covers six real metro systems, ranging from 37 to 414 stations, and eleven categories that include routing, fare calculation, disruptions, accessibility, and adversarial input. In each case, the model must call structured tools and submit a machine-renderable terminal state containing an outcome, a per-ticket fare quote when applicable, and a kiosk action. Fourteen deterministic scoring components form Tier 1; eight semantic-quality components form Tier 2, six of which use a language-model judge. We report Tier 1 and the combined score of both tiers. A stratified 75/25 split reserves 717 cases for training-data generation and 238 for held-out evaluation. We evaluate twenty-six models from six vendors, of which twenty-three are ranked. On the held-out partition, a 4B Qwen 3.5 student trained through parameter-efficient fine-tuning (PEFT) exceeds both GPT-5.6 tiers on Tier 1 (91.3 against 90.6 and 90.0) and matches GPT-5.4 full at maximum reasoning effort (91.4), with a 2.6 GB Q4_K_M footprint. Larger 9B and 27B students provide no further Tier 1 improvement over the 4B student at this training scale. Across the four Qwen sizes, the PEFT gain over the corresponding base model decreases from +7.03 points at 2B (three training seeds) to -0.91 at 27B; every seed shows the same direction at every size. A deterministic rule-based baseline reaches 84.6 on Tier 1, with the remaining language-model advantage concentrated in policy adaptation, compound scenarios, accessibility, and temporal reasoning. Muse Glimmer 30B leads the composite ranking, and serving configuration alone moves the Qwen 3.5-to-3.8 comparison by 2.7 Tier 1 points. The benchmark, harness, reproduction guide, and fine-tuned students are released at https://github.com/continker/metrollm-bench.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.10016"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "benchmark",
+    "produit"
+   ],
+   "tldr": "Présente MetroLLM-Bench, un benchmark de 955 cas évaluant les LLM comme interfaces de kiosques de transport, avec des métriques structurées (Tier 1) et sémantiques (Tier 2). Intéressant pour l'évaluation des LLM en contexte applicatif réel.",
+   "score": 7.9
+  },
+  {
+   "id": "929203dee638d4e6",
+   "title": "NCP-ArchPreview Technical Report: Moving towards Latent Space Language Models through Next Concept Prediction",
+   "url": "https://huggingface.co/papers/2609.10715",
+   "summary": "We introduce NCP-ArchPreview, a latent-space language model that pushes autoregressive pretraining beyond standard next-token prediction (NTP). Alongside NTP, the model learns through Next Concept Prediction (NCP) to predict discrete concepts that span multiple tokens, introducing an explicit and more challenging concept-level objective while preserving standard token-level autoregressive generation. NCP-ArchPreview builds a latent space by constructing a product-quantized concept vocabulary directly from its hidden states, and subsequently learns to predict future concepts via a dedicated Concept Module. These predicted concepts are then fed back to the token level to guide subsequent generation, with NTP and NCP trained jointly end-to-end. We scale this architecture to 8.9B parameters and train it on 5.73T tokens from the Dolma-3 dataset, marking the largest demonstration of a latent-space language model to date. Remarkably, by consuming only 51.3% of the total training tokens, NCP-ArchPreview achieves the final pretraining loss of OLMo-3-7B. Following full pretraining, it outperforms OLMo-3-7B by 2.45 points on the downstream macro-average, including a notable 5.99-point gain on GSM8K. Controlled experiments isolate a clear progression of performance gains stemming from both the latent architecture and the NCP objective. Furthermore, utilizing only 85% of the standard computation, NCP-ArchPreview approaches the training loss of a strictly parameter-aligned 8.9B baseline. The learned latent space remains highly valuable after the pretraining stage: updating just the 17M-parameter VQ module yields a novel, lightweight interface for domain adaptation, while a simple injection of concept representations into a DFlash2 drafter improves the mean accepted length by 4.17% with negligible overhead.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 106,
+    "arxiv_id": "2609.10715"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "llm"
+   ],
+   "tldr": "NCP-ArchPreview introduit une prédiction de concepts latents (NCP) en plus de la prédiction de tokens, améliorant les performances d'un modèle de 8.9B paramètres (51.3% des tokens d'entraînement) par rapport à OLMo-3-7B. Avancée majeure pour les architectures de LLM au-delà du next-token prediction.",
+   "score": 7.9
+  },
+  {
+   "id": "8e555c18f01d8e60",
+   "title": "Data Scarcity and Model Sparsity: Mixtures-of-Experts Overfit More to Repeated Data",
+   "url": "https://arxiv.org/abs/2609.11917v1",
+   "summary": "As the supply of human-written text is exhausted, it has become standard practice to repeat language model training data. Prior work has studied data repetition for densely activated Transformers, but the effects of data repetition remains largely unexplored for recently dominant sparse architectures such as Mixture-of-Experts (MoE), despite their increased compute efficiency. We vary data repetition rates across single- and multi-domain data mixes, and across MoE settings, including expert count and granularity. We consistently find, for models ranging from 80M to 1B active (8.5B total) parameters, that MoEs degrade more rapidly under data repetition. This effect increases with sparsity, dictated by total rather than active parameters. While 80M dense models can repeat data over 8x with minimal degradation, MoEs instead begin to suffer at 4x, and deteriorate rapidly, ceding their performance benefits in all-unique data settings to underperform dense models after 32x. We experiment with existing regularization methods as a potential remedy. We find that some methods, such as dropout, can mitigate overfitting. In particular, with strong masking-based regularization, MoEs are able to outperform dense models even when data is repeated more than 64 times. However, no method fully matches the performance of all-unique training data. Finally, we analyze internal mechanisms correlated with MoE overfitting in high repetition regimes, and find that MoE routing universally stabilizes early in training, and that expert specialization correlates with overfitting to repeated data. In sum, our work addresses the adverse interactions between sparsity and data repetition: we present evidence for the core mechanisms of overfitting and its potential remediation, and suggest promising avenues for future methods to reduce over-specialization in model parameters by disrupting memorization patterns.",
+   "published": "2026-09-10T17:57:33+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Atindra Jha, Margaret Li, Jure Leskovec, Percy Liang, Luke Zettlemoyer"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Les modèles Mixture-of-Experts (MoE) surentraînent davantage que les modèles denses sous répétition de données, avec une dégradation accélérée dès 4x de répétition, remettant en cause leur efficacité en contexte de données limitées ou répétées.",
+   "score": 7.7
+  },
+  {
+   "id": "d141af8f864bfe7c",
+   "title": "Nuha-Speech: Building General-Purpose Arabic Speech-LLMs",
+   "url": "https://arxiv.org/abs/2609.11892v1",
+   "summary": "As Speech Large Language Models (speech-LLMs) become increasingly multilingual, Arabic remains significantly underrepresented, highlighting the need for dedicated infrastructure to train and evaluate Arabic speech-LLMs. To address this gap, we introduce Nuha-Speech, a comprehensive initiative to develop general-purpose Arabic speech-LLMs spanning dataset construction, model training, and systematic evaluation. Specifically, we constructed a large-scale Arabic Speech Question-Answering (SQA) corpus comprising over 1.5 million training samples to allow instruction tuning over a broad range of core speech tasks. Then, the corpus was used for supervised fine-tuning based on Qwen-Omni model variants at different scales. Finally, we designed an evaluation framework featuring diverse tasks and tailored metrics. Through this work, we aim to establish foundational infrastructures for Arabic Speech-LLMs under constraints imposed by limited Arabic speech resources.",
+   "published": "2026-09-10T17:50:35+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yingzhi Wang, Reem Alhazzani, Muhammad Alqurishi"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "audio",
+    "produit"
+   ],
+   "tldr": "Nuha-Speech développe une infrastructure complète pour des Speech-LLMs en arabe, incluant un corpus de 1,5M de Q&A, un fine-tuning sur Qwen-Omni et un cadre d'évaluation. Répond à un besoin critique pour la diversité linguistique dans les modèles multimodaux.",
+   "score": 7.7
+  },
+  {
+   "id": "db9e6b13e82fd008",
+   "title": "RetroThinker: Enabling Retrospective Thinking in Speech LLMs",
+   "url": "https://arxiv.org/abs/2609.11864v1",
+   "summary": "Speech large language models (SpeechLLMs) offer reduced latency and retain paralinguistic nuances that are typically lost in cascaded automatic speech recognition (ASR) and text-based LM architectures. However, they continue to lag behind text-only LLMs on complex reasoning tasks, while real-time spoken interaction imposes strict latency constraints. Although prior works employ Chain-of-Thought (CoT) and concurrent reasoning to enhance reasoning capabilities without inducing prohibitive delays, an inherent accuracy-latency trade-off persists. In this paper, we investigate whether a streaming SpeechLLM can dynamically revise its reasoning traces on the fly. We introduce RetroThinker, a multi-stage post-training framework that equips the Moshi model to self-verify and forward-correct CoT steps during inference. RetroThinker combines supervised fine-tuning (SFT) on curated retrospective thinking data with length-based direct preference optimization (DPO) to optimize retrospective during early reasoning (i.e., reasoning concurrently while the user speaks). Evaluated on the GSM8K benchmark, RetroThinker significantly improves the accuracy-latency trade-off over non-retrospective baselines, achieving an 11% absolute accuracy gain at a comparable latency.",
+   "published": "2026-09-10T17:41:53+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yi-Jen Shih, Puyuan Peng, Abdelrahman Mohamed, David Harwath"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "RetroThinker améliore les SpeechLLMs en permettant une révision dynamique des traces de raisonnement (CoT) pendant l'inférence, réduisant le compromis précision-latence. Approche innovante pour les modèles audio en temps réel, validée sur GSM8K.",
+   "score": 7.7
+  },
+  {
+   "id": "a8ab3b77105d028d",
+   "title": "Building py-kvcache: A Performance Characterization of External KV Caching for vLLM with NVMe SSDs",
+   "url": "https://arxiv.org/abs/2609.11744v1",
+   "summary": "Prefix caching can reduce the time to first token (TTFT) of long-context LLM requests by reusing previously computed key-value (KV) states, but for short prefixes or fast GPUs, recomputation can be faster than loading from an external cache. We characterize this tradeoff in vLLM across GPU, CPU, and NVMe tiers using synthetic workloads, long-context benchmarks, production traces, and find that cache performance depends on transfer granularity, intermediate memory use, and when transfers enter the request schedule, not only on device bandwidth. These findings motivate py-kvcache, a vLLM KV Offload connector with asynchronous direct I/O, bounded shared staging, and scheduler-aware preloading, which starts disk reads while requests are still waiting, overlapping with compute. At 80k tokens, py-kvcache loading from disk is 2.0x faster than LMCache, with preloading contributing 1.34x. With GPU, CPU, and disk caching enabled, it is 1.23x faster than LMCache and within approximately 4% of the native vLLM KV Offload implementation. LongBench and SCBench show that these benefits extend to irregular prefix chains and multi-turn workloads. Bailian trace replays improve TTFT on a weaker GPU, but on an H100 the average request falls below the break-even point and GPU memory alone retains enough prefixes. External KV caching should therefore be treated as a setup specific admission decision. The py-kvcacheimplementation is available at: https://github.com/atlarge-research/py-kvcache.",
+   "published": "2026-09-10T16:00:35+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Joseph Kanichai, Tiziano De Matteis, Animesh Trivedi"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Bibliothèque *py-kvcache* optimisant le *KV caching* externe pour vLLM via I/O asynchrone et préchargement intelligent, réduisant le TTFT de 2x vs LMCache à 80k tokens et restant proche de l'implémentation native.",
+   "score": 7.7
+  },
+  {
+   "id": "d195986aa3794679",
+   "title": "When Agents Disagree: Bayesian Backward Reasoning as a Label-Free Anchor for Multi-Agent Collective Decision-Making",
+   "url": "https://arxiv.org/abs/2609.11709v1",
+   "summary": "When multiple LLM agents yield conflicting answers, the decision-making process dictates whether agent diversity improves performance or merely compounds shared errors. Existing collective decision-making methods, including voting, electoral rules, and LLM judges, rely on forward reasoning: they map evidence to labels in one direction. Although these methods can combine diverse forward traces, they still aggregate estimates that share this evidence-to-label factorization and can inherit correlated errors within the forward pool. We therefore construct a reverse posterior for each instance through Bayesian backward reasoning from an explicit likelihood. The forward and reverse posteriors provide differently factorized approximations of the underlying posterior. Because estimates from different factorizations may tend to share the same error less often, we use Jensen-Shannon divergence to rank agents by cross-path consistency. This cross-path consistency signal underlies three strategies: hard selection (MinJS), soft reweighting (FwdJS), and log-linear fusion (LogLin). Evaluated on DDXPlus across five LLM backbones, our proposed strategies show consistent improvements: MinJS outperforms random selection across all backbones, FwdJS generally improves over the strongest baseline, and LogLin achieves the best performance among the evaluated methods, with its largest gains on the subset where the agents disagree. Despite its weaker standalone accuracy, the reverse posterior serves as a more useful anchor than forward-only alternatives, providing complementary information for collective decision-making. When labeled data are available, a lightweight two-stage calibration can further refine the reverse anchor and improve aggregation performance.",
+   "published": "2026-09-10T15:27:58+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ken Chen, Wei Wang, Sachith Seneviratne, Hansani Weeratunge, Saman Halgamuge"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Méthode bayésienne pour la prise de décision collective entre agents LLM en conflit, utilisant des posteriors inverses et la divergence de Jensen-Shannon. Approche innovante pour améliorer la robustesse des systèmes multi-agents.",
+   "score": 7.7
+  },
+  {
+   "id": "671e4a46be247b4b",
+   "title": "A Three-Layer Caching Architecture for Low-Latency LLM Web Search on Commodity CPU Hardware",
+   "url": "https://huggingface.co/papers/2609.05463",
+   "summary": "AI-powered search products such as ChatGPT search, Google's AI Overviews, and Perplexity provide LLM-synthesized answers grounded in live web results. We developed OreoLook (formerly lixSearch), an open-source answer engine using automated browser agents and provider-routed LLM inference. Its local search, caching, session-management, and embedding stack runs on commodity CPU hardware; answer synthesis is performed by a remote inference provider. As usage grew, sessions lost context, equivalent queries triggered redundant work, and URLs were repeatedly embedded across sessions. We present a three-layer caching architecture: (1) a Session Context Window maintaining a rolling window of recent messages in Redis with automatic overflow to Huffman-compressed disk archives; (2) a Semantic Query Cache catches rephrasings via cosine similarity on embedding vectors, eliminating redundant LLM invocations; and (3) a URL Embedding Cache that deduplicates embedding computations across sessions. Deployed on a single 8-vCPU Intel Cascade Lake server (2 GHz, 32 GB RAM) running 30 Hypercorn worker processes across three containerized replicas, the evaluated system reported an 89.3% aggregate Redis keyspace hit rate with 0.1 ms read latency and just 1.38 MB of memory overhead. A background LRU eviction daemon migrates idle sessions from Redis to disk and re-hydrates them on demand, enabling conversations that can be resumed hours or days later under the configured retention policy.",
+   "published": "2026-08-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.05463"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "OreoLook (lixSearch) introduit une architecture de cache 3 couches (contexte session, requêtes sémantiques, embeddings URL) pour optimiser les moteurs de recherche LLM sur CPU, réduisant les invocations redondantes et améliorant l'efficacité à 89.3% de cache Redis.",
+   "score": 7.6
+  },
+  {
+   "id": "60318abf9fb9d098",
+   "title": "From Reweighting to Rewriting: Unlocking the Intervention Effects of Influential Samples in Training Data Attribution",
+   "url": "https://huggingface.co/papers/2609.02771",
+   "summary": "Training data attribution (TDA) aims to identify training examples that shape model behavior, but its intervention value depends on both which examples are selected and how they are modified. Influence functions (IF) estimate behavioral changes under infinitesimal reweighting, yet IF-selected examples often show limited advantages over random selection under conventional weight-based interventions. This raises the question of whether influential examples lack intervention value or whether reweighting fails to realize their behavioral leverage.We introduce influence-guided response rewriting, which uses IF to identify intervention targets and replaces their responses with behavior-aligned or behavior-opposed supervision while keeping instructions fixed. Across four open-weight LLMs, we compare rewriting and reweighting on the same influence-selected examples using epistemic abstention as our primary testbed. Response rewriting produces stronger, more persistent, and bidirectional behavioral shifts, while reweighting the same examples yields weak and inconsistent effects. Further analyses show that influence-selected examples provide greater rewriting leverage than alternative selectors, with changes remaining concentrated on target-relevant behaviors. The same qualitative contrast extends to safety refusal. These results distinguish the local reweighting effects captured by influence estimates from the broader intervention leverage of the examples they identify, motivating intervention-aware evaluation of TDA methods.",
+   "published": "2026-09-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.02771"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "L'étude montre que la réécriture guidée par l'influence (remplacement de réponses) est plus efficace que le rééquilibrage (reweighting) pour modifier le comportement des LLM, avec des effets persistants et bidirectionnels sur l'abstention épistémique.",
+   "score": 7.6
+  },
+  {
+   "id": "6a68464a86517543",
+   "title": "DF26: We Cannot Tell Fake From Real Anymore",
+   "url": "https://huggingface.co/papers/2609.07369",
+   "summary": "We introduce DF26, a novel benchmark for detecting AI-generated videos containing fully synthetic clips produced by recent text-to-video and image-to-video models. The videos capture single-person public-speaking scenarios, spanning direct-to-camera recordings, official statements, and studio interviews - 271 real and 2,420 synthetic videos generated by seven modern video models. The study on DF26 shows that human performance in detecting AI-generated videos, as well as state-of-the-art deepfake detectors, is close to random chance. Our results highlight the limitations of current evaluation protocols and motivate the need for benchmarks that explicitly measure robustness to modern generative model distribution shifts.",
+   "published": "2026-09-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.07369"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "regulation"
+   ],
+   "tldr": "DF26 évalue la détection de vidéos IA générées (271 réelles vs 2420 synthétiques), révélant que les humains et les détecteurs SOTA sont proches du hasard, soulignant les limites des protocoles actuels face aux nouveaux modèles de génération.",
+   "score": 7.6
+  }
+ ]
+}
