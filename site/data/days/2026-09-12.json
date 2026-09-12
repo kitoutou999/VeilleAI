@@ -1,0 +1,704 @@
+{
+ "date": "2026-09-12",
+ "digest": {
+  "headline": "Nemotron-IMO atteint un score or à l'IMO 2026 grâce à une pipeline de calcul itératif en langage naturel et un benchmark dédié",
+  "overview": "La veille du 12 septembre 2026 met en avant des avancées significatives en IA, notamment dans les domaines des modèles de langage pour les mathématiques, des benchmarks spécialisés et des architectures multilingues ou multimodales. Les travaux sur l'interprétabilité, l'optimisation des ressources et les systèmes multi-agents complètent un paysage technique dense, avec des applications allant de la robotique à la vision par ordinateur.",
+  "highlights": [
+   {
+    "title": "LLM et raisonnement mathématique de haut niveau",
+    "text": "Nemotron-IMO et StochBench marquent des progrès majeurs dans l'application des LLM aux mathématiques. Nemotron-IMO combine fine-tuning, reinforcement learning et des checkpoints spécialisés pour résoudre des problèmes d'olympiade (IMO 2026) via un calcul itératif en langage naturel. StochBench, quant à lui, cible les processus stochastiques dans Lean 4, avec un benchmark de 450 problèmes et un taux de preuve de 34,9% pour Opus 4.8. Ces travaux comblent des lacunes dans l'évaluation des LLM pour des tâches mathématiques complexes et appliquées."
+   },
+   {
+    "title": "Architectures multilingues et multimodales unifiées",
+    "text": "Tiny Aya L2-Thinker démontre qu'un modèle multilingue peut atteindre un taux de raisonnement dans la langue cible supérieur à 93% sur 60 langues, en optimisant la composition des données d'entraînement. Parallèlement, l'étude sur les tokenizers d'images dans les modèles multimodaux unifiés révèle des différences de scaling selon les tâches et propose des critères pour évaluer leur qualité. Ces travaux soulignent l'importance de la couverture linguistique et de l'alignement des modalités pour des performances robustes."
+   },
+   {
+    "title": "Vérification et interprétabilité des traductions formelles",
+    "text": "Generative Verification (GenV) introduit une méthode pour détecter les erreurs de traduction formelle (VPU) en distillant un oracle d'équivalence dans un modèle génératif. Avec une analyse mécaniste via des logits projetés et des autoencodeurs clairsemés, GenV atteint 0,961 AUROC pour la vérification d'équivalence. Ce travail est crucial pour améliorer la fiabilité des systèmes de formalisation automatique, notamment en mathématiques et en programmation."
+   },
+   {
+    "title": "Optimisation des ressources et inférence sur matériel limité",
+    "text": "GLIE et slotstream proposent des solutions pour réduire l'empreinte mémoire des modèles. GLIE exploite la géométrie des embeddings de documents visuels pour régénérer des vecteurs à partir de bases apprises, améliorant l'efficacité du stockage. Slotstream permet d'exécuter Qwen3.8-Flash-Next (125B MoE) sur Mac en streaming les experts depuis le SSD, réduisant drastiquement l'usage RAM. Ces innovations sont essentielles pour déployer des modèles volumineux sur des infrastructures contraintes."
+   },
+   {
+    "title": "Agents et planification pour la robotique et le MARL",
+    "text": "DRG-MAPPO et MaP-WAM abordent la coordination et la planification dans des environnements complexes. DRG-MAPPO utilise une architecture hiérarchique et graphique pour le MARL en combat aérien, combinant modélisation relationnelle dynamique et assignation de rôles tactiques. MaP-WAM propose un cadre de planification mémoire pour la robotique, décomposant les tâches non markoviennes en segments multimodaux épars. Ces travaux illustrent l'évolution vers des systèmes autonomes plus adaptatifs et collaboratifs."
+   }
+  ],
+  "trend": "Les avancées récentes confirment une tendance vers des modèles plus spécialisés et interprétables, avec une attention accrue portée aux benchmarks ciblant des domaines précis (mathématiques, processus stochastiques, raisonnement temporel). Parallèlement, l'optimisation des ressources et l'efficacité des architectures restent des enjeux centraux, notamment pour le déploiement sur des infrastructures limitées."
+ },
+ "items": [
+  {
+   "id": "85a4ed297180b47e",
+   "title": "An Open Recipe for IMO Gold: Training Nemotron for Olympiad Mathematics",
+   "url": "https://huggingface.co/papers/2609.10712",
+   "summary": "We study how model post-training and test-time inference design affect natural-language proof generation for hard olympiad mathematics. Starting from Nemotron 3 Ultra, we train two specialist checkpoints using supervised fine-tuning and reinforcement learning, and evaluate checkpoint choice, verification, and refinement. Based on these findings, we present an open-model test-time-compute pipeline. The system operates entirely in natural language, with no formal prover, external tools, or internet access. Three Nemotron 3 Ultra checkpoints - the general-availability model and two post-trained specialists - power an iterative search that generates, verifies, and refines candidate proofs; a separate high-compute stage then selects each final submission. The system scored 30 out of 42 points at IMO 2026, reaching the gold-medal threshold. We release the two post-trained checkpoints as well as the training data, the training and inference code, the submitted solutions, and Nemotron-IMO-Bench, a new benchmark of 200 novel olympiad-level problems.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2609.10712"
+   },
+   "relevance": 9,
+   "reliability": 10,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Nemotron-IMO atteint un score or à l'IMO 2026 via une pipeline de calcul itératif en langage naturel, combinant fine-tuning et RL, avec des checkpoints spécialisés et un benchmark dédié pour évaluer la génération de preuves mathématiques.",
+   "score": 9.4,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi de la génération automatique de preuves mathématiques en langage naturel pour des problèmes complexes d'olympiades, comme ceux de l'IMO (International Mathematical Olympiad). L'objectif est de développer un système capable de produire des solutions rigoureuses sans recourir à des prouveurs formels ou à des outils externes, tout en restant accessible et reproductible.",
+    "methode": "Les auteurs partent du modèle Nemotron 3 Ultra et appliquent deux techniques de post-entraînement : le *supervised fine-tuning* (SFT) et l'apprentissage par renforcement (RL). Trois versions du modèle (la version générale et deux spécialisées) sont utilisées dans un pipeline itératif de génération, vérification et raffinement de preuves. Ce pipeline exploite le *test-time compute* pour explorer plusieurs candidats, les évaluer et sélectionner la meilleure solution via un mécanisme de haute capacité de calcul. Le système fonctionne entièrement en langage naturel, sans dépendance à des outils externes ou à une connexion internet.",
+    "resultats": "Le système a obtenu 30 points sur 42 à l'IMO 2026, atteignant ainsi le seuil de la médaille d'or. Les auteurs publient les deux modèles spécialisés post-entraînés, les données d'entraînement, le code d'entraînement et d'inférence, ainsi que les solutions soumises. Ils introduisent également *Nemotron-IMO-Bench*, un benchmark de 200 problèmes inédits de niveau olympiade pour évaluer les performances des modèles.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques des mécanismes de vérification ou de raffinement, ni les métriques utilisées pour évaluer la qualité des preuves générées. De plus, l'absence de comparaison avec d'autres approches (comme les prouveurs formels) limite l'appréciation de l'efficacité relative du système. Enfin, la robustesse face à des problèmes hors distribution ou à des erreurs subtiles dans les preuves n'est pas explicitement abordée.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et reproductible en génération de preuves mathématiques, mais son évaluation technique reste à approfondir pour en mesurer pleinement la portée."
+   }
+  },
+  {
+   "id": "f7c2c06abf81b029",
+   "title": "StochBench: A Domain-Specific Benchmark for Stochastic Processes in Lean",
+   "url": "https://huggingface.co/papers/2609.09264",
+   "summary": "Leading benchmarks for formal theorem proving with large language models are small collections drawn from competition math, such as the IMO and Putnam, that poorly represent field-specific applications. We introduce StochBench, a Lean 4 benchmark of 450 graduate stochastic-processes problems at varying abstraction levels, each paired with its natural-language source. Addressing a field underrepresented in Mathlib, it covers finite and countable Markov chains, renewal processes, random walks, martingales, stopping times, queues, Brownian motion, stochastic calculus, weak convergence, and Poisson and continuous-time Markov processes. Our Opus 4.8-based agent achieves a 34.9% proof rate (157/450) under a 15-minute per-problem limit. StochBench better represents domain-specific applied mathematics while remaining challenging for advanced provers.",
+   "published": "2026-09-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.09264"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "StochBench est un benchmark spécialisé en processus stochastiques pour Lean 4, couvrant 450 problèmes de niveau graduate, avec un taux de preuve de 34,9% pour l'agent Opus 4.8. Il comble un vide dans Mathlib et propose une évaluation plus réaliste des LLM en mathématiques appliquées.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les benchmarks actuels pour la preuve formelle de théorèmes avec des modèles de langage (LLM) se concentrent principalement sur des problèmes de compétition mathématique comme l'IMO ou le Putnam, qui ne reflètent pas les applications spécifiques à des domaines techniques avancés. StochBench vise à combler cette lacune en proposant un benchmark dédié aux processus stochastiques, un champ sous-représenté dans Mathlib (la bibliothèque mathématique de Lean) et crucial pour les mathématiques appliquées et l'ingénierie.",
+    "methode": "StochBench est un benchmark en Lean 4 composé de 450 problèmes issus de cours de niveau master en processus stochastiques. Ces problèmes couvrent un large spectre de concepts : chaînes de Markov finies et dénombrables, processus de renouvellement, marches aléatoires, martingales, temps d'arrêt, files d'attente, mouvement brownien, calcul stochastique, convergence faible, et processus de Markov en temps continu. Chaque problème est associé à sa source en langage naturel pour faciliter l'évaluation des LLM. Un agent basé sur Opus 4.8 a été utilisé pour évaluer les performances, avec une limite de temps de 15 minutes par problème.",
+    "resultats": "L'agent basé sur Opus 4.8 a atteint un taux de preuve de 34,9 % (157 problèmes résolus sur 450). Ce résultat montre que StochBench reste un défi significatif même pour des systèmes de preuve avancés, tout en offrant une meilleure représentativité des mathématiques appliquées spécifiques au domaine des processus stochastiques.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques de l'agent Opus 4.8, comme son architecture exacte ou les optimisations utilisées. De plus, le benchmark pourrait être biaisé par la sélection des problèmes, qui proviennent principalement de sources académiques, limitant peut-être sa généralisabilité à des cas d'usage industriels ou variés. Enfin, l'absence de comparaison avec d'autres benchmarks ou outils de preuve formelle rend difficile l'évaluation de sa performance relative.",
+    "verdict": "StochBench mérite une attention particulière pour son approche ciblée sur un domaine technique sous-représenté, mais son utilité dépendra de son adoption par la communauté et de son extension à des cas d'usage plus diversifiés."
+   }
+  },
+  {
+   "id": "9508815b88a129e5",
+   "title": "Building Multilingual Bridges: Data Mixing as the Pillar of Generalization for In-Language Reasoning",
+   "url": "https://huggingface.co/papers/2609.10445",
+   "summary": "Reasoning language models have made substantial advances on a variety of complex tasks, yet their capabilities remain overwhelmingly English-centric: models primarily reason in English regardless of the language they are prompted in. This is inaccessible for non-English-speaking users, risks losing the intent of the original question, and forgoes knowledge more readily expressed in the target language. In this work, we advance L2 reasoning, the ability of a model to reason consistently in the language of the user's prompt, thus building an in-language bridge between the prompt and the answer. We approach this problem from a data-centric angle, investigating how to optimize data composition and scheduling in SFT for reasoning generalization. Building Tiny Aya L2-Thinker at 3.35B scale, we achieve an L2 reasoning rate above 93% across 60 languages on 6 benchmarks spanning math, commonsense reasoning, instruction following, open-ended generation, and cultural reasoning while keeping performance strong. We show the path to generalizing L2 reasoning to held-out languages goes through broader language coverage, readily available multilingual non-reasoning data, and a sufficient English reasoning backbone. These findings indicate that reasoning is a language-agnostic behavior that can be transferred across typologically diverse languages through careful data mixing and without requiring reasoning supervision in every target language. We release our model weights and multilingual reasoning data to support further research on accessible, in-language reasoning.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.10445"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Démontre qu'un modèle de raisonnement multilingue (Tiny Aya L2-Thinker) peut atteindre un taux de raisonnement dans la langue cible supérieur à 93% sur 60 langues via une optimisation de la composition des données d'entraînement et une couverture linguistique élargie, tout en maintenant des performances élevées.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'incapacité des modèles de langage avancés à raisonner de manière cohérente dans une langue autre que l'anglais, même lorsqu'ils sont sollicités dans une autre langue. Cela limite l'accessibilité pour les utilisateurs non anglophones, risque de déformer l'intention originale de la question et ignore des connaissances potentiellement mieux exprimées dans la langue cible.",
+    "methode": "Les auteurs adoptent une approche centrée sur les données pour résoudre ce défi, en optimisant la composition et la planification des données lors du *fine-tuning* supervisé (SFT). Ils développent *Tiny Aya L2-Thinker*, un modèle de 3,35 milliards de paramètres, en exploitant un mélange de données multilingues non dédiées au raisonnement et une base solide de raisonnement en anglais. L'objectif est de transférer la capacité de raisonnement à des langues typologiquement diverses sans nécessiter de supervision explicite du raisonnement dans chaque langue cible. La méthodologie inclut également une couverture linguistique élargie et l'utilisation de données multilingues facilement accessibles.",
+    "resultats": "Le modèle atteint un taux de raisonnement en langue cible (L2) supérieur à 93 % sur 60 langues et 6 benchmarks couvrant des domaines variés : mathématiques, raisonnement commun, suivi d'instructions, génération ouverte et raisonnement culturel. Les performances globales restent robustes, démontrant que le raisonnement peut être généralisé à des langues non vues lors de l'entraînement grâce à une stratégie de mélange de données adaptée.",
+    "limites": "Les détails techniques sur la répartition exacte des données ou les critères de sélection des langues restent flous. De plus, l'évaluation sur des langues peu dotées ou des dialectes non standardisés pourrait révéler des limites non explorées ici. Enfin, la dépendance à une base de raisonnement en anglais pourrait introduire des biais culturels ou conceptuels.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et ses résultats prometteurs en matière de généralisation multilingue du raisonnement, bien que des questions subsistent sur sa robustesse à grande échelle et son applicabilité à des contextes linguistiques plus diversifiés."
+   }
+  },
+  {
+   "id": "8a1e565a9117b7ab",
+   "title": "Studying Image Tokenizers as Visual Languages in Unified Multimodal Models",
+   "url": "https://huggingface.co/papers/2609.09143",
+   "summary": "Image tokenizers define the ``visual language'' of unified multimodal models, yet are commonly studied through isolated metrics or generation-/understanding-only evaluations. These evaluations do not fully capture how visual tokens behave when modeled jointly with text. We build a controlled pure-autoregressive testbed and track task-specific validation losses during multimodal continual pretraining across text, image, text-to-image (T2I), and image-to-text (I2T) prediction. We examine how these losses scale and relate to downstream performance, then use them to study multimodal learnability---how well image and text tokens are jointly modeled---and tokenizer design. We find that (1) losses should be analyzed by task, since they exhibit distinct scaling behavior and rank tokenizers differently. (2) The loss--performance relationship depends on the predicted token space: for a fixed tokenizer, T2I and I2T losses correlate with generation quality, but across tokenizers, the T2I loss--performance relationship shifts with the image-token space, whereas I2T loss, computed over a shared text vocabulary, provides a more consistent signal. I2T loss also correlates with both generation and visual understanding performance after supervised finetuning. Using losses as a lens, we show that (3) better reconstruction does not necessarily yield lower task-specific losses or stronger downstream performance, and that (4) image tokenizer choice can affect text modeling under joint optimization. As case studies, we revisit three tokenizer design axes---the discriminator, semantic supervision, and vocabulary size---to examine their effects on joint modeling and downstream performance. Together, our testbed offers a complementary perspective on image tokenizers as visual languages, highlighting their interplay with text in joint multimodal training.",
+   "published": "2026-09-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2609.09143"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Étude systématique des tokenizers d'images comme langage visuel dans les modèles multimodaux unifiés, analysant leur comportement conjoint avec le texte via des pertes de validation spécifiques à chaque tâche et leur impact sur la performance en génération et compréhension. Met en évidence des différences de scaling selon les tâches et propose des critères pour évaluer la qualité des tokenizers.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Les modèles multimodaux unifiés, qui traitent conjointement texte et images, reposent sur des *tokenizers* d'images pour définir leur 'langage visuel'. Cependant, ces tokenizers sont généralement évalués de manière isolée (via des métriques de reconstruction) ou sur des tâches spécifiques (génération *ou* compréhension), ce qui ne reflète pas leur comportement réel lorsqu'ils sont optimisés conjointement avec le texte dans un cadre autoregressif.",
+    "methode": "Les auteurs construisent un *testbed* contrôlé purement autoregressif pour étudier l'entraînement continu multimodal (pretraining) sur quatre tâches : prédiction de texte, d'images, de texte-à-image (T2I) et d'image-à-texte (I2T). Ils suivent les pertes de validation spécifiques à chaque tâche pendant l'entraînement et analysent leur évolution, leur relation avec les performances en aval, ainsi que leur capacité à évaluer la *learnability* multimodale (la facilité avec laquelle texte et images sont modélisés conjointement). Trois axes de conception des tokenizers sont explorés : le discriminateur (pour la reconstruction), la supervision sémantique, et la taille du vocabulaire visuel.",
+    "resultats": "1) Les pertes par tâche (T2I, I2T, etc.) ont des comportements de *scaling* distincts et classent les tokenizers différemment. 2) La relation perte-performance dépend de l'espace des tokens prédits : pour un tokenizer fixe, les pertes T2I/I2T corrèlent avec la qualité de génération, mais entre tokenizers, la perte T2I varie avec l'espace des tokens d'image, tandis que la perte I2T (sur un vocabulaire textuel partagé) offre un signal plus stable. 3) Une meilleure reconstruction n'améliore pas systématiquement les pertes spécifiques aux tâches ni les performances en aval. 4) Le choix du tokenizer peut impacter la modélisation du texte lors de l'optimisation conjointe.",
+    "limites": "1) L'étude se concentre sur un cadre autoregressif pur, ce qui peut ne pas capturer les dynamiques d'autres architectures (ex. : modèles diffusion). 2) Les résultats dépendent fortement du *testbed* utilisé, dont la généralisabilité à d'autres jeux de données ou tâches n'est pas garantie. 3) Les corrélations observées entre pertes et performances ne prouvent pas de causalité, et certains effets pourraient être spécifiques aux tokenizers testés.",
+    "verdict": "Cette publication mérite l'attention pour son approche systématique et ses insights sur l'interdépendance entre tokenizers visuels et modélisation multimodale, bien que ses conclusions restent à valider sur des architectures et des données plus variées."
+   }
+  },
+  {
+   "id": "a1014fccf82a5aa1",
+   "title": "Beyond Solver Verdicts: Generative Reward Models for Autoformalization",
+   "url": "https://huggingface.co/papers/2609.11085",
+   "summary": "Neurosymbolic systems rely on mathematical solvers to guarantee reasoning correctness, yet solvers are fundamentally blind to whether a formal translation maintains strict reference-equivalence to a designated formalization. We formalize this vulnerability as Verdict-Preserving-Unfaithfulness (VPU): a failure mode where an incorrect encoding executes successfully and matches the expected verdict. We theoretically prove that structural, verdict-only verification heuristics are mathematically bounded to chance-level detection on these deceptively valid traces. To resolve this, we introduce Generative Verification (GenV), which distills an offline Z3-equivalence oracle into a reference-free, continuous reference-equivalence score by repurposing the language model's native vocabulary space. Mechanistic analysis via decision-projected logit lenses and sparse autoencoders shows this generative readout natively extracts precise spatial error coordinates without explicit localization training. Empirically, our oracle-mined verifier (GenV+HN) achieves 0.961 AUROC in reference-equivalence verification, generalizes zero-shot across unseen translators and divergent formal styles, and yields an 11.3-point downstream accuracy gain in agentic test-time compute allocation.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2609.11085"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Introduit Generative Verification (GenV), une méthode pour détecter les traductions formelles incorrectes (VPU) en distillant un oracle d'équivalence dans un modèle génératif, avec une analyse mécaniste via des logits projetés et des autoencodeurs clairsemés. Atteint 0.961 AUROC pour la vérification d'équivalence de référence.",
+   "score": 8.5
+  },
+  {
+   "id": "55db15a893975f0c",
+   "title": "DRG-MAPPO: Hierarchical Dynamic Role-Graph Multi-Agent Reinforcement Learning for Cooperative Air Combat",
+   "url": "https://huggingface.co/papers/2609.11155",
+   "summary": "Multi-Agent Reinforcement Learning (MARL) has emerged as a pivotal paradigm for complex decision-making in autonomous systems and air combat. While MARL has demonstrated significant potential in air combat, achieving sophisticated tactical coordination remains a non-trivial challenge. This difficulty is largely attributed to two primary limitations: (1) the absence of structured relational modeling hinders agents from capturing complex, time-varying interactions among battlefield entities; and (2) conventional flat architectures often lack the capability to explicitly model tactical roles, leading to ambiguous task allocation in highly dynamic environments. To address these challenges, we propose Hierarchical Dynamic Role-Graph Multi-Agent Proximal Policy Optimization (DRG-MAPPO), a novel MARL framework that integrates graph-based relational modeling with dynamic role assignment. Specifically, DRG-MAPPO constructs a graph-based representation of battlefield interactions and leverages graph attention mechanisms to extract critical relational features among allies, enemies, and threats. Subsequently, a high-level policy employs a dynamic role assignment mechanism to determine tactical responsibilities (e.g., ``leader'' and ``supporter''). Conditioned on these roles and encoded graph-relational features, a low-level policy executes discrete maneuver actions, facilitating the joint optimization of tactical strategy and collaborative execution. Furthermore, a target-priority auxiliary task is designed to foster the emergence of behaviors such as focus-fire. Experimental results demonstrate that DRG-MAPPO achieves a state-of-the-art win rate of 87%, suggesting that our framework effectively balances relational modeling, interpretability, and optimization stability for cooperative air combat.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2609.11155"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "DRG-MAPPO propose une architecture hiérarchique et graphique pour le Multi-Agent Reinforcement Learning (MARL) en combat aérien, combinant modélisation relationnelle dynamique et assignation de rôles tactiques pour améliorer la coordination entre agents dans des environnements complexes et dynamiques.",
+   "score": 8.5
+  },
+  {
+   "id": "9771708ac7ba7d08",
+   "title": "Memory as Plans: World-Action Modeling with Memory-Grounded Planning",
+   "url": "https://huggingface.co/papers/2609.11561",
+   "summary": "Mainstream robotic policies often adopt a Markovian formulation, but many complex real-world manipulation tasks are inherently non-Markovian, requiring long-horizon memory beyond the current observation. Existing memory mechanisms often rely on language summaries, growing visual windows, or their combinations, and may therefore lose fine-grained visual evidence or face a trade-off between history coverage and execution efficiency. We introduce MaP-WAM, a Memory-as-Plans framework that decomposes memory-dependent world-action modeling into memory-grounded planning and plan-conditioned execution, and uses long-term multimodal episodic context as planning-time evidence rather than repeatedly conditioning the executor on the full history. MaP-WAM represents memory as completed segment records containing language instructions and sparse visual context, and converts this episodic memory into compact plans comprising the next segment-level language plan and corresponding visual guidance. A World-Action-Progress (WAP) model executes each plan over an unknown duration by jointly predicting action chunks and corresponding execution progress at inference time, calibrating predicted progress through plan-observation alignment for adaptive segment transitions and closed-loop context updates. MaP-WAM keeps the executor context length fixed, while structured attention further enables key-value caching in both planning and execution. MaP-WAM achieves state-of-the-art performance on RMBench with an 83.3% success rate and attains 78.0% success on real-robot tasks, while maintaining approximately constant executor inference latency as task history grows.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2609.11561"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Présente MaP-WAM, un cadre de planification mémoire pour la robotique où la mémoire est utilisée comme plans pour décomposer les tâches non markoviennes en planification et exécution conditionnée. Utilise des segments multimodaux épars pour guider l'action sans perte de détails visuels.",
+   "score": 7.9
+  },
+  {
+   "id": "131c89d1d8bf2596",
+   "title": "Think Before You Link: Rarity, Reasoning, and Retrieval in Multilingual Entity Linking",
+   "url": "https://huggingface.co/papers/2609.10745",
+   "summary": "Multimodal entity linking grounds entity mentions in text and images to knowledge-base entries. These systems degrade on rare entities, but prior work measures rarity primarily through popularity-based metrics such as pageviews. We broaden this view using knowledge-graph structural metrics that capture how well an entity is documented and connected. These metrics identify many rare entities that popularity metrics miss. Across the resulting rare-entity slices, state-of-the-art accuracy drops by 15.4-39.9%, showing that different rarity definitions expose different failure modes. To address these failures, we introduce a simple, training-free framework in which a reasoning-capable vision-language model iteratively searches and reasons over Wikipedia, gathering evidence dynamically. Controlled experiments show that reasoning and retrieval are complementary. Reasoning alone does not significantly improve accuracy on rare entities. Retrieval without reasoning improves rare-entity accuracy but can hurt overall accuracy. Their combination performs best. On MERLIN, a multilingual multimodal entity linking benchmark over five languages (Hindi, Indonesian, Japanese, Tamil, Vietnamese), our best system improves over the state of the art by 6.9% overall and by up to 23.3% on rare-entity slices. We release MERLIN-Rare, rare-entity test slices for targeted evaluation, with our framework.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2609.10745"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "Propose une méthode pour améliorer l'entité linking multimodal multilingue en combinant raisonnement et récupération dynamique d'informations depuis Wikipédia, ciblant spécifiquement les entités rares où les approches classiques échouent. Montre que les deux approches sont complémentaires pour maximiser la précision.",
+   "score": 7.6
+  },
+  {
+   "id": "edef31f2642ece31",
+   "title": "TempCloze: Can Video-LLMs Identify the Missing Middle?",
+   "url": "https://huggingface.co/papers/2609.01515",
+   "summary": "Temporal reasoning benchmarks for Video-LLMs are often mediated by language, leaving room for linguistic shortcuts from option wording, answer correlations, or language priors. To reduce such shortcuts, we introduce TempCloze, a video cloze benchmark for evaluating visual temporal reasoning in Video-LLMs. Given the beginning and ending clips of a video, models must identify the true missing middle from four candidates. TempCloze contains 1,521 carefully filtered videos from seven sources, mainly long-take and egocentric videos. We construct same-source distractors along three dimensions: Semantic asks what event should happen, Alignment probes when it should occur, and Progression tests how it should unfold, while shared scenes and objects reduce appearance cues. Our evaluation of 10 proprietary and 21 open-source Video-LLMs reveals Alignment as the primary bottleneck: models often recognize plausible semantic content and local event progression but struggle with temporal alignment. We further conduct error pattern and behavioral sensitivity analyses on TempCloze-Mixed and TempCloze-Hard with four representative models to examine where errors arise and how candidate order, context direction, visible span, frame density, and test-time scaling influence model choices.",
+   "published": "2026-08-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2609.01515"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "TempCloze évalue le raisonnement temporel visuel des Video-LLMs via un benchmark de type 'cloze' (complétion) sur des vidéos longues, révélant que l'alignement temporel est le principal goulot d'étranglement pour ces modèles.",
+   "score": 7.6
+  },
+  {
+   "id": "0a4ecae4e99cffe9",
+   "title": "SpatialBlock: Enhancing Spatial Intelligence in LVLMs via Synthetic Block-Stacking Problem",
+   "url": "https://huggingface.co/papers/2609.07064",
+   "summary": "Large Vision-Language Models (LVLMs) have achieved strong performance on diverse visual tasks, yet their ability to reconstruct and reason about the 3D structure of the scene depicted in 2D images -- referred to as spatial intelligence -- remains limited. Existing approaches attempt to address this gap by using real-scene spatial question answering datasets that require dense geometric annotations. However, constructing such labels is costly, time-consuming, and often noisy due to reliance on external perception modules. In this work, we propose a novel paradigm inspired by human cognitive development: learning foundational spatial skills through structured block-manipulation tasks. We introduce SpatialBlock-15k, a synthetic dataset of 15,000 block-stacking problems covering 3D-to-2D projection, viewpoint transformation, and structural combination. The dataset further incorporates controlled color modulation as visual cues to encourage anchor-based reasoning in visually complex conditions. Experiments demonstrate that LVLMs trained on our dataset through either direct answering or reasoning-based prediction significantly outperform baselines and generalize to real-world spatial tasks, despite the dataset's synthetic and compact nature. Code and data are available at https://github.com/rsoohyun/SpatialBlock.",
+   "published": "2026-09-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 79,
+    "arxiv_id": "2609.07064"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "SpatialBlock améliore le raisonnement spatial des LVLMs via un dataset synthétique de problèmes de construction de blocs 3D, permettant une meilleure généralisation à des tâches réelles sans annotations géométriques coûteuses.",
+   "score": 7.6
+  },
+  {
+   "id": "a4e53e34b3002be4",
+   "title": "The Semantic Bottleneck: Leveraging Semantic Representations for Non-Invasive Speech Decoding",
+   "url": "https://huggingface.co/papers/2609.10296",
+   "summary": "Non-invasive speech decoding remains constrained by the low signal-to-noise ratio of neural recordings, which makes fine-grained reconstruction of phonemes or individual words difficult. Motivated by neuroscientific evidence that high-level semantic representations are distributed across cortical regions and evolve over slower temporal scales, we hypothesize that semantic content may provide a more suitable target for non-invasive decoding than low-level acoustic or lexical features. We introduce Brain2Semantics2Text, a method that reconstructs text through an intermediate semantic embedding space. Our model maps sentence-level MEG responses into a semantic manifold and then inverts the predicted embeddings into natural language. This semantic bottleneck enables recovery of high-level meaning without word-level alignment. We describe the core principles of the approach, its implementation, and the strategies used to mitigate the challenges of learning a reliable neural-to-semantic mapping. Finally, we compare against prior non-invasive Brain2Text methods and show improved sentence-level results.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.10296"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "interpretabilite"
+   ],
+   "tldr": "Brain2Semantics2Text decode la parole non-invasive via une représentation sémantique intermédiaire, améliorant la reconstruction de texte à partir de signaux MEG en exploitant des échelles temporelles plus lentes que les phonèmes.",
+   "score": 7.6
+  },
+  {
+   "id": "cf935b1146d582ac",
+   "title": "ApodexAI/FrontierAgent",
+   "url": "https://github.com/ApodexAI/FrontierAgent",
+   "summary": "🧩 FrontierAgent, our agent framework, open-sourced alongside it — native command-line TUI, ReAct and Agent Team modes, one command on macOS and Linux, no preinstall, no hard Docker dependency.",
+   "published": "2026-08-22T05:07:35Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2673,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Framework open-source pour agents IA (FrontierAgent) avec modes ReAct et Team, compatible macOS/Linux et sans dépendances lourdes. Solution architecturale solide pour les systèmes multi-agents, mais encore jeune et en développement.",
+   "score": 7.4
+  },
+  {
+   "id": "91463530ba37bdf8",
+   "title": "Generative Late-Interaction Embeddings For Visual Document Retrieval",
+   "url": "https://huggingface.co/papers/2609.11808",
+   "summary": "Late-interaction retrieval is the state-of-the-art for visual document search, but it pays for its accuracy in storage. Existing compression methods retain a subset or local average of the N~1,000 vectors per page. Under aggressive storage budgets, however, these methods degrade sharply, and alternatives require retraining the encoder. Investigating this degradation across three encoders, we found two consistent properties: the vectors lie exactly on the unit sphere and concentrate near a manifold of intrinsic dimension five to six. This geometry yields two insights. First, standard k-means centroids fall inside the sphere, causing systematic underestimation of MaxSim scores. Normalizing them to the surface is a free correction worth up to +0.093 nDCG@5 over raw centroids. Second, because the page manifold has few degrees of freedom, the full set of vectors can be regenerated from only a few. To this end, we introduce Generative Late-Interaction Embeddings (GLIE): k << N vectors per page learned from the normalized centroids to serve as both a lightweight index and a basis for regenerating the page's full embedding set. At query time, search runs exclusively on these k vectors, and a decoder expands only the top candidates back to all N vectors for exact rescoring. At four vectors per page on ViDoRe v1, GLIE retains nearly 80% of the uncompressed system's nDCG@5, against 70% for the best prior post-hoc method. These results use a 415K-parameter network fitted in under three GPU-minutes on just a thousand training pages. At a matched training budget, fine-tuning the encoder does not reach even the training-free stage of GLIE, and the full system beats it at every budget. These patterns hold across a second encoder and ViDoRe v2. By reconstructing evidence on demand rather than sampling it, GLIE opens a new axis for storage-efficient retrieval, with the decoder as its main design surface.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.11808"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "GLIE exploite la géométrie des embeddings de documents visuels pour réduire leur stockage sans sacrifier la précision, en régénérant les vecteurs à partir de quelques bases apprises, avec des gains mesurables en nDCG@5.",
+   "score": 7.3
+  },
+  {
+   "id": "6c4c62438da1e3d3",
+   "title": "carloslfu/slotstream",
+   "url": "https://github.com/carloslfu/slotstream",
+   "summary": "Run Qwen3.8-Flash-Next (125B MoE, 104 GB at 4-bit) on Macs with a fraction of that RAM by streaming experts from SSD. MLX + Swift, Ollama-compatible API.",
+   "published": "2026-08-28T06:42:21Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 348,
+    "language": "Swift"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Optimisation pour exécuter Qwen3.8-Flash-Next (125B MoE) sur Mac via streaming des experts depuis le SSD, réduisant drastiquement l'usage RAM. Solution technique innovante pour l'inférence efficace sur matériel limité, mais dépendante de MLX et non peer-reviewée.",
+   "score": 7.1
+  },
+  {
+   "id": "9cea5faaa30ef1a2",
+   "title": "IdeaAMBIG: Benchmarking Implementation-Critical Gaps in Research-Idea Specifications",
+   "url": "https://huggingface.co/papers/2609.10539",
+   "summary": "A research idea may be novel, coherent, and scientifically plausible, yet its proposed method may remain insufficiently specified for faithful implementation. We study the codification readiness of implementation-facing research-method specifications, defined by whether they provide sufficient methodological information for a competent implementer or coding agent to construct the intended method without unsupported assumptions. We construct evidence-grounded specifications and their supported resolutions from papers, codebases, issue threads, and reproduction artifacts. We introduce IdeaAMBIG, a benchmark of 660 evidence-grounded instances: 163 real-world gaps from reproducibility reports and GitHub issues, and 497 controlled synthetic gaps injected into codification-ready references. IdeaAMBIG evaluates three capabilities: codification-readiness assessment, defect localization, and clarification action generation. Defect localization receives only the specification, whereas clarification additionally receives the annotated defect. Across 13 LLMs, the best model achieves 9.6% Macro Defect Recovery Rate on real-world instances but 80.6% Macro Clarification Action Success Rate when given the defect. In an oracle study, supplying the gold resolution raises the downstream codification-ready rate from 14% to 98%. Across all evaluated models, defect localization is the main bottleneck, with stronger clarification given the defect.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2609.10539"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Introduit IdeaAMBIG, un benchmark évaluant la capacité des modèles à identifier et corriger les lacunes de spécification dans les méthodes de recherche, avec des instances réelles et synthétiques. Montre que les modèles peinent à localiser les défauts sans contexte supplémentaire.",
+   "score": 7.0
+  },
+  {
+   "id": "d089b3b20144fd24",
+   "title": "Recursive Code World Models: Building Complex Worlds through Recursive Scene Programs",
+   "url": "https://huggingface.co/papers/2609.11499",
+   "summary": "Code world models represent worlds as executable programs, but this representation alone does not determine how to construct a complex world. We introduce Recursive Code World Models (RCWM), a framework for reconstructing complex 3D worlds in code from a single reference image. RCWM couples a Recursive Scene Program (RSP) representation with a construction solver that recursively calls itself. An RSP represents the executable world as compositional scene code, while each solver call follows the same complete process: establish the whole, recursively reconstruct unresolved parts, and revisit the whole to refine their composition. This global-local-global recursion gives fine-scale structures their own perception-and-editing loops while preserving scene-wide geometry and relationships. Reference-aligned views propagate a shared camera projection across levels, while parent revisitation addresses boundaries, spatial relations, and shared errors that emerge after local refinement. A vision-language coding agent directly compares reference images with scene renders to guide refinement, recursive descent, and return. Across complex scenes, RCWM outperforms prior code-based image-to-scene reconstruction methods. Ablation studies further support the benefits of recursive construction and suggest that deeper calls can improve finer-scale reconstruction. RCWM provides a recursive construction principle for building complex executable worlds from visual evidence.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2609.11499"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "RCWM reconstruit des scènes 3D complexes à partir d'une seule image via une représentation récursive en code, utilisant un solveur itératif pour affiner les structures locales tout en préservant la cohérence globale.",
+   "score": 7.0
+  },
+  {
+   "id": "f779c7312a5685b3",
+   "title": "World in World: Explore the World with World Models",
+   "url": "https://huggingface.co/papers/2609.11548",
+   "summary": "Autoregressive video world models enable interactive, long-horizon exploration, but flexible control remains challenging. Exploring a source video from new viewpoints requires the generated rollout to remain synchronised with the recorded event, place observed content in the requested view, plausibly complete newly exposed regions, and recover previously generated appearance on revisits. Existing methods typically address these requirements through task-specific modules or additional training. We present World in World, a training-free inference-time interface that converts heterogeneous control evidence into camera- and time-labelled clean visual states, which are read through the native self attention of a frozen causal video model. The evidence comprises source-video observations, target-view scene projections, geometry renderings that guide completion of newly exposed subject regions, and retrieved generated states beyond the rolling cache. Each evidence source carries token-level support and its own availability schedule. A correspondence router combines persistent point identities with geometry to establish token correspondences, guiding supported queries towards matching source-video tokens. Evidence-wise attention CFG (EWA) then independently regulates each auxiliary channel's additional contribution using attention responses from the same denoising forward pass. The shared interface supports camera-controlled rerendering, long-horizon revisiting, and human-motion transfer with the same frozen backbone. We evaluate World in World on camera-controlled video rerendering under diverse viewpoint changes, assessing perceptual quality, temporal consistency, and camera-following accuracy.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2609.11548"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "World in World permet une exploration interactive de vidéos via des modèles de monde autorégressifs, synchronisant les rollouts avec des vues cibles et comblant les régions manquantes via des correspondances token-to-token guidées par géométrie.",
+   "score": 7.0
+  },
+  {
+   "id": "488db19c955d1398",
+   "title": "SenseNova-U1.5: Towards Native Unified Visual Intelligence",
+   "url": "https://huggingface.co/papers/2609.11929",
+   "summary": "We launch SenseNova-U1.5, an 8B-MoT native unified multimodal model that understands, reasons about, and generates visual content within an encoder-free and VAE-free architecture. We strengthen its visual interface through spatially coherent patch reconstruction and scale its training with carefully curated generation and editing data, improved task formulation, structural prompt enhancement, and native resolutions of up to 4K. For post-training, we optimize specialized experts for visual aesthetics, bilingual text rendering, infographic generation, and image editing, and consolidate their capabilities through multi-expert on-policy distillation. Across extensive evaluations, SenseNova-U1.5 largely advances image fidelity, text rendering, complex composition, multi-reference editing, and interleaved generation, while improving instruction following and preserving subject identity, geometry, and unmodified regions. Despite limited exposure to structured formats in its generation data, SenseNova-U1.5 generalizes effectively to long, complex, and structured visual instructions, further proving that multimodal understanding can transfer to visual planning and creation. Together, these findings position native unified modelling as a promising path towards systems that perceive, reason and create within a fully end-to-end framework. We will open-source training code, including supervised fine-tuning, reinforcement learning, and on-policy distillation.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 153,
+    "arxiv_id": "2609.11929"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "produit",
+    "vision"
+   ],
+   "tldr": "SenseNova-U1.5 est un modèle multimodal 8B natif unifié (sans encodeur ni VAE) optimisé pour la génération et l'édition d'images haute résolution (jusqu'à 4K), avec des experts spécialisés et une distillation multi-experts pour améliorer la fidélité et la composition.",
+   "score": 6.7
+  },
+  {
+   "id": "4f1ce9e0dee5bff6",
+   "title": "OracleZoom: On-Policy Self-Distillation Inspired Reference-Constrained Recursive Image Super Resolution",
+   "url": "https://huggingface.co/papers/2609.06490",
+   "summary": "Recursive Super-Resolution (SR) extends fixed-scale SR to extreme magnification by repeatedly feeding predictions back into the same model, analogous to zooming an image repeatedly. However, ground truth availability at every scale, especially at depth, remains challenging as the required source resolution grows geometrically, leaving deeper predictions unsupervised. We present OracleZoom, an on-policy distillation-inspired, reference-constrained framework that trains on its trajectory while carrying the last ground-truth evidence beyond the supervision boundary. Direct and cross-scale supervision constrain verifiable content, while a no-reference quality objective guides unresolved fine-scale detail. A KL-constrained pretrained latent prior limits quality-driven drift, while EMA consistency stabilizes the supervision boundary. Across seven datasets, OracleZoom achieves the state-of-the-art SR quality across zooming scales, averaging 0.713 CLIPIQA, with larger gains on deeper scales, while significantly reducing hallucinations. Code, data, and models are available at https://dipta007.github.io/OracleZoom/ .",
+   "published": "2026-09-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2609.06490"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "OracleZoom introduit une distillation auto-référencée pour la super-résolution d'images récursive, réduisant les hallucinations et améliorant la qualité à grande échelle via une supervision croisée et un prior latent pré-entraîné.",
+   "score": 6.7
+  },
+  {
+   "id": "a3062cee180f2b98",
+   "title": "FreeFlow: A Bias-free Hierarchical Transformer for Optical Flow Estimation",
+   "url": "https://huggingface.co/papers/2609.11486",
+   "summary": "Optical flow methods typically rely on task-specific inductive biases, such as correlation volumes, feature warping, and iterative refinement, among others, to reach high accuracy. While effective, such biases constrain the model to predefined heuristics, which can limit its expressivity and lead to more complex pipelines and additional computational cost. We present FreeFlow, a hierarchical transformer built without any flow-specific components, using instead a single feed-forward encoder--decoder. FreeFlow combines three attention variants: window attention for local processing, shifted-window attention for cross-window information exchange, and a global attention operating at a reduced resolution. The resulting architecture scales naturally with model capacity, enabling a consistent accuracy gain from small to large variants. Despite the absence of standard inductive biases, FreeFlow achieves state-of-the-art results on major benchmarks, including Sintel (0.68/1.48 EPE on Clean/Final), KITTI-2015 (3.23 Fl-all), and Spring (3.192 1px), while remaining memory efficient at 1080p inference.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2609.11486"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Propose FreeFlow, un transformeur hiérarchique sans biais spécifiques au flux optique, utilisant uniquement des mécanismes d'attention génériques. Atteint des performances state-of-the-art sur Sintel, KITTI-2015 et Spring sans composants dédiés, avec une efficacité mémoire accrue.",
+   "score": 6.4
+  },
+  {
+   "id": "7be1cc75bbd03e2d",
+   "title": "UniH^3: Unifying Hierarchical Homogeneity and Heterogeneity for All-in-One Medical Image Restoration",
+   "url": "https://huggingface.co/papers/2609.11156",
+   "summary": "All-in-One medical image restoration (MedIR) aims to address diverse tasks across modalities and degradation types using a single universal model. Existing methods typically prioritize modeling inter-task heterogeneity (e.g., distinct data distributions and degradation types). However, they largely neglect the inherent homogeneity present in medical images, such as widely shared anatomical structures within and across modalities, which can be leveraged to ease model training and improve generalization. To this end, we propose UniH3, a novel framework that Unifies Hierarchical Homogeneity and Heterogeneity for all-in-one medical image restoration. Specifically, to comprehensively exploit homogeneity, we introduce a Hierarchical Homogeneity Memory (H2M) module that progressively distills intra- and inter-task homogeneity priors from high-quality images during training, and adaptively retrieves the most relevant priors tailored to the input for guided restoration. These retrieved priors are then injected into the restoration pipeline via an efficient Homogeneity-Guided Attention (HGA) mechanism. Furthermore, to comprehensively address heterogeneity, we design a Hierarchical Heterogeneity Balancer (H2B) that mitigates both inter- and intra-task conflicts during optimization, facilitating balanced and effective multi-task learning. Extensive experiments on two large-scale benchmarks, MedIR-2D-500K and MedIR-3D-3K, demonstrate that UniH3 achieves state-of-the-art performance on both all-in-one and single-task medical image restoration. We hope this work establishes a strong benchmark and advances the development of general-purpose medical image restoration models. Code is available at https://github.com/Yaziwel/UniH3.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2609.11156"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "UniH³ unifie homogénéité et hétérogénéité hiérarchiques pour restaurer des images médicales multi-tâches avec un seul modèle, exploitant des structures anatomiques partagées via des modules de mémoire et d'attention guidée pour améliorer la généralisation.",
+   "score": 6.4
+  },
+  {
+   "id": "b2e24dfd6d9603cf",
+   "title": "Retrospectively Reverse-Engineering Apple's Neural Engine",
+   "url": "https://eiln.github.io/posts/ane.html",
+   "summary": "",
+   "published": "2026-09-12T07:54:03Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 97,
+    "comments": 11
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Analyse rétrospective de l'Apple Neural Engine, combinant architecture matérielle et interprétabilité, pertinente pour la recherche fondamentale et l'optimisation, bien que non peer-reviewed.",
+   "score": 6.2
+  },
+  {
+   "id": "455ba9012e89518d",
+   "title": "KaiWU5/Awesome-AI4AI",
+   "url": "https://github.com/KaiWU5/Awesome-AI4AI",
+   "summary": "AI4AI Survey: can AI reliably improve AI? 223 papers on long-horizon agents, benchmarks, harness design, and recursive self-improvement · updated weekly",
+   "published": "2026-08-14T14:03:43Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 144,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "Recueil de 223 papers sur l'amélioration des agents IA par l'IA (long-horizon, benchmarks, auto-amélioration), mis à jour hebdomadairement. Ressource utile pour la recherche en agents, mais compilation non peer-reviewée et potentiellement biaisée.",
+   "score": 6.2
+  },
+  {
+   "id": "d577ed7d0b86a151",
+   "title": "ActReview: Rebuttal-Guided Training Data and Rubric Rewards for Actionable Peer Review Generation",
+   "url": "https://huggingface.co/papers/2609.09076",
+   "summary": "As LLMs are increasingly used for pre-submission self-review, there is growing demand for feedback that not only identifies weaknesses but also guides authors toward concrete revisions. We study this as Actionable Peer-review Generation and decompose it into two subtasks: diagnostic claim generation and revision suggestion generation. We introduce ActReview, a rebuttal-guided post-training framework that connects paper-specific diagnoses to concrete, grounded revision plans. Our central insight is that author rebuttals reveal plausible actions for addressing reviewer concerns and can therefore provide latent supervision for revision-oriented feedback. From real review-rebuttal threads on OpenReview, we construct ActReview-40K by aligning reviewer weaknesses with author responses and grounding the resulting feedback in localized paper evidence. We post-train Qwen3-8B-Base with multi-task supervised fine-tuning followed by GRPO using candidate-aware, weakness-specific rubric rewards. We also introduce ActReview-Bench, a human-curated benchmark of 1,000 instances for evaluating diagnostic quality and revision usefulness. Experiments show that ActReview outperforms prior specialized review-generation models on actionability and grounding while remaining competitive with strong prompt-based LLMs. Human evaluation confirms improved revision usefulness while revealing a remaining gap in technical accuracy, and additional analyses support generalization to held-out papers and robustness across independent judges.",
+   "published": "2026-09-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2609.09076"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "outils",
+    "produit"
+   ],
+   "tldr": "Propose ActReview, un cadre de post-entraînement pour générer des revues par les pairs actionnables en utilisant des réponses d'auteurs comme supervision latente. Évalue la qualité diagnostique et l'utilité des suggestions de révision sur un benchmark humain (ActReview-Bench). Intéressant mais moins central pour les centres d'intérêt.",
+   "score": 6.1
+  },
+  {
+   "id": "9392f5653a1a34dc",
+   "title": "Nanako0129/sepia",
+   "url": "https://github.com/Nanako0129/sepia",
+   "summary": "De-AI writing skill for any Agent Skills-compatible agent (77+ via the Skills CLI), with native plugins for Claude Code, Codex, Grok Build, and Antigravity. Narrative-architecture repair for fiction, venue-matched rules for professional prose. Based on StoryScope (arXiv:2604.03136).",
+   "published": "2026-08-28T05:56:49Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2564,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Outil de post-traitement pour agents compatibles Skills, spécialisé dans la correction narrative et l'adaptation de style (fiction/professionnel) via des plugins natifs pour plusieurs modèles. Intéressant pour l'optimisation des sorties d'agents, mais dépendant d'une architecture tierce (StoryScope) non encore consolidée.",
+   "score": 5.6
+  },
+  {
+   "id": "d35afbac075daa42",
+   "title": "Litelm: LiteLLM Without the Bloat",
+   "url": "https://github.com/kennethwolters/litelm",
+   "summary": "",
+   "published": "2026-09-11T18:10:20Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 148,
+    "comments": 49
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Projet open-source (LiteLLM) visant à optimiser les coûts et la latence des appels LLM, intéressant pour l'efficacité des modèles mais avec un niveau de fiabilité limité (non peer-reviewed).",
+   "score": 5.3
+  },
+  {
+   "id": "21df6740b604a5d0",
+   "title": "yjh051108/dsh-routing-suite",
+   "url": "https://github.com/yjh051108/dsh-routing-suite",
+   "summary": "dsh-routing-suite — injector + router-standard kit: install the runtime injector first, then the task-aware reasoning-mode router preset (measured P1-P23).",
+   "published": "2026-08-14T21:20:55Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 7167,
+    "language": "JavaScript"
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Suite d'outils pour DeepSeek Harness incluant un injecteur et un routeur pour modes de raisonnement (P1-P23). Approche technique concrète pour l'optimisation des agents, mais manque de documentation ou de benchmarks publics.",
+   "score": 5.3
+  },
+  {
+   "id": "6e136cbe61408daf",
+   "title": "S1N6H/pentest-harness",
+   "url": "https://github.com/S1N6H/pentest-harness",
+   "summary": "Pentest Harness — Heaven for Hackers. A self-hosted AI agent harness for authorized pentests, bug bounty, security labs, and CTFs. Bring your own AI model API; sessions stay local.",
+   "published": "2026-08-26T04:57:19Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 356,
+    "language": "TypeScript"
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Plateforme auto-hébergée pour exécuter des agents IA dédiés au pentest et à la cybersécurité, avec intégration locale des modèles. Pertinent pour les applications sécurisées, mais manque de détails sur les méthodes ou benchmarks.",
+   "score": 4.7
+  },
+  {
+   "id": "3f3cc1b7224ec752",
+   "title": "A misalignment of AI in mathematics",
+   "url": "https://mathandai.org/",
+   "summary": "",
+   "published": "2026-09-11T17:45:12Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 952,
+    "comments": 910
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Article HN discutant des risques de désalignement en mathématiques, avec des commentaires riches mais sans source académique ou analyse structurée.",
+   "score": 4.4
+  }
+ ]
+}
