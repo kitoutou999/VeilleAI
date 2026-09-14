@@ -1,0 +1,587 @@
+{
+ "date": "2026-09-14",
+ "digest": {
+  "headline": "L'optimisation des modèles robotiques et des agents LLM domine la veille avec des méthodes réduisant les biais et les coûts d'entraînement",
+  "overview": "Les avancées du jour se concentrent sur l'amélioration de la généralisation et de l'efficacité des systèmes d'IA, notamment en robotique et pour les agents LLM. Les méthodes proposées ciblent des problèmes récurrents comme les raccourcis vision-action, le bruit dans les données de préférence, ou la sélection optimale de compétences. En parallèle, des outils et benchmarks émergent pour structurer l'évaluation et l'infrastructure.",
+  "highlights": [
+   {
+    "title": "Latent Interface Training (LIT) pour la robotique généralisable",
+    "text": "LIT introduit une approche en deux étapes pour éviter les raccourcis entre perception et action dans les modèles robotiques. En combinant un expert d'action spatialement conditionné et une interface latente, la méthode contraint l'utilisation des informations visuelles, améliorant la robustesse. Cette architecture répond à un défi clé en robotique : la dépendance excessive aux corrélations superficielles dans les données d'entraînement."
+   },
+   {
+    "title": "PLC-DPO et DSR : robustesse et diversité pour les LLM et agents",
+    "text": "PLC-DPO corrige les labels bruités ou ambigus dans l'optimisation par préférences (DPO) en classant les paires d'entraînement via une marge calibrée, surpassant DPO sur 57 benchmarks. DSR, quant à lui, améliore la sélection de compétences dans les agents LLM en utilisant un reranking basé sur les processus déterminantaux, favorisant la complémentarité plutôt que la simple pertinence. Ces méthodes adressent des limites critiques des pipelines actuels : la sensibilité au bruit et le manque de diversité dans les réponses."
+   },
+   {
+    "title": "COBRA-Skills et l'optimisation des agents par bandits contextuels",
+    "text": "COBRA-Skills utilise un bandit contextuel pour optimiser les compétences des agents LLM, réduisant les coûts d'évaluation de 55-58% tout en améliorant les performances moyennes sur 6 benchmarks. Cette approche montre une robustesse aux changements de contexte, un avantage pour les applications où les tâches varient fréquemment. Elle illustre une tendance vers des méthodes d'optimisation plus adaptatives et moins coûteuses."
+   },
+   {
+    "title": "SAS et l'attention éparse optimisée pour les Transformers",
+    "text": "SAS propose une méthode pour optimiser l'attention éparse en alignant directement le classement des unités de contexte avec leur impact sur les prédictions. Ce mécanisme end-to-end réduit les coûts quadratiques de l'attention tout en préservant les performances, un enjeu majeur pour les modèles à grande échelle. La méthode s'inscrit dans les efforts pour rendre les architectures Transformer plus efficaces sans sacrifier la précision."
+   },
+   {
+    "title": "Benchmark Radar et DataFlex-RL : structurer l'évaluation en IA",
+    "text": "Benchmark Radar centralise 1 283 benchmarks IA avec leurs métriques et historiques, facilitant la comparaison et la découverte d'évaluations pertinentes. DataFlex-RL, de son côté, évalue des politiques de données en RLVR et montre que les méthodes de sélection/rééquilibrage de rollouts n'améliorent pas significativement les performances par rapport à un échantillonnage uniforme. Ces outils répondent à un besoin croissant de standardisation et de transparence dans l'évaluation des modèles."
+   }
+  ],
+  "trend": "Les méthodes d'optimisation et de généralisation gagnent en maturité, avec un focus sur la réduction des biais (vision-action, bruit dans les données) et des coûts (bandits contextuels, attention éparse). En parallèle, l'écosystème se structure autour de benchmarks et d'outils pour évaluer et déployer ces avancées de manière reproductible."
+ },
+ "items": [
+  {
+   "id": "12ac24231eafe1e3",
+   "title": "Breaking the Vision-Action Shortcut: Latent Interface Training for Generalizable Robotics Foundation Models",
+   "url": "https://huggingface.co/papers/2609.12641",
+   "summary": "Robot foundation models achieve strong in-distribution performance but often degrade under visual distribution shifts. When learning to generate actions from pretrained visual representations, models may exploit task-irrelevant visual cues that correlate with demonstrated actions within the training distribution. Such vision-action shortcuts can undermine generalization when these correlations change under distribution shifts. Mitigating these shortcuts requires constraining how visual information is used for action generation while preserving task-relevant spatial information. We propose Latent Interface Training (LIT), a framework-agnostic two-stage strategy that first establishes a spatial-goal-conditioned action prior without images, then constrains visual conditioning through a pose-supervised latent interface. Stage 1 trains the action expert to generate action chunks conditioned on language, robot state, and each demonstrated chunk's terminal SE(3) end-effector pose, learning goal-directed action generation independently of visual cues. Stage 2 introduces a latent interface that aggregates visual and semantic representations and serves as the pretrained action expert's only visual conditioning pathway. The interface is supervised to reconstruct the terminal pose previously used to condition Stage 1, encouraging it to retain the goal-relevant spatial information needed for action generation. Across four vision-language-action and world-action architectures (Pi0.5, MolmoAct2, FAST-WAM, and ImageWAM), LIT improves overall LIBERO-Plus success by 3.87-10.70 percentage points while preserving or improving average LIBERO success. Real-world evaluations show 13.30-16.70 percentage-point gains in success aggregated across three tasks under unseen camera configurations, lighting variations, and distractors.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 51,
+    "arxiv_id": "2609.12641"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "LIT (Latent Interface Training) propose une méthode en deux étapes pour éviter les raccourcis vision-action dans les modèles robotiques, combinant un expert d'action spatialement conditionné et une interface latente pour contraindre l'utilisation des informations visuelles.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles de fondation robotiques actuels excellent dans des environnements similaires à leur distribution d'entraînement, mais leur performance se dégrade significativement face à des variations visuelles (changements d'éclairage, de caméra, ou présence d'éléments distracteurs). Cela s'explique par l'exploitation de raccourcis visuo-moteurs (vision-action shortcuts), où le modèle utilise des indices visuels non pertinents pour la tâche mais corrélés aux actions dans les données d'entraînement, compromettant ainsi la généralisation.",
+    "methode": "La méthode proposée, *Latent Interface Training* (LIT), est une stratégie en deux étapes, indépendante du cadre architectural. **Étape 1** : Un expert en actions est entraîné à générer des séquences d'actions (*action chunks*) conditionnées par du langage, l'état du robot, et la pose terminale SE(3) de l'effecteur final pour chaque chunk démontré. Cette phase apprend une génération d'actions dirigée par des objectifs, sans dépendre de données visuelles. **Étape 2** : Une *interface latente* est introduite pour agréger les représentations visuelles et sémantiques, servant de seul canal de conditionnement visuel pour l'expert en actions pré-entraîné. Cette interface est supervisée pour reconstruire la pose terminale utilisée dans l'Étape 1, forçant ainsi la rétention d'informations spatiales pertinentes pour la tâche tout en filtrant les raccourcis visuels non pertinents.",
+    "resultats": "LIT améliore les performances globales sur le benchmark *LIBERO-Plus* de 3,87 à 10,70 points de pourcentage selon l'architecture (Pi0.5, MolmoAct2, FAST-WAM, ImageWAM), tout en maintenant ou améliorant les résultats moyens sur *LIBERO*. En évaluation réelle, des gains de 13,30 à 16,70 points de pourcentage sont observés sur trois tâches sous des configurations de caméra, d'éclairage et de distracteurs inédits.",
+    "limites": "Le contenu disponible ne permet pas d'identifier clairement les limites théoriques ou pratiques de LIT, comme la robustesse face à des variations extrêmes de pose ou la dépendance à la qualité des annotations de pose SE(3). De plus, l'absence de détails sur le coût computationnel ou la scalabilité de la méthode laisse des zones d'ombre pour une adoption industrielle.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à améliorer la généralisation des modèles robotiques face aux variations visuelles, tout en restant compatible avec plusieurs architectures existantes."
+   }
+  },
+  {
+   "id": "3b9ff84752610ed9",
+   "title": "PLC-DPO: Posterior Label Correction in Noisy and Ambiguous Preference Optimization",
+   "url": "https://huggingface.co/papers/2608.30597",
+   "summary": "Direct Preference Optimization (DPO) simplifies alignment through pairwise comparisons but assumes all observed preferences are reliable. Real data often violates this assumption, leading to reversed, weak, or ambiguous labels that cause harmful policy updates. To address this, we propose Posterior Label Correction DPO (PLC-DPO) to robustly optimize preferences by routing each pair's training signal as a clean, flip, or tie case. The key idea is to use the calibrated policy-reference margin as online evidence to take appropriate correction actions. This reframes noisy preference learning as actively correcting supervision direction and strength rather than merely filtering suspicious examples. Across 57 dataset-model-benchmark cells, PLC-DPO obtains the best mean win rate against DPO (60.5 vs. 55.5 for the next-best method). Injected-noise and tie stress tests, human disagreement analysis, and self-confirmation diagnostics further show that the routing remains stable and distinguishes flipped from weakly directional pairs.",
+   "published": "2026-08-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2608.30597"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "PLC-DPO propose une méthode robuste pour corriger les labels bruités ou ambigus dans l'optimisation par préférences (DPO), en routant les paires d'entraînement comme des cas 'propres', 'inversés' ou 'égaux' via une marge calibrée. Résultats supérieurs à DPO sur 57 benchmarks, avec stabilité face au bruit et aux ambiguïtés.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le papier aborde un défi majeur dans l'alignement des modèles de langage via Direct Preference Optimization (DPO) : l'hypothèse selon laquelle toutes les préférences observées dans les données sont fiables est souvent violée en pratique. Les données réelles contiennent des labels bruités, inversés, faibles ou ambigus, ce qui entraîne des mises à jour de politique sous-optimales, voire nuisibles, pour le modèle.",
+    "methode": "Les auteurs proposent PLC-DPO (Posterior Label Correction DPO), une méthode qui corrige dynamiquement les labels de préférence pendant l'entraînement. L'idée centrale est d'utiliser la marge calibrée entre la politique actuelle et une référence (comme un modèle pré-entraîné) comme indicateur en ligne pour classifier chaque paire de préférences en trois catégories : *clean* (label fiable), *flip* (label inversé à corriger), ou *tie* (préférence faible ou ambiguë, à traiter comme un match nul). Cette approche transforme l'apprentissage de préférences bruitées en un processus actif de correction de la direction et de l'intensité de la supervision, plutôt qu'en un simple filtrage des exemples suspects. La correction repose sur des seuils adaptatifs dérivés de la distribution des marges observées.",
+    "resultats": "PLC-DPO surpasse DPO et d'autres méthodes concurrentes sur 57 configurations combinant datasets, modèles et benchmarks, avec un taux de victoire moyen de 60,5 % contre 55,5 % pour la meilleure alternative. Des tests de robustesse (bruit injecté, stress sur les *ties*, analyse des désaccords humains) montrent que la méthode maintient une classification stable des paires et distingue efficacement les labels inversés des préférences faiblement directionnelles. Les diagnostics de *self-confirmation* confirment que les corrections ne s'auto-renforcent pas de manière biaisée.",
+    "limites": "Le papier ne détaille pas explicitement les coûts computationnels supplémentaires induits par le calcul en ligne des marges et la correction dynamique des labels. De plus, la dépendance à une référence (modèle pré-entraîné) pour calibrer les marges pourrait introduire un biais si cette référence est elle-même mal alignée. Enfin, l'évaluation se limite à des benchmarks académiques, sans validation sur des cas d'usage industriels ou des données à très grande échelle.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante et ses résultats solides, mais son applicabilité en production dépendra de sa scalabilité et de sa robustesse face à des données encore plus bruitées ou hétérogènes."
+   }
+  },
+  {
+   "id": "08564f58e73602ef",
+   "title": "Beyond Top-k Skill Retrieval: Diversity-Aware Skill Routing for LLM Agents",
+   "url": "https://huggingface.co/papers/2609.05824",
+   "summary": "Large language model (LLM) agents increasingly rely on external skills, but routing user requests over large skill registries is difficult because many skills are functionally redundant while complex tasks often require complementary skill sets. Existing skill routers typically rank candidates independently by query relevance, which can waste context budget on redundant skills. We propose Diverse Skill Routing (DSR), a diversity-aware reranking framework that uses a Determinantal Point Process to balance relevance and non-redundancy. DSR introduces a query-residual diversity kernel that penalizes redundant skill overlap while reducing penalties caused only by shared query relevance. On the SkillRouter benchmark, DSR improves recall and full coverage over a strong pointwise reranking baseline, with larger gains on multi-skill queries. These results suggest that skill routing should be treated not only as relevance ranking, but also as complementary set selection.",
+   "published": "2026-09-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.05824"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "DSR (Diverse Skill Routing) introduit un cadre de reranking basé sur les processus déterminantaux pour sélectionner des compétences complémentaires dans les agents LLM, améliorant la couverture et le rappel sur des requêtes multi-compétences par rapport aux méthodes classiques de pertinence.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents basés sur les grands modèles de langage (LLM) dépendent de plus en plus de compétences externes pour accomplir des tâches complexes. Cependant, le routage des requêtes utilisateurs vers un large registre de compétences est problématique, car de nombreuses compétences sont fonctionnellement redondantes, tandis que certaines tâches nécessitent des ensembles de compétences complémentaires. Les approches existantes se limitent souvent à un classement indépendant des compétences par pertinence, ce qui gaspille le budget de contexte en sélectionnant des compétences redondantes.",
+    "methode": "L'article propose *Diverse Skill Routing* (DSR), un cadre de réordonnancement tenant compte de la diversité, utilisant un *Determinantal Point Process* (DPP) pour équilibrer pertinence et non-redondance. DSR introduit un *noyau de diversité basé sur le résidu de la requête* (*query-residual diversity kernel*), qui pénalise le chevauchement redondant entre compétences tout en atténuant les pénalités liées uniquement à une pertinence partagée avec la requête. Contrairement aux méthodes traditionnelles de réordonnancement point par point, DSR traite le routage comme une sélection d'ensembles complémentaires plutôt qu'un simple classement par pertinence. Le DPP permet de modéliser explicitement les interactions entre compétences pour favoriser la diversité tout en conservant la pertinence.",
+    "resultats": "Sur le benchmark *SkillRouter*, DSR améliore le rappel (*recall*) et la couverture complète (*full coverage*) par rapport à une baseline forte de réordonnancement point par point. Les gains sont particulièrement marqués pour les requêtes nécessitant plusieurs compétences, démontrant l'efficacité de l'approche pour les tâches complexes. Les chiffres exacts ne sont pas précisés dans le résumé disponible, mais l'amélioration est présentée comme significative.",
+    "limites": "Le résumé ne détaille pas les hypothèses sous-jacentes au modèle, comme la définition exacte de la redondance ou la sensibilité aux hyperparamètres du DPP. De plus, l'évaluation se limite à un seul benchmark (*SkillRouter*), ce qui soulève des questions sur la généralisabilité des résultats à d'autres contextes ou registres de compétences. Enfin, l'impact sur la latence ou le coût computationnel n'est pas abordé, bien que le DPP puisse introduire une complexité supplémentaire.",
+    "verdict": "Ce travail mérite l'attention des chercheurs et ingénieurs en IA, car il aborde un problème critique et sous-estimé du routage de compétences pour les LLM, avec une approche technique innovante et des résultats prometteurs, malgré des limites à explorer."
+   }
+  },
+  {
+   "id": "c10f9a1933ce39b3",
+   "title": "COBRA-Skills: Contextual Bandit-Guided Evolution for Agent Skill Optimization",
+   "url": "https://huggingface.co/papers/2609.11682",
+   "summary": "Large language model (LLM) agents can benefit from reusable skills distilled from prior task experience, yet existing skill optimization methods often rely on costly execution-based evaluation and substantial task data. We introduce COBRA-Skills, an efficient framework that formulates skill optimization as budgeted sequential optimization over a dynamically evolving candidate space. COBRA-Skills couples contextual-bandit-guided prioritization with evidence-grounded skill evolution, selectively allocating evaluations to promising or informative candidates while continually refining the skill population from execution feedback. Across six heterogeneous agent benchmarks and three target models, COBRA-Skills consistently achieves the strongest average performance among compared methods, while reducing optimization cost by 55--58\\% relative to SkillOpt and using only 50 unique optimization examples per benchmark. Further analyses show that COBRA-Skills remains robust to changes in the agent harness and performs effectively when the target model itself is used for skill generation and refinement.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2609.11682"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "COBRA-Skills optimise les compétences des agents LLM via un bandit contextuel, réduisant les coûts d'évaluation de 55-58% tout en améliorant les performances moyennes sur 6 benchmarks hétérogènes, avec une robustesse aux changements de contexte.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents basés sur des grands modèles de langage (LLM) peuvent tirer parti de compétences réutilisables, extraites d'expériences antérieures sur des tâches. Cependant, les méthodes actuelles d'optimisation de ces compétences dépendent souvent d'évaluations coûteuses en termes d'exécution et nécessitent une quantité substantielle de données spécifiques aux tâches, ce qui limite leur efficacité et leur scalabilité.",
+    "methode": {
+     "approche_generale": "COBRA-Skills propose un cadre d'optimisation efficace qui reformule l'optimisation des compétences comme un problème d'optimisation séquentielle sous contrainte de budget, appliqué à un espace de candidats évoluant dynamiquement.",
+     "details_techniques": [
+      "Le système utilise un guidage par *contextual bandit* pour prioriser les candidats prometteurs ou informatifs, réduisant ainsi le nombre d'évaluations nécessaires.",
+      "Il intègre une évolution des compétences basée sur des preuves (*evidence-grounded skill evolution*), affinant continuellement la population de compétences à partir des retours d'exécution.",
+      "L'allocation sélective des évaluations permet de concentrer les ressources sur les candidats les plus pertinents, tout en exploitant les feedbacks pour améliorer dynamiquement l'espace de recherche.",
+      "Le cadre est conçu pour fonctionner avec un nombre limité d'exemples d'optimisation (seulement 50 par benchmark dans les expériences)."
+     ]
+    },
+    "resultats": {
+     "performances": "COBRA-Skills surpasse systématiquement les méthodes comparées (dont SkillOpt) en termes de performance moyenne sur six benchmarks hétérogènes et trois modèles cibles.",
+     "efficacite": "Le cadre réduit les coûts d'optimisation de 55 à 58 % par rapport à SkillOpt, tout en maintenant une robustesse face aux variations de l'environnement d'exécution de l'agent (*agent harness*).",
+     "flexibilite": "Les analyses montrent que COBRA-Skills reste efficace même lorsque le modèle cible est utilisé à la fois pour la génération et le raffinement des compétences."
+    },
+    "limites": {
+     "manque_details": "Le contenu disponible ne précise pas les benchmarks exacts utilisés ni les métriques détaillées de performance, ce qui limite l'évaluation de la généralisabilité des résultats.",
+     "hypotheses_implicites": "La méthode repose sur une hypothèse forte de qualité des retours d'exécution, dont la robustesse face à des environnements bruités ou imprévisibles n'est pas explicitement testée.",
+     "comparaisons": "Les comparaisons se limitent à SkillOpt et à des méthodes non détaillées, sans benchmark contre des approches plus récentes ou alternatives (ex. : optimisation par gradient, méthodes hybrides)."
+    },
+    "verdict": "COBRA-Skills mérite une attention particulière pour son approche innovante et ses gains d'efficacité, mais son adoption nécessiterait des validations supplémentaires sur des cas d'usage plus variés et des comparaisons élargies."
+   }
+  },
+  {
+   "id": "eaf41361e45556f4",
+   "title": "DataFlex-RL: An Evaluation Platform for RLVR Data Policies",
+   "url": "https://huggingface.co/papers/2609.06107",
+   "summary": "Data policies for reinforcement learning with verifiable rewards (RLVR) determine which rollouts are used, how strongly they are weighted, and which domains contribute to subsequent training batches. We introduce DataFlex-RL, an evaluation platform for comparing these choices under a common GRPO recipe. Our primary experiment evaluates 13 configurations across 12 matched seeds using Qwen2.5-7B-Base and 12 mathematics, logic, and science benchmarks. Uniform GRPO improves the domain-balanced average accuracy by 7.76 percentage points over the untrained checkpoint. None of the eight rollout-selection or reweighting methods achieves a paired 95% confidence interval that excludes zero relative to uniform sampling, and none of the three adaptive mixtures outperforms a fixed equal mixture at the same level of precision. A corrected 12-seed extension on Llama-3.1-8B-Base places the additional methods on the same score scale as the original controls, but does not reveal a consistent winner in terms of observed mean performance. We also quantify evaluation sensitivity by rescoring nine Qwen2.5-7B-Instruct runs using a math-heavy six-benchmark summary, consisting of five mathematics benchmarks and GPQA-Diamond but no logic benchmark, and comparing it with the domain-balanced 12-benchmark summary. The resulting rankings are negatively correlated, with a correlation coefficient of -0.33, whereas summaries that retain all 12 benchmarks largely agree. Across the controlled settings studied here, changing the data policy measurably changes the training process but does not produce a reproducible improvement over uniform training.",
+   "published": "2026-09-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2609.06107"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "DataFlex-RL propose une plateforme d'évaluation pour comparer des politiques de données en RLVR (Reinforcement Learning avec récompenses vérifiables), montrant que les méthodes de sélection/rééquilibrage de rollouts n'améliorent pas significativement les performances par rapport à un échantillonnage uniforme dans un cadre GRPO standard.",
+   "score": 8.5
+  },
+  {
+   "id": "b232b8f19a8fe91b",
+   "title": "Online Learning with LLM Experts from Limited Feedback",
+   "url": "https://huggingface.co/papers/2609.05820",
+   "summary": "We study adaptive routing of prompts to large language model (LLM) experts to maximize response quality in an online setting with limited feedback. We formulate it as a bandit problem with K actions that represent experts and d features that encode prompts, over a horizon of T rounds. We propose algorithms that strategically select and observe rewards to minimize regret. In the full-information setting, we achieve a regret of O(d T / m), while in the bandit setting we achieve O(d T K / m), where m ll T is a budget on feedback. Our experiments show that we efficiently learn high-quality routing strategies across diverse LLMs from limited feedback.",
+   "published": "2026-09-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.05820"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Ce travail formalise le routage adaptatif d'experts LLM comme un problème de bandit en ligne avec feedback limité, proposant des algorithmes avec des bornes de regret théoriques et des résultats empiriques sur la sélection efficace d'experts pour maximiser la qualité des réponses.",
+   "score": 8.2
+  },
+  {
+   "id": "fee6bc029aff4954",
+   "title": "SAS: Simple Attention Sparsification via End-to-End Optimization of Context Ranking",
+   "url": "https://huggingface.co/papers/2609.13141",
+   "summary": "Post-training attention sparsification reduces the quadratic cumulative attention cost of pretrained Transformers by selecting a small set of context units (tokens or blocks) for each query. Existing trainable methods usually use a lightweight selector to score context units, followed by hard Top-K selection that blocks gradients from the language modeling loss. Consequently, these methods commonly distill layer-wise dense attention distributions. Although this encourages the selector to rank context units by dense attention weights in the original model, the ranking is not directly aligned with their impact on predictions under a fixed attention budget (i.e., the number of attended context units per query), potentially wasting the limited budget on less useful units. To address this misalignment, we propose Simple Attention Sparsification (SAS), a gated sparse attention mechanism that optimizes context ranking end-to-end with the language modeling loss. The key idea is to inject the selector's continuous scores into attention logits during training, allowing the loss to update the selector through standard backpropagation. We identify several choices crucial for this simple design to work well in practice: placing the gate inside the attention softmax in log form, using normalized softmax gates to calibrate historical context against the always-retained current block, and preserving continuous selector scores so the model learns relative priorities rather than only hard selections. To support long-sequence training, we implement a memory-efficient Triton kernel that integrates SAS into FlashAttention-style computation. Across reasoning, long-context understanding, and agentic tasks, SAS consistently outperforms trainable sparse attention baselines across attention budgets, with especially large gains under tight budgets, demonstrating more effective context ranking for downstream tasks.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 47,
+    "arxiv_id": "2609.13141"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture",
+    "llm"
+   ],
+   "tldr": "SAS optimise l'attention éparse des Transformers en alignant directement le classement des unités de contexte avec l'impact sur les prédictions via un mécanisme géré end-to-end. Réduction des coûts d'attention quadratique tout en préservant les performances.",
+   "score": 8.2
+  },
+  {
+   "id": "748b3933b19e2cbf",
+   "title": "Benchmark Radar: A Living Database and Search Engine for AI Benchmarks and Evaluation",
+   "url": "https://huggingface.co/papers/2609.11115",
+   "summary": "Benchmark researchers and developers of large language models (LLMs) and other AI systems need to find relevant evaluations, locate their benchmark datasets and code, and understand the settings behind reported scores. We present Benchmark Radar, a living database and search engine for retrieval and discovery of AI benchmarks, covering LLM evaluation, agentic and tool-use benchmarks, coding, reasoning, safety, and domain-specific evaluations. The system combines daily discovery of benchmark papers, repositories, datasets, and releases with a searchable benchmark catalog, mentions in model cards and technical reports, and score histories. It retains source identities and citations so readers can inspect candidate benchmarks and their evaluation evidence. Daily discovery draws on 37 sources: 13 direct connectors and 24 first-party research and engineering feeds. The catalog contains 1,283 source records drawn from 4 benchmark catalogs and 12,916 numeric observations on 790 records. We describe collection and retrieval, audit the full catalog, and examine benchmark saturation, adoption trends, and the limits of score comparisons. A worked example walks through a complete prior-art search, showing how to query the catalog and inspect benchmark evidence when designing a new evaluation. We release the web dashboard with a benchmark leaderboard, a Pareto frontier view of score against measured use, saturation and trend views, daily feeds, downloadable evidence, a command-line interface (CLI) for offline queries, and reproducible analysis.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 48,
+    "arxiv_id": "2609.11115"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "benchmark",
+    "produit"
+   ],
+   "tldr": "Benchmark Radar est une base de données vivante et moteur de recherche centralisant 1 283 benchmarks IA (LLM, agents, robotique, etc.) avec leurs métriques, jeux de données et historiques, facilitant la comparaison et la découverte d'évaluations pertinentes.",
+   "score": 7.9
+  },
+  {
+   "id": "70396b411ea7ecfe",
+   "title": "Feyospace-v1: How the Cyber Mercury Seven Trained Frontier Cyber Models",
+   "url": "https://huggingface.co/papers/2609.08418",
+   "summary": "Training capable cyber agents is often treated primarily as a problem of model scale, yet open-weight post-training is constrained more directly by the cost of executable environments, reliable multi-turn supervision, and access to strong teachers. We present a data-centric framework that addresses these bottlenecks through five complementary systems: Choulea analyzes hidden reasoning signatures, SkyReal reduces teacher-sampling cost, Hongzwang bypasses API restrictions on teacher execution, PSBreakup restores capabilities weakened by model merging, and Kreator converts expert interventions into trainable reasoning. Our data engine constructs resettable coding, vulnerability, CTF, kernel-history, full-exploit, firmware, and device-backed environments. Candidate trajectories are retained only after execution verification and evidence auditing, yielding 164,269 trajectories for long-context supervised fine-tuning. The three checkpoints improve over their starting models by an average of 23.76% on the full CyberGym suite and 10.49% across the pooled CTF suites. As of September 1, 2026, Feyospace-s1 achieves a verified success rate of 63.24% and ranks 10th on the official CyberGym leaderboard, while all three checkpoints rank 1st among models at comparable parameter scales. To our knowledge, this is the first end-to-end demonstration that a seven-person independent team can train open-weight models with leading agentic cyber capability.",
+   "published": "2026-09-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 73,
+    "arxiv_id": "2609.08418"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "outils"
+   ],
+   "tldr": "Feyospace-v1 présente un cadre data-centric pour entraîner des agents cyber avancés (CyberGym) via des systèmes complémentaires (exécution vérifiée, contournement d'API, fusion de modèles), améliorant de 23,76% les performances moyennes sur des tâches complexes.",
+   "score": 7.6
+  },
+  {
+   "id": "ad7eb6e1b0221712",
+   "title": "SNAP3D: Physically Grounded 3D Parts for Assembly from a Single Image",
+   "url": "https://huggingface.co/papers/2609.13146",
+   "summary": "Part-aware 3D asset generation enables applications such as editing, articulation, simulation, and fabrication, yet existing methods can generate visually complete individual parts without ensuring that they form a valid physical assembly. Consequently, generated neighboring parts may interpenetrate, lack valid connections, or collapse under gravity. We propose a physics-guided framework for improving single-image part-aware 3D generation with physically compatible geometry and stable connections. Our method resolves inter-part penetration, recovers a contact graph between neighboring parts, and introduces parameterized connectors at their contact surfaces. Using feedback from physical simulation, we refine connector placement, orientation, and dimensions to improve assembly stability while preserving the generated geometry. We further introduce a physics-based evaluation protocol that complements conventional geometric metrics by directly testing assembly validity and stability under gravity. Experiments comparing against multiple part-aware 3D generators show substantial improvements in physical realizability and stability while maintaining geometric quality. We additionally validate the resulting parts through 3D printing and real-world assembly.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.13146"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "SNAP3D améliore la génération 3D de pièces physiques à partir d'une image en intégrant des contraintes physiques (évitement des intersections, graphes de contact, connecteurs paramétrés) et une évaluation basée sur la simulation. Méthode validée sur des benchmarks de réalisme physique et de stabilité.",
+   "score": 7.3
+  },
+  {
+   "id": "2d86ea937c0e52f7",
+   "title": "rome-os/rome",
+   "url": "https://github.com/rome-os/rome",
+   "summary": "A compounding agent OS for recursive agents. Also an open source alternative to Grok Bot and Meta's Muse.",
+   "published": "2026-08-23T06:15:15Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 495,
+    "language": "TypeScript"
+   },
+   "relevance": 9,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Projet expérimental proposant un OS pour agents récursifs, se positionnant comme alternative open source à Grok Bot et Muse, mais manquant de documentation technique solide ou de validation académique.",
+   "score": 7.1
+  },
+  {
+   "id": "bc0f4b105507a68e",
+   "title": "peonist-ai/halogen-flash-server",
+   "url": "https://github.com/peonist-ai/halogen-flash-server",
+   "summary": "The fastest way to run Qwen3.8-Flash-Next on Strix Halo (gfx1151)",
+   "published": "2026-08-26T12:41:30Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 385,
+    "language": "Shell"
+   },
+   "relevance": 8,
+   "reliability": 5,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Script d'optimisation pour l'inférence ultra-rapide de Qwen3.8-Flash-Next sur GPU Strix Halo, axé sur la performance matérielle mais sans analyse comparative ou publication peer-reviewed.",
+   "score": 6.8
+  },
+  {
+   "id": "2f24f373de22d1ca",
+   "title": "Building and Evaluating Fixed-Voice Thai TTS from Synthetic Speech",
+   "url": "https://huggingface.co/papers/2609.03502",
+   "summary": "In low-resource settings, deploying TTS typically requires choosing between a large voice-cloning model with costly inference or a compact fixed-voice system that requires a speaker-specific corpus. We study a third route: using a large voice-cloning model as a programmable data source to turn a short voice reference (e.g., 15 seconds) into a compact fixed-voice student trained entirely on synthetic speech. This setting makes pipeline design consequential: teacher errors become training targets, while filtering failed generations can reduce coverage of difficult texts. Thai further introduces challenges from ambiguous word boundaries, lexical tone, names and loanwords, numeric verbalization, and Thai-English code-switching. We study how text preparation, synthetic generation, quality filtering, rejection sampling, and frontend choices affect the resulting student, and where teacher limitations remain. We evaluate CER, Challenge-Set Keyword Accuracy, Prosody Pause Accuracy, speaker similarity, and speaking rate. The resulting 82M-parameter model, Wayu-Paxa-TTS-Edge, enables on-device Thai TTS without reference audio. It achieves 68.2% Challenge-Set Keyword Accuracy (85.5% of Gemini 3.1) and 91.4% pause precision, outperforming its OmniVoice teacher (89.9%) and reaching 94.8% of Gemini 3.1. It also achieves the lowest pause-placement error and intra-word pause rates among the three systems, and 3.7% and 1.1% CER on Thai and English, respectively. We open-source the model and evaluation framework for Thai TTS development.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.03502"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "outils"
+   ],
+   "tldr": "Wayu-Paxa-TTS-Edge démontre une approche de TTS en voix fixe pour le thaï en utilisant des données synthétiques générées par un modèle de clonage vocal, atteignant une précision de 68,2% sur un jeu de mots complexes, avec un modèle léger (82M de paramètres) optimisé pour l'inférence embarquée.",
+   "score": 6.7
+  },
+  {
+   "id": "1e5849ca1cca3cd8",
+   "title": "StepAudio 3 Gen Technical Report",
+   "url": "https://huggingface.co/papers/2609.12945",
+   "summary": "We introduce StepAudio 3 Gen, a general-purpose audio generation model that supports zero-shot text-to-speech (TTS), voice design, vocal generation, sound effects, music, vibe speech, and mixtures of multiple audio types within a unified framework. At its core, StepAudio 3 Gen is a discrete autoregressive generator that models audio directly over residual vector quantization (RVQ) tokens, departing from the diffusion Transformer-based continuous generation paradigm prevalent in recent general audio models. Its StepAudio Tokenizer represents general audio at 12.5 Hz in a shared 16 times 2048 residual code space, jointly quantizing semantic and waveform-level acoustic features so that each code layer preserves both types of information. For generation, the backbone predicts the first codebook along the time axis using autoregressive modeling, while a lightweight causal Transformer completes the remaining fifteen codebooks along the codebook axis. Our study further identifies three key design principles: (1) interference-aware progressive pretraining for acquiring audio capabilities while preserving the textual abilities of the large language model, (2) RVQ Adaptor for effectively incorporating multi-codebook acoustic representations, and (3) discrete autoregressive modeling over a shared representation across general audio domains. With progressive pretraining, multi-task instruction training, and supervised fine-tuning, StepAudio 3 Gen achieves state-of-the-art performance on both TTS and voice design, while retaining strong generation capabilities across speech, vocals, sound effects, and music. Audio samples are available at https://stepaudiollm.github.io/step-audio-3-gen/.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 26,
+    "arxiv_id": "2609.12945"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "architecture"
+   ],
+   "tldr": "StepAudio 3 Gen introduit un modèle audio génératif autorégressif basé sur des tokens RVQ, unifiant TTS, génération vocale, effets sonores et musique dans un cadre unique, avec des principes de conception comme un tokenizer joint sémantique/acoustique et un entraînement progressif.",
+   "score": 6.7
+  },
+  {
+   "id": "57b1afbc3b001eb7",
+   "title": "bojieli/ai-infra-book",
+   "url": "https://github.com/bojieli/ai-infra-book",
+   "summary": "《深入理解 AI Infra：量化分析与系统设计》（李博杰 著）开源书稿：从硬件约束和模型架构出发，量化推导 LLM 推理与训练系统设计。含全书正文、PDF、配套计算工具与实验",
+   "published": "2026-08-22T15:30:41Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1847,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Livre open-source en chinois sur l'infrastructure IA (quantification, entraînement, inférence) avec outils de calcul et expériences. Approche pratique et technique, mais limité par la langue et l'absence de peer-review.",
+   "score": 6.5
+  },
+  {
+   "id": "80cef584b6d9d6cf",
+   "title": "How Far Can Synthetic Data Take Thai OCR?",
+   "url": "https://huggingface.co/papers/2609.03595",
+   "summary": "We investigate what makes synthetic OCR supervision transfer to real Thai documents and use the resulting insights to build Wayu-Paxa-OCR-Zero, a Thai OCR model adapted without OCR labels from real Thai document pages. Synthetic data provide exact labels at scale, but \"realism\" conflates source domain, page context, typography, spatial structure, and glyph variation. We disentangle these factors with a controlled document-reconstruction pipeline and evaluate each variant under page- and crop-level training on printed and handwritten Thai documents. Non-text context has little consistent effect, whereas typeface diversity, two-dimensional structure, and real handwriting glyphs improve transfer; moreover, source-domain matching depends on training granularity, with in-domain reconstruction approaching real printed supervision under page-level training (1.82% versus 1.31% median character error rate) but underperforming out-of-domain reconstruction under crop-level training (15.59% versus 5.52%). Guided by these findings, we adapt the 0.9B-parameter PaddleOCR-VL-1.6 into Wayu-Paxa-OCR-Zero using 45,723 synthetic pages: relative to its base checkpoint, it reduces median character error rate from 6.64% to 1.24% on printed pages and from 74.87% to 20.55% on handwriting and outperforms Typhoon OCR v1 7B on all five evaluation sets, showing that synthetic-only training can be competitive.",
+   "published": "2026-09-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.03595"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "Wayu-Paxa-OCR-Zero adapte un modèle OCR thaï sans données labellisées réelles en utilisant des données synthétiques, réduisant l'erreur de caractères médiane à 1,82% (vs 1,31% pour un modèle supervisé) sous certaines conditions, mais avec des limites selon le niveau de granularité d'entraînement.",
+   "score": 6.1
+  },
+  {
+   "id": "fd206d46d42e83cf",
+   "title": "xzf-thu/VoiceMem",
+   "url": "https://github.com/xzf-thu/VoiceMem",
+   "summary": "Infrastructure for the next generation of voice agents, designed to provide universal memory. It is divided into a left brain and a right brain, storing information and emotions respectively, while a fully streaming architecture eliminates latency at the fundamental level.",
+   "published": "2026-08-17T09:49:10Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1627,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "audio",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "VoiceMem propose une infrastructure pour agents vocaux avec mémoire universelle (émotions vs informations) et architecture streaming pour réduire la latence. Concept innovant mais manque de détails techniques et de validation expérimentale.",
+   "score": 5.6
+  },
+  {
+   "id": "32607f1587dc963d",
+   "title": "sodiumsun/agenttrail",
+   "url": "https://github.com/sodiumsun/agenttrail",
+   "summary": "Local observability for AI coding agents. Agenttrail Map shows project structure and activity; Agenttrail Kitchen visualizes tasks and role contributions in 3D.",
+   "published": "2026-08-21T21:14:33Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 663,
+    "language": "JavaScript"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Outil de visualisation pour agents de coding local, offrant une cartographie 3D des tâches et rôles, mais centré sur l'observabilité pratique sans contribution théorique ou benchmarking.",
+   "score": 5.6
+  },
+  {
+   "id": "f31be0c625cb8e92",
+   "title": "okf-memory/okf-agent-memory",
+   "url": "https://github.com/okf-memory/okf-agent-memory",
+   "summary": "Git-native persistent memory for AI coding agents. Implements Google OKF v0.2 with sub-300µs in-memory BM25 search, embedded MCP server, and progressive disclosure. Slashes token bloat by 80% with zero external databases or dependencies. Built in pure Go.",
+   "published": "2026-09-05T21:26:04Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 641,
+    "language": "Go"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Implémente une mémoire persistante native Git pour agents IA, optimisée pour le codage avec recherche BM25 ultra-rapide (<300µs) et réduction de 80% des tokens sans base de données externe. Intéressant pour les workflows d'agents autonomes, mais dépendant de l'écosystème OKF et de la maturité de l'outil.",
+   "score": 5.6
+  },
+  {
+   "id": "c62a261749021279",
+   "title": "NiluK/worldmodels101",
+   "url": "https://github.com/NiluK/worldmodels101",
+   "summary": "Free interactive course on world models in AI. Nine visual chapters on prediction, latent dynamics, planning, JEPA, video models, and failure modes.",
+   "published": "2026-08-19T10:39:11Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 200,
+    "language": "TypeScript"
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Cours interactif gratuit sur les world models en IA, couvrant prédiction, JEPA et modèles vidéo, mais basé sur des ressources tierces sans contribution originale ou validation experte.",
+   "score": 5.3
+  },
+  {
+   "id": "8eae3aea79f2d070",
+   "title": "duty1g/x64dbg-mcp-server",
+   "url": "https://github.com/duty1g/x64dbg-mcp-server",
+   "summary": "x64dbg-MCP Server is a native MCP (Model Context Protocol) plugin for x64dbg that exposes the debugger's full functionality over HTTP. Connect any MCP-compatible AI assistant and control x64dbg programmatically: set breakpoints, step through code, read memory, dump registers, and more. Built with Zig — zero dependencies, single-binary output, cros",
+   "published": "2026-08-22T14:28:41Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1959,
+    "language": "Zig"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Plugin MCP pour x64dbg permettant un contrôle programmatique du débogueur via des agents IA, avec une implémentation technique solide mais un usage niche et peu documenté scientifiquement.",
+   "score": 5.3
+  },
+  {
+   "id": "12e9dd6851803557",
+   "title": "Perplexity trusts GPT-6 Astra with end-to-end systems",
+   "url": "https://openai.com/index/perplexity-improving-accuracy-with-astra",
+   "summary": "Perplexity uses Astra to write communications, change software, and monitor production systems, and checks in much less frequently than with earlier models.",
+   "published": "2026-09-14T00:00:00+00:00",
+   "source": "openai-blog",
+   "source_label": "OpenAI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "produit",
+    "llm"
+   ],
+   "tldr": "Perplexity annonce l'intégration de GPT-6 Astra pour des tâches d'écriture, de développement logiciel et de monitoring, avec une réduction de la fréquence des vérifications. Contenu marketing sans détails techniques ou benchmarks.",
+   "score": 4.9
+  },
+  {
+   "id": "6823c8dc98778b96",
+   "title": "kgoedecke/doop",
+   "url": "https://github.com/kgoedecke/doop",
+   "summary": "The open-source alternative to Paper.design. A multiplayer design canvas where humans and AI agents design together, live. MCP built in.",
+   "published": "2026-08-22T15:40:51Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 687,
+    "language": "TypeScript"
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Canvas de design collaboratif humain-IA avec support MCP, inspiré de Paper.design, mais sans analyse de son utilité ou de ses performances par rapport aux outils existants.",
+   "score": 4.7
+  }
+ ]
+}
