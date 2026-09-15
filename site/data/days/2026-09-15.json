@@ -1,0 +1,741 @@
+{
+ "date": "2026-09-15",
+ "digest": {
+  "headline": "La précision numérique et l'optimisation mémoire remettent en cause les affirmations de 'lossless' dans les LLM et leurs architectures dérivées",
+  "overview": "Les avancées du 15 septembre 2026 révèlent des limites techniques critiques dans les modèles de langage et les agents autonomes, notamment sur la précision des calculs, l'efficacité des caches et la robustesse des interactions physiques. Les optimisations matérielles et logicielles continuent de progresser, mais leur impact sur la fiabilité et la sécurité reste un enjeu central.",
+  "highlights": [
+   {
+    "title": "Précision numérique et inférence spéculative : le mythe du 'lossless'",
+    "text": "L'étude sur Orthrus démontre que la réduction de précision (BF16 vs FP32) dégrade significativement la spécificité de l'inférence spéculative, sans pour autant impacter systématiquement les performances en aval. Cela remet en question l'affirmation de 'lossless' pour les optimisations de précision, soulignant un compromis entre efficacité et exactitude des calculs dans les modèles hybrides diffusion/autoregressifs."
+   },
+   {
+    "title": "Optimisation du KV cache et attention groupée",
+    "text": "Grouped Value Attention (GVA) réduit l'empreinte mémoire du KV cache de 45-47% par rapport à GQA en reconstruisant les clés à la volée, tout en maintenant des performances comparables. Cette approche, couplée à une implémentation matérielle en cours, pourrait accélérer l'inférence autoregressive, un goulot d'étranglement majeur pour les LLM."
+   },
+   {
+    "title": "Sécurité et évaluation des agents autonomes",
+    "text": "HazardAuditor propose un cadre pour détecter et atténuer les risques d'exécution des agents IA (accès fichiers, commandes terminal) via une représentation normalisée des événements. La méthode GuardPO optimise les décisions de sécurité au niveau séquentiel, améliorant la robustesse des agents comme Claude Code ou Codex dans des environnements critiques."
+   },
+   {
+    "title": "Modèles de monde et intelligence incarnée",
+    "text": "Pelican-Sim 1.0 et Dynin-Robotics introduisent des architectures unifiées pour l'intelligence incarnée, combinant langage, vision et action physique. Pelican-Sim utilise un MoE sparse et une distillation en 4 étapes pour accélérer l'inférence (5,67x), tandis que Dynin-Omni prédit des trajectoires et états futurs via un modèle diffusion masquée, améliorant l'adaptabilité des robots."
+   },
+   {
+    "title": "Auto-amélioration et exploration autonome",
+    "text": "RSIAgent et ZGCM-1 illustrent les progrès en auto-amélioration et raisonnement agentique. RSIAgent, sans entraînement spécifique, découvre des structures complexes via une exploration 'large puis profond', tandis que ZGCM-1, un modèle 7B open-source, rivalise avec des modèles 100x plus grands sur des tâches mathématiques et de recherche."
+   },
+   {
+    "title": "Fiabilité et benchmarks pour les applications critiques",
+    "text": "ReactHuman et l'approche déterministe pour les calculs cliniques soulignent l'importance de benchmarks robustes et de méthodes fiables. ReactHuman évalue la prise de décision réactive des MLLM dans des scénarios physiques à haute fréquence, tandis que la délégation des calculs à un solveur Python réduit les erreurs numériques dans les applications médicales."
+   }
+  ],
+  "trend": "Les optimisations matérielles et logicielles des LLM et agents autonomes progressent, mais leur adoption en production nécessite des compromis entre performance, précision et sécurité. La tendance vers des architectures unifiées (langage, vision, action) et des benchmarks physiques ou adversariaux reflète un besoin croissant de robustesse et de fiabilité."
+ },
+ "items": [
+  {
+   "id": "8a9a27de76ee9e32",
+   "title": "How Lossless Is Lossless Speculative Decoding? The Role of Numerical Precision in Orthrus",
+   "url": "https://huggingface.co/papers/2609.15504",
+   "summary": "Orthrus is a hybrid autoregressive-diffusion architecture that accelerates autoregressive language-model inference by generating multiple tokens in parallel while using a frozen autoregressive backbone. Its central claim is that an intra-model consensus mechanism enables lossless speculative decoding, producing the same output sequence as the autoregressive model. We independently reproduce Orthrus and examine this claim under different numerical precisions. Under BF16 inference, exact trajectory matching occurs in only 45% of cases for the authors' checkpoint and 43% for our independently trained model across 1,190 prompts from 12 domains. The probability of exact matching is also strongly associated with the response-conditional perplexity of the reference model. Despite this trajectory divergence, Orthrus does not show systematic degradation on downstream lm-eval-harness benchmarks. In contrast, repeating the trajectory evaluation with FP32 yields exact trajectory matching on all evaluated prompts. These results show that the practical losslessness of Orthrus depends on numerical precision and that exact trajectory equivalence should be evaluated separately from downstream task performance.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2609.15504"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "L'étude démontre que la perte de précision numérique (BF16 vs FP32) impacte fortement la perte de spécificité de l'inférence spéculative d'Orthrus, un modèle hybride diffusion/autoregressif, sans dégradation systématique des performances en aval. Une analyse rigoureuse remet en cause l'affirmation de 'lossless' pour des précisions réduites.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi de l'accélération de l'inférence des modèles de langage autoregressifs tout en prétendant préserver la qualité des sorties générées. Orthrus propose une méthode de décodage spéculatif dite 'sans perte' (lossless), visant à produire des séquences identiques à celles d'un modèle autoregressif classique, mais avec un gain de vitesse grâce à la génération parallèle de plusieurs tokens.",
+    "methode": "Orthrus combine une architecture hybride autoregressive-diffusion, où un modèle autoregressif gelé (backbone) est utilisé en parallèle avec un mécanisme de consensus intra-modèle pour valider les tokens générés. Le décodage spéculatif permet de générer plusieurs tokens simultanément, puis de les vérifier via ce consensus. Les auteurs évaluent la fidélité des trajectoires générées (c'est-à-dire l'identité des séquences) sous différentes précisions numériques (BF16 et FP32) et comparent les performances sur des benchmarks standards (lm-eval-harness). La reproductibilité du modèle et son comportement face à la perplexité conditionnelle du modèle de référence sont également analysés.",
+    "resultats": "Les résultats montrent que, sous une précision BF16, seulement 45% (pour le checkpoint des auteurs) et 43% (pour un modèle entraîné indépendamment) des 1 190 prompts testés produisent des trajectoires exactement identiques à celles du modèle autoregressif de référence. La probabilité d'une correspondance exacte est corrélée à la perplexité conditionnelle du modèle. Cependant, malgré ces divergences, Orthrus ne présente pas de dégradation systématique sur les benchmarks aval. En revanche, en utilisant FP32, une correspondance exacte est observée pour tous les prompts évalués.",
+    "limites": "La principale limite réside dans la dépendance critique de la 'losslessness' à la précision numérique, ce qui remet en question la robustesse de la méthode dans des contextes pratiques où BF16 est souvent utilisé. De plus, l'absence de dégradation sur les benchmarks ne garantit pas une équivalence sémantique ou qualitative fine, et les cas de divergence de trajectoire mériteraient une analyse plus approfondie. Enfin, la reproductibilité partielle des résultats (43% vs 45%) suggère une sensibilité aux détails d'implémentation ou d'entraînement.",
+    "verdict": "Cette étude mérite attention pour son éclairage technique sur les compromis entre vitesse, précision numérique et fidélité des sorties, mais ses promesses de 'décodage sans perte' doivent être nuancées par ses limites pratiques et sa sensibilité aux conditions d'exécution."
+   }
+  },
+  {
+   "id": "2ebba49b0a32a93e",
+   "title": "Grouped Value Attention: Efficient KV Caching via On-Demand Key Reconstruction",
+   "url": "https://huggingface.co/papers/2609.13285",
+   "summary": "The KV cache is a primary bottleneck for Transformer decoding: its memory footprint and cache-read traffic grow with sequence length. Grouped-query attention (GQA) reduces this cost by sharing key-value heads, but still stores both a key and a value at every step. We introduce Grouped Value Attention (GVA), which stores grouped values and reconstructs content keys with a learned linear map. At inference, the map can be absorbed into the query, eliminating the need to materialize content keys in the intended decode path. A small shared decoupled RoPE channel retains positional information through a separately cached positional key. For the configurations studied, this representation reduces persistent cache scalars by approximately 45-47% relative to matched GQA. At the 350M-parameter scale with 30B FineWeb-Edu tokens, the 16-dimensional positional variant reaches 44.18 average accuracy across five tasks, compared with 44.36 for GQA and 43.88 for MLA. These results demonstrate near-GQA benchmark accuracy with a more compact cache representation. To translate this compact representation into faster autoregressive inference, we have developed custom decoding kernels and are currently evaluating their end-to-end inference performance with an open-source release planned soon.",
+   "published": "2026-09-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 46,
+    "arxiv_id": "2609.13285"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "GVA réduit l'empreinte mémoire du KV cache de 45-47% par rapport à GQA en reconstruisant les clés à la volée via une carte linéaire, tout en maintenant des performances comparables (44.18 vs 44.36 en accuracy moyenne). Une implémentation matérielle est en cours pour accélérer l'inférence autoregressive.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le cache clé-valeur (KV cache) constitue un goulot d'étranglement majeur pour le décodage dans les architectures Transformer, car sa taille mémoire et le trafic de lecture augmentent linéairement avec la longueur de la séquence. Cela limite l'efficacité des modèles lors de l'inférence, notamment pour les longues séquences ou les applications temps réel.",
+    "methode": "Les auteurs proposent *Grouped Value Attention* (GVA), une méthode qui optimise le KV cache en stockant uniquement des valeurs groupées et en reconstruisant les clés de contenu à la demande via une projection linéaire apprise. Lors de l'inférence, cette projection est intégrée directement dans la requête (*query*), évitant ainsi de matérialiser explicitement les clés de contenu. Un canal RoPE (*Rotary Position Embedding*) découplé et partagé, de faible dimension, conserve les informations positionnelles via une clé positionnelle séparée et mise en cache. Cette approche réduit significativement l'empreinte mémoire du cache par rapport à *Grouped-Query Attention* (GQA), tout en maintenant une précision comparable.",
+    "resultats": "Pour les configurations étudiées, GVA réduit le nombre de scalaires persistants dans le cache de 45 à 47 % par rapport à GQA, sans dégradation notable des performances. À l'échelle d'un modèle de 350 millions de paramètres entraîné sur 30 milliards de tokens *FineWeb-Edu*, la variante positionnelle à 16 dimensions atteint une précision moyenne de 44,18 % sur cinq tâches, contre 44,36 % pour GQA et 43,88 % pour *Multi-Head Latent Attention* (MLA). Les auteurs annoncent également le développement de noyaux de décodage personnalisés pour accélérer l'inférence, avec une évaluation en cours et une publication open-source prévue.",
+    "limites": "Les détails techniques sur la reconstruction des clés et l'intégration de la projection linéaire dans la *query* restent flous, notamment sur les compromis potentiels en termes de complexité computationnelle ou de stabilité numérique. De plus, les résultats présentés se limitent à une échelle modeste (350M paramètres) et à un jeu de données spécifique, ce qui ne garantit pas une généralisation à des modèles plus grands ou des tâches variées. Enfin, l'impact réel sur la latence d'inférence n'est pas encore quantifié, malgré les noyaux personnalisés en développement.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à réduire significativement l'empreinte mémoire du KV cache sans sacrifier la précision, mais son adoption dépendra des performances en inférence temps réel et de sa scalabilité sur des architectures plus larges."
+   }
+  },
+  {
+   "id": "1c270914689fdb6f",
+   "title": "HazardAuditor: From Executable Threats to Safer Computer-Use Agents",
+   "url": "https://huggingface.co/papers/2609.15134",
+   "summary": "Computer-use agents increasingly interact with browsers, terminals, file systems, and external services, introducing safety risks that emerge through runtime behavior rather than generated content alone. Existing guard models target static prompts and responses and are poorly suited to agent execution; existing executable safety platforms produce evaluation verdicts rather than the normalized supervision a guard model needs to learn across heterogeneous agent frameworks. We introduce HazardAuditor, an execution-grounded framework that closes both gaps. Its infrastructure runs heterogeneous agents (Claude Code, Codex, Hermes, and OpenClaw) in controlled environments and normalizes their interactions into a canonical event representation for cross-framework supervision. We further observe that token-level post-training objectives create a structural mismatch for generative guards, causing longer rationales to dominate gradient updates. Guard Policy Optimization (GuardPO) addresses this by converting deterministic safety outcomes into sequence-level advantages and normalizing rationale and verdict regions, making the safety decision the effective unit of optimization. Across multiple benchmarks and heterogeneous computer-use systems, HazardAuditor improves accuracy by up to 16.5 percentage points over the strongest prior guard. Code, models, and evaluation artifacts will be available at https://yunhao-feng.github.io/HazardAuditor/.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2609.15134"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "HazardAuditor propose un cadre d'évaluation et d'optimisation des agents IA (Claude Code, Codex, etc.) pour détecter les risques d'exécution (accès fichiers, commandes terminal) via une représentation normalisée des événements. La méthode GuardPO améliore l'apprentissage des modèles de garde en optimisant les décisions de sécurité au niveau séquentiel plutôt que token par token.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents d'utilisation informatique (comme ceux interagissant avec des navigateurs, terminaux ou systèmes de fichiers) posent des risques de sécurité dynamiques liés à leur comportement en temps réel, et non uniquement à leur sortie statique. Les modèles de garde existants, conçus pour des prompts ou réponses statiques, sont inadaptés à ces scénarios, tandis que les plateformes de sécurité exécutables ne fournissent pas de supervision normalisée nécessaire à l'apprentissage des modèles de garde pour des frameworks d'agents hétérogènes.",
+    "methode": "HazardAuditor est un framework ancré dans l'exécution qui comble ces lacunes en exécutant des agents hétérogènes (Claude Code, Codex, Hermes, OpenClaw) dans des environnements contrôlés. Il normalise leurs interactions en une représentation canonique d'événements pour une supervision transversale. De plus, les auteurs identifient un problème structurel avec les objectifs d'entraînement post-formation au niveau des tokens, où les rationalisations longues dominent les mises à jour de gradients. Pour y remédier, ils proposent Guard Policy Optimization (GuardPO), qui convertit les résultats de sécurité déterministes en avantages au niveau de la séquence et normalise les régions de rationalisation et de verdict, faisant de la décision de sécurité l'unité effective d'optimisation.",
+    "resultats": "HazardAuditor améliore la précision des modèles de garde jusqu'à 16,5 points de pourcentage par rapport aux meilleures solutions existantes, sur plusieurs benchmarks et systèmes d'utilisation informatique hétérogènes. Les artefacts d'évaluation, le code et les modèles seront disponibles publiquement.",
+    "limites": "Le contenu disponible ne précise pas les types de benchmarks utilisés ni leur représentativité réelle des scénarios de sécurité critiques. De plus, l'efficacité de GuardPO dépend fortement de la qualité des environnements contrôlés et de la normalisation des événements, ce qui pourrait introduire des biais ou des angles morts non documentés.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique de la sécurité des agents dynamiques, bien que des détails supplémentaires sur les benchmarks et les limites expérimentales soient nécessaires pour une évaluation complète."
+   }
+  },
+  {
+   "id": "2e1eee96ac25fe9c",
+   "title": "Pelican-Sim 1.0: A General World Model Simulator for Embodied Intelligence",
+   "url": "https://huggingface.co/papers/2609.12036",
+   "summary": "In this technical report, we propose Pelican-Sim 1.0, a general world model simulator for embodied intelligence that predicts future observations from visual context and robot actions to support downstream learning and decision making. The model incorporates four key design features: (1) Unified action representation: a 28-dimensional action value space covering most mainstream embodiments, keeping one model valid across heterogeneous devices. (2) Action-visual injection: URDF- and camera-rendered action videos bridge actions and pixels, giving markedly better controllability across embodiments, scenes, and tasks (PSNR +0.904 over alternative fusion baselines). (3) Sparse mixture-of-experts (MoE): sparse MoE layers add capacity for heterogeneous dynamics and absorb the action modality while reducing inter-modality conflict (FVD -6.530 vs. the dense backbone). (4) Efficient rollout generation: causal adaptation and few-step distillation yield a four-step autoregressive simulator, achieving a 5.67-fold speedup over the 35-step model. Benefiting from these designs, we train on approximately one million real-world and simulated trajectories and obtain large gains in action controllability and video quality: PSNR improves over the strongest evaluated baselines by 4.636 on AgiBotWorld Beta, 2.080 on RoboMIND, and 10.343 on RoboTwin, with the adapted EWMBench DYN score up 0.426 on RoboTwin. Relying on this, four downstream applications on RoboTwin succeed: 500 generated trajectories added to 50 demonstrations per task raise policy success from 70% to 93%; policy evaluation reaches a Pearson correlation of 0.994 across five checkpoints; and relative success gains reach 47.7% for action selection and 20.3% for policy improvement. Qualitative generalization across trajectory, scene, object, embodiment, and viewpoint shifts highlights its potential as a general-purpose world model simulator.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2609.12036"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "llm",
+    "agents"
+   ],
+   "tldr": "Pelican-Sim 1.0 est un simulateur de monde généraliste pour l'intelligence incarnée, combinant une représentation unifiée des actions, une injection visuelle-action via des vidéos URDF, un MoE sparse et une distillation en 4 étapes pour accélérer l'inférence (5.67x) tout en améliorant la contrôlabilité des robots hétérogènes. Intéressant pour les architectures multimodales et l'optimisation des simulateurs pour l'apprentissage par renforcement.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Pelican-Sim 1.0 vise à résoudre le défi de la simulation généraliste pour l'intelligence incarnée (embodied intelligence), où les modèles doivent prédire des observations futures à partir de contextes visuels et d'actions robotiques. Le problème central est de créer un simulateur universel capable de fonctionner avec des dispositifs hétérogènes (robots variés) tout en améliorant l'apprentissage et la prise de décision en aval, sans nécessiter des adaptations spécifiques par plateforme ou tâche.",
+    "methode": "L'approche repose sur quatre piliers techniques : (1) Une **représentation unifiée des actions** (28 dimensions) couvrant la plupart des robots grand public, évitant de recourir à des modèles spécifiques par dispositif. (2) **L'injection action-visuelle** via des vidéos générées à partir de fichiers URDF et de caméras, améliorant la contrôlabilité entre actions et pixels (ex. : gain de +0.904 en PSNR par rapport aux méthodes alternatives). (3) Un **mélange d'experts clairsemé (MoE)** pour gérer des dynamiques hétérogènes et intégrer la modalité action tout en réduisant les conflits inter-modalités (réduction de 6.530 en FVD par rapport à un backbone dense). (4) Une **génération efficace de rollouts** grâce à une adaptation causale et une distillation en quelques étapes, permettant un simulateur autoregressif en 4 étapes (accélération de 5.67x par rapport à un modèle en 35 étapes). Le modèle est entraîné sur environ un million de trajectoires réelles et simulées.",
+    "resultats": "Pelican-Sim 1.0 montre des améliorations significatives en contrôlabilité et qualité vidéo : gains de PSNR de +4.636 sur AgiBotWorld Beta, +2.080 sur RoboMIND, et +10.343 sur RoboTwin par rapport aux meilleures baselines. Le score DYN adapté d'EWMBench augmente de 0.426 sur RoboTwin. Quatre applications en aval sur RoboTwin confirment son utilité : l'ajout de 500 trajectoires générées à 50 démonstrations par tâche fait passer le succès des politiques de 70% à 93%. La corrélation de Pearson pour l'évaluation des politiques atteint 0.994, et les gains relatifs en succès atteignent 47.7% pour la sélection d'actions et 20.3% pour l'amélioration des politiques.",
+    "limites": "Les détails sur la **généralisation réelle** (hors benchmarks contrôlés) manquent, notamment pour des environnements bruités ou imprévus. La dépendance à des données URDF et à des rendus caméra pourrait limiter l'applicabilité à des robots non standardisés. Enfin, l'évaluation se concentre sur des métriques techniques (PSNR, FVD) sans analyse approfondie des biais ou des échecs qualitatifs en conditions réelles.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systémique et ses gains quantitatifs, mais son adoption nécessitera des validations supplémentaires en conditions réelles et sur des plateformes robotiques variées."
+   }
+  },
+  {
+   "id": "4dbfeedc8d5a50f2",
+   "title": "RSIAgent: Autonomous Exploration for Recursive Self-improvement in New Environments",
+   "url": "https://huggingface.co/papers/2609.15364",
+   "summary": "Digital agents must often adapt to new environments whose interfaces, tools, and failure modes are not fully captured by pretrained models. We introduce RSIAgent, a training-free multi-agent framework for recursive self-improvement through autonomous memory construction. RSIAgent coordinates curriculum, actor, and verifier agents to continually explore the environment, validate outcomes, and retain environment-specific knowledge, including reusable causal relationships between actions, conditions, and consequences. It further adopts a broad-then-deep exploration strategy, combining parallel broad recursive self-exploration for discovering diverse environment structures with focused deep self-exploration for uncovering hard cases, hidden constraints, boundary conditions, and previously unknown causal dependencies. The resulting memory is frozen and can be directly reused for downstream tasks without updating model parameters. Experiments on OSWorld-v2 and Agent's Last Exam show that RSIAgent substantially improves strong open-source models, enabling Kimi-K3 and GLM-5.3 to outperform frontier closed-source models including GPT-6.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2609.15364"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "RSIAgent, un cadre multi-agents sans entraînement, améliore l'exploration autonome et la mémorisation récursive pour l'auto-amélioration dans de nouveaux environnements. La stratégie 'large puis profond' permet de découvrir des structures complexes et des dépendances causales, boostant les performances sur OSWorld-v2 et Agent's Last Exam.",
+   "score": 8.8
+  },
+  {
+   "id": "ceb1c2555fac2e83",
+   "title": "ZGCM-1: A Fully Open and Extremely Efficient Foundation Model for Math and Agentic Search",
+   "url": "https://huggingface.co/papers/2609.13356",
+   "summary": "In this work, we present ZGCM-1, a fully open 7B dense foundation model trained from scratch with extreme data, system, and algorithmic efficiency. ZGCM-1 is founded on a core premise: compact models cannot passively memorize the open web, but can overcome parametric capacity limits by coupling deliberate internal thinking with active external tool use. To support this paradigm across a 256K context, we develop an end-to-end, high-efficiency open training recipe: Architecture & System Co-design: interleaved gated sliding-window and full attention, and a stable FP8 Muon optimizer; Progressive Curriculum & MDP Mid-Training: context scaling across 16K, 64K, and 256K, and the reformulation of interaction traces into Markov Decision Processes. Furthermore, we establish an AI-native R&D workflow where agent swarms autonomously manage cluster operations, data curation, and rapid diagnostic evaluation. Extensive evaluations show that ZGCM-1-7B is competitive across 7B model family on general benchmarks. On several challenging mathematical reasoning and agentic search suites, it remains competitive with frontier models orders of magnitude larger, such as Qwen3-235B-A22B and GLM-5.1. We also show that our pre-training design offers a ~4.2x efficiency improvement in 16K pre-training time-to-loss. Across the full development lifecycle, we distill eight actionable empirical findings-spanning architectural scaling, SFT quality pruning, long-context generalization, and agentic co-training dynamics. To facilitate community research, we open-source model weights from the pre-training, mid-training, and post-training stages, intermediate checkpoints, training code, per-stage data and data recipes, and W&B logs.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 222,
+    "arxiv_id": "2609.13356"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "ZGCM-1 est un modèle 7B open-source optimisé pour les tâches mathématiques et de recherche agentique, combinant raisonnement interne et outils externes. Il rivalise avec des modèles 100x plus grands (Qwen3-235B) sur des benchmarks spécialisés.",
+   "score": 8.8
+  },
+  {
+   "id": "aafaf45f076dbb8d",
+   "title": "PhysBrain 1.5: From Vision-Language Models to Physical Foundation Models",
+   "url": "https://huggingface.co/papers/2609.14973",
+   "summary": "We present PhysBrain 1.5, a unified model for understanding physical environments, generating actions, and predicting future states. Motivated by the physical loop of observation, interaction, and environmental change, we bring these capabilities into a common learning framework. Starting from a general vision--language model, we encode language responses, end-effector motion, and dense visual targets as discrete sequences and jointly optimize them with autoregressive next-token prediction. Pre-training draws its embodied supervision entirely from human interaction videos, using task-centered episodes to pair semantic and spatial context with recovered motion and subsequent observations. We then adapt the model through supervised fine-tuning on a mixture of human demonstrations, robot trajectories, and simulated experience. Across 28 embodied understanding benchmarks, our 8B model achieves an average score of 72.5, setting a new open-source state of the art and performing on par with leading proprietary models such as GPT-6-Astra and Gemini 3.6 Flash. It achieves the best open-source results on 14 benchmarks while retaining general multimodal capabilities. Beyond these understanding evaluations, qualitative examples show the model's ability to produce end-effector trajectories and predict future scenes through spatially aligned RGB, depth, and robot-mask outputs.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 134,
+    "arxiv_id": "2609.14973"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique",
+    "agents"
+   ],
+   "tldr": "PhysBrain 1.5 unifie vision, langage et action physique dans un modèle 8B, entraîné sur des vidéos d'interaction humaine. Il atteint 72.5% de score moyen sur 28 benchmarks de compréhension physique, rivalisant avec des modèles propriétaires comme GPT-6-Astra.",
+   "score": 8.8
+  },
+  {
+   "id": "dd99debb0fc3183e",
+   "title": "ReactHuman: A Physics-Grounded Benchmark for Human-Like Reactive Decision-Making in Embodied Multimodal LLMs",
+   "url": "https://huggingface.co/papers/2609.10895",
+   "summary": "Reacting to sudden physical hazards (catching a slipping plate, dodging a falling knife) is both a meaningful test of embodied intelligence and a hard requirement for deploying multimodal large language models (MLLMs) as the decision coreof household robots. Existing evaluations, however, probe intuitive physics passively through question answering over videos, or target deliberate, long-horizon tasks such as navigation and rearrangement; none measure whether a model can turn physical understanding into immediate, safety-critical action. We introduce ReactHuman, the first physics-grounded benchmark for human-like reactive decision-making, in which the evaluated MLLM acts as the brain of a simulated humanoid facing sudden household hazards; it spans 17 event families and over 1,000 bit-for-bit reproducible scenes with exact, annotation-free ground truth derived from 240 Hz rigid-body simulation, including adversarial objects whose appearance contradicts their physics (a foam anvil, a steel apple). We further design a five-metric suite that scores each reaction along three axes: reasonable, safe, and physically grounded. We physically execute every committed plan so that decisions have observable consequences. With this harness we evaluate seven representative MLLMs. Results show that reactive safety is far from solved: models mishandle roughly one hazard in three, act from fixed dispositions rather than the observed scene, trust appearance over motion, and miss interception points at meter scale even when the chosen action is correct; none of these failures shrink with model scale. ReactHuman thus offers both a fine-grained diagnosis and a scalable training signal toward physically grounded, safety-aware embodied agents. The benchmark can be found here: https://huggingface.co/datasets/Alan123/reacthuman-benchmark-scaled",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 37,
+    "arxiv_id": "2609.10895"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "ReactHuman introduit un benchmark physique pour évaluer la prise de décision réactive des MLLM dans des scénarios de dangers domestiques simulés avec une précision de 240 Hz. Le benchmark teste la sécurité, la raison et la cohérence physique des actions, avec des objets adversariaux (ex. marteau en mousse). Pertinent pour l'évaluation des agents embarqués et la robustesse des modèles.",
+   "score": 8.5
+  },
+  {
+   "id": "51c0d34fdd96d309",
+   "title": "Towards a Deterministic Math Solver for Clinical Language Models",
+   "url": "https://huggingface.co/papers/2609.10728",
+   "summary": "Large language models are unreliable at arithmetic, which is a problem for clinical calculators where a single numerical error changes the recommendation. The standard response is to hardcode each calculator as a validated function, one at a time. We test an alternative: the model does not calculate. Instead, it writes case-specific Python that a restricted local executor runs as a deterministic solver, and the model's task reduces to deciding how to use it. We evaluate this Program-Solve interface on MedCalc-Bench Verified (1,100 cases, 55 calculators) against direct model arithmetic and a hand-written 22-calculator library, using Qwen2.5-7B and Qwen2.5-32B-AWQ, after auditing the benchmark's formulas against current clinical guidelines and flagging 16 of 55 with version, use or coefficient concerns. With formulas and gold variables supplied and both routes reading the whole note, handing off to the solver is not a reliable advantage at 7B (75.31% against 72.02%, a paired +3.29 points with a 95% calculator-cluster interval of [-3.49, 10.38]) but is one at 32B (90.53% against 83.47%, +7.05 [0.47, 14.60], clear of zero). The hand-written library is exact on its 440 supported cases but abstains elsewhere (40.0% overall). Adding an executor thus helps some open-weight models more than others even under matched formula, variable and note access, and is not a substitute for verified formulas or reliable variable extraction either way.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.10728"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Approche déterministe pour les calculs cliniques avec des LLM : délégation des calculs à un solveur Python exécuté localement, réduisant les erreurs numériques. À 32B, le modèle atteint 90.53% de précision vs 83.47% en calcul direct. Pertinent pour la fiabilité des LLM dans les applications critiques.",
+   "score": 8.5
+  },
+  {
+   "id": "08f0c3d51f3a627e",
+   "title": "Dynin-Robotics: Omnimodal Unified Diffusion Vision-Language-Action Model",
+   "url": "https://huggingface.co/papers/2609.13053",
+   "summary": "Visual goal and dynamics prediction can provide language-conditioned robot policies with both a target outcome and a representation of action-dependent scene changes. We bring these predictions into action generation and selection through a shared trajectory model. Dynin-Robotics implements this formulation on Dynin-Omni, an omnimodal masked-diffusion backbone, representing language, visual observations, goals, and actions as discrete tokens. By varying conditioning and target spans, the same model learns action prediction, action-conditioned next-observation prediction, terminal goal-state prediction, and trajectory-to-instruction reconstruction. These interfaces support test-time scaling through goal prediction, action-candidate evaluation, and joint refinement of action and future-state predictions. We continually pretrain the model on approximately 1.33 million trajectories from 48 Open X-Embodiment datasets and adapt it separately to downstream domains. On two VLABench tasks, robot pretraining improves adaptation within a fixed Stage-2 step budget, and the full objective mixture improves shifted-instruction success over Policy-only post-training under the same coupled decoder. Combining goal guidance with joint action-next-state denoising further improves shifted-instruction success over action-only decoding; the benefit depends on how the predictions are composed. Dynin-Robotics achieves competitive performance on LIBERO and zero-shot LIBERO-Plus, together with a 78.4% average success rate across four manipulation conditions on a Franka Research 3 robot. An optimized block-parallel implementation accelerates model-side action decoding by up to 29.2x relative to the base implementation under the reported profiling setup. These results support shared trajectory modeling as a common interface for learning complementary robot objectives and composing their predictions during control.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.13053"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Dynin-Robotics propose un modèle unifié diffusion masquée (Dynin-Omni) pour prédire des trajectoires, actions et états futurs, intégrant langage, vision et action. Le modèle, entraîné sur 1,33M de trajectoires, améliore l'adaptation et la réussite en tâches robotiques via des interfaces flexibles et un scaling en inférence.",
+   "score": 8.2
+  },
+  {
+   "id": "c9df4b3ba8a67661",
+   "title": "Expert-Space Exploration in MoE Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2609.13058",
+   "summary": "Reinforcement learning (RL) has become central to post-training of large language models. Recent advances in RL for Mixture-of-Experts (MoE) models have primarily focused on improving optimization stability and training efficiency, while treating the expert selection as a fixed component. Since routing determines the sparse computation paths that induce output distributions, expert selection offers an additional source of rollout diversity. Through empirical analysis, we find that perturbing expert routing effectively alters model output and increases rollout diversity, which is similar to increasing the decoding temperature. However, direct perturbation can activate unsuitable experts and substantially degrade rollout quality. Motivated by these observations, we introduce Expert-Space Exploration Reinforcement Learning (ESRL), an architecture-aware framework that explicitly explores the expert-routing space of MoE models. ESRL preserves high-confidence experts as anchors, and restricts stochastic routing to a plausible candidate pool, thereby retaining reliable computation paths. The perturbation strength is further adapted according to router entropy to avoid over-perturbation. To mitigate the routing mismatch introduced by perturbation, ESRL records the expert paths used during rollout and replays them during policy optimization. Experiments demonstrate that ESRL achieves the best performance across MoE backbones with top-K, top-1, and shared-expert routing, as well as across mathematics, science, and code tasks without additional sampling or computational cost. Specifically, ESRL on Qwen3-30B-A3B achieves the best among all compared methods, improving average Pass@1 and Pass@8 over GRPO by 3.2 and 4.5 percentage points, respectively. Further analyses of expert utilization and training dynamics provide insights into how exploiting MoE-specific routing structure benefits RL training.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.13058"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "ESRL explore l'espace de routage des experts dans les MoE via RL, perturbant sélectivement les chemins de calcul pour augmenter la diversité des rollouts sans dégrader la qualité. La méthode limite les perturbations aux experts plausibles via des ancres à haute confiance et une adaptation dynamique de l'entropie du routeur.",
+   "score": 8.2
+  },
+  {
+   "id": "8fea5d8ee6c95085",
+   "title": "MInTRL: Off-policy Intervention can boost On-policy RL",
+   "url": "https://huggingface.co/papers/2609.12419",
+   "summary": "Reinforcement learning with verifiable rewards is typically performed on-policy, keeping training data close to the current policy but limiting learning to trajectories that the policy can discover itself. Off-policy methods such as supervised fine-tuning, on the other hand, can leverage external knowledge beyond the base model's capabilities, but may suffer from large distribution shift. The key challenge is thus to expand exploration without sacrificing learnability. In this work, we introduce Minimal Intervention Reinforcement Learning (MInTRL), which expands the exploration frontier through sparse, local interventions in otherwise on-policy rollouts. During generation, a judge-intervention policy periodically reviews the current policy's output, replaces erroneous suffixes with short corrections, and immediately returns control to the policy. During training, MInTRL adopts a sequence-level advantage-regression objective that eliminates the need for importance sampling. We show that sparse, local interventions can substantially improve coverage beyond finite-budget on-policy sampling while preserving the overall on-policy nature of the resulting trajectories. Across math and code benchmarks, MInTRL consistently outperforms standard on-policy and off-policy baselines. Ablations show that MInTRL remains effective with self-intervention and across different judge policies, while performance peaks at moderate intervention intensity, highlighting the importance of intervening minimally. These results establish minimal intervention as an effective paradigm for enhancing on-policy RL.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.12419"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "MInTRL combine on-policy RL et interventions hors-policy minimales (corrections locales) pour élargir l'exploration sans sacrifier la stabilité. La méthode utilise un objectif de régression d'avantage au niveau séquence, améliorant les performances en maths et code avec des corrections éparses.",
+   "score": 8.2
+  },
+  {
+   "id": "4e16037dd6a14d09",
+   "title": "Agent as Policy for Robotic Manipulation",
+   "url": "https://huggingface.co/papers/2609.12541",
+   "summary": "We demonstrate that a general-purpose agent can directly drive a physical robot throughout task execution without any task-specific or environment-specific training. We introduce Agent as Policy (AGP), which places task planning and execution under the agent's control. Given a task and a robot interface, the agent interprets visual evidence, writes executable programs, issues motion commands, and revises its actions in response to physical outcomes. This brings the agent's reasoning and programming capabilities into continuous interaction with the physical world. We study AGP across multiple real-world manipulation tasks spanning precision manipulation, dynamic motions, and deformable objects. These include assembly from human videos, block construction from goal images, die reorientation, targeted throwing, and bimanual towel folding. AGP achieves success rates of 100%, 100%, and 80% on three block construction configurations. These findings establish a path for general-purpose agents to act as robotic policies, extending their autonomy to physical manipulation through runtime reasoning, programming, and interaction.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.12541"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Agent as Policy (AGP) démontre qu'un agent généraliste peut contrôler un robot physique sans entraînement spécifique, en planifiant et exécutant des tâches (assemblage, pliage, lancer) via raisonnement et génération de code en temps réel. Succès de 100% sur plusieurs configurations de construction de blocs.",
+   "score": 8.2
+  },
+  {
+   "id": "fcf7dbba56836108",
+   "title": "When Agents Slow Down: Understanding LLM Agents' Test-Time Strategies via Elo-per-token Analysis",
+   "url": "https://huggingface.co/papers/2609.15309",
+   "summary": "Large language model (LLM) agents allocate test-time compute adaptively as they revise solutions, use tools, explore alternatives, and decide when to stop. This test-time strategy makes it difficult to measure how agent performance scales. We study open-ended tasks that provide continuous scores for intermediate submissions, making progress observable throughout long trajectories. We propose Elo-per-token analysis, which tracks the best solution found at each token budget and uses a Bradley-Terry model to aggregate within-task orderings into Elo ratings across tasks with different score scales. We apply it to four general-purpose agents on four open-ended benchmarks, with sessions of up to 100M tokens, and to three feedback-driven LLM optimization harnesses in controlled single-task interventions. Independent sampling provides a theoretically characterized reference, for which Elo grows linearly with log compute. Against this reference, agents can initially convert tokens into Elo faster than independent sampling, but their marginal gains diminish and eventually fall below the reference. In contrast, the strongest historical human contestants improve superlinearly over contest time on shared AtCoder Heuristic Contest tasks, providing evidence of continual learning and substantial headroom after agents slow down. We define the scaling inflection point as the per-session budget where marginal Elo gains match the independent-sampling reference. Using this point as the per-session budget, we split 100M tokens across parallel sessions on FrontierCS Polyomino Packing, gaining +264 Elo over one long session and +355 over ten short sessions.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2609.15309"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Elo-per-token analyse les stratégies de calcul des agents LLM en mesurant leur progression sur des tâches ouvertes. Les agents surpassent initialement l'échantillonnage indépendant, mais leur gain marginal diminue avec le temps, contrairement aux humains qui améliorent leur performance de manière superlinéaire.",
+   "score": 8.2
+  },
+  {
+   "id": "cbe4ea34e04167ab",
+   "title": "Atria Dawn: The Dawn of Agentic Superintelligence",
+   "url": "https://huggingface.co/papers/2609.15818",
+   "summary": "As AI agents become participants in the development of their successors, they reshape both the production of intelligence and the role of human researchers. We introduce Atria Dawn Preview, a foundation agentic language model designed for scientific research and engineering workflows, with the goal of expanding the frontier of agent productivity in the real world. This model is trained via a Verifiable Experience Pipeline that connects tool-mediated interactions to executable environments and externally verified outcomes. Across 16 benchmarks spanning real-world research, engineering, and digital work, Atria Dawn Preview is competitive with frontier agents and achieves the highest reported score on five of them. Beyond standalone performance, we examine the real research-and-development process behind this model as a case study of human--AI collaboration, analyzing 769 task records from 56 participants together with agent logs. When asked to evaluate completed tasks under comparable conditions, participants rated about one-third of completed AI-assisted tasks as infeasible without AI. More strikingly, agents frequently propose methods and implement revisions, while humans retain most final decisions and guide exploration through judgment and feedback. These observations indicate a shift from task-level execution to project-level partnership, with human effort concentrating on what is worth pursuing and how evidence should guide research. Progress toward more autonomous AI research must therefore advance both the capacity for discovery and the capacity for meaningful human oversight, preserving accountable human authority over the risks and direction of continued development.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 235,
+    "arxiv_id": "2609.15818"
+   },
+   "relevance": 9,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "Atria Dawn Preview est un agent IA conçu pour la recherche scientifique et l'ingénierie, avec une pipeline d'expérience vérifiable. Il rivalise avec les meilleurs agents existants sur 16 benchmarks et montre l'impact de la collaboration humain-IA dans 769 tâches analysées.",
+   "score": 8.2
+  },
+  {
+   "id": "c268a4dd4fea21fd",
+   "title": "ActionSplice: In-Flight Action Editing for Interactive World Models",
+   "url": "https://huggingface.co/papers/2609.08230",
+   "summary": "Chunk-autoregressive video world models typically condition each generated chunk on one action. An action received during sampling must therefore wait for the next chunk, condition future solver evaluations on a state produced under the previous action, or trigger rollback that repeats completed evaluations. We introduce ActionSplice, an inference framework that formulates this problem as Counterfactual State Transport (CST). A lightweight corrector transports the interrupted backbone-native representation toward the matched state induced by the revised action at the same solver step. The world model and sampler remain frozen, and sampling resumes without replaying completed evaluations. The retargeting variant CST*{R} updates the entire active chunk, while the temporal-splicing variant CST*{T} preserves a temporal prefix and updates only the suffix. Across minWM-Wan Action2V and HY-WM1.5, CST*{R} reduces rollback-relative LPIPS by 61.5% and 75.9% relative to direct condition swapping. CST*{T} reduces suffix LPIPS by 56.1% and 77.5%, respectively, while providing 2.73times and 1.69times pixel-ready speedups over waiting. Under the HY-WorldPlay protocol, CST_{R} obtains a PSNR of 25.66 dB, an SSIM of 0.6902, and an LPIPS of 0.1337 against the original rollout.",
+   "published": "2026-09-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.08230"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "llm",
+    "agents"
+   ],
+   "tldr": "ActionSplice propose un framework (CST) pour éditer des actions en temps réel dans les modèles de monde autorégressifs, évitant les rollbacks via un transport d'état contrefactuel. Réduit les erreurs LPIPS de 61.5% à 75.9% et accélère l'inférence (jusqu'à 2.73x). Pertinent pour l'optimisation des inférences interactives dans les agents.",
+   "score": 8.2
+  },
+  {
+   "id": "78cff9531e6d3b2a",
+   "title": "AlayaVista: Streaming World Modeling from Panoramic States to Perspective Video",
+   "url": "https://huggingface.co/papers/2609.14462",
+   "summary": "Interactive video world models must maintain broad scene context under camera motion while producing high-fidelity observations with low latency. Existing approaches face a representation trade-off: perspective models operate on local views and must preserve off-screen content over long rollouts, whereas broader spatial coverage is typically obtained by synthesizing full-sphere videos or constructing explicit 3D representations. Motivated by the complementary roles of global context and selective local acuity in visual perception, we present AlayaVista, a camera-controllable streaming video world model that decouples panoramic world evolution from perspective observation synthesis. Given a single perspective image, AlayaVista constructs a 360-degree scene prior using a pretrained panorama expansion model and then evolves the scene as a camera-conditioned panoramic latent state. A latent viewport renderer maps this state to the requested perspective video latents, while a perspective refiner restores details, suppresses artifacts, and performs super-resolution. To support efficient streaming, we adapt the panoramic generator to chunk-autoregressive generation and distill both panoramic generation and perspective refinement into few-step processes. To provide the supervision required by this design, we construct MUGEN, a large-scale real-world panoramic video dataset containing 1,318 hours of videos at resolutions of at least 4K, together with rich semantic and geometric annotations.",
+   "published": "2026-09-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2609.14462"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "AlayaVista modélise des mondes vidéo en séparant l'évolution panoramique du rendu perspectif, utilisant un générateur panoramique chunk-autoregressif et un raffineur perspectif pour des observations haute fidélité et faible latence. La méthode cible les modèles de monde interactifs avec contrôle de caméra.",
+   "score": 7.6
+  },
+  {
+   "id": "c13017f9c67259e4",
+   "title": "Feature Recovery for Object Understanding After Irreversible Fire Damage",
+   "url": "https://huggingface.co/papers/2609.12078",
+   "summary": "Objects in post-fire environments often undergo irreversible physical transformations that change their geometry, material state, and visual appearance. Detecting and identifying these remnants is critical for locating hazards, reconstructing pre-incident contents, and inventorying losses. Unlike standard image corruptions, these degradations affect the physical structure of the object itself. To study this setting, we introduce TRACE, a transformation-aware benchmark for post-fire object understanding. TRACE contains 21.4K real-image-grounded synthetic scenes and paired object-level pristine-to-degraded progressions spanning 499 object identities across 189 categories. We define five tasks targeting localization and pre-degradation understanding: degraded-object detection, pristine-state recovery and retrieval, original material recovery, pristine description generation, and functional reasoning. Existing models degrade sharply with severity. From the least to the most severe level, RF-DETR mAP decreases by 71% relative, while InternVL3.5 retrieval R@1 falls from 93.85 to 28.11. To address this, we propose the Feature Recovery Module (FRM), a plug-and-play module that maps degraded encoder features to pristine-aligned representations while keeping the host frozen. Trained only with paired feature supervision, FRM improves scene-level detection, CLIP/SigLIP2 feature recovery, and all four object-level VLM tasks, with larger gains under more severe degradation. Across VLM hosts and severity levels, relative gains average 12.5% for retrieval, 20.1% for material recovery, 13.2% for description generation, and 12.4% for functional reasoning.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.12078"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "interpretabilite",
+    "benchmark"
+   ],
+   "tldr": "TRACE est un benchmark et module (FRM) pour la récupération de caractéristiques d'objets après des dommages irréversibles (ex. incendie), avec 21.4K scènes synthétiques et 5 tâches (détection, récupération de l'état initial, etc.). Le FRM améliore significativement les performances des modèles (ex. mAP de RF-DETR réduit de 71% entre niveaux de sévérité). Utile pour la vision robuste et l'interprétabilité des dégradations physiques.",
+   "score": 7.6
+  },
+  {
+   "id": "c30a90bb89818c96",
+   "title": "ModaLens: Measuring Image Sensitivity in Report-Conditioned Medical VLMs",
+   "url": "https://huggingface.co/papers/2609.15635",
+   "summary": "A radiology report can already answer a clinical question, so it is hard to tell whether a vision-language model also uses the image. ModaLens, a paired image-swap audit, measures how report availability changes image sensitivity: MedGemma-27B on 3,199 paired MIMIC-CXR cases from 293 patients, all 14 questions per case (13 finding-specific and one composite), each image replaced by one from another study, usually of the same patient, with question and report fixed. Under an explicit answer instruction, the model's generated answer changes on 4.26 percent of trials with the report and 20.94 percent without it, a paired increase of 16.7 points (patient-clustered 95 percent CI 15.6 to 17.7), so report availability reduces image-swap sensitivity under this protocol; the original prompt with a lowercase first-token readout gives 4.70 percent against 17.07 percent, and substitutions also move continuous answer scores where the binary prediction does not change. The labels are derived from reports, which limits conclusions about visual correctness; the direction replicates in two further model lineages. Code, the exact prompts and a run record for every number are at https://github.com/criticaldata/MODALENS.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2609.15635"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "ModaLens évalue la sensibilité des VLMs médicaux aux images en comparant les réponses avec/sans rapport radiologique, révélant une dépendance significative à ces rapports (réduction de 16,7 points de sensibilité aux images). L'étude souligne les limites des labels dérivés des rapports pour évaluer la justesse visuelle.",
+   "score": 7.3
+  },
+  {
+   "id": "653fbdf371e72379",
+   "title": "Pick Your Poison: Learning to Select Poison Sets for Stronger LLM Backdoor Attacks",
+   "url": "https://huggingface.co/papers/2609.15029",
+   "summary": "Backdoor poisoning attacks add poisoned examples to otherwise-clean finetuning data, pairing a trigger with a target behavior that the model learns to produce when the trigger appears. Existing evaluations typically fix the number of poisoned examples and sample them at random from a candidate pool. We show that this can severely underestimate worst-case vulnerability: across three LLaMA-3-8B backdoor settings, holding the model, clean data, and poison count fixed, attack success ranges from 3% to 80% depending only on which poison set is chosen. We formalize poison selection as oracle-budgeted set optimization and introduce SAILS (Set-level Audit-Informed Iterative Learned Selection), which learns a set scorer from a few hundred finetune-and-evaluate runs, ranks millions of candidate sets, and audits only a small shortlist. SAILS improves held-out attack success by 30 percentage points on average over the strongest influence baselines, transfers from small-scale to full-scale finetuning, and extends to code-generation, agentic, and API-only backdoors.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.15029"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm"
+   ],
+   "tldr": "SAILS montre que le choix des données de poison dans les attaques par backdoor des LLM peut faire varier le taux de succès de 3% à 80% pour un même modèle et jeu de données. La méthode optimise la sélection des poisons pour maximiser l'efficacité des attaques.",
+   "score": 7.3
+  },
+  {
+   "id": "9f66db7dcf6213f8",
+   "title": "Not All Prompts Are Equal: Exploration-Guided Prompt Scaffolding for Multimodal Reinforcement Post-Training",
+   "url": "https://huggingface.co/papers/2609.15051",
+   "summary": "Training prompts in online reinforcement learning (RL) differ substantially in how informative they are for the current policy: some are already saturated while others are too difficult to yield reliable learning signals, yet both receive equal rollout budget under standard training. We propose an exploration-guided prompt scaffolding framework that adapts the training prompt distribution dynamically throughout RL post-training of multimodal large language models (MLLMs). Central to our approach is the Exploration Potential Score (EPS), a lightweight rollout-based proxy for prompt utility derived from KL-regularized policy improvement theory, computable directly from on-policy rollout statistics without additional overhead. Rather than discarding low-utility prompts, we use a teacher model to generate scaffolded rewrites that preserve the original task intent while making subsequent training more informative, reframing teacher supervision as training-data refinement rather than output imitation. Integrated with GRPO on Geo3K and MMK12, our method consistently outperforms the baseline on both in-domain and out-of-distribution benchmarks, achieving up to 9.7\\% relative improvement in-domain and gains of 11.5\\% on MathVision and 11.1\\% on MMMU-Pro.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.15051"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Exploration-Guided Prompt Scaffolding adapte dynamiquement les prompts d'entraînement en RL pour les MLLM, en utilisant un score de potentiel d'exploration (EPS) pour maximiser l'utilité des données. Amélioration relative jusqu'à 9.7% sur Geo3K et MMK12.",
+   "score": 7.3
+  },
+  {
+   "id": "da99a191d8d141d3",
+   "title": "TRACE: Trajectory-robust Admission with Evidence Ordering for Efficient GUI Agents",
+   "url": "https://huggingface.co/papers/2609.10297",
+   "summary": "GUI agents accumulate high-resolution screenshots as the trajectory unfolds, increasing inference latency and memory usage. Training-free visual token pruning can reduce this cost, but cache reuse introduces a fundamental constraint. Once tokens are discarded, the corresponding visual evidence cannot be recovered without re-encoding. Pruning therefore becomes an irreversible admission decision that must remain useful for unknown future targets while preserving coverage of operable regions under tight budgets. To address these challenges, we propose \\method{}, a training-free framework for \\textbf{Trajectory-robust Admission and Coverage-aware Evidence ordering}. Specifically, we combine a query-independent layout-derived interaction prior with instruction relevance and feature novelty to rank visual evidence according to both potential future utility and diversity. Then, we reserve part of the budget for native visual tokens distributed across the screen, repairing missing spatial coverage without breaking the ordering. Together, these mechanisms produce a nested token order, allowing retained visual evidence to shrink monotonically across budgets while remaining reusable throughout the trajectory. Finally, our monotone KV contraction incrementally contracts retired frames into compact session state, avoiding repeated visual encoding or pruning. Extensive experiments across six GUI benchmarks and diverse models verify the effectiveness of our proposed under tight budgets. The source code will be released.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.10297"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "TRACE (Trajectory-robust Admission with Evidence Ordering) est un framework pour le pruning de tokens visuels dans les agents GUI, combinant priorité d'interaction, pertinence et nouveauté pour optimiser la couverture spatiale. Réduit la latence et la mémoire tout en préservant l'utilité future des tokens. Utile pour l'optimisation des agents d'interface.",
+   "score": 7.3
+  },
+  {
+   "id": "71e0793ee3538893",
+   "title": "Backprop Alternative: Augmented Lagrangian Predictive Coding",
+   "url": "https://pub.sakana.ai/pc-alm/",
+   "summary": "",
+   "published": "2026-09-14T18:03:12Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 103,
+    "comments": 37
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Proposition d'une alternative à la rétropropagation via le *Predictive Coding* avec des contraintes de Lagrangien augmentées, visant une approche plus biologiquement plausible et potentiellement plus efficace pour l'apprentissage des LLM. Intéressant pour la recherche fondamentale sur les architectures alternatives et l'interprétabilité des modèles.",
+   "score": 7.1
+  },
+  {
+   "id": "2ac5f0529128ff0f",
+   "title": "Building a Production Greek-English Speech Recognizer",
+   "url": "https://huggingface.co/papers/2609.13498",
+   "summary": "We report a multi-month engineering program to build Sophea, a production bilingual Greek-English automatic speech recognition system. We evaluate the system against nine production gates covering Greek and English word error rate, language identification, and hallucinations on non-speech audio. Across twenty-three training iterations and two model architectures, no training-data composition passed all nine gates simultaneously. Meeting the Greek noisy-environment target required about 1,500 steps of dense domain exposure, while preserving English language identification tolerated only about 250 steps, or about 1,250 with a rebalanced mix that reduced Greek accuracy. We describe a six-stage data pipeline in which calibrating an audio-quality filter against in-domain anchors reduced the discarded share of scored Greek audio from 98.7 percent to 10.6 percent. A pre-registered ablation isolated a hallucination defect to one training-data package. A three-model ROVER ensemble increased gate coverage from 4-7 of 9 for individual models to 9 of 9 and reduced overlapping-speech WER from 53.35 percent to 37.87 percent, a 29 percent relative improvement. A separate learned per-clip arbiter over two models is listed as sophea/asr-k1 (preview) on the public Open ASR Leaderboard, with 4.26 percent average WER across eight public English test sets, and reaches 25.88 percent WER on live Greek noisy-environment traffic. We also document five cases in which a measurement tool produced a plausible but incorrect result and seven substantial approaches that were evaluated but not shipped. No model weights or training data are released; we report methodology and quantitative results only.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.13498"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "produit",
+    "regulation"
+   ],
+   "tldr": "Sophea, un système de reconnaissance vocale bilingue grec-anglais, a nécessité 1 500 itérations d'exposition au domaine pour atteindre les cibles de WER en grec, avec des compromis complexes entre langues et hallucinations. Un ensemble ROVER de 3 modèles et un arbitre par clip ont permis de passer tous les tests de production.",
+   "score": 7.0
+  },
+  {
+   "id": "fc43a9e1d302c7d8",
+   "title": "Ambient @ EgoProactive 2026 : Proactive Egocentric Assistance with Visually Grounded Supervision",
+   "url": "https://huggingface.co/papers/2609.07099",
+   "summary": "We present our submission to the EgoProactive track of the ECCV 2026 Wearable AI Challenge, which ranked first in the large-model division and second in the or silent, the model predicts yes or no, and we derive the decision from the renormalised probabilities of these two tokens. This formulation improved macro-F1 by 0.249 and G-mean by 0.30 over free-form generation. Second, because labelled data were limited to the released validation set, we generated additional supervision using a tool-calling video agent that inspects each clip and assigns intervention timestamps. A narration-only alternative was four times larger and ten times cheaper, but transferred worse than supervision from an unrelated real corpus, suggesting that visual grounding is more important than annotation volume for this task.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.07099"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Soumission primée (1er en division large) pour le challenge EgoProactive 2026 : modèle proactif d'assistance égocentrique avec supervision visuelle. Utilise une formulation binaire (oui/non) et un agent vidéo pour générer des supervisions. Intéressant pour les agents embarqués, mais dépendant du contexte du challenge.",
+   "score": 7.0
+  },
+  {
+   "id": "b12a9e23a142889e",
+   "title": "Ambient @ EgoLongQA 2026: Distilling Long-Video perception into a Sub-2B Model",
+   "url": "https://huggingface.co/papers/2609.07154",
+   "summary": "We describe our entry to the EgoLongQA track of the Wearable-AI Challenge in ECCV 2026, which placed first in the <=2B parameter division with 0.8279 on the held-out test set. Our system is a single 2B vision-language model that answers multiple-choice questions about ten-minute egocentric videos in one greedy forward pass; It is obtained by distilling the junior perception module of a tool-using agentic pipeline, not the agent itself into a small student, using teacher traces filtered to those that answered correctly. it reaches 89% of the accuracy of the large agentic pipeline using 1.1% of its parameters. This raises a 27.1% base model to 81.4% on our held-out questions. The 2B backbone has 2.2132B parameters and therefore over the divisional limit, to make the entry admissable we prune the multilingual embedding table from 248,320 to 143,469 rows, reaching 1.9985B with provably identical logits on retained rows.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.07154"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Modèle sous-2B (1.9985B) pour répondre à des questions sur des vidéos égocentriques de 10 minutes, obtenu par distillation d'un agent outil. Atteint 81.4% de précision (vs 89% pour l'agent large) avec seulement 1.1% des paramètres. Pertinent pour l'optimisation des agents légers, mais limité au contexte du challenge.",
+   "score": 7.0
+  },
+  {
+   "id": "1fe4198f680a4545",
+   "title": "Enabling Creative Exploration for Vibe Design Agents",
+   "url": "https://huggingface.co/papers/2609.15078",
+   "summary": "Vibe design agents turn natural-language briefs into rendered interfaces and frontend code. Yet a useful design agent should do more than produce one valid page: it should help users explore coherent alternatives. Increasing token-level temperature is a blunt solution because it varies aesthetic decisions and syntax-sensitive code at the same time. We instead separate exploration from implementation through an inference architecture that makes design direction an explicit intermediate decision. Inspired by Verbalized Sampling, a pre-pass proposes structured design specifications with typicality scores, an external selector samples one, and the downstream generator realizes the selected specification together with the original request under fixed settings. We apply this approach to UI themes and visual-asset prompts. Across 168 prompts, with 1,255 paired comparisons per temperature for each intervention, theme sampling broadens observed selection coverage and screenshot variation, while LLM-judge preferences vary across interventions, prompt complexity, and viewport. In an online experiment with more than 300,000 tasks, the observed code-export increase remains statistically uncertain, while fewer negative feedback events coexist with more correction interactions and modest operational costs. Together, these findings identify structured design specifications as a practical control point for exploring alternative UI concepts while keeping downstream generation settings fixed.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.15078"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "autre"
+   ],
+   "tldr": "Vibe design agents améliore l'exploration créative en séparant la génération de spécifications de design (via échantillonnage structuré) de leur implémentation. Les tests montrent une meilleure couverture des alternatives visuelles, mais avec des préférences utilisateurs variables selon la complexité des prompts.",
+   "score": 6.7
+  },
+  {
+   "id": "31c75b018c92104d",
+   "title": "Competence-Gated Pooling of Language Models and Priors for Event Forecasting",
+   "url": "https://huggingface.co/papers/2609.12101",
+   "summary": "In hybrid forecasting, a language model is often one of several available signals. A system may already have a market, crowd, or statistical forecast and must decide whether the model adds useful information or should be ignored. The relevant target is therefore not standalone model accuracy, but relative competence, defined as the model's marginal value beyond the available external forecast. Under Brier loss, we characterize when model disagreement can improve an external forecast and derive the gain from using domain-specific rather than global pooling weights. We then introduce a competence gate that estimates domain-level source weights from resolved outcomes, shrinks uncertain estimates toward a global weight, and recalibrates the pooled forecast. Across 2,357 resolved binary questions and five language models, the gate improves the main external baseline from 0.0771 to 0.0732 Brier and significantly outperforms global forecast combinations. The gain remains significant under leakage controls and against a leakage-safe time-series prior on the pooled structured set, with separate evidence on FRED. In contrast, the gate gives no significant improvement on the official ForecastBench market subset, where it largely defers to the market. Across four Qwen models, verbal confidence does not reliably identify when the model outperforms the external forecast, while outcome-estimated competence supports better abstention decisions. These results provide a practical approach for selective model use based on measured marginal value.",
+   "published": "2026-09-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.12101"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Ce papier propose une méthode de pooling compétent (compétence-gated) pour combiner des prédictions de modèles de langage avec des signaux externes (marchés, foules) en forecasting, améliorant le score Brier de 0.0771 à 0.0732. Intéressant pour l'optimisation des pipelines hybrides, mais limité à un domaine spécifique (événements binaires).",
+   "score": 6.7
+  },
+  {
+   "id": "a1774f8674051402",
+   "title": "Studying Without a Syllabus: Task-Agnostic Environment Preprocessing",
+   "url": "https://huggingface.co/papers/2609.10824",
+   "summary": "Before an LLM agent tackles tasks in a new environment, it can inspect available corpora and tools and construct reusable resources such as indices, scripts, or procedural guidance. Most automated adaptation methods, however, rely on task examples, trajectories, or evaluation feedback to decide what to build. Existing task-agnostic approaches avoid this supervision but commit in advance to a preparation strategy for a particular type of environment. We study a more open-ended setting: can an agent study an unfamiliar environment without a syllabus, i.e. before test time and without knowledge of the downstream task distribution, and choose how to prepare it? We formalize task-agnostic environment preprocessing, in which a studying system explores an environment under a budget and produces artifacts for a frozen solver. We compare unaided and archive-equipped meta-agents with fixed synthetic-practice and corpus-processing methods across six heterogeneous benchmarks. A meta-agent variant achieves the highest Avg@3 reward on five benchmarks, while fixed corpus processing remains best on the largest corpus benchmark. Larger study budgets do not reliably improve downstream reward. Nevertheless, studied artifacts reduce the test-time sampling needed to reach a given score, demonstrating how reusable preparation can shift computation from repeated test-time attempts to a pre-task study phase.",
+   "published": "2026-09-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.10824"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Étude sur la préprocessing autonome d'environnements par des agents (sans syllabus ni feedback) pour générer des artefacts réutilisables (indices, scripts). Un méta-agent surpasse les méthodes fixes sur 5 benchmarks, mais les budgets d'exploration n'améliorent pas systématiquement les résultats. Intéressant pour l'autonomie des agents, mais résultats mitigés.",
+   "score": 6.7
+  },
+  {
+   "id": "296d33defd03a1b2",
+   "title": "How Fyxer built an AI executive assistant people trust",
+   "url": "https://openai.com/index/fyxer",
+   "summary": "Fyxer uses OpenAI models, fine-tuning, memory, and real user feedback to organize inboxes and draft emails in each user’s voice.",
+   "published": "2026-09-14T12:00:00+00:00",
+   "source": "openai-blog",
+   "source_label": "OpenAI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "produit"
+   ],
+   "tldr": "Fyxer utilise des modèles OpenAI avec fine-tuning, mémoire et feedback utilisateur pour automatiser l'organisation des boîtes mail et la rédaction d'emails dans le style de l'utilisateur. Intéressant pour l'optimisation des workflows LLM en production, mais limité par le manque de détails techniques profonds.",
+   "score": 6.7
+  }
+ ]
+}
