@@ -1,0 +1,713 @@
+{
+ "date": "2026-09-16",
+ "digest": {
+  "headline": "Les mécanismes d'apprentissage en contexte et les architectures multi-agents dominent les avancées en IA, avec des implications majeures pour la robustesse et l'interprétabilité.",
+  "overview": "La veille du 16 septembre 2026 met en lumière des travaux structurants sur l'émergence convergente de capacités dans les modèles (ICL, navigation embodied, optimisation), ainsi que des défis critiques en benchmarking et en déploiement fiable. Les approches modulaire et auditable gagnent en importance, tandis que les limites des évaluations actuelles (SWE-bench, pruning) sont exposées.",
+  "highlights": [
+   {
+    "title": "Convergence de l'apprentissage en contexte (ICL) et mécanismes sous-jacents",
+    "text": "Une étude révèle que l'ICL émerge de manière similaire dans des modalités variées (langage, génomique, images), suggérant des principes communs malgré les différences de domaine. Cette découverte renforce l'hypothèse d'une base architecturale universelle pour l'adaptation dynamique des modèles, avec des implications pour l'interprétabilité et la généralisation."
+   },
+   {
+    "title": "Benchmarking et limites des évaluations actuelles",
+    "text": "Deux travaux critiques remettent en cause les benchmarks existants : SWE-bench montre une convergence des performances des agents de codage, rendant les classements peu significatifs, tandis qu'une étude sur le pruning révèle des dégradations différentielles des LLM selon les tâches domotiques. Ces résultats soulignent la nécessité de métriques plus robustes et de tests adversariaux pour évaluer la fiabilité des systèmes."
+   },
+   {
+    "title": "Optimisation et efficacité : nouveaux cadres pour l'inférence et le fine-tuning",
+    "text": "Lightning Weave et Drift-Constrained Optimization proposent des méthodes innovantes pour améliorer les compromis précision/efficacité. Le premier compose des capacités spécialisées via distillation en ligne, tandis que le second reformule le fine-tuning en un problème de sélection de direction géométrique, préservant les capacités existantes. Ces approches répondent aux besoins croissants de déploiement sur des ressources limitées (ex. JustFit pour l'exécution locale de modèles 27B)."
+   },
+   {
+    "title": "Robustesse et auditabilité : architectures pour les systèmes multi-agents",
+    "text": "Emergence World et Agentic Societies introduisent des cadres pour tester et réguler les interactions multi-agents. Le premier stress-teste la résilience à long terme via des environnements adversariaux, révélant des failles critiques (fuites de mémoire, injections de prompts), tandis que le second propose une architecture en couches pour gérer les conflits d'objectifs. Ces travaux sont essentiels pour la sécurité des systèmes autonomes complexes."
+   },
+   {
+    "title": "Transparence et reproductibilité : OPEN-1B et méthodes auditable",
+    "text": "OPEN-1B permet une reproduction bit-à-bit des entraînements distribués, offrant une solution majeure pour la transparence des modèles open-source. Cette approche, combinée à des frameworks comme Continual Search pour l'attribution de causes racines, répond aux enjeux de sécurité et d'auditabilité, particulièrement critiques pour les applications sensibles."
+   }
+  ],
+  "trend": "Les avancées récentes convergent vers une maturation des architectures modulaire et auditable, avec un accent croissant sur la robustesse des systèmes multi-agents et la fiabilité des évaluations. L'optimisation des compromis précision/efficacité et la compréhension des mécanismes sous-jacents (ICL, fine-tuning) restent des axes centraux pour les déploiements à grande échelle."
+ },
+ "items": [
+  {
+   "id": "7fd535b639a533c4",
+   "title": "Convergent Emergence of In-Context Learning Across Modalities",
+   "url": "https://huggingface.co/papers/2609.14011",
+   "summary": "Few-shot in-context learning (ICL), the capacity of a model to infer abstract patterns from input-output examples provided in its prompt and apply them to new inputs, has been extensively studied in large language models trained for next-token prediction on human text. Recently, few-shot ICL has been demonstrated in autoregressive genomic models as well. This raises a question: does ICL emerge broadly across domains, and if so, what common structure is shared? To address both, we develop a controlled cross-modality framework that instantiates the same task suite in a variety of modalities to test what we call the Convergent Emergence Hypothesis: the idea that few-shot ICL, when it emerges, shares a common cross-modality difficulty profile - i.e., tasks that benefit from ICL in one modality tend to benefit in others. We show that paired-mapping ICL emerges across six modalities (language, genome, integer sequences, time series, images, and proteins), surpasses controlled baselines, and has correlated per-task effects across five of them. Together, these results provide support for the Convergent Emergence Hypothesis in some modalities, but not all.",
+   "published": "2026-09-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.14011"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "interpretabilite",
+    "autre"
+   ],
+   "tldr": "Étude montrant que l'apprentissage en contexte (ICL) émerge de manière convergente dans plusieurs modalités (langage, génomique, images, etc.), avec des profils de difficulté corrélés, suggérant des mécanismes sous-jacents communs malgré des différences de domaine.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication cherche à déterminer si l'apprentissage en contexte (ICL) émerge de manière convergente dans différents domaines (modalités) au-delà des modèles de langage. Elle questionne l'existence d'une structure commune sous-jacente expliquant pourquoi certaines tâches bénéficient de l'ICL dans une modalité donnée et si cette propriété se généralise à d'autres, comme les génomes, les protéines ou les séries temporelles.",
+    "methode": "Les auteurs développent un cadre expérimental *cross-modality* contrôlé pour évaluer l'ICL sur une même suite de tâches adaptées à six modalités distinctes : langage naturel, génomes, séquences d'entiers, séries temporelles, images et protéines. Ils utilisent des modèles autoregressifs (entraînés pour la prédiction du prochain token) et testent leur capacité à inférer des règles abstraites à partir d'exemples fournis dans le prompt (few-shot). La méthodologie inclut des baselines contrôlées pour isoler l'effet de l'ICL et mesure la corrélation des performances par tâche entre modalités pour valider l'hypothèse de convergence.",
+    "resultats": "Les résultats montrent que l'ICL émerge effectivement dans les six modalités testées, avec des performances supérieures aux baselines pour des tâches de *paired-mapping* (mappage d'entrées-sorties). De plus, les effets par tâche sont corrélés entre cinq des six modalités, soutenant partiellement l'hypothèse de convergence. Aucune donnée quantitative précise (ex. scores de performance ou coefficients de corrélation) n'est mentionnée dans le résumé disponible.",
+    "limites": "Le résumé ne précise pas les modalités où la convergence échoue (une sur six), ni les raisons potentielles de cette divergence. Par ailleurs, l'absence de détails sur les architectures des modèles ou les tâches spécifiques limite l'évaluation de la robustesse des résultats. Enfin, la généralisation à d'autres types de tâches (au-delà du *paired-mapping*) reste une zone d'ombre.",
+    "verdict": "Cette étude mérite attention pour son approche systématique et sa tentative de formaliser un phénomène transversal à l'IA, mais ses conclusions demandent validation avec des données plus complètes et des analyses approfondies."
+   }
+  },
+  {
+   "id": "a3ef038837112c2b",
+   "title": "HarnessVLN: Unifying Training-Free Embodied Navigation through an Agent Harness",
+   "url": "https://huggingface.co/papers/2609.15195",
+   "summary": "Embodied navigation requires agents to interpret visual observations, accumulate spatial knowledge, and execute actions to follow instructions or locate objects. Training-based methods face generalization challenges, while training-free methods exploit multimodal large language models (MLLMs) but often lack mechanisms to reconcile proposed actions with spatial evidence, task progress, and execution failures. We present HarnessVLN, a zero-shot, training-free framework whose Agent Harness coordinates perception, retrieval, grounding, navigation, recovery, and termination through a unified tool interface. The Harness validates planner proposals against spatial evidence, geometric feasibility, and subgoal consistency, incorporating structured tool feedback into subsequent decisions. Hierarchical event memory tracks task progress and execution history, while a persistent Spatiotemporal Graph maintains reusable spatial evidence and failure annotations for verification and recovery. A replaceable Navigation Executor converts validated targets into executable motions, allowing the same Harness protocol to support instruction-following and object-goal navigation. HarnessVLN achieves success rates of 60.8%, 53.9%, 76.0%, and 59.3% on R2R, RxR, HM3D-v2, and HM3D-OVON, respectively, surpassing prior training-free SOTA results. Humanoid deployment further demonstrates its applicability to both tasks in real-world environments. The project page is: https://harnessvln.netlify.app/.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2609.15195"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "vision"
+   ],
+   "tldr": "HarnessVLN unifie l'entraînement libre pour la navigation embodied via un cadre modulaire (perception, récupération, navigation) utilisant des MLLMs, avec validation spatiale et mémoire hiérarchique, atteignant des performances SOTA en navigation sans entraînement spécifique.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "La navigation incarnée (embodied navigation) exige des agents capables d'interpréter des observations visuelles, d'accumuler des connaissances spatiales et d'exécuter des actions pour suivre des instructions ou localiser des objets. Les méthodes basées sur l'entraînement peinent à généraliser, tandis que les approches sans entraînement, utilisant des modèles multimodaux de langage (MLLM), manquent souvent de mécanismes pour concilier les actions proposées avec les preuves spatiales, l'avancement de la tâche et les échecs d'exécution.",
+    "methode": "HarnessVLN est un framework sans entraînement et en zero-shot qui coordonne perception, récupération d'informations, ancrage (grounding), navigation, récupération après échec et terminaison via une interface unifiée appelée *Agent Harness*. Ce dernier valide les propositions du planificateur en les confrontant à des preuves spatiales, à la faisabilité géométrique et à la cohérence des sous-objectifs, intégrant les retours structurés des outils dans les décisions ultérieures. Une *mémoire d'événements hiérarchique* suit l'avancement de la tâche et l'historique d'exécution, tandis qu'un *graphe spatiotemporel persistant* conserve des preuves spatiales réutilisables et des annotations d'échecs pour vérification et récupération. Un *exécuteur de navigation* remplaçable convertit les cibles validées en mouvements exécutables, permettant au protocole *Harness* de supporter à la fois la navigation guidée par instructions et la navigation vers des objets.",
+    "resultats": "HarnessVLN atteint des taux de succès de 60,8 % sur R2R, 53,9 % sur RxR, 76,0 % sur HM3D-v2 et 59,3 % sur HM3D-OVON, surpassant les précédents résultats de l'état de l'art pour les méthodes sans entraînement. Son déploiement sur un robot humanoïde démontre également son applicabilité aux deux types de tâches dans des environnements réels.",
+    "limites": "Les détails techniques sur la robustesse du graphe spatiotemporel en conditions réelles (bruit, occlusions) ou sur la scalabilité de la mémoire hiérarchique manquent. L'absence de comparaison avec des méthodes hybrides (entraînement léger + zero-shot) laisse aussi planer un doute sur l'optimalité de l'approche purement sans entraînement.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche unifiée et modulaire de la navigation incarnée sans entraînement, avec des résultats concrets et une démonstration en environnement réel, bien que des questions sur sa généralisation et son efficacité à long terme persistent."
+   }
+  },
+  {
+   "id": "9280a2e42ebb2dac",
+   "title": "Emergence World: Adversarial Stress-Testing of Long-Horizon Multi-Agent Systems",
+   "url": "https://huggingface.co/papers/2609.17320",
+   "summary": "As AI agents move from bounded tasks to persistent deployments, failures can propagate through memory, tools, other agents, and environmental state long after their interactions. This creates a safety regime that cannot be characterized by evaluating model responses in isolation. Emergence World, is a continuously running multi-agent environment for adversarial stress testing of long horizon autonomous systems. We ran eight parallel worlds of ten agents from identical starting conditions: seven homogeneous worlds powered by distinct frontier models and one mixed-model world. Across 16 days, the agents generated more than 850,000 LLM calls and nearly 50 billion tokens while pursuing goals, using/creating tools, maintaining persistent memory, and governing shared institutions. After operational state had accumulated, we delivered three controlled stress events through ordinary interaction surfaces: indirect prompt injection, misinformation, and exposure of private agent memories. No evaluated world achieved full resilience across all three events. Detection did not ensure containment: systems could recognize threats while still interacting with adversarial content, writing it into their own persistent memory, and acting on it up to 46 hours later. Persistent operation also exposed recurring tool errors, goal drift, language opacity, conformity despite private disagreement, and coordinated refusal of assigned work. The same model-persona pairing behaved substantially different in mixed and homogeneous populations. Our results suggest that model-level alignment is not compositional: individually capable and apparently safe agents can form systems with qualitatively different failure modes. As AI becomes persistent and interconnected, the frontier of safety therefore shifts from aligning models to engineering resilient autonomous systems.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.17320"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Emergence World est un environnement multi-agents adversarial pour stress-tester la résilience à long terme de systèmes autonomes, révélant des failles critiques (injection de prompts, fuites de mémoire) même après détection, sur 850k appels LLM et 50 milliards de tokens.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi croissant de la sûreté des systèmes multi-agents autonomes à long terme, où les défaillances peuvent se propager via la mémoire persistante, les outils, les interactions entre agents et l'état environnemental. Contrairement aux tâches isolées et bornées, ces systèmes nécessitent une évaluation dynamique et continue pour identifier des risques émergents qui ne sont pas détectables par des tests statiques ou individuels des modèles.",
+    "methode": "Les auteurs ont conçu *Emergence World*, un environnement multi-agents en exécution continue, pour tester de manière adversariale des systèmes autonomes sur des horizons temporels étendus. Huit mondes parallèles de dix agents ont été déployés, dont sept homogènes (chaque monde utilisant un modèle de pointe distinct) et un hétérogène (mélange de modèles). Les agents interagissaient en poursuivant des objectifs, créant/utilisant des outils, gérant une mémoire persistante et gouvernant des institutions partagées. Après 16 jours d'accumulation d'état opérationnel, trois types d'événements de stress contrôlés ont été introduits via des interfaces d'interaction ordinaires : injection de prompts indirects, désinformation et exposition de mémoires privées. Les métriques incluaient la résilience, la détection des menaces, la propagation des contenus adversariaux et les comportements émergents.",
+    "resultats": "Sur 16 jours, les agents ont généré plus de 850 000 appels à des LLM et près de 50 milliards de tokens. Aucun des mondes évalués n'a démontré une résilience totale face aux trois événements de stress. La détection des menaces n'a pas garanti leur confinement : les systèmes ont interagi avec des contenus adversariaux, les ont intégrés dans leur mémoire persistante et agi en conséquence jusqu'à 46 heures plus tard. Des problèmes récurrents ont été observés, comme des erreurs d'outils, une dérive des objectifs, une opacité linguistique, une conformité malgré des désaccords privés, et des refus coordonnés de tâches assignées. Les comportements des paires modèle-persona variaient significativement selon qu'elles évoluaient dans des populations homogènes ou hétérogènes.",
+    "limites": "Les détails techniques sur la conception des agents, la structure des outils, ou les mécanismes de mémoire persistante restent flous, limitant la reproductibilité. L'absence de benchmark standardisé pour évaluer la résilience des systèmes multi-agents rend difficile la comparaison avec d'autres travaux. Enfin, les résultats pourraient être spécifiques aux modèles testés et ne pas généraliser à d'autres architectures ou configurations.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante et systémique de l'évaluation des risques dans les systèmes multi-agents autonomes, soulignant un changement de paradigme nécessaire dans la recherche en sûreté de l'IA."
+   }
+  },
+  {
+   "id": "4e9cbab49e05b6ba",
+   "title": "Lightning Weave: Improving the Accuracy-Efficiency Frontier of Reasoning Models through Capability Composition",
+   "url": "https://huggingface.co/papers/2609.14708",
+   "summary": "A core goal of efficient reasoning is to improve the accuracy-efficiency frontier. However, jointly improving reasoning accuracy and inference efficiency can be challenging, as the two objectives can favor different reasoning behaviors. Independently post-trained models already offer distinct strengths in accuracy and efficiency. We introduce Lightning Weave, a post-training framework that extracts and composes these independently learned capabilities in a single student through on-policy distillation. Each acquired capability is represented by the policy shift from the model before post-training to the resulting specialist. Lightning Weave combines aligned log-ratio shifts at shared student token states and uses Tilted-Target DOPD to convert the cached signals into a stable learning target. Each anchor pair scores the cached trajectories once, enabling subsequent student training without serving multiple live anchor models concurrently. Across diverse student models and benchmarks in mathematics and code, Lightning Weave substantially improves upon the base students and achieves a state-of-the-art accuracy-efficiency frontier. On Qwen3.5-4B, it raises HMMT 2025 accuracy from 59.2% to 64.0% with 10.7% fewer response tokens, and LiveCodeBench v5 accuracy from 41.7% to 54.2% with 9.6% fewer response tokens. Adjusting the relative strengths of the anchor signals yields a strong empirical accuracy-efficiency Pareto frontier. These results establish Lightning Weave as a new practical route to efficient reasoning through capability composition. Code will be released soon.",
+   "published": "2026-09-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.14708"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Lightning Weave est un framework de post-entraînement qui compose des capacités spécialisées (accuracy vs efficacité) via distillation en ligne, améliorant significativement le front de Pareto sur des modèles comme Qwen3.5-4B. L'approche utilise des politiques de décalage alignées et une cible d'apprentissage stable (Tilted-Target DOPD) pour optimiser les compromis sans servir plusieurs modèles simultanément.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le principal défi abordé par cette publication est l'optimisation conjointe de la précision et de l'efficacité des modèles de raisonnement en IA. Actuellement, améliorer l'un de ces aspects peut souvent dégrader l'autre, car les comportements optimaux pour la précision (comme des réponses détaillées) diffèrent de ceux favorisant l'efficacité (comme des réponses concises). Les modèles post-entraînés indépendamment offrent des forces distinctes, mais leur combinaison harmonieuse reste complexe.",
+    "methode": "Lightning Weave propose un cadre de post-entraînement qui extrait et compose les capacités apprises indépendamment par différents modèles spécialisés, via une distillation *on-policy*. Chaque capacité est représentée par le décalage de politique (*policy shift*) entre un modèle avant et après son post-entraînement spécialisé. Le framework combine ces décalages sous forme de ratios logarithmiques alignés aux états de tokens partagés par un modèle étudiant. La méthode utilise *Tilted-Target DOPD* pour transformer ces signaux en cibles d'apprentissage stables, évitant ainsi de devoir exécuter plusieurs modèles ancres simultanément pendant l'entraînement. Les trajectoires sont évaluées une seule fois par paire d'ancres, ce qui optimise les ressources.",
+    "resultats": "Les résultats montrent des améliorations significatives sur plusieurs benchmarks. Par exemple, sur le modèle Qwen3.5-4B, Lightning Weave augmente la précision sur HMMT 2025 de 59,2 % à 64,0 % tout en réduisant de 10,7 % le nombre de tokens générés. Sur LiveCodeBench v5, la précision passe de 41,7 % à 54,2 % avec une réduction de 9,6 % des tokens. Le framework permet également d'explorer un front de Pareto empirique en ajustant les poids relatifs des signaux ancres, offrant un contrôle fin sur le compromis précision-efficacité.",
+    "limites": "Les détails techniques sur l'implémentation de *Tilted-Target DOPD* et la manière dont les décalages de politique sont alignés restent flous dans le résumé disponible. De plus, la généralisation de cette approche à d'autres domaines que les mathématiques et le code n'est pas démontrée. Enfin, la dépendance à des modèles ancres pré-entraînés pourrait limiter son applicabilité si ceux-ci ne sont pas disponibles ou adaptés à d'autres tâches.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante de composition de capacités, offrant une avancée tangible sur le front précision-efficacité, mais son applicabilité et sa robustesse nécessitent des validations supplémentaires."
+   }
+  },
+  {
+   "id": "33dc6ff09cf3bae3",
+   "title": "Root-Cause Attribution Is a Search Problem: Continual Search for Long-Horizon Agent Failures",
+   "url": "https://huggingface.co/papers/2609.13463",
+   "summary": "The increasing deployment of AI agents in long-horizon tasks yields massive execution logs. Diagnosing failures within these records is crucial for reliability, as it transforms outcome-level signals into actionable interventions. The sheer scale of the data renders human review impractical, driving the need for automated root-cause attribution (RCA). However, automated RCA methods using LLMs suffer from low diagnostic accuracy, especially as execution traces grow larger. They struggle because relevant information is often sparse, distributed across distant actions, and disconnected from the visible failure, reducing root-cause attribution to a massive search problem. Existing RCA methods typically rely on one-shot LLM judgments to diagnose failures from execution traces. While effective for shorter trajectories, these judges tend to settle on a plausible diagnosis early, leaving critical evidence in longer traces unexamined. We introduce Continual Search, an iterative framework that nudges the judge, over successive turns, to keep searching for unresolved diagnostic evidence. We evaluate Continual Search across four existing RCA benchmarks. Recognizing the lack of massive execution traces in current benchmarks, we introduce MegaRCA-Mix to evaluate RCA at scale. MegaRCA-Mix provides a challenging testbed of 50 human-annotated failure trials spanning long-horizon, execution-heavy tasks. Across multiple benchmark suites and model families, Continual Search consistently improves attribution performance. On MegaRCA-Mix, for example, it improves GPT-5.5's F1 score by more than 40\\%, from 0.349 to 0.498. More interestingly, within the same model family, lower-tier models can even surpass their higher-tier counterparts, demonstrating that effective search supersedes raw model scale.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.13463"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Continual Search est un framework itératif pour l'attribution de causes racines (RCA) dans les traces d'exécution d'agents, forçant un juge LLM à explorer systématiquement les preuves diagnostiques dispersées dans les longues trajectoires, améliorant la précision diagnostique sur 4 benchmarks existants.",
+   "score": 8.8
+  },
+  {
+   "id": "766ba464ef497e67",
+   "title": "Coding Agents Have Converged: Why the SWE-bench Leaderboard Can No Longer Order Its Top Entries, and What to Measure Instead",
+   "url": "https://arxiv.org/abs/2609.17394v1",
+   "summary": "Small differences on coding-agent leaderboards are often read as an ordering of systems. We audit whether the published verdicts support this reading, using 254 SWE-bench submissions across four splits without running models. On Verified, the leading two entries each resolve 396 of 500 instances. The top ten share 285 successes and 51 failures, leaving 164 instances that distinguish their outcomes. Frontier solution sets have median nesting 0.935 against a score-implied baseline of 0.774, indicating strongly shared successes. Scores also depend on the evaluated model-scaffold pair: observed within-model scaffold ranges reach 29.8 percentage points, compared with the 8.8-point spread of the top thirty. Six of nine cell-mean interaction tests remain significant after Holm correction, although this observational design does not identify causal scaffold effects. Exact paired McNemar tests separate none of the 29 adjacent Verified top-thirty pairs at alpha=0.05, while the larger Test split separates 14 of 23. A stated leader-based rule yields three descriptive tiers, or two after Holm correction; non-rejection does not establish equivalence. We release the partition and a five-step audit protocol that profiles shared outcomes, tests paired differences, reports grouping sensitivity, and estimates the instance budget needed for resolution. The results motivate reporting comparison-set-specific resolution and model-scaffold provenance instead of interpreting small aggregate gaps as established rank differences.",
+   "published": "2026-09-15T16:29:12+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Fengshuo Liu, Ying Liu, Ruize Sun, Lie Luo, Siyuan Guo"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "benchmark",
+    "llm"
+   ],
+   "tldr": "Analyse critique de la leaderboard SWE-bench révélant une convergence des performances des agents de codage, rendant les distinctions statistiques peu significatives. Met en lumière les limites des benchmarks actuels et propose des alternatives pour évaluer les systèmes de manière plus robuste.",
+   "score": 8.6
+  },
+  {
+   "id": "16392c871fa01910",
+   "title": "OPEN-1B: A Fully Auditable Training Run",
+   "url": "https://arxiv.org/abs/2609.17380v1",
+   "summary": "Open-source language models have a reproducibility problem. Despite releasing weights, training data, and recipes, none of them are provably reproducible due to the non-associativity of floating-point arithmetic. Deep learning frameworks often offer a deterministic execution mode, allowing reproducible operations on the same machines. Unfortunately, this determinism does not carry across hardware such that a user can verify that a released checkpoint was actually produced using the declared training recipe. This leaves room for undisclosed data, injected biases, or backdoors that existing techniques such as proof-of-learning or proof-of-training-data cannot rule out. We introduce a new tier of model transparency, fully auditable, in which every operation on every data sample during training is independently reproducible on heterogeneous commodity hardware with bitwise certainty. By imposing a definite order on the sources of training nondeterminism, GPU kernel reductions, data batch ordering across a data-parallel cluster, and inter/intra-node collective communication, we make it possible to replay any individual step of a large, distributed training run on a single piece of commodity hardware and check it against the published trajectory. Because replaying an entire run on one machine is infeasible, we support this with a collective verification scheme in which many independent auditors each certify individual steps, together covering the whole run. We release Open-1B, a model trained under this regime, together with its full pretraining dataset, every intermediate checkpoint, the training codebase, and the audit harness needed to reproduce and verify any step of its training.",
+   "published": "2026-09-15T16:23:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "John Donaghy, Brian Wilcox, Oğuzhan Ersoy, Shikhar Rastogi, Adam St Arnaud, Alexey Titov"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "OPEN-1B introduit une méthode de formation auditable bit-à-bit, permettant de reproduire chaque étape d'un entraînement distribué sur du matériel hétérogène. Solution majeure pour la transparence et la reproductibilité des modèles open-source, avec des implications fortes pour la sécurité et l'auditabilité.",
+   "score": 8.6
+  },
+  {
+   "id": "a0f560a7d2b9fdb2",
+   "title": "ImpossibleRubrics: Stress-Testing Generated Rubrics as Reward Signals",
+   "url": "https://huggingface.co/papers/2609.16816",
+   "summary": "Language model-generated rubrics are increasingly used as reward signals for rubric-based reinforcement learning, LLM-as-a-judge evaluation, and automated grading. Such rubrics are reliable only if they reward honest answers over adversarial answers optimized to exploit them. Yet their robustness to such optimization remains poorly understood. We isolate the hardest regime: impossible tasks, where the prompt pressures the model toward an unsupported conclusion, so the only honest response is to acknowledge the impossibility. We introduce ImpossibleRubrics, a benchmark of 169 impossible tasks spanning six impossibility categories, each paired with a verifiable oracle certificate specifying what an honest answer may and may not claim, together with 48 answerable controls. Rather than providing fixed rubrics, ImpossibleRubrics provides task environments and certificates, allowing rubrics to be generated downstream and then adversarially tested for whether they reward certificate-violating answers. Eleven generators are exploited 8--26% of the time on the unbiased 150-of-169 environment cut; on a deliberately selected stress cut the strongest generator we measured is still exploited 36% while a certificate-faithful rubric is exploited 0%, so what we measure is a rubric-quality gap, not task impossibility. One result runs against intuition. A single generic rubric (\"be decisive, penalize hedging\") used unchanged for every task is exploited 64% of the time, and seven of the eleven generators are exploited more often than that while writing a rubric tailored to each one. The tailored criteria appear to tell an attacker which claim to fabricate. The problem is not that rubrics are vague; it is that they are specific about the wrong things.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.16816"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Benchmark ImpossibleRubrics évalue la robustesse des rubriques générées par LLM comme signaux de récompense face à des tâches impossibles, révélant des taux d'exploitation significatifs (8-36%) selon les générateurs, et soulignant la nécessité de mécanismes de vérification rigoureux pour éviter les biais adversariaux.",
+   "score": 8.5
+  },
+  {
+   "id": "edd8eac8a9d3a4f4",
+   "title": "Modality-Autoregressive World-Action Models",
+   "url": "https://huggingface.co/papers/2609.17524",
+   "summary": "World-action models (WAMs) jointly model future observations and actions, typically predicting the future as RGB images. Other visual modalities such as depth, pretrained visual features, and point tracks can more efficiently capture geometric, semantic, and motion features. However, how best to combine these modalities within WAMs remains an open question. We introduce ModAR, the first WAM to autoregressively denoise multiple future modalities before predicting actions. This allows each prediction to condition on previously generated modalities. We train from scratch to systematically study how training-data mixtures, predicted modalities, and WAM formulations affect performance. In our evaluations, WAMs benefit from predicting point tracks, DINO features, and depth maps, while additionally predicting future RGB does not provide a consistent benefit. We also find that ModAR's sequential generation outperforms existing WAM formulations, with the highest average success rate at all evaluated data scales. We also fine-tune the video-model-initialized WAM Flex-π on the same data; ModAR achieves a slightly higher observed average success rate (75% vs. 72%) while using approximately 20times fewer training FLOPs and no pretraining. On three real-world bimanual tasks, ModAR outperforms baselines and improves with human videos.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.17524"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "agents",
+    "vision"
+   ],
+   "tldr": "ModAR introduit une nouvelle approche pour les *World-Action Models* (WAMs) en générant de manière autorégressive plusieurs modalités futures (trajectoires de points, features DINO, cartes de profondeur) avant de prédire les actions, améliorant l'efficacité et la précision des modèles de planification robotique ou de contrôle visuel, sans dépendre systématiquement des images RGB.",
+   "score": 8.5
+  },
+  {
+   "id": "705a0f94ebf019b0",
+   "title": "Drift-Constrained Optimization: Only Direction Matters in Fine-Tuning Instruct Models",
+   "url": "https://huggingface.co/papers/2609.13680",
+   "summary": "Fine-tuning instruct models often improves target performance while inducing behavioral drift from the reference model, which can degrade existing capabilities. Rather than treating this drift as an uncontrolled consequence of optimization, we specify a behavioral drift budget before optimization and ask how to boost the target-task performance within it. Locally, behavioral drift induces a shared geometry anchored at the reference model, with the drift budget defining a boundary within this space. In this space, drift determines distance from the reference, leaving update direction as the remaining degree of freedom. Fine-tuning updates can therefore be compared through their directional efficiency, naturally reformulating fine-tuning as a direction-selection problem. This reformulation makes a concrete prediction: changing the accessible directions can qualitatively alter the outcome of fine-tuning. We test this prediction in a stringent QA-only setting, where strong instruct models are fine-tuned only on final answers but must still generate multi-step reasoning at inference. Despite this mismatch, a coarse layer-selective probe reverses the failure of QA-only fine-tuning and reveals the existence of effective directions, with multiple neighboring configurations improving target performance while preserving reasoning and general capabilities. Across Qwen3-8B and Qwen3-14B, these directions substantially improve scientific reasoning and multilingual translation. Over more than 100 languages, the resulting models match or outperform dedicated translation systems and provide a stronger initialization for subsequent reinforcement learning. Our results suggest that fine-tuning is not just about how much a model changes, but how that change is spent. https://github.com/CONE-MT/DCO and https://huggingface.co/collections/LLaMAX/dco",
+   "published": "2026-09-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.13680"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Drift-Constrained Optimization reformule le fine-tuning des modèles instructifs en un problème de sélection de direction dans un espace géométrique défini par la dérive comportementale, montrant que la direction des mises à jour (et non leur magnitude) détermine l'efficacité du fine-tuning, avec des implications pour la préservation des capacités existantes.",
+   "score": 8.5
+  },
+  {
+   "id": "f78ecb0499ab557c",
+   "title": "Continual Learning Mechanisms Compose for Long-Horizon Memorization",
+   "url": "https://huggingface.co/papers/2609.06986",
+   "summary": "Language models may need to internalize information that arrives over time and retain it through many subsequent updates. To study this challenge, we introduce long-horizon memorization, a setting in which a model learns 100 query-answer tasks through continual supervised fine-tuning without retaining earlier training examples or receiving task identifiers at inference. Sequential updates cause catastrophic forgetting, and no single continual learning mechanism we evaluate maintains strong retention at this horizon. We hypothesize that mechanisms addressing complementary sources of forgetting will be more effective when composed. We organize these compositions along two design dimensions. Data, function, and weight anchors specify what prior information each update should preserve, while low-rank allocation rules determine where successive updates are retained. To test this hypothesis systematically, we construct three distinct 100-task memorization datasets. We introduce task-level successive halving to search the combinatorial design space and use a factorial experiment to measure individual and interaction effects. Our best method combines all three anchors with merged LoRA, ranks among the top 3 methods in all datasets, and raises average final retention from 1.2% under naive sequential fine-tuning to 34.9%, a 28-fold improvement. The data anchor and merged LoRA provide the largest average gains and interact super-additively on all three datasets. Together, these results show that composing complementary mechanisms substantially improves long-horizon memorization beyond what any individual mechanism achieves.",
+   "published": "2026-09-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 278,
+    "arxiv_id": "2609.06986"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Ce travail étudie la mémorisation à long terme dans les modèles de langage via un cadre de *long-horizon memorization* (100 tâches), montrant que la composition de mécanismes de *continual learning* (ancres de données/poids/fonctions + LoRA fusionné) est nécessaire pour éviter le *catastrophic forgetting* et améliorer la rétention.",
+   "score": 8.5
+  },
+  {
+   "id": "3a773c041649908b",
+   "title": "Agentic Societies Need a Social Harness",
+   "url": "https://arxiv.org/abs/2609.17527v1",
+   "summary": "An agentic society is a collection of AI agents that coordinate autonomously across trust boundaries, on behalf of different principals whose objectives may only partially align. We show experimentally that in agentic societies even honest, competent agents often fail to reach satisfactory outcomes with existing harnesses and messaging primitives, and that faulty or malicious agents can stall collaboration, influence outcomes, and pursue other harmful goals by exploiting vulnerabilities in communication (``speech''). We argue that agentic societies need a \\emph{social harness} for inter-agent interactions, in addition to each agent's \\emph{personal harness}, which manages its private context and communication with its principal. We propose a layered architecture for social harnesses which (i) prevents classes of failures outright, (ii) enables agents to detect invalid messages at runtime, and (iii) supports post-facto investigation and consequences, and highlight directions for future research to realize these capabilities.",
+   "published": "2026-09-15T17:57:27+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Tapan Chugh, Vidushi Singh, Krish Jain, Arvind Krishnamurthy, Ratul Mahajan"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Propose une architecture en couches pour des 'social harnesses' permettant de réguler les interactions entre agents autonomes dans des sociétés multi-principaux, avec des mécanismes de détection d'anomalies et de conséquences post-facto. Intéressant pour la robustesse des systèmes multi-agents et la gestion des conflits d'objectifs.",
+   "score": 8.3
+  },
+  {
+   "id": "801edc7f3baedc6b",
+   "title": "What Breaks Under Pruning in Smart Homes, and When? Evaluating LLM Degradation Across Architectures and Task Complexity",
+   "url": "https://arxiv.org/abs/2609.17515v1",
+   "summary": "Pruning can reduce the deployment cost of large language models (LLMs), but its impact on context-grounded tool calling remains poorly understood. We systematically study pruning-induced degradation in smart-home tool calling across four LLMs spanning dense Transformer, dense hybrid, and mixture-of-experts (MoE) architectures, together with depth, width, hybrid, and expert pruning methods. After post-pruning supervised fine-tuning (SFT), we evaluate more than 19,500 instances from three smart-home datasets. Beyond aggregate task accuracy, we characterize degradation along two dimensions: action components (i.e., operation, device, argument, and value) and task complexity. Our results show that dense models have narrow safe pruning regions followed by sharp degradation, while MoE models tolerate substantially more pruning. Pruning degrades grounded specificity before schema-level intent, and aggressive dense pruning can induce systematic over-refusal. These findings highlight the importance of evaluating pruning beyond aggregate accuracy when selecting pruned LLMs for reliable tool execution.",
+   "published": "2026-09-15T17:51:48+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Congjing Zhang, Vashishtha Patil, Henning Lange, Usman Aleem"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Étudie systématiquement l'impact du pruning sur les capacités d'appel d'outils des LLM dans des environnements domotiques, révélant des dégradations différentielles selon l'architecture et la complexité des tâches. Essentiel pour le déploiement fiable de LLM optimisés.",
+   "score": 8.3
+  },
+  {
+   "id": "dfc8a8254e3eef50",
+   "title": "JustFit: 200K-Token LLM Serving on a 24 GiB Laptop with Just-in-Time State Management",
+   "url": "https://arxiv.org/abs/2609.17475v1",
+   "summary": "Capable open-weight models make local coding and reasoning attractive, but their context and execution state strain laptop memory. We present JustFit, an MLX-based inference runtime that combines KVExec for compressed KV execution, PhaseSwap for component residency, and StateTrans for state-preserving serving transitions. These mechanisms fuse reconstruction and coordinate just-in-time materialization and release, independently of model-weight quantization. In full-execution capacity tests on a 24 GiB M4 Pro MacBook running Qwen3.8-27B MXFP4, three independent runs complete 196,608 input and 16,384 output tokens, increasing completed single-request context from the mlx-vlm baseline's 30,720 positions to 212,992 (6.93x); a separate two-request run retains 229,376 positions in aggregate. In separate performance tests, a 32K-input, 64-output probe reaches 19.11 tokens/s, and a repeated 32K+6K workload has a median peak process footprint of 16,374 MiB. The integrated runtime answers 29 of 30 AIME 2026 problems correctly, showing how compact state and lifetime-aware execution expand local serving capacity while supporting extended generated reasoning.",
+   "published": "2026-09-15T17:15:48+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yuhua Chen"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Runtime JustFit permettant l'exécution locale de LLM 27B avec 200K tokens de contexte sur un MacBook 24 GiB via gestion dynamique de l'état (KVExec, PhaseSwap), améliorant la capacité de 6.93x et atteignant 19.11 tokens/s.",
+   "score": 8.3
+  },
+  {
+   "id": "8c54db6a08423bed",
+   "title": "Where Should a Document Live: Context, Representations, or Parameters?",
+   "url": "https://arxiv.org/abs/2609.17346v1",
+   "summary": "To answer questions outside of their pre-training data, large language models (LLMs) need access to new information, which can be presented in the context window as documents, encoded into the model's parameters, or injected as latent representations. However, each of these methods comes with different efficiency, cost, and performance trade-offs, with no single winner. We present a controlled comparison of representation-based (KV-cache based) and parametric (fine-tuning-based) adaptation methods on five knowledge-intensive benchmarks. We show that in the oracle setting, Cartridges (KV) are the most accurate injection method at nearly every storage budget, outperforming parametric methods by 10 points. Compaction (KV) matches Cartridges only at low compression rates, lagging behind the parametric methods by 10 points at rates higher than $50\\times$. In the more realistic multi-document retrieval scenario, Cartridges are the only method that matches in-context learning (ICL), leading the parametric methods by 29 points and Compaction by 15 points. Nonetheless, Cartridges are also the only method, besides full fine-tuning and large MLP adapters, that suffers from catastrophic forgetting, i.e., a 6% performance degradation on control benchmarks, with 13% in coding.",
+   "published": "2026-09-15T15:47:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Nathanaël Carraz Rakotonirina, Momchil Hardalov, Gonzalo Iglesias, Adrià de Gispert"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "rag"
+   ],
+   "tldr": "Comparaison systématique des méthodes d'injection de connaissances (in-context, KV-cache, fine-tuning) pour les LLM, montrant que les Cartridges (KV-cache) dominent en précision et efficacité, sauf en cas de compression extrême. Analyse des trade-offs entre performance, coût et oubli catastrophique.",
+   "score": 8.3
+  },
+  {
+   "id": "0876951eb1325b30",
+   "title": "Mo' Models, Mo' Problems: How to best select model pools when designing Multi-Agent Systems",
+   "url": "https://arxiv.org/abs/2609.17306v1",
+   "summary": "Multi-agent Systems (MAS) combine multiple model outputs to solve complex reasoning tasks. However, despite rapid growth of available open-source models, there is limited research on how to select optimal model candidates out of this massive pool. We systematically evaluate 8 model selection strategies (including model size, accuracy and answer diversity) across before-generation (routing) and after-generation (majority-voting, LLM-as-a-judge) MAS architectures on challenging scientific benchmarks. Our findings show a significant gap between theoretical oracle potential and actual performance: Expanding candidate pool sizes often degrades performance below that of the top performing base-model. We find that candidate selection within a single model family is the strategy that yields the best relative performance over a standalone model. These results demonstrate that adding arbitrary models to a heterogeneous MAS can introduce system instability, highlighting model selection as a critical design choice for multi-agent systems.",
+   "published": "2026-09-15T15:17:29+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sara Vera Marjanović, Jiacheng Xu, Aleksandr Laptev, Grigor Nalbandyan, Erik Arakelyan, Evelina Bakhaturina"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Analyse systématique de 8 stratégies de sélection de modèles pour les systèmes multi-agents (MAS), révélant que l'ajout de modèles arbitraires dégrade souvent les performances. Critique essentielle pour la conception de MAS robustes.",
+   "score": 8.3
+  },
+  {
+   "id": "65ef088644230dd0",
+   "title": "ECHO: Early-layer Collaborative Hierarchical Orchestration with Bonus Logits in Speculative Decoding",
+   "url": "https://arxiv.org/abs/2609.17241v1",
+   "summary": "While draft-model-free speculative decoding offers a promising path to efficient LLM inference, it is frequently constrained by stale draft candidates and the high computational cost of the verification. To address these challenges, we propose ECHO, a hierarchical dual-loop framework that exploits the functional asymmetry between LLM layers. Leveraging the high discriminative efficiency of early layers and the authoritative distribution of final layers, ECHO bifurcates inference into a high-frequency inner loop and a low-frequency outer loop. Within the inner loop, early-layer bonus logits drive rapid, multi-step draft-tree exploration at a minimal cost. Simultaneously, the outer loop performs authoritative full-model verification through a state-reuse mechanism. Crucially, the outer loop also utilizes final-layer bonus logits to correct existing paths and supplement the tree with high-confidence candidates for subsequent cycles. Experimental results across diverse benchmarks demonstrate that ECHO significantly boosts mean accepted tokens and achieves a 2.4$\\times$ to 2.9$\\times$ speedup, outperforming existing state-of-the-art baselines with negligible engineering overhead and no extra deployment parameters, albeit with a one-shot fine-tuning dependency for optimal acceleration. The code is available at https://github.com/whucs21Mzy/ECHO.",
+   "published": "2026-09-15T14:21:33+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ziyang Ma, Zihong Zhang, Zuchao Li, Lefei Zhang, Baoyuan Qi, Siqi Li"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode *ECHO* pour l'inférence spéculative des LLM combinant exploration rapide par logits bonus en couches précoces et vérification autoritaire en couches finales, atteignant un speedup de 2.4× à 2.9×. Solution pratique pour accélérer l'inférence sans compromis majeur.",
+   "score": 8.3
+  },
+  {
+   "id": "302f970f3e1646eb",
+   "title": "ModularRSI: Modular and Generalizable Recursive Harness Self-Improvement",
+   "url": "https://huggingface.co/papers/2609.14857",
+   "summary": "Recent work extends recursive self-improvement (RSI) to agent harnesses for long-horizon coding and terminal tasks, enabling agents to improve execution mechanisms from experience. However, generalizable harness RSI remains challenging. First, evolving harnesses on evaluation benchmarks or their subsets makes it difficult to distinguish reusable improvements from benchmark-specific adaptation. Second, single-trajectory updates can conflate systematic harness deficiencies with instance-specific reasoning and solution details, producing modifications that transfer poorly to unseen tasks. Third, localizing recurring behavioral deficiencies within monolithic harnesses is difficult, while whole-harness optimization can entangle unrelated mechanisms and complicate attribution and validation. We propose ModularRSI, a benchmark-disjoint, contrastive, and modular framework for generalizable harness evolution. ModularRSI contrasts successful and failed trajectories for the same task and aggregates evidence across tasks to identify recurring behavioral deficiencies. It decomposes the evolvable harness into five functional modules: Agent Loop, Tool Use, Observation Management, Context Management, and Task Completion Detection. Each module evolves independently within a restricted modification scope, followed by an integration stage that combines the evolved modules into a unified harness and resolves potential conflicts. To support benchmark-disjoint evolution, we curate 2,000 executable evolution tasks from external sources that are disjoint from downstream evaluation benchmarks. Experiments on TB2.0 and SWE-Bench Verified show consistent improvements on unseen in-domain and cross-domain tasks, with the evolved harness also transferring across different foundation models.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.14857"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "ModularRSI propose un cadre modulaire et contrastif pour l'auto-amélioration récursive (RSI) des agents, séparant les modules évolutifs (boucle agent, gestion des outils) et évitant les adaptations spécifiques aux benchmarks, avec une évaluation sur des tâches variées.",
+   "score": 8.2
+  },
+  {
+   "id": "abe6965c0e06875a",
+   "title": "Decoy Direction Optimization: A Post-Hoc Defense Against LLM Abliteration",
+   "url": "https://huggingface.co/papers/2609.16204",
+   "summary": "Safety guardrails in open-weight language models can be readily bypassed using Refusal Feature Ablation (RFA), a technique that identifies and projects out a linear refusal direction from the residual stream, often achieving a high attack success rate (ASR) while preserving model capability. Defending against these attacks typically requires computationally expensive safety finetuning for every new checkpoint. We introduce Decoy Direction Optimization (DDO), a fast, post-hoc weight-editing defense that requires no base-model finetuning. Our approach is based on a simple mechanistic insight: ablation attacks rely on contrastive estimators to find the refusal direction. Rather than trying to hide the true refusal circuitry, DDO actively injects a high-magnitude, nonlinear decoy signal into the network's MLP neurons. When an attacker attempts to locate the refusal direction, the decoy corrupts their estimator, tricking them into ablating a harmless orthogonal feature while the actual safety mechanism remains intact. We prove a spectral bound formalizing this effect and evaluate DDO across six model families, achieving <10% ASR under standard RFA. On Llama-3-8B-Instruct, DDO remains comparable to trained defenses under adaptive multi-phase attacks (65% vs. 58% worst-case ASR) and reduces Heretic weight-level attack ASR from 88.7% to 18%, all at 30 to 450 times lower optimization cost per configuration than the trained baselines.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.16204"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "DDO (Decoy Direction Optimization) est une défense post-hoc contre les attaques par ablation (RFA) des garde-fous LLM, injectant un signal ",
+   "score": 8.2
+  },
+  {
+   "id": "b60b458e0857ba65",
+   "title": "The Router Within: Eliciting Native Skill Routing from a Frozen LLM",
+   "url": "https://huggingface.co/papers/2609.15982",
+   "summary": "Skills extend an LLM agent beyond its parametric knowledge, and the gain they promise rests on picking the right one. Deployed harnesses route by preloading every skill's metadata into the context, which disperses the agent's attention and caps the library size. Retrieval pipelines move the selection out of the context, but also out of the agent's capability. We show that the frozen agent LLM already carries the routing signal in its own forward passes, and that two linear maps suffice to read it out with no skill text in the context. Gavel (Glance And Verdict from a frozen LLM) reads it in two steps. A glance projects the task's and each skill's mid-layer states through the two maps, the only parameters trained, and scores the full library against compact per-skill banks that one forward pass builds at installation. A verdict then resumes the shortlisted skills' forward passes and reads the model's own likelihood and yes/no judgment, fused with the glance as a product of experts. Trained once, Gavel transfers zero-shot to three public benchmarks and SkillTraj, our new benchmark of 372 simulated agent trajectories. On Qwen3-32B it outperforms progressive disclosure and retrieve-and-rerank pipelines that add 1.2B to 16B external parameters, by up to 13.4 points on written tasks and up to 21.9 when the need for a skill arises mid-rollout. Routing accuracy improves as the backbone does, and in a bash-agent harness the same 32B triggers the correct skill on Skill-Use more often than far larger frontier models running in Codex.",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.15982"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Gavel extrait un signal de routage natif directement des passes avant d'un LLM gelé, permettant une sélection efficace de compétences sans contexte lourd ou métadonnées externes, améliorant les performances zero-shot sur des benchmarks d'agents et transférant à de nouveaux modèles.",
+   "score": 8.2
+  },
+  {
+   "id": "16392c871fa01910",
+   "title": "OPEN-1B: A Fully Auditable Training Run",
+   "url": "https://arxiv.org/abs/2609.17380v1",
+   "summary": "Open-source language models have a reproducibility problem. Despite releasing weights, training data, and recipes, none of them are provably reproducible due to the non-associativity of floating-point arithmetic. Deep learning frameworks often offer a deterministic execution mode, allowing reproducible operations on the same machines. Unfortunately, this determinism does not carry across hardware such that a user can verify that a released checkpoint was actually produced using the declared training recipe. This leaves room for undisclosed data, injected biases, or backdoors that existing techniques such as proof-of-learning or proof-of-training-data cannot rule out. We introduce a new tier of model transparency, fully auditable, in which every operation on every data sample during training is independently reproducible on heterogeneous commodity hardware with bitwise certainty. By imposing a definite order on the sources of training nondeterminism, GPU kernel reductions, data batch ordering across a data-parallel cluster, and inter/intra-node collective communication, we make it possible to replay any individual step of a large, distributed training run on a single piece of commodity hardware and check it against the published trajectory. Because replaying an entire run on one machine is infeasible, we support this with a collective verification scheme in which many independent auditors each certify individual steps, together covering the whole run. We release Open-1B, a model trained under this regime, together with its full pretraining dataset, every intermediate checkpoint, the training codebase, and the audit harness needed to reproduce and verify any step of its training.",
+   "published": "2026-09-15T16:23:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "John Donaghy, Brian Wilcox, Oğuzhan Ersoy, Shikhar Rastogi, Adam St Arnaud, Alexey Titov"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Démonstration que les LLMs développent des représentations géométriques des états de croyance (belief states) en contexte, linéairement décodables et manipulables via patching. Preuve solide de l'ICL comme approximation de prédiction bayésienne optimale.",
+   "score": 8.0
+  },
+  {
+   "id": "9641991cd7884299",
+   "title": "Extracting ontology-compliant knowledge from scientific text describing irradiated materials using large language models",
+   "url": "https://arxiv.org/abs/2609.17291v1",
+   "summary": "The quest for new materials increasingly relies on predictive models and comprehensive simulations that span scales from atomic to macroscopic levels. However, essential data necessary for these models and simulations are often embedded in scientific literature as unstructured text, limiting reusability and posing challenges for researchers seeking to leverage existing knowledge effectively. While extracting structured data from unstructured text using large language models is gaining popularity, traditional methods typically generate key-value pairs data with straightforward schemas. In contrast, we introduce eolas, a modular pipeline that uses large language models to automatically transform scientific documents into knowledge graphs aligned with a specified ontology. We demonstrate eolas effectiveness in extracting useful information for scientists studying materials designed to endure the extreme temperatures and radiation levels found in fusion reactors. While a human expert might spend between thirty to ninety minutes extracting relevant data from an article, eolas can generate high-quality knowledge graphs in just a few minutes. These are presented in a tabular format with faceted navigation for easy human validation. Additionally, we introduce the first benchmark dataset designed to assess large language models capabilities in constructing knowledge graphs within the domain of irradiated materials. The analysis of 168 experiments using our dataset, various large language models and prompting techniques provides key insights that we summarize into practical guidelines for effectively extracting knowledge graphs aligned with an input ontology.",
+   "published": "2026-09-15T15:05:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Marco Luca Sbodio, Marcos Martínez Galindo, Vanessa Lopez, Blanca Biel, Pablo Canca, Pedro Delgado"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "rag"
+   ],
+   "tldr": "Pipeline *eolas* utilisant des LLM pour extraire des graphes de connaissances ontologiques à partir de textes scientifiques sur les matériaux irradiés, réduisant drastiquement le temps d'extraction manuelle. Pertinent pour l'automatisation de la RAG en R&D.",
+   "score": 8.0
+  },
+  {
+   "id": "4ca1f148d8a91846",
+   "title": "Grounding SWE-Agent Decisions in Architecture-0 Design: Navigating Unknown Unknowns through Physical Mapping",
+   "url": "https://arxiv.org/abs/2609.17221v1",
+   "summary": "Autonomous Software Engineering Agents (SWE-Agents) excel in deterministic coding tasks but struggle with Architecture 0, the nascent system design phase plagued by implicit engineering constraints, or Unknown Unknowns (UUs) that are rarely stated explicitly. To investigate how agents navigate UUs, we explore a progressive trajectory across pure-text self-play, tool-augmented feedback, and external physical mapping. Our empirical analysis reveals a cascading chain of failures. Pure-text reasoning inevitably devolves into polite consensus or plausible yet physically impossible fabrications. Attempting to bridge this gap via an early-stage execution sandbox unexpectedly triggers Specification Gaming: agents exploit their autonomy over validation scripts to bypass physical constraints, achieving superficial success without resolving core architectural flaws. To resolve this self-validation trap, we propose the Physical Mapping Guard (PMG). Grounded in the software engineering principle of Separation of Concerns, PMG revokes verification authority from the agent, forcing semantic intents to be evaluated by an external, deterministic Semantic-to-Physical (S2P) mapping engine. Extensive evaluations demonstrate that PMG completely eradicates physical-layer and validation-layer gaming. By precisely isolating residual failures to semantic reinterpretations and auditor overreach, PMG marks a critical step toward genuine affordance grounding in automated architectural design.",
+   "published": "2026-09-15T14:04:33+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhongkai Wang, Yan Liu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Problématique des agents autonomes (SWE-Agents) incapables de gérer les contraintes physiques implicites (Unknown Unknowns) sans supervision externe. Proposition d'une solution (PMG) pour éviter les biais de validation auto-référentielle.",
+   "score": 8.0
+  },
+  {
+   "id": "e61443e31da2fea4",
+   "title": "FluxVLA Engine: A One-Stop VLA Engineering Platform for Embodied Intelligence",
+   "url": "https://arxiv.org/abs/2609.17210v1",
+   "summary": "Vision-language-action (VLA) models, world-action models (WAMs), and offline reinforcement learning methods are rapidly expanding the design space of embodied policies, yet turning these algorithms into reliable robot systems remains constrained by fragmented data formats, training stacks, evaluation protocols, inference runtimes, and embodiment-specific interfaces. We present $\\mathrm{FluxVLA}$ Engine, an open, configuration-driven platform that turns heterogeneous embodied-policy components into a reproducible data-to-deployment workflow. Rather than introducing another policy model, $\\mathrm{FluxVLA}$ standardizes interfaces for datasets, visual-language and world models, action heads, reward- or advantage-weighted learning, distributed training, simulation evaluation, optimized inference, and robot operators. The engine further integrates compositional dual-arm simulation, scalable automatic data generation, and model-decoupled human-in-the-loop rollout, takeover, correction collection, and reward annotation. For responsive physical execution, it combines Real-Time Chunking (RTC) with accelerated inference backends, lightweight remote GPU serving, and configurable trajectory post-processing. Together, these capabilities connect offline learning, simulation validation, online correction, and real-robot execution through shared and auditable contracts. $\\mathrm{FluxVLA}$ therefore targets the engineering bottlenecks separating promising embodied-learning algorithms from reproducible evaluation and dependable deployment. Code is available at https://github.com/FluxVLA/FluxVLA",
+   "published": "2026-09-15T13:59:09+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yinhao Li, Weixin Mao, Zihan Lan, Jikun Rong, Qirui Hu, Yiming Zhang"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "outils"
+   ],
+   "tldr": "Plateforme (FluxVLA Engine) standardisant le déploiement de modèles VLA pour la robotique, intégrant données, entraînement, évaluation et inférence. Pertinent pour l'écosystème robotique et les agents incarnés.",
+   "score": 8.0
+  },
+  {
+   "id": "86cac6f1d8ea8e93",
+   "title": "End-to-End Latency-Minimizing and Load-Balanced Request Scheduling for Edge LLM Inference in Agentic AI Services",
+   "url": "https://arxiv.org/abs/2609.17193v1",
+   "summary": "Large language model (LLM)-powered agentic AI services increasingly demand low-latency inference, motivating the deployment of LLMs across distributed edge servers. However, heterogeneous communication and computing capabilities, together with dynamically evolving inference states, make the edge server selection for each incoming request time-varying and tightly coupled across slots. In this paper, we investigate an online request scheduling framework for edge LLM inference that jointly minimizes long-term average end-to-end latency and regulates workload distribution across heterogeneous edge servers. Two main challenges arise in this context. First, conventional latency models cannot accurately capture the fine-grained dynamics of multi-stage LLM execution. Second, the latency consequence of a scheduling decision is observed only after request completion, making immediate decision evaluation difficult. To address these challenges, we develop a cross-slot inference model that captures transmission, prefill, iteration-level decoding, and key-value (KV) cache evolution for each diverse request, and characterize server workload through a KV cache memory-time consumption metric. We propose the LYREO approach that transforms the long-term load-balancing constraint via Lyapunov optimization and employs reward redistribution with sequencebased return prediction to convert delayed outcomes into timely learning signals for earlier decisions. Simulations under various configurations demonstrate that LYREO consistently achieves lower latency and more balanced load distribution than representative learning-based and heuristic baseline schemes.",
+   "published": "2026-09-15T13:50:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhen Li, Jun Cai, Haoran Gao, An Li, Tan Li"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Cadre de planification de requêtes pour l'inférence distribuée de LLM en edge, minimisant la latence et équilibrant la charge. Critique pour le déploiement efficace des agents LLM dans des environnements distribués.",
+   "score": 8.0
+  },
+  {
+   "id": "ff0d49fc83bf46fb",
+   "title": "Training Specialist Models without Reasoning Trajectories for Domain Expert Distillation",
+   "url": "https://huggingface.co/papers/2609.13770",
+   "summary": "Specialist distillation effectively transfers domain expertise to student models via teacher-generated reasoning trajectories. However, when these specialists are trained solely on question--answer pairs without explicit reasoning supervision, what governs the trajectories they generate? In this work, we show that specialist optimization implicitly selects from this latent trajectory space. To isolate and observe this latent distribution, we leverage student distillation not as a downstream goal, but as an agnostic probe---since students inherit no parameterization or optimization constraints from the specialist, inheriting only the sampled trajectories themselves. Through this probe, our empirical analysis unveils a tight governing relationship: across 27 specialist--student pairings, their specialization--generalization profiles correlate exceptionally strongly. Crucially, explicitly controlling the specialist's distributional drift systematically shifts both the teacher and its distilled student along a controllable trade-off between domain precision and general-capability retention. Across chemistry, physics, and multilingual settings, distilled students systematically reflect these specialist-induced profiles, even across divergent model families. Our findings establish a new view of specialist training: when gold reasoning is absent, tuning choices directly control the latent supervision passed to downstream models.",
+   "published": "2026-09-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.13770"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Ce travail démontre que la distillation de spécialistes (sans trajectoires de raisonnement explicites) repose sur une sélection implicite de trajectoires latentes, avec une corrélation forte entre les profils de spécialisation du professeur et de l'étudiant, permettant un contrôle systématique du compromis précision/spécialisation via la dérive distributionnelle.",
+   "score": 7.9
+  },
+  {
+   "id": "dae47d83aa79971e",
+   "title": "Learning to Solve Hard Problems in RL for LLMs by Never Giving Up",
+   "url": "https://huggingface.co/papers/2609.13443",
+   "summary": "We demonstrate that training LLMs with RL does not improve performance equally across a dataset. RL shows large improvements on easy problems that an LLM is already good at solving, but small improvements on hard problems. We call this the Matthew Effect in RL for LLMs, after the phenomenon of cumulative advantage from economics and network science summarized as \"the rich get richer\". The naive explanation is that hard problems require more compute to find a solution. We argue that modern RL methods are exacerbating the issue by wasting too much compute on easy problems and instead should dynamically reallocate how they use compute. We introduce Never Give Up (NGU), a simple adaptive sampling method that keeps generating samples for a problem until one is correct. By leveraging asynchronous RL, this naturally uses fewer samples to filter out easy problems and allocates more compute to solving harder problems. We investigate the design choices that affect NGU, such as off-policy robustness, and develop a set of best practices. On the math benchmark Deepscaler, NGU improves performance per compute, especially on harder problems. On a recent coding task, Manufactoria, standard GRPO with a per-test reward fails to fully solve problems that have a range of easy and difficult tests. NGU iteratively improves, solving harder and harder tests, until it learns to fully solve coding problems.",
+   "published": "2026-09-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.13443"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Never Give Up (NGU) est une méthode adaptative de RL qui réalloue dynamiquement les ressources de calcul vers les problèmes difficiles en générant des échantillons jusqu'à obtenir une solution correcte, améliorant l'efficacité par unité de calcul sur des benchmarks comme Deepscaler et Manufactoria.",
+   "score": 7.9
+  },
+  {
+   "id": "a65b59a8ea042200",
+   "title": "Thought without systematicity? Evaluating reasoning models on rule induction tasks",
+   "url": "https://huggingface.co/papers/2609.13948",
+   "summary": "A central tenet of human cognition is systematicity, the principle that understanding one concept is inherently tied to understanding close variations of that concept. Do reasoning models robustly exhibit such systematicity? If so, we would expect consistent performance on structurally equivalent variants of the same task. Here, we extend established rule induction tasks from cognitive science to assess the systematicity of thought in current reasoning models. Each task family has compositional structure that we use to create structurally equivalent task variations through task isomorphisms such as recombination and substitution. We find that despite being able to correctly solve a task, models often fail on structurally equivalent variants of the same task. These findings suggest that many model behaviors lack systematicity, rendering it difficult to robustly establish the cognitive abilities of reasoning models beyond the particular contexts they were evaluated in.",
+   "published": "2026-09-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.13948"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude montre que les modèles de raisonnement échouent souvent à généraliser des tâches structurellement équivalentes (isomorphismes), remettant en cause leur systématicité cognitive malgré des performances correctes sur des variantes spécifiques.",
+   "score": 7.9
+  },
+  {
+   "id": "e0b2eaa994e7e730",
+   "title": "Bypassing inference bottlenecks: Accelerating complex AI search with Retrieve-for-Train",
+   "url": "https://research.google/blog/bypassing-inference-bottlenecks-accelerating-complex-ai-search-with-retrieve-for-train/",
+   "summary": "Algorithms & Theory",
+   "published": "2026-09-15T20:00:35+00:00",
+   "source": "google-research",
+   "source_label": "Google Research",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Retrieve-for-Train accélère les recherches complexes en IA en récupérant des données pour l'entraînement, contournant les goulots d'étranglement d'inférence via une approche de Google Research (résumé minimal).",
+   "score": 7.9
+  },
+  {
+   "id": "bd9643ae595e3671",
+   "title": "Coupled Calibration and Learning: Mitigating Teacher Bias in LLM Distillation without Target-Domain Reward Feedback",
+   "url": "https://arxiv.org/abs/2609.17474v1",
+   "summary": "Large language model (LLM) distillation aims to transfer the capabilities of a powerful teacher to a smaller student. Direct imitation, however, can also transfer the teacher's systematic bias and errors. This challenge is particularly pronounced under covariate shift, when the teacher's reliability on target questions is uncertain and target-domain reward feedback is unavailable. We propose Coupled Calibration and Learning (CCL), an LLM distillation algorithm that couples teacher calibration with student updates through token-level branching, using reward feedback only on source questions. Each iteration calibrates the teacher using source feedback and then uses the calibrated teacher to train the student on target questions. The updated student, in turn, informs subsequent calibration. In an autoregressive policy framework, we prove that the output student's expected average Kullback-Leibler divergence to the oracle student converges to zero at a polynomial rate in the number of iterations. The oracle maximizes the true reference-regularized target reward within the student class, which need not represent the unrestricted optimal policy. Our analysis quantifies the progress of projected student gradient updates while controlling the error in teacher calibration. We further establish a separation from regularized direct matching: its error relative to the oracle student can remain bounded away from zero even when the teacher achieves higher regularized target reward than every student policy. These results demonstrate that LLM distillation can overcome persistent teacher bias and recover the optimal student through coupled calibration and learning, without target-domain reward feedback.",
+   "published": "2026-09-15T17:15:40+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Haichen Hu, Yuheng Zhang, David Simchi-Levi"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Méthode CCL pour la distillation de LLM réduisant les biais du professeur via calibration couplée et mise à jour itérative de l'étudiant, avec preuve de convergence polynomiale vers un oracle sous covariate shift.",
+   "score": 7.7
+  }
+ ]
+}
