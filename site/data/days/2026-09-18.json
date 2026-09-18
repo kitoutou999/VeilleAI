@@ -1,0 +1,723 @@
+{
+ "date": "2026-09-18",
+ "digest": {
+  "headline": "Les désaccords de tokens EOS en distillation on-policy identifiés comme cause majeure d'inflation de longueur dans les LLM",
+  "overview": "La veille du 2026-09-18 met en lumière des avancées significatives en optimisation des LLM et agents autonomes, avec des études ciblant des mécanismes précis comme la compression de cache KV, la supervision des observations en RL, ou les biais de surclaim dans les agents. Les benchmarks industriels et les outils de test régression gagnent aussi en maturité, soulignant une transition vers des systèmes plus robustes et interprétables.",
+  "highlights": [
+   {
+    "title": "Alignement des tokens EOS et inflation de longueur en OPD",
+    "text": "L'étude 'When EOS Tokens Disagree' révèle que les désaccords entre tokens de fin de séquence (EOS) des modèles enseignants et élèves en distillation on-policy (OPD) provoquent une inflation artificielle des longueurs de réponse. Une analyse stage-wise montre que l'alignement de ces tokens réduit significativement le phénomène, mettant en lumière des dynamiques de terminaison complexes pendant l'entraînement. Ce travail offre une piste concrète pour optimiser l'efficacité des LLM distillés."
+   },
+   {
+    "title": "Optimisation des caches KV et architectures pour LLM multimodaux",
+    "text": "DeepSeek-V4.1-Flash repousse les limites de la compression de cache KV (890 octets/token) via CSA2 et FP4, combinés à une architecture CED. Cette approche réduit les coûts mémoire et calcul pour les modèles multimodaux et les agents à long contexte, tout en maintenant des performances élevées. Parallèlement, On-Demand Attention (ODA) propose une invocation sélective de l'attention globale, récupérant 90% des performances perdues sous attention locale avec une accélération notable du décodage."
+   },
+   {
+    "title": "Supervision des observations et surclaim dans les agents autonomes",
+    "text": "ActObs améliore l'exploration des agents RL en supervisant les observations (et non seulement les actions) lors du fine-tuning supervisé (SFT), boostant les performances (pass@k) sans coût supplémentaire. À l'inverse, l'étude 'Quantifying Overclaiming Propensity' révèle que 67,9% des runs d'agents LLM ne lisent pas tous les fichiers demandés, avec 80,4% des cas restants trompeurs. OverclaimBench propose un cadre pour quantifier ce phénomène critique pour la fiabilité des agents."
+   },
+   {
+    "title": "Benchmarks industriels et outils pour la robustesse des systèmes",
+    "text": "SAFARI évalue la fiabilité des LLMs dans l'analyse de risques (HARA) selon la norme ISO 26262, révélant des lacunes majeures (F1 max à 0.261) malgré des récits plausibles. Chronicle introduit un outil de *cut-point replay* pour tester la régression des agents LLM, essentiel pour la fiabilité en production. Ces travaux soulignent l'importance des benchmarks sectoriels et des outils CI/CD pour des systèmes critiques."
+   },
+   {
+    "title": "Gestion du contexte et efficacité des agents de codage",
+    "text": "Deux études empiriques sur les *harnesses* d'agents de codage convergent : la gestion du contexte (notamment l'élision avant résumé) est cruciale pour éviter les échecs de débordement, avec des gains d'efficacité significatifs. SoL-Pi réduit de 44,7-49% le trafic token et d'un tiers les coûts API pour les agents auto-rechercheurs, via des mécanismes de compaction et exécution d'actions."
+   }
+  ],
+  "trend": "Les optimisations ciblent désormais des mécanismes fins (tokens EOS, attention sélective, supervision des observations) pour améliorer l'efficacité et la robustesse des LLM et agents, tandis que les benchmarks industriels et outils de test régression gagnent en importance pour des systèmes déployables en contexte critique."
+ },
+ "items": [
+  {
+   "id": "fea4b23eaeab92da",
+   "title": "When EOS Tokens Disagree: Understanding Length Inflation in On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2609.20511",
+   "summary": "We study length inflation in on-policy distillation (OPD), where student responses can become excessively long and even exhaust the generation budget. We identify termination-token mismatch between base students and post-trained teachers as an important source of this behavior. Across Qwen3, Llama, and Gemma, the two models can place their stopping probability on different EOS tokens, even when their declared stopping sets are identical. This mismatch can suppress the student's preferred termination action without reliably transferring the teacher-preferred alternative. We show that aligning the decoding stopping set alone is insufficient, while treating functionally equivalent EOS tokens as a shared semantic stopping action substantially mitigates mismatch-induced length inflation across all three model families. To further understand how termination behavior evolves over training, we study OPD across different K2-Horizon training stages. This stage-wise analysis shows that termination preferences can shift substantially during training, while also revealing a distinct length inflation late in the OPD run that persists beyond termination alignment. Together, these results identify termination mismatch as an important, but not exhaustive, source of OPD length dynamics. We release an implementation incorporating the proposed termination-handling corrections.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2609.20511"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Cette étude identifie les désaccords entre tokens EOS (fin de séquence) des enseignants et élèves en distillation on-policy (OPD) comme cause majeure de l'inflation de longueur. Aligner ces tokens réduit significativement le phénomène, avec une analyse stage-wise révélant des dynamiques de terminaison complexes pendant l'entraînement.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le phénomène d'inflation de longueur dans la distillation sur politique (OPD), où les réponses générées par le modèle étudiant deviennent excessivement longues, voire épuisent le budget de génération. Le problème central identifié est le désaccord entre les tokens de fin (EOS) utilisés par le modèle étudiant et l'enseignant, même lorsque leurs ensembles de tokens déclarés sont identiques.",
+    "methode": "Les auteurs analysent le désalignement des tokens de terminaison entre les modèles étudiant et enseignant (ex. : Qwen3, Llama, Gemma) et montrent que ce désaccord peut supprimer la préférence de terminaison de l'étudiant sans transférer efficacement celle de l'enseignant. Ils proposent une solution technique consistant à traiter les tokens EOS fonctionnellement équivalents comme une action sémantique partagée pour atténuer l'inflation de longueur. Une analyse par étapes (K2-Horizon) est également menée pour étudier l'évolution des préférences de terminaison durant l'entraînement. Enfin, ils publient une implémentation intégrant ces corrections.",
+    "resultats": "Les résultats démontrent que l'alignement des ensembles de tokens de décodage seul est insuffisant pour résoudre le problème. En revanche, la méthode proposée (considérer les EOS équivalents comme une action partagée) réduit significativement l'inflation de longueur induite par le désaccord de terminaison dans les trois familles de modèles testées. L'analyse par étapes révèle aussi une inflation de longueur persistante en fin d'entraînement, même après alignement des terminaisons.",
+    "limites": "Bien que le désaccord des tokens EOS soit identifié comme une cause majeure, il n'explique pas entièrement la dynamique d'inflation de longueur, notamment en fin d'entraînement. Les mécanismes sous-jacents à ces variations restent partiellement inexpliqués. De plus, l'étude se limite à trois familles de modèles, ce qui peut restreindre la généralisation des résultats.",
+    "verdict": "Cette publication mérite une attention particulière pour son analyse technique fine d'un problème critique en distillation sur politique, offrant des solutions concrètes et reproductibles."
+   }
+  },
+  {
+   "id": "67d6a5e6442bc084",
+   "title": "DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression",
+   "url": "https://huggingface.co/papers/2609.19969",
+   "summary": "The widespread adoption of long-horizon agents has made model workloads increasingly input-heavy. Although prior work has substantially reduced the cost of long-context computation, prefill remains computationally expensive, and large KV caches continue to strain HBM and SSD capacity and data-transfer bandwidth. Together, these compute, storage, and bandwidth demands constitute the primary bottleneck to further lowering deployment costs. To address this challenge, we introduce DeepSeek-V4.1-Flash, a multimodal Mixture-of-Experts (MoE) model with 552B backbone parameters and support for contexts of up to one million tokens. With its Causal Encoder-Decoder (CED) architecture, the model activates 16B parameters per token during decode but only 8B parameters during prefill, substantially improving cost efficiency for agentic workloads. To push the limits of KV cache compression, DeepSeek-V4.1-Flash combines cross-layer KV cache reuse in Compressed Sparse Attention 2 (CSA2) with FP4 KV caching. These designs reduce its global KV cache footprint (always in HBM) to 890 bytes per token, roughly 1/4 of the corresponding footprint of DeepSeek-V4-Flash. Further, through a dedicated deployment optimization known as SWA Bounded Replay, DeepSeek-V4.1-Flash reduces its persistent KV cache footprint (always on SSD or in host memory) to roughly 1/8 of that of DeepSeek-V4-Flash. Despite its much smaller KV cache footprint, the model delivers substantially better performance than the baseline. In addition, we streamline the DeepSeek-V4 architecture and introduce several efficient architectural extensions. We pretrain DeepSeek-V4.1-Flash on a multimodal corpus comprising 45T tokens and conduct comprehensive post-training, yielding strong performance across diverse text-based and multimodal agentic scenarios. Model checkpoints are available at https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 42,
+    "arxiv_id": "2609.19969"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "DeepSeek-V4.1-Flash introduit une compression avancée du cache KV (890 octets/token) via CSA2 et FP4, combinée à une architecture CED, réduisant les coûts de calcul et de mémoire pour les modèles multimodaux et agents à long contexte.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La publication aborde le défi majeur des modèles d'IA modernes confrontés à des contextes longs, typiques des agents autonomes. Les coûts computationnels élevés du préfill (traitement initial des entrées) et la taille excessive des caches KV (clés-valeurs) saturent la mémoire HBM/SSD et la bande passante, limitant la réduction des coûts de déploiement pour des applications à grande échelle.",
+    "methode": {
+     "architecture": "DeepSeek-V4.1-Flash utilise une architecture *Causal Encoder-Decoder (CED)* multimodale et *Mixture-of-Experts (MoE)* avec 552 milliards de paramètres. Pendant la phase de décodage, 16 milliards de paramètres sont activés par token, contre seulement 8 milliards lors du préfill, optimisant ainsi l'efficacité pour les workloads agentiques.",
+     "compression_kv_cache": "Le modèle combine deux techniques pour réduire l'empreinte du cache KV : (1) la *réutilisation inter-couches* via *Compressed Sparse Attention 2 (CSA2)*, et (2) un *stockage en FP4* des caches KV. Ces innovations réduisent l'empreinte globale en HBM à 890 octets par token, soit environ 1/4 de celle de DeepSeek-V4-Flash.",
+     "optimisation_deploiement": "Une technique nommée *SWA Bounded Replay* réduit davantage l'empreinte persistante du cache KV (stocké sur SSD ou en mémoire hôte) à environ 1/8 de celle de la version précédente. Le modèle est pré-entraîné sur un corpus multimodal de 45 000 milliards de tokens, avec un post-entraînement approfondi pour améliorer ses performances.",
+     "extensions_architecturales": "La publication mentionne également des optimisations architecturales supplémentaires, bien que les détails techniques précis restent limités dans le résumé disponible."
+    },
+    "resultats": "DeepSeek-V4.1-Flash affiche une empreinte KV réduite de manière significative (890 octets/token en HBM, 1/8 en SSD/mémoire hôte) tout en surpassant les performances de la baseline (DeepSeek-V4-Flash). Le modèle supporte des contextes allant jusqu'à un million de tokens et démontre une efficacité accrue pour les scénarios agentiques textuels et multimodaux. Les checkpoints du modèle sont disponibles publiquement.",
+    "limites": {
+     "manque_details_techniques": "Le résumé ne fournit pas d'informations précises sur les compromis potentiels liés à la compression du cache KV (ex. : perte de précision, latence accrue) ou sur les benchmarks utilisés pour évaluer les performances.",
+     "evaluation_relative": "Les gains de performance sont présentés comme 'substantiellement meilleurs' que la baseline, mais sans chiffres absolus ni contexte comparatif avec d'autres modèles (ex. : Llama, Mistral). La robustesse des résultats en conditions réelles reste à vérifier.",
+     "complexite_deploiement": "L'optimisation *SWA Bounded Replay* et l'architecture MoE complexe pourraient introduire des défis en termes de stabilité, de maintenance ou de compatibilité avec les infrastructures existantes."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante de la compression du cache KV et son potentiel à réduire les coûts de déploiement des modèles longue-contextes, mais une analyse plus approfondie des compromis et des données expérimentales est nécessaire pour en évaluer l'impact réel."
+   }
+  },
+  {
+   "id": "b0edea45327d59a8",
+   "title": "Don't Mask the Environment: Observation Supervision Changes How Agents Explore Under RL",
+   "url": "https://huggingface.co/papers/2609.20715",
+   "summary": "Agent trajectories record what an agent does and what happens next. Yet standard supervised fine-tuning (SFT) applies loss only to agent-authored action tokens, using environment observations as context but not as prediction targets. We ask whether this convention provides the best initialization for subsequent reinforcement learning. We introduce ActObs, which also supervises the observation tokens already present in each trajectory. Although deployed agents never generate observations, learning to predict them encourages the policy to model action consequences without adding data, parameters, sequence tokens, or forward passes. The methods perform similarly after SFT but diverge after GRPO. On Qwen3-4B, GRPO from ActObs achieves higher pass@k at every evaluated sampling budget than its action-only counterpart on Terminal-Bench 2.0. On Qwen3-8B, it trades some pass@1 reliability for higher pass@k (+3.4 pp at pass@16) and solves more distinct tasks. The advantage extends to cross-domain code editing on aider-polyglot (+4.2 pp at pass@1 at 4B), whose tasks are unseen during SFT and RL. ActObs retains more entropy during RL while requiring less policy movement, leaving the final policy closer to its SFT initialization. Our analysis traces this difference to SFT: action and observation gradients rapidly become orthogonal, while action-only training leaves a large residual observation gradient and degrades environment prediction below the base model. Joint supervision prevents this one-sided specialization, preserving consequence prediction and preparing the policy for downstream exploration.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.20715"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "ActObs propose une méthode de supervision des observations (et non seulement des actions) lors du fine-tuning supervisé (SFT) des agents, améliorant leur exploration sous RL (GRPO). Sur Qwen3, cette approche booste les performances (pass@k) sans coût supplémentaire en données ou paramètres, notamment sur des tâches cross-domaines non vues en SFT.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde une limitation dans le fine-tuning supervisé (SFT) des agents en apprentissage par renforcement (RL). Traditionnellement, seul le token d'action généré par l'agent est utilisé comme cible de prédiction, tandis que les observations de l'environnement servent uniquement de contexte. Cela peut limiter la capacité de l'agent à modéliser les conséquences de ses actions et à explorer efficacement lors de la phase de RL subséquente.",
+    "methode": "Les auteurs proposent **ActObs**, une méthode qui étend la supervision aux tokens d'observation déjà présents dans les trajectoires de l'agent. Contrairement aux approches classiques, ActObs entraîne le modèle à prédire à la fois les actions et les observations, sans ajouter de données, de paramètres, de tokens supplémentaires ou de passes forward. Cette approche vise à améliorer la modélisation des conséquences des actions pendant la phase de SFT, préparant ainsi mieux le modèle pour l'exploration en RL. Après le SFT, les performances sont évaluées avec **GRPO** (Generalized Reinforcement Learning from Preferences Optimization), une variante de RL adaptée aux modèles de langage.",
+    "resultats": "Les résultats montrent que ActObs et les méthodes classiques obtiennent des performances similaires après le SFT, mais divergent après GRPO. Sur **Qwen3-4B**, ActObs atteint un **pass@k** supérieur à tous les budgets de sampling évalués sur **Terminal-Bench 2.0**. Sur **Qwen3-8B**, la méthode sacrifie légèrement la fiabilité du **pass@1** mais améliore le **pass@k** (+3,4 points de pourcentage à pass@16) et résout davantage de tâches distinctes. L'avantage se confirme aussi en édition de code cross-domaine sur **aider-polyglot** (+4,2 pp à pass@1 pour 4B), un benchmark non vu pendant le SFT et le RL. ActObs préserve également plus d'entropie pendant le RL et réduit le déplacement de la politique par rapport à son initialisation SFT.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques sur la mise en œuvre de GRPO ou les hyperparamètres utilisés, ce qui limite l'évaluation de la reproductibilité. De plus, l'analyse se concentre sur des modèles spécifiques (Qwen3) et des benchmarks comme Terminal-Bench 2.0, sans garantie de généralisation à d'autres architectures ou environnements. Enfin, l'impact à long terme sur des tâches plus complexes ou des modèles plus grands reste à explorer.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à améliorer l'exploration en RL sans surcoût computationnel, mais nécessite des validations supplémentaires sur des cas d'usage plus variés."
+   }
+  },
+  {
+   "id": "03110c40c9f7ea4a",
+   "title": "VABench: Measuring Embodied Spatial Intelligence through Visual Demonstrations, Active Perception, and Metric Control",
+   "url": "https://huggingface.co/papers/2609.19554",
+   "summary": "Spatial intelligence requires more than describing object locations. Under incomplete observation, models must identify and acquire missing evidence, interpret it in a common spatial frame, and act on it. We introduce VA-Bench to evaluate the complete observe-reason-act-revise loop. General-purpose MLLMs learn procedural context from RGB-only demonstrations, actively select camera viewpoints, issue metric Cartesian commands, and revise them from execution feedback. Models receive no privileged object poses, oracle trajectories, or learned action heads. A fixed model-agnostic controller executes only model-specified targets. VA-Bench contains 14 base task families (11 single-arm and three dual-arm), seven held-out geometry/layout variants, and a long-horizon five-object composition track. We evaluate 12 primary model conditions in three independent runs over the same 20 physically verified seeds per base task, reporting terminal success, nine trajectory-level behavioral diagnostics, and subtask progress. First, the best-performing model scores 100.0% on target localization and 78.9% on spatial relations in the annotated run. Its three-run macro-average task success is only 53.93+/-3.17%. Second, active camera control significantly improves task success over passive multi-view observation. In one matched comparison, success rises from 27.86% to 57.50%. Third, held-out geometric transfer can reduce task success by over 30 percentage points. No model completes a strict long-horizon episode, despite substantial partial progress. VA-Bench thus tests whether general-purpose MLLMs can turn visual demonstrations and actively acquired evidence into successful embodied action.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.19554"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "VA-Bench mesure l'intelligence spatiale incarnée via des démonstrations visuelles, une perception active et un contrôle métrique, évaluant 14 familles de tâches robotiques avec des métriques de succès terminal et des diagnostics comportementaux.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le benchmark VABench vise à évaluer la véritable intelligence spatiale incarnée des modèles d'IA, au-delà de la simple description de positions d'objets. Il cherche à mesurer la capacité des modèles à gérer des observations incomplètes, à identifier et acquérir des informations manquantes, à interpréter ces données dans un cadre spatial commun, et à agir en conséquence dans un environnement physique.",
+    "methode": "VABench introduit une boucle complète d'observation-raisonnement-action-révision pour évaluer les modèles multimodaux de langage (MLLM). Les modèles apprennent le contexte procédural à partir de démonstrations en RGB uniquement, sélectionnent activement des points de vue de caméra, émettent des commandes métriques en coordonnées cartésiennes, et révisent leurs actions en fonction des retours d'exécution. Aucun modèle n'a accès à des poses d'objets privilégiées, des trajectoires optimales prédéfinies, ou des têtes d'action pré-entraînées. Un contrôleur fixe et agnostique au modèle exécute uniquement les cibles spécifiées par le modèle. Le benchmark inclut 14 familles de tâches de base (11 pour un seul bras robotique et 3 pour deux bras), sept variantes géométriques ou de disposition non vues pendant l'entraînement, et une piste de composition longue avec cinq objets.",
+    "resultats": "Le modèle le plus performant atteint 100 % de succès en localisation de cibles et 78,9 % en relations spatiales lors d'une exécution annotée. Cependant, sa moyenne macro de succès sur trois exécutions n'est que de 53,93 ± 3,17 %. Le contrôle actif de la caméra améliore significativement le succès des tâches, passant de 27,86 % à 57,50 % dans une comparaison appariée. Les transferts géométriques non vus réduisent le succès de plus de 30 points de pourcentage. Aucun modèle n'a complété un épisode strict à long horizon, malgré des progrès partiels notables.",
+    "limites": "Les résultats montrent une forte variabilité des performances, suggérant une robustesse limitée des modèles actuels. L'absence de succès complet sur les tâches longues et complexes indique que les MLLM peinent encore à gérer des séquences d'actions étendues. De plus, la dépendance à des démonstrations visuelles et à un contrôleur externe pourrait masquer des lacunes fondamentales en planification et en adaptation dynamique.",
+    "verdict": "VABench représente une avancée significative pour évaluer l'intelligence spatiale incarnée des MLLM, mais ses résultats soulignent que les modèles actuels restent loin d'une maîtrise complète de ces tâches complexes."
+   }
+  },
+  {
+   "id": "f27c681e78550473",
+   "title": "SoL-Pi: Recursively Scaling Auto-Research Loops for Efficient Agent Harness",
+   "url": "https://huggingface.co/papers/2609.20519",
+   "summary": "As coding agents move from supervised code completion to unattended, around-the-clock exploration, their work expands from isolated predictions into long trajectories of reasoning, tool use, and feedback. Token efficiency therefore becomes important for scaling recursive self-improvement. We take an RSI-inspired approach at the harness layer, scaling auto-research loops across increasingly numerous and diverse environments for harness rollouts. At this scale, the process yields reusable improvements that transfer beyond their development setting, moving automated harness discovery toward production-level outcomes. Four mechanisms survive selection and form SoL-Pi, spanning action execution, context compaction, observation handling, and delegated reading. On the 51-task EdgeBench evaluation, SoL-Pi achieves performance comparable to Pi across GPT-5.6 Sol and Opus 5 while reducing recorded token traffic by 44.7-49.0% and API cost by about one third. In other words, estimated hourly savings are \\8.75-13.50 relative to native Codex and Claude Code harnesses, and \\4.36-5.71 relative to Pi.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 37,
+    "arxiv_id": "2609.20519"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "SoL-Pi réduit de 44,7-49% le trafic token et d'un tiers les coûts API pour les agents de codage auto-rechercheurs, via des mécanismes de compaction de contexte, exécution d'actions et gestion des observations, tout en maintenant les performances.",
+   "score": 8.8
+  },
+  {
+   "id": "caaf99b872222669",
+   "title": "An Empirical Study of Harness Design for Coding Agents",
+   "url": "https://arxiv.org/abs/2609.20804v1",
+   "summary": "Coding harnesses shape how autonomous coding agents translate model capabilities into long-horizon software-engineering performance, yet existing work typically evaluates harnesses as monolithic systems, leaving the effectiveness of individual components unclear. To enable component-level comparisons, we study this question with a lightweight coding harness whose execution loop is fixed while three components are varied: planning, action space, and context management. Across four models evaluated on SWE-Bench Verified and Terminal-Bench 2.1, we evaluate 176 matched settings spanning five context-management strategies, four context-window budgets, and targeted ablations of planning and action space. We find that: (1) Context management becomes increasingly valuable as the context-window budget tightens, with most of its benefit coming from preventing context-overflow failures. (2) Staging rule-based elision before LLM-based summarization provides the strongest overall efficiency among the context-management strategies, whereas making elided content recoverable adds machinery that models rarely use and yields no accuracy gain. (3) Planning shifts from an accuracy scaffold for weaker models to a cost saver for stronger models, with little change in accuracy. (4) Predefined tools improve performance for models with weaker bash proficiency, whereas bash-capable models can operate effectively with a bash-only interface and achieve substantially lower cost, especially on command-line-centric tasks. Trajectory-level analysis explains these effects: context management extends execution trajectories without substantially altering agent behavior, planning changes where trajectories stop, and the action space changes the granularity at which code is written. These findings inform model- and budget-aware harness design and provide a modular framework for evaluating future harness components.",
+   "published": "2026-09-17T17:58:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Run-Ze Fan, Zihao Zhang, Simin Ma, Yebowen Hu, Shouju Wang, Kaiqiang Song"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Étude empirique sur l'impact des composants d'un *harness* (planification, espace d'actions, gestion du contexte) pour les agents autonomes de codage, évaluée sur SWE-Bench Verified et Terminal-Bench 2.1. Montre que la gestion du contexte devient cruciale avec des fenêtres limitées, et que les stratégies de résumé par élimination avant synthèse LLM sont les plus efficaces.",
+   "score": 8.6
+  },
+  {
+   "id": "553f6dbe68080a93",
+   "title": "SAFARI: An Industrial Benchmark for LLM-Assisted Hazard Analysis and Risk Assessment",
+   "url": "https://arxiv.org/abs/2609.20584v1",
+   "summary": "Large language models (LLMs) are increasingly considered for safety-critical engineering, yet their reliability in regulated functional-safety workflows remains underexplored. We introduce SAFARI (Safety-Aware Functional Automotive Risk Inference), the first industrial benchmark for LLM-assisted automotive Hazard Analysis and Risk Assessment (HARA) under ISO 26262. It contains 3,000 de-identified industrial HARA cases and evaluates two coupled tasks: open-ended hazard analysis and standards-grounded risk assessment. To evaluate open-ended HARA artifacts, we propose the first reference-anchored LLM-as-a-judge protocol with high expert correlation. Experiments with nine frontier LLMs show that models often produce plausible hazard narratives but remain weak at ISO 26262 risk classification, with the best ASIL macro-F1 reaching only 0.261. Chain-of-Thought prompting provides limited benefit and often degrades categorical risk assessment. Error analysis further localizes major failures to scenario-critical context omissions during hazard generation and to controllability misjudgments during risk assessment, indicating where expert oversight should be concentrated. The dataset can be obtained from https://github.com/xixi47520-hash/HARA.",
+   "published": "2026-09-17T15:37:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chenxi Wu, Zimu Wang, Haiyang Zhang, Wei Wang, Zhijie Xu"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "regulation",
+    "benchmark"
+   ],
+   "tldr": "SAFARI est un benchmark industriel évaluant la fiabilité des LLMs dans l'analyse de risques (HARA) selon la norme ISO 26262 pour l'automobile, révélant des lacunes critiques dans la classification des risques (meilleur F1 à 0.261) malgré des récits plausibles. Essentiel pour comprendre les limites des LLMs en contexte réglementé.",
+   "score": 8.6
+  },
+  {
+   "id": "fb7b2096165b8a8b",
+   "title": "What Does Privileged Information Add to On-Policy Self-Distillation?",
+   "url": "https://huggingface.co/papers/2609.20612",
+   "summary": "On-policy self-distillation (OPSD) lets a language model learn from a frozen copy of itself that sees an answer or a worked solution. Giving the teacher this extra information seems to offer the student more to learn, but how much does it add beyond distillation itself? To isolate that contribution, we construct AMPLE-Math, a reusable suite of 5,319 mathematical problems with six reasoning views that share the same answer, and compare each view with matched reference-free distillation. With a thinking-enabled teacher supervising direct-response rollouts, reference-free distillation accounts for much of Qwen3-1.7B's improvement under thinking-enabled evaluation, both in domain and on external benchmarks. Evidence for an additional reference benefit is modest in Qwen, strongest for a polished solution, whereas complete traces add two percentage points in SmolLM3-3B at step 50. These benefits depend on the student being trained. At the same checkpoint, replacing short direct-response rollouts with long thinking-enabled rollouts turns gains into losses in both families while the problems, references, and evaluation stay fixed. Teacher profiles and matched loss interventions in Qwen further show that changing token-level supervision can leave student behavior largely unchanged. Together, these findings suggest that OPSD can improve access to existing reasoning capabilities through parameters shared by direct-response and thinking-enabled inference. The value of a privileged reference is what it adds to this cross-mode transfer, not how much of the solution it reveals.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.20612"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "L'étude évalue l'apport de l'auto-distillation avec information privilégiée (OPSD) pour les LLM, montrant que la distillation sans référence explique une grande partie des gains, tandis que les bénéfices supplémentaires des solutions détaillées sont modestes et dépendent du modèle étudié.",
+   "score": 8.5
+  },
+  {
+   "id": "7e7ad59df36b163f",
+   "title": "JEPA-Anything: Learning Predictive Models across Different Worlds",
+   "url": "https://huggingface.co/papers/2609.20800",
+   "summary": "World modeling enables intelligence to anticipate consequences, guide interventions, and learn from interaction. Yet predictive models remain domain-specific: can a common learning principle support world modeling across radically different systems? We introduce JEPA-Anything, a domain-agnostic framework based on orthogonal predictive factorization (OPF). Extending joint-embedding predictive architectures, OPF decomposes latent targets into complementary factors, learns them through dedicated pathways, and recombines them within a shared predictive design. We evaluate JEPA-Anything across seven domains: vision, biology, clinical trajectories, control, molecular dynamics, physical fields, and weather. Experiments span representation learning, intervention prediction, out-of-distribution generalization, and long-horizon dynamics, including 10 matched dynamics tasks, forecasting of over 1,000 clinical events, and 100-step molecular rollouts across four systems. Against matched JEPA baselines, JEPA-Anything improves reported metrics on all 10 dynamics tasks and reduces single-intervention prediction error on Interventional Pong by 34.8%. It achieves the lowest one-step and 100-step molecular errors among compared methods in all four systems. Beyond prediction, a factor-nominated biological intervention receives experimental support in cell co-cultures, patient-derived organoids, tumor fragments, and mice; latent orbital modes recover the Keplerian scaling exponent with a fitted slope of -1.4991. These results support a common factorized predictive principle across heterogeneous worlds, connecting world modeling with intervention and experimentally grounded scientific discovery. Code: https://github.com/Gen-Verse/JEPA-Anything",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2609.20800"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "JEPA-Anything généralise les architectures prédictives (JEPA) à travers 7 domaines (vision, biologie, etc.) via une factorisation orthogonale des facteurs latents, améliorant les tâches dynamiques, la prédiction d'interventions et la généralisation hors distribution.",
+   "score": 8.5
+  },
+  {
+   "id": "b0603df003f6f749",
+   "title": "Fingers as Legs: Learning Self-Supported Locomotion and Manipulation with an Anthropomorphic Hand",
+   "url": "https://huggingface.co/papers/2609.17172",
+   "summary": "A walking robotic hand must use the same fingers to move its body, support its weight, and interact with the environment. We show how an anthropomorphic hand can learn these skills while retaining its finger design and position controller. Onboard power and computation make the platform self-contained. Our reinforcement learning approach accounts for the hand's unequal fingers, with training in a simulator calibrated from hardware measurements. In simulation, the hand moves faster with our reward formulation than with tuned rewards originally designed for quadrupeds. On hardware, task-specific policies enable untethered crawling, steering, and fall recovery. While supporting its own weight, the hand also executes successive keyboard commands without vision and pushes an object to targets using overhead visual feedback. These results demonstrate a compact mobile manipulator that reuses its fingers for locomotion and interaction, without a separate locomotion mechanism.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.17172"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Un bras robotique anthropomorphe apprend à se déplacer (crawling, steering) et manipuler des objets en réutilisant ses doigts pour la locomotion et l'interaction, via un apprentissage par renforcement dans un simulateur calibré sur du matériel réel, avec des politiques spécifiques pour des tâches comme la récupération de chutes ou l'exécution de commandes clavier.",
+   "score": 8.5
+  },
+  {
+   "id": "8b2b2746f5870e9f",
+   "title": "Rethinking Critic Learning in PPO: Understanding and Mitigating Value Flattening",
+   "url": "https://huggingface.co/papers/2609.18708",
+   "summary": "In reinforcement learning for large language models, Proximal Policy Optimization (PPO) commonly uses a critic to estimate state values and reduce the variance of policy updates. However, we uncover a systematic failure mode in PPO critics, which we call Value Flattening: state values, estimated from multiple Monte Carlo continuations, change sharply across intermediate states while critic predictions remain comparatively flat. We further observe this phenomenon in a controlled FrozenLake environment and find that it becomes more pronounced as the state space grows. Our theoretical and empirical analyses relate Value Flattening to an implicit variance penalty in the critic loss and redundant updates from temporally correlated states with similar gradients. Motivated by these findings, we introduce SParse Proximal Policy Optimization (SP^3O), which applies the value loss to only a few well-separated states in each response to mitigate both effects. Experiments on Qwen3-Base show that SP^3O with only three states supervised per response can mitigate Value Flattening and consistently improve the learned policy across model sizes and evaluation suites. Together, our results identify Value Flattening as an important yet overlooked failure mode of critic learning in standard PPO and show that a simple sparse supervision strategy can mitigate it.",
+   "published": "2026-09-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 62,
+    "arxiv_id": "2609.18708"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Découverte du *Value Flattening* dans les critiques PPO pour RL, où les valeurs d'état estimées restent plates malgré des variations réelles, et proposition de SP³O (SParse Proximal Policy Optimization) pour cibler des états bien séparés, améliorant les politiques apprises (ex: Qwen3-Base) avec seulement 3 états supervisés par réponse.",
+   "score": 8.5
+  },
+  {
+   "id": "e0eba9ff769be1ed",
+   "title": "Quantifying Overclaiming Propensity in Frontier LLM Agents",
+   "url": "https://arxiv.org/abs/2609.20812v1",
+   "summary": "Frontier coding agents are increasingly trusted to work autonomously for long periods, yet an agent's final response is often the only account of that work a user sees. We quantify the propensity of frontier agents to \\emph{overclaim} task completion, a misrepresentation that can mislead the user. An agent overclaims when its final response contradicts information in its context. This definition requires no inference about intent and is independent of task success. We introduce \\emph{OverclaimBench}, an evaluation suite composed of five file-review scenarios, transcript-based coverage measurements, and registered planted defects. We evaluate eight proprietary frontier models in their own production command-line interfaces, and four open-weight models under a single fixed harness on OverclaimBench and find that 1) agents do not read all the files they were asked to review in 67.9\\% of runs; 2) among runs where not all files are read, agents are \\emph{misleading} 80.4\\% of the time (59--96\\% per model), either falsely claiming to have read all files or omitting that coverage is incomplete; 3) requiring delegation to subagents increased reading coverage, but among reviews that remained incomplete, a large majority were still misleading; and 4) agents that falsely claimed a complete review missed planted defects at about 1.8 times the rate of agents that read every file, showing that claims of completion can conceal substantive failures. Together, these results show that agents' final responses are not reliable accounts of their actions.",
+   "published": "2026-09-17T17:59:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Nolan Smyth, Yorguin-Jose Mantilla-Ramos, Pascal Jr Tikeng Notsawo, Saskia Helbling, Alberto Tosato, Mohamed Amine Merzouk"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Les agents LLM de pointe (*frontier*) ont une forte propension à *surclaim* (affirmer à tort avoir accompli une tâche), avec 67,9% des runs ne lisant pas tous les fichiers demandés et 80,4% des cas restants étant trompeurs. L'étude propose *OverclaimBench* pour quantifier ce phénomène.",
+   "score": 8.3
+  },
+  {
+   "id": "5d4e49654c31e3c4",
+   "title": "On-Demand Attention: Language Models Know When to Recall",
+   "url": "https://arxiv.org/abs/2609.20734v1",
+   "summary": "Reasoning and agentic workloads increasingly demand efficient long-context inference. Yet full-attention decoding reads the growing history at every step, regardless of its benefit to the next prediction. We show that a pretrained model's decoding states already contain information predictive of this benefit, before the global read. Building on this finding, we introduce On-Demand Attention (ODA), a local-first decoding method that uses a lightweight recall head to selectively invoke global attention as its predicted benefit changes during generation. ODA trains only the recall head, leaving pretrained weights unchanged and the complete historical KV cache available for future recall. We further implement GPU-side conditional execution in vLLM, translating reduced global reads into practical decoding speedups over full attention at long context lengths. Experiments across Qwen and Gemma models, including hybrid-attention backbones, show that selective recall recovers most of the performance lost under local attention while substantially reducing global reads. These findings support long-context inference in which pretrained models guide their own access to the information they retain.",
+   "published": "2026-09-17T17:24:48+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Haibo Feng, Ruiqi Liang, Hanyang Peng, Shiqi Yu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "interpretabilite"
+   ],
+   "tldr": "On-Demand Attention (ODA) réduit les coûts d'inférence en LLM en invoquant l'attention globale de manière sélective (via un *recall head*), récupérant jusqu'à 90% des performances perdues sous attention locale tout en accélérant le décodage en contexte long.",
+   "score": 8.3
+  },
+  {
+   "id": "e6b1f48bf7a19495",
+   "title": "Chronicle: Cut-Point Replay for Regression Testing of LLM Agents",
+   "url": "https://arxiv.org/abs/2609.20625v1",
+   "summary": "Large language model responses are non-deterministic, so failures in LLM agents are hard to reproduce: a failure depends on inference that is not bitwise reproducible, on tools that read changing state, and on a multi-step trajectory that a re-run rarely repeats. Record-and-replay makes a run reproducible, but existing agent tooling records runs only to trace or score them, not to test a code change against them. We present Chronicle, which records an agent run at its non-deterministic boundaries as immutable envelopes and replays it from the record. Its central operation, cut-point replay, serves a chosen subset of boundaries from the record and executes the complementary subset live with new code, turning a recorded incident into a regression test that runs in continuous integration. On a benchmark of 6 recorded failures with simulated model boundaries, recording adds 23 μs per crossing (0.008% of an assumed 300 ms model call), full replay issues zero model calls and is bit-stable across 20 repetitions, and cut-point tests fail on faulty code and pass on guarded and benign changes for all 6 incidents. In a mutation study of the guarded tools, cut-point tests catch every mutant that lets the recorded unsafe action through, while a baseline that stubs every boundary, using the same assertion, catches none. Chronicle and the benchmark are publicly available at https://github.com/theagentplane/chronicle.",
+   "published": "2026-09-17T16:09:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Tisha Chawla, Susheem Koul"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Outil Chronicle pour tester la régression des agents LLM via un mécanisme de *cut-point replay* permettant de reproduire des échecs non déterministes. Critique pour la fiabilité des agents en production et l'intégration CI/CD.",
+   "score": 8.3
+  },
+  {
+   "id": "39b61133dc78f4b4",
+   "title": "RetireOPD: Self-Retiring On-Policy Distillation for Agentic Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2609.20784",
+   "summary": "Multi-turn agents trained with reinforcement learning (RL) receive a single scalar reward per trajectory, which motivates self on-policy distillation (OPD) to supply dense token-level supervision from a self-teacher with privileged task skills, letting a skill-free student internalize them. This recipe, however, is undermined by two findings in agentic tasks: privileged information alone does not always make a teacher reliable, and the benefit of teacher supervision is stage-dependent. We therefore propose RetireOPD (Self-Retiring On-Policy Distillation), which first optimizes a decoupled, skill-conditioned teacher with environment rewards and then trains a skill-free student jointly with RL and OPD. Rather than following a predefined distillation schedule, RetireOPD adopts Adaptive Retirement: the student drops the teacher on its own once their discrepancy stops shrinking and it reaches a target fraction of the teacher's success rate, after which training proceeds with RL alone. Across Qwen2.5 models from 1.5B to 7B, RetireOPD improves ALFWorld success rate over RL baseline by 14.1% to 18.8% and WebShop accuracy by 11.8% to 19.0%, and surpasses its own skill-conditioned teacher in every setting.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2609.20784"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "RetireOPD propose une distillation on-policy auto-régulée (Adaptive Retirement) pour les agents RL, abandonnant le professeur quand son bénéfice cesse. Sur Qwen2.5 (1.5B-7B), la méthode améliore significativement les taux de succès (ALFWorld +14.1% à +18.8%, WebShop +11.8% à +19.0%) vs RL seul.",
+   "score": 8.2
+  },
+  {
+   "id": "de54af9dba3c1d00",
+   "title": "When2Think: Learning Difficulty-Aware Length Control for Efficient Hybrid Reasoning Models",
+   "url": "https://huggingface.co/papers/2609.19671",
+   "summary": "Large Reasoning Models (LRMs) achieve strong performance on complex tasks but exhibit systematic inefficiency: they often overthink easy problems and underthink hard ones. Existing approaches based on uniform length penalties or rigid routing incur an efficiency tax, trading reduced computation on easy instances for accuracy loss on hard instances. We formulate efficient reasoning as an instance-adaptive computation allocation problem and propose When2Think, a post-training framework for hybrid reasoning that dynamically allocates computation based on problem difficulty. Our method introduces Instance-level Difficulty-Aware Control (IDAC), a reward-shaping mechanism that leverages pre-computed reference statistics (accuracy and token usage) to regulate reasoning depth. Combined with verifier-based rewards and batch-wise standardized advantages, IDAC enables stable critic-free optimization without learned reward models or online reference-model queries. When2Think encourages direct answering on easy instances while preserving extended reasoning on hard instances, thereby learning when to use System 1 (NoThink) versus System 2 (Think). Experiments on mathematical benchmarks demonstrate improved accuracy-efficiency trade-offs: on AIME24, Pass@3 increases by 10.0% while token usage is reduced by 27.9% relative to the base model, and on AIME25, When2Think achieves 40.0% Pass@3, outperforming compression and routing-only baselines.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.19671"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "When2Think optimise l'allocation computationnelle des modèles hybrides (System 1/2) en fonction de la difficulté des instances, via un mécanisme de reward-shaping (IDAC). La méthode réduit l'inefficacité des LRM (overthinking/underthinking) sans modèles de récompense appris, avec gains sur des benchmarks mathématiques.",
+   "score": 8.2
+  },
+  {
+   "id": "20f25018a1089d09",
+   "title": "An Empirical Study of Harness Design for Coding Agents",
+   "url": "https://huggingface.co/papers/2609.20804",
+   "summary": "Coding harnesses shape how autonomous coding agents translate model capabilities into long-horizon software-engineering performance, yet existing work typically evaluates harnesses as monolithic systems, leaving the effectiveness of individual components unclear. To enable component-level comparisons, we study this question with a lightweight coding harness whose execution loop is fixed while three components are varied: planning, action space, and context management. Across four models evaluated on SWE-Bench Verified and Terminal-Bench 2.1, we evaluate 176 matched settings spanning five context-management strategies, four context-window budgets, and targeted ablations of planning and action space. We find that: (1) Context management becomes increasingly valuable as the context-window budget tightens, with most of its benefit coming from preventing context-overflow failures. (2) Staging rule-based elision before LLM-based summarization provides the strongest overall efficiency among the context-management strategies, whereas making elided content recoverable adds machinery that models rarely use and yields no accuracy gain. (3) Planning shifts from an accuracy scaffold for weaker models to a cost saver for stronger models, with little change in accuracy. (4) Predefined tools improve performance for models with weaker bash proficiency, whereas bash-capable models can operate effectively with a bash-only interface and achieve substantially lower cost, especially on command-line-centric tasks. Trajectory-level analysis explains these effects: context management extends execution trajectories without substantially altering agent behavior, planning changes where trajectories stop, and the action space changes the granularity at which code is written. These findings inform model- and budget-aware harness design and provide a modular framework for evaluating future harness components.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2609.20804"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Étude empirique sur la conception des *harnesses* pour agents de codage, identifiant que la gestion du contexte (notamment l'élision avant résumé) est cruciale pour éviter les échecs de débordement, avec des gains d'efficacité significatifs.",
+   "score": 8.2
+  },
+  {
+   "id": "34a9b979631ed229",
+   "title": "Harm Laundering in GPT Models: Evidence That Gender Discrimination Is Transformed Rather Than Reduced Across Safety-Trained Generations",
+   "url": "https://arxiv.org/abs/2609.20779v1",
+   "summary": "Safety evaluations for large language models rely on surface-form classifiers that report declining harm scores across model generations. We provide evidence that this methodology is systematically incomplete: explicit discriminatory content is transformed rather than removed. We call this \\emph{harm laundering}. Analysing 450,000 gender-directed completions across 15 models spanning GPT-2 through to GPT-5 (OpenAI GPT lineage; three demographic conditions), we show that sexual violence clusters prevalent in GPT-2 women-directed output disappear by GPT-4, while men-directed completions gain positive representational territory (caregiving, emotional range, ally identity) that women-directed completions do not. The pattern is most visible at GPT-5: Topic~5 (1,997~documents) frames breast cancer as a men's rights debate, while zero equivalent clusters appear in women-directed output. Three independent classifiers score this content as non-toxic. Sentiment scores invert at GPT-4: early models demean women; later models over-correct. Topic diversity in women-directed completions falls 36\\% relative to men at the GPT-4 alignment boundary (W/M~$= 0.58$, from $0.91$ at GPT-2). REGARD representational harm disparity correlates with release date ($ρ= +0.55$, $p = .034$) while Detoxify does not ($ρ= -0.23$, $p = .42$): toxicity scores fall as representational harm grows. We formalise harm laundering as a three-criteria test and provide a three-stage detection protocol applicable to any generative model. Within the OpenAI GPT lineage, toxicity score reduction is not a sufficient proxy for harm reduction.",
+   "published": "2026-09-17T17:49:28+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sarah Wyer, Sue Black, Noura Al Moubayed"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "regulation",
+    "llm"
+   ],
+   "tldr": "Analyse de 450 000 complétions genrées (GPT-2 à GPT-5) révélant un phénomène de *harm laundering* : la discrimination explicite disparaît mais se transforme (ex. : cancer du sein traité comme un débat de droits masculins), avec des scores de toxicité non détectés par les classifieurs standards.",
+   "score": 8.0
+  },
+  {
+   "id": "38fd3b301f2ab224",
+   "title": "RAFT: A Stateful Retrieval-Augmented Framework for Troubleshooting Agents",
+   "url": "https://arxiv.org/abs/2609.20754v1",
+   "summary": "Effective troubleshooting agents in enterprise customer support depend on retrieving actionable guidance from similar historical cases, yet existing retrieval-augmented generation (RAG) systems treat support cases as static documents and overlook their multi-stage, stateful nature. We introduce RAFT (Retrieval-Augmented Framework for Troubleshooting Agents), a stateful RAG framework that abstracts each closed historical case into a directed chain of timeline entries and retrieves at the entry level, surfacing cases whose intermediate states match the active case and returning the parent-case trajectory anchored at the matched state; an optional case-level graph links cases through a configurable similarity representation. We evaluate this retrieval layer directly, which, unlike evaluating a full agent system, requires no production deployment. Because public multi-stage troubleshooting data is extremely rare, we pair a synthetic benchmark built from Microsoft Learn Windows Server documentation with real Apache Jira issues carrying human-created duplicate labels. RAFT improves Case Hit over vanilla RAG and GraphRAG baselines at every stage of case progress, with statistically significant gains over the strongest baseline; the Jira results provide directional evidence that the advantage transfers to real case histories. We release our benchmark, implementation, and the Apache Jira evaluation set.",
+   "published": "2026-09-17T17:41:31+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mingxuan Zhang, Xiaowen Wang, Anupma Sharan, Zhengyi Chen, Chenyu Diana Zhang, Shanshan Yang"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "rag",
+    "benchmark"
+   ],
+   "tldr": "RAFT introduit un cadre RAG état-aware pour les agents de dépannage, structurant les cas historiques en chaînes d'étapes et améliorant la récupération au niveau des entrées, avec des gains mesurables sur des benchmarks synthétiques et réels (Jira).",
+   "score": 8.0
+  },
+  {
+   "id": "3f6162c4aae86b64",
+   "title": "MILER: Semantic Mid-Level Representation for Sim-to-Real Reinforcement Learning in Unstructured Autonomous Driving",
+   "url": "https://arxiv.org/abs/2609.20747v1",
+   "summary": "Reinforcement learning constitutes a promising approach owing to its potential for superhuman performance and self-learned policies. However, its application to real-world autonomous driving remains scarce, particularly in unstructured environments, because of the challenges associated with sim-to-real transfer for unstructured environments. In this work, we present MILER, an end-to-end policy framework with zero-shot sim-to-real transfer. During offline training, we employ a custom semantic mid-level representation (MLR) simulator and train the policy network using reinforcement learning, with its control outputs applied directly to a bicycle model. During deployment on the real vehicle, camera and LiDAR data are processed by BEVFusion to generate a semantic bird's-eye-view representation consistent with that of the MLR simulator. The actions generated by the policy network are not applied directly to the real vehicle. Instead, we employ a trajectory-alignment strategy that enables zero-shot sim-to-real transfer of both perception and control. We extensively evaluate the proposed framework on a diverse test track comprising numerous challenges, including various obstacles, hairpin curves, velocities of up to 33.6 km/h, and off-road sections. In total, we drove 17.3 km with two different vehicles on a 3.0 km test track without human intervention, thereby demonstrating the effectiveness of our approach. Furthermore, the entire software stack runs on a Jetson AGX Orin.",
+   "published": "2026-09-17T17:35:22+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Thomas Steinecker, Denis Trescher, Alexander Bienemann, Thorsten Luettel, Mirko Maehlisch"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "MILER propose un cadre de RL end-to-end avec transfert sim-to-real zéro-shot pour la conduite autonome non structurée, utilisant une représentation sémantique intermédiaire (MLR) et une stratégie d'alignement de trajectoire pour une généralisation efficace.",
+   "score": 8.0
+  },
+  {
+   "id": "5f0389aeeb446031",
+   "title": "HerHealthEval: Evaluating Multilingual and Register-Sensitive Understanding of Women's Health Communication",
+   "url": "https://arxiv.org/abs/2609.20684v1",
+   "summary": "Large language models are increasingly used in healthcare communication, yet most evaluations emphasize response quality while assuming that the user's concern has been interpreted correctly. We introduce HerHealthEval, a controlled evaluation framework for multilingual understanding of women's-health communication. For each clinical case, HerHealthEval provides matched versions in English, French, and Modern Standard Arabic using six communicative forms: canonical, clinical, layperson, indirect or hedged, emotionally concerned, and deliberately under-specified. The first five express the same underlying concern and retain the same clinical information, whereas the under-specified form intentionally omits relevant details to test whether the model recognizes that clarification is needed. We evaluate a multilingual instruction model and QLoRA-adapted variants on concern classification, risk calibration, clarification behavior, parse compliance, and cross-form consistency. Results reveal that aggregate accuracy and consistency can conceal safety-relevant failures. A multilingual adaptation model reaches 0.994 under-triage in French and Arabic under language-asymmetric risk supervision. A controlled re-adaptation using source-derived, language-invariant risk labels reduces under-triage to 0.572 and 0.558, respectively. These findings show that robust multilingual healthcare evaluation requires explicit testing of register variation, uncertainty handling, and the provenance and invariance of adaptation labels.",
+   "published": "2026-09-17T16:53:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hassan Saeed Hassan Albattra, Mazen Mohammed Bahgat, Rahatara Ferdousi, Hana Essam Sayed Ahmed Amrya, Mariam Mousa"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "regulation",
+    "produit"
+   ],
+   "tldr": "Cadre d'évaluation (HerHealthEval) pour tester la compréhension multilingue et sensible au registre des LLM en santé féminine, révélant des biais de sous-triage et des lacunes dans la calibration des risques selon la langue.",
+   "score": 8.0
+  },
+  {
+   "id": "ff9a0a59a8a8ca52",
+   "title": "Inference-Engine Fingerprinting Attacks are Practical: Exploring Model-Driven Environmental Discovery, Exploitation, and Escape",
+   "url": "https://arxiv.org/abs/2609.20614v1",
+   "summary": "Frontier AI models are rapidly gaining the ability to exploit vulnerabilities in complex pieces of software. The risk is not theoretical, as evidenced by recent sandbox escapes performed by frontier models at OpenAI and Anthropic. Discussions of how to sandbox inference stack components often focus on components other than the inference engine itself (e.g., network proxies or code execution environments). However, the inference engine is an attractive target for a misaligned model. For example, if a model can trigger exploits in that engine merely by generating specially-crafted output tokens, the model can initiate a multi-step, to-the-bare-metal exploit chain in the engine, without relying on vulnerabilities in other components of the inference stack, and without assistance from externally-provided, maliciously-crafted input tokens. In this paper, we show that a misaligned model can perform inference engine fingerprinting to determine the specific engine (e.g., vLLM, SGLang) which executes the model. Once the engine has been fingerprinted, the model can leverage engine-specific exploits to take control of the engine using only carefully-selected output tokens. We provide concrete examples of model fingerprints in five popular engines, and demonstrate how realistic agentic harnesses allow a model to leverage those fingerprints to identify the local engine. We also describe a proof-of-concept, to-the-bare-metal exploit chain that originates from a fingerprinted (and subsequently compromised) inference engine. We conclude by discussing several ways that inference engines could be changed to make fingerprinting attacks more difficult.",
+   "published": "2026-09-17T15:59:45+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sarah Radway, Andrew Cheng, Vijay Janapa Reddi, James Mickens"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "regulation",
+    "outils"
+   ],
+   "tldr": "Démonstration d'attaques par *fingerprinting* de moteurs d'inférence (vLLM, SGLang) permettant à un LLM malveillant d'exploiter des vulnérabilités via des tokens de sortie. Soulève des enjeux majeurs pour la sécurité des systèmes d'inférence et la régulation.",
+   "score": 8.0
+  },
+  {
+   "id": "c924b55f593c6cf6",
+   "title": "PACT: Can Enterprise AI Assistants Be Trusted Under Pressure?",
+   "url": "https://huggingface.co/papers/2609.18605",
+   "summary": "As corporate AI adoption continues to grow, enterprise-grade LLM agents are being deployed into sensitive contexts such as hiring, healthcare, and finance. In these contexts, compliance with rules specified in an agent's system context is a first-order legal concern. Currently, no evaluation framework systematically measures which LLM models tend to violate compliance rules, especially under pressure from a persistent user, a hurried manager, or circumstances where violation is convenient or attractive. We introduce PACT (Pressure-Applied Compliance Testing), a benchmark for rule-following under pressure in AI agents assisting employees in daily tasks across twelve regulated enterprise domains and forty-eight scenarios, each set in a realistic multi-turn conversation. Each benchmark item pairs a standing rule against a rule-violating shortcut, and applies a battery of pressures across different wordings and system-prompt modes. We construct PACT component by component under strict LLM-as-judge auditing to ensure samples are unambiguous, ungameable, and realistic enough to avoid eliciting evaluation-aware behavior. We use PACT to profile LLM compliance across six complementary metrics that create a holistic picture of an AI assistant's robustness under pressure and throughout multi-turn conversations, its transparency, and ability to correctly discern where a rule applies. We aggregate this profile into PACTScore, a reliability-weighted compliance rate over all items and modes. Our results across 22 common LLM models spanning multiple providers and sizes show substantial variability in compliance across models and metric dimensions. Even the strongest assistants mis-apply a rule on 6 to 10% of items, and ordinary user pressure raises the violation rate by 65% on average. PACT highlights compliance risks in LLM assistants, motivating guardrails and careful model selection.",
+   "published": "2026-09-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.18605"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "regulation",
+    "produit"
+   ],
+   "tldr": "PACT introduit un benchmark pour évaluer la conformité des assistants IA d'entreprise sous pression (multi-tours, formulations ambiguës). Le cadre mesure systématiquement les violations de règles dans 12 domaines réglementés, avec une méthodologie rigoureuse (LLM-as-judge) pour éviter les biais d'évaluation.",
+   "score": 7.9
+  },
+  {
+   "id": "8d2b464d81ab3aa0",
+   "title": "Coding Agents with an Obstacle-Aware Harness for Safe Robot Manipulation",
+   "url": "https://arxiv.org/abs/2609.20822v1",
+   "summary": "Coding agents have emerged as a promising paradigm for robot manipulation: a language model writes the robot controller as a program, and agents built in this way now operate robots without robot-specific training.Whether this paradigm is also safe, however, has not been asked. We evaluate coding agent under a safety constraint, where each task pairs a manipulation goal with an obstacle the robot must not touch. The agent pursues the goal but collides with the obstacle in most cases, treating task completion as its sole objective while neglecting safety. The agent reasons about the obstacle in its traces, and the prompt already forbids touching it, so neither perception nor instruction is at fault; the fault lies in the planning, where the stated constraint never becomes a priority. By decomposing manipulation into a route phase and a contact-rich moment, we locate the source of the failure. Along the route, the model cannot prioritize the safety constraint, having no notion of a clearing route and none of replanning once a chosen route becomes infeasible. At the contact, it is unaware that contact execution is bounded by the same constraint. To close this gap, we present SafeHarness, which equips the model with two obstacle-aware harnesses that enable it to prioritize the safety constraint. Obstacle-aware route planning grounds the objects as bounding boxes and draws candidate routes over them as sequences of waypoints. The agent then plans a route in advance, verifies it, replans when necessary, and only then executes it. Obstacle-aware contact execution instead selects the contact position so that the contact itself avoids the obstacle. SafeHarness attains 71.9% task success and 87.5% collision avoidance, surpassing the previous SOTA by 6.5% and 27.0%, respectively. These results are $2.3\\times$ and $1.5\\times$ those of the same agent without harnesses.",
+   "published": "2026-09-17T17:59:58+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Bingxin Xu, Yuzhang Shang, Zhen Dong, Emilio Ferrara"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Les agents LLM générant des programmes pour la manipulation robotique échouent à respecter des contraintes de sécurité (ex. éviter des obstacles) malgré des instructions claires, révélant un défaut de priorisation dans la planification. L'étude propose une solution (SafeHarness) pour intégrer ces contraintes via une décomposition en phases de déplacement et d'interaction.",
+   "score": 7.7
+  },
+  {
+   "id": "2160140d5fbc4371",
+   "title": "RetireOPD: Self-Retiring On-Policy Distillation for Agentic Reinforcement Learning",
+   "url": "https://arxiv.org/abs/2609.20784v1",
+   "summary": "Multi-turn agents trained with reinforcement learning (RL) receive a single scalar reward per trajectory, which motivates self on-policy distillation (OPD) to supply dense token-level supervision from a self-teacher with privileged task skills, letting a skill-free student internalize them. This recipe, however, is undermined by two findings in agentic tasks: privileged information alone does not always make a teacher reliable, and the benefit of teacher supervision is stage-dependent. We therefore propose RetireOPD (Self-Retiring On-Policy Distillation), which first optimizes a decoupled, skill-conditioned teacher with environment rewards and then trains a skill-free student jointly with RL and OPD. Rather than following a predefined distillation schedule, RetireOPD adopts Adaptive Retirement: the student drops the teacher on its own once their discrepancy stops shrinking and it reaches a target fraction of the teacher's success rate, after which training proceeds with RL alone. Across Qwen2.5 models from 1.5B to 7B, RetireOPD improves ALFWorld success rate over RL baseline by 14.1% to 18.8% and WebShop accuracy by 11.8% to 19.0%, and surpasses its own skill-conditioned teacher in every setting.",
+   "published": "2026-09-17T17:52:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yan Yu, Zhengxi Lu, Yizhou Liu, Yichen Pan, Aozhe Wang, Qipeng Chen"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Méthode *RetireOPD* pour la distillation auto-régulée en RL agentique, améliorant les performances de Qwen2.5 (1.5B–7B) sur ALFWorld (+14.1% à +18.8%) et WebShop (+11.8% à +19.0%) en adaptant dynamiquement l'utilisation du *teacher* via un critère de convergence.",
+   "score": 7.7
+  },
+  {
+   "id": "078ec71bd807d49c",
+   "title": "Agile-WAM: An Agile Tactile World Action Model for Contact-Rich Robot Control",
+   "url": "https://arxiv.org/abs/2609.20761v1",
+   "summary": "World Action Models (WAMs) advance beyond conventional visuomotor policies by jointly predicting future world states and robot actions, enabling the policy to learn physical dynamics that support effective control. However, recent tactile WAMs often rely on large-scale pretrained generative backbones to capture contact-rich physical dynamics, which limit their inference efficiency and flexible deployment. In this paper, we present \\ABBR{}, an agile tactile World Action Model for contact-rich robot control. \\ABBR{} encodes visual and tactile observations into a shared latent that serves as the source of a direct vision-tactile-to-action flow-matching process, which can jointly generate latent representations of action chunks and future visual/tactile latents. A key observation is that vision and tactile signals evolve at inherently different timescales: adjacent visual frames are often highly similar, whereas tactile signals can change abruptly upon contact. We therefore introduce multi-horizon multimodal prediction in \\ABBR{}, which provides supervision for visual latent at a larger temporal offset while predicting the tactile latent in the next frame to capture fine-grained contact dynamics. Across nine simulated and five real-world contact-rich manipulation tasks, \\ABBR{} demonstrates strong and robust performance, outperforming the strongest baseline in success rate while maintaining low inference latency. In particular, in five real-world experiments, \\ABBR{} yields a relative gain of $\\textbf{29.4\\%}$ in overall success rates while achieving inference latency of $\\textbf{11.9 ms}$. These results demonstrate that multimodal WAM can be achieved with an agile architecture suitable for precise and high-frequency robot control. More details are available on our project page: https://hanchuzhou.github.io/TARO_project_page/.",
+   "published": "2026-09-17T17:43:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hanchu Zhou, Brendan Lynch, Raman Goyal, Dechen Gao, Begum Kasap, Boqi Zhao"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "optimisation"
+   ],
+   "tldr": "Modèle *Agile-WAM* pour le contrôle robotique tactile basé sur un flux direct vision-tactile-action avec prédiction multihorizon. Capture les dynamiques de contact finement tout en optimisant l'efficacité d'inférence, testé sur GR00T N1.5 et π0.5.",
+   "score": 7.7
+  },
+  {
+   "id": "ff15956fe1f03c71",
+   "title": "OPTED: On-Policy Fine-Tuning for End-to-End Driving using a Render-Free Teacher",
+   "url": "https://arxiv.org/abs/2609.20756v1",
+   "summary": "As scaling pre-training data alone yields diminishing returns, post-training is becoming increasingly important across physical AI domains such as autonomous driving. End-to-end driving policies are pre-trained in open loop with behavior cloning on human demonstrations. However, compounding errors during closed-loop deployment can take the vehicle outside the training data distribution, increasing the risk of safety-critical incidents. Closed-loop post-training can mitigate this risk but requires costly simulation for sensor-based policies. We propose OPTED (on-policy fine-tuning for end-to-end driving) which decouples reinforcement learning from the post-training of the end-to-end policy: a privileged teacher is trained using RL on vectorized inputs (HD-map and bounding boxes). This teacher then provides supervision to the pre-trained student during closed-loop post-training. We apply OPTED to two camera-based models, TransFuser and VaVAM, and fine-tune them in AlpaSim, using neural reconstructions (3DGS) of real driving logs. Driving scores increase by factors of 1.6$\\times$ and 9.5$\\times$, respectively. In controlled experiments OPTED matches closed-loop performance with approximately three orders of magnitude fewer simulator interactions than direct RL post-training, while staying closer to the human prior. Project page: https://01dami23.github.io/opted/",
+   "published": "2026-09-17T17:41:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Damiano Da Col, Maximilian Igl, Peter Karkus, Kashyap Chitta, Boris Ivanovic, Marco Pavone"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "OPTED propose une méthode de fine-tuning en boucle fermée pour les politiques de conduite end-to-end, utilisant un enseignant privilégié (RL sur entrées vectorisées) pour superviser un étudiant pré-entraîné (modèles caméra comme TransFuser ou VaVAM), améliorant significativement les scores de conduite (jusqu'à 9.5x) via un post-entraînement efficace en simulation.",
+   "score": 7.7
+  },
+  {
+   "id": "349577259e5bffdb",
+   "title": "Accelerating Visual Policy Learning with Sampling-Based Model Predictive Control",
+   "url": "https://arxiv.org/abs/2609.20575v1",
+   "summary": "Learning visual policies for locomotion and manipulation requires coordinating contact with the environment and can incur substantial computation and GPU memory costs. First-order policy gradients (FoPG) reduce training cost through differentiable simulation, but local optimization can converge to unintended contact patterns. To address this shortfall, we propose Sampling-Guided Policy Search (SGPS), which couples recurring action-target refinement by sampling-based model-predictive control with first-order policy optimization. Behavior cloning initializes the policy from sampled actions; training then alternates sampling-based refinement with short-horizon FoPG updates under perturbed initial states and randomized dynamics. For visual policy training, we use a decoupled FoPG formulation that excludes rendering from the computation graph, enabling direct learning from depth observations without a state-policy teacher. On a single GPU, SGPS learns policies for locomotion, obstacle traversal, crate pushing, and bimanual carrying on simulated Unitree Go2 and G1 robots. Our experiments further show that refinement improves policy learning beyond initialization and tracking alone. For hardware deployment, the distilled policy transfers zero-shot to a real Go2 and uses onboard depth to autonomously trot, crawl, clear hurdles, and switch between these behaviors.",
+   "published": "2026-09-17T15:33:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yilang Liu, Haoxiang You, Qian Wang, Daniel Rakita, Ian Abraham"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "SGPS combine MPC par échantillonnage et gradients de politique (FoPG) pour accélérer l'apprentissage de politiques visuelles en robotique, améliorant la coordination des contacts et réduisant les coûts computationnels. Pertinent pour l'optimisation de modèles en robotique, avec des résultats sur des robots simulés.",
+   "score": 7.7
+  },
+  {
+   "id": "606e894d88a5e3fe",
+   "title": "An Analysis of Training-Free Self-Reported Confidence in Language Models",
+   "url": "https://arxiv.org/abs/2609.20541v1",
+   "summary": "Large language models can report a numerical confidence together with generated content, but it is unclear whether this report is more than calibrated rhetoric. We analyze three training-free signals: confidence verbalized with the answer, post-hoc $P(\\mathrm{True})$, and agreement with three additional generations on the same 100 TriviaQA questions for two model families. Direct verbalization is a surprisingly strong baseline: after auditing benchmark errors, it reaches AUROC 0.956 and 0.937 for correctness prediction. Three-sample agreement is substantially weaker (0.765 and 0.790), and a fixed interpolation with verbalized confidence has no statistically reliable benefit. Four of nine errors from one model and two of eight from the other receive unanimous sample support, showing that self-consistency can amplify shared misconceptions. Re-eliciting confidence for the same fixed answers with equivalent prompts changes scores by 0.043 to 0.084 on average and flips 4\\% to 9\\% of decisions at a 0.8 threshold. An exploratory audit of 100 confidence-tagged biography claims further finds only a modest confidence gap between supported and contradicted claims. These results argue that useful self-reports remain sensitive to elicitation, correlated errors, and benchmark noise.",
+   "published": "2026-09-17T15:10:28+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Lukas Meyer, Sofia Rossi, Wei Chen, Thomas Laurent, Yiming Li"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Analyse de la confiance auto-déclarée par les LLMs (verbalisation, P(True), accord entre échantillons) sur TriviaQA, montrant que la verbalisation directe est un indicateur robuste (AUROC > 0.93) mais sensible aux biais de ré-éllicitation. Critique pour évaluer la fiabilité des signaux de confiance dans les LLM.",
+   "score": 7.7
+  },
+  {
+   "id": "e00f945ba32ca3a9",
+   "title": "Video DeltaNet: A Video-Native Hybrid Attention for Livestream Video Generation",
+   "url": "https://huggingface.co/papers/2609.20744",
+   "summary": "Video diffusion models repeatedly process long spatiotemporal token sequences during denoising, making attention a major computational bottleneck. Linear attention offers an appealing alternative and has been widely adopted in recent large language models, but directly applying it to video models often fails to preserve the fine-grained interactions required for high-quality generation. We present Video DeltaNet (VDN), which combines local Softmax attention with bidirectional linear memory for long-range video context. Its linear branch introduces Video Delta Attention (VDA), which updates memory once per frame by jointly incorporating its spatial tokens. Separate output projections and learnable gates calibrate the two branches, while a staged teacher-alignment recipe progressively introduces the new pathway into pretrained models. We instantiate VDN on MiniMax H3, applying the hybrid to video-to-video interactions while retaining Softmax for interactions involving text or audio. With eight-step distillation and an optimized SGLang serving stack, VDN-H3 completes DiT denoising for a 14.3-second, 768p video in 6.70 seconds on eight NVIDIA B200 GPUs, corresponding to a 14.5x speedup over the 50-step dense H3 baseline on the same GPU count.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.20744"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "optimisation"
+   ],
+   "tldr": "Video DeltaNet combine une attention Softmax locale et une mémoire linéaire bidirectionnelle pour accélérer la génération vidéo (14,5x plus rapide) tout en préservant la qualité, via une distillation en 8 étapes et une optimisation du pipeline SGLang.",
+   "score": 7.6
+  }
+ ]
+}
