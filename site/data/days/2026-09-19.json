@@ -1,0 +1,708 @@
+{
+ "date": "2026-09-19",
+ "digest": {
+  "headline": "Les stratégies de génération de candidats et les cadres multi-agents redéfinissent l'efficacité et la robustesse des LLM en test-time et en raisonnement social",
+  "overview": "La veille du 19 septembre 2026 met en lumière des avancées majeures dans l'optimisation des LLM, notamment via des approches systématiques pour le *test-time scaling* et l'évaluation des capacités sociales. Les travaux sur les agents (GUI, robotique, multimodaux) et les architectures innovantes (communication sémantique, auto-évolution) soulignent une maturation des méthodes pour des applications concrètes, tout en révélant des limites persistantes en robustesse et généralisation.",
+  "highlights": [
+   {
+    "title": "Optimisation du *test-time scaling* : batch vs séquentiel",
+    "text": "Une étude démontre que la stratégie de génération de candidats (batch ou séquentiel) impacte fortement l'efficacité énergétique et les performances des LLM lors du *test-time scaling*. Les approches batch réduisent significativement la latence et la consommation GPU, remettant en cause l'hypothèse selon laquelle le nombre d'échantillons suffit à garantir des gains. Ces résultats incitent à repenser les protocoles de benchmarking pour intégrer des métriques opérationnelles."
+   },
+   {
+    "title": "Raisonnement social et agents : biais et complexité des interactions",
+    "text": "Le cadre Fuse évalue le raisonnement social des LLM via des simulations multi-agents où un assistant doit inférer des motifs cachés. Les résultats révèlent des biais liés au cadrage utilisateur et une difficulté accrue lorsque l'utilisateur intervient comme médiateur. Parallèlement, EvoSkill-GUI et GPT-Policy montrent que les agents (GUI ou robotiques) gagnent en robustesse via des mécanismes de révision en temps réel ou d'apprentissage in-context, sans fine-tuning. Ces travaux soulignent le besoin de cadres d'évaluation plus réalistes pour les interactions dynamiques."
+   },
+   {
+    "title": "Architectures et communication sémantique : vers des systèmes plus efficaces",
+    "text": "Cache-to-Cache propose une architecture permettant une communication sémantique directe entre LLM, réduisant les latences et améliorant l'efficacité des systèmes multi-agents. LimiX-2 introduit les *Contextual Mechanism Networks* pour une meilleure intelligence structurée, avec une conscience causale accrue via l'attention des features. Ces innovations, bien que prometteuses, nécessitent des validations à grande échelle pour confirmer leur supériorité face aux approches existantes."
+   },
+   {
+    "title": "Benchmarking et évaluation : des outils pour mesurer la robustesse",
+    "text": "RiskChainBench et UFO offrent de nouveaux cadres pour évaluer la restauration de messages obfusqués et l'alignement multi-modal en génération d'images. RiskChainBench combine 3 600 cas synthétiques et humains pour mesurer la précision des agents multimodaux, tandis qu'UFO améliore de 15,25% la corrélation avec les jugements humains. Ces benchmarks répondent à un besoin croissant de métriques standardisées pour des applications critiques (détection de risques, perception fine-grained)."
+   },
+   {
+    "title": "Auto-évolution et décentralisation : des pistes exploratoires",
+    "text": "SELF-INDEX et NeoHorse explorent des systèmes auto-évolutifs pour l'indexation de recherche et l'auto-amélioration des agents. SELF-INDEX optimise dynamiquement les clés d'indexation sans intervention humaine, tandis que NeoHorse propose un entraînement post-formation avec routage pour les agents. SwarmLLM, quant à lui, permet une inférence distribuée de LLM via navigateur, mais ces approches manquent encore de validation technique approfondie pour en évaluer la viabilité."
+   }
+  ],
+  "trend": "Les avancées récentes confirment une tendance vers des systèmes d'IA plus modulaires et adaptatifs, où l'optimisation des phases de test et d'interaction (plutôt que l'entraînement seul) devient un levier clé. Parallèlement, l'émergence de benchmarks spécialisés et d'architectures sémantiques suggère une maturation des outils pour des applications critiques, bien que la robustesse et l'interprétabilité restent des défis centraux."
+ },
+ "items": [
+  {
+   "id": "1b7fca8fc44235b4",
+   "title": "Verifiable Social Reasoning for LLM Assistants",
+   "url": "https://huggingface.co/papers/2609.17496",
+   "summary": "LLM assistants are widely used for daily social advice, yet evaluating their social reasoning in such consultation settings remains challenging since (i) it requires setups where the assistant learns about social situations from subjective user narratives, and (ii) social properties, such as others' intentions, typically lack verifiable ground truth. To address these challenges, we introduce Fuse, a multi-agent simulation framework for studying user-mediated social reasoning. In Fuse, a target agent with a hidden motive interacts with other agents including one representing the user, who then consults the evaluated assistant to infer the target's motive, providing verifiable ground truth by construction. Simulation faithfulness is validated through a human study with 24k annotations. We apply Fuse to 12 LLMs and demonstrate its analytical utility by systematically isolating key factors, showing that (i) user mediation compounds the inherent difficulty of social reasoning; (ii) LLMs exhibit systematic sensitivity to biased user framing; (iii) models can require more details than humans need to reach a correct prediction; and (iv) longer conversations do not always improve performance despite providing opportunities for clarifying questions. We open-source Fuse and a dataset with 21k examples.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 28,
+    "arxiv_id": "2609.17496"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Fuse est un cadre de simulation multi-agents pour évaluer le raisonnement social des LLM via des scénarios interactifs où un agent cible cache un motif que l'assistant doit inférer. L'étude révèle des biais dans les réponses des modèles selon le cadrage utilisateur et montre que la médiation utilisateur complexifie le problème.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "L'évaluation de la capacité de raisonnement social des assistants basés sur les grands modèles de langage (LLM) est complexe, car elle nécessite des scénarios où l'assistant apprend à partir de récits subjectifs d'utilisateurs. De plus, les propriétés sociales comme les intentions d'autrui manquent souvent de vérité terrain vérifiable, ce qui rend difficile l'évaluation objective de ces systèmes.",
+    "methode": "Les auteurs proposent *Fuse*, un cadre de simulation multi-agents conçu pour étudier le raisonnement social médié par l'utilisateur. Dans Fuse, un agent cible (avec un motif caché) interagit avec d'autres agents, dont un représentant l'utilisateur. Ce dernier consulte ensuite l'assistant LLM évalué pour inférer le motif de l'agent cible. La vérité terrain est générée par construction, car le motif caché est connu à l'avance. La fidélité de la simulation est validée via une étude humaine incluant 24 000 annotations. Le cadre permet d'isoler des facteurs clés comme l'influence du biais de l'utilisateur, la quantité d'informations nécessaires ou la longueur des conversations.",
+    "resultats": "L'application de Fuse à 12 LLM révèle plusieurs insights : (1) le rôle d'intermédiaire de l'utilisateur aggrave la difficulté intrinsèque du raisonnement social ; (2) les modèles sont systématiquement sensibles aux biais de cadrage introduits par l'utilisateur ; (3) les LLM peuvent nécessiter plus de détails que les humains pour parvenir à une prédiction correcte ; (4) des conversations plus longues n'améliorent pas toujours les performances, malgré les opportunités de clarification. Un jeu de données de 21 000 exemples est publié avec le framework.",
+    "limites": "La validité écologique des simulations multi-agents reste à démontrer, car les interactions artificielles peuvent ne pas refléter pleinement la complexité des dynamiques sociales réelles. De plus, la généralisation des résultats à d'autres contextes culturels ou linguistiques n'est pas abordée. Enfin, la dépendance à une vérité terrain construite artificiellement pourrait introduire des biais spécifiques au cadre expérimental.",
+    "verdict": "Ce travail mérite l'attention pour son approche innovante et reproductible d'évaluation du raisonnement social des LLM, malgré des limites inhérentes aux simulations artificielles."
+   }
+  },
+  {
+   "id": "1b905a9caa3cec53",
+   "title": "Sample Count Is Not Enough: Candidate-Generation Strategy Shapes the Energy and Performance of LLM Test-Time Scaling",
+   "url": "https://huggingface.co/papers/2609.19499",
+   "summary": "Test-time scaling can improve large language model reasoning by generating and combining multiple candidate responses. In sampling-based methods, the inference budget is often described by the number of generated candidates, N. However, N tells us how many candidates are generated, not how they are executed. The same candidate budget can be produced in one batched generation call or split across several sequential calls with smaller batch sizes. We first study the effect of increasing N on reasoning accuracy using Phi-3-mini and Qwen2.5-1.5B on 500 GSM8K prompts. As expected, increasing N from 1 to 8 improves accuracy by 8.4 percentage points for Phi-3-mini and 18.4 points for Qwen2.5-1.5B. However, accuracy alone does not show the systems cost of using a larger candidate budget. We therefore fix N = 8 and compare four generation schedules: 1x8, 2x4, 4x2, and 8x1, where axb denotes a generation calls with b candidates per call. We measure latency, throughput, GPU-hours, and gross GPU-device energy while keeping the total candidate count fixed. On A100 GPUs, eight serial calls use 4.64-4.86x as much gross GPU-device energy and have 5.77-6.12x the P95 latency of one batched call with eight candidates. The same pattern appears across three independently scheduled A100 nodes per model and in short-output SciQ/V100 experiments. These results show that candidate count alone is not enough to describe the systems cost of multi-candidate test-time scaling. When candidates are independent and memory allows it, fewer generation calls with larger batch sizes are more efficient. Evaluations should therefore report not only candidate count and accuracy, but also generation schedule and GPU-level systems metrics.",
+   "published": "2026-09-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2609.19499"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "L'étude démontre que la stratégie de génération de candidats (batch vs séquentiel) impacte significativement l'efficacité énergétique et les performances des LLM lors du *test-time scaling*, avec des gains majeurs en latence et consommation GPU pour les approches batch.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde une limitation majeure dans l'évaluation des performances des modèles de langage (LLM) lors du *scaling* à l'inférence (*test-time scaling*). Elle démontre que le simple comptage du nombre de candidats générés (N) ne suffit pas à caractériser le coût système réel, car la stratégie de génération (exécution en une seule passe batchée ou en plusieurs passes séquentielles) impacte fortement l'efficacité énergétique et les performances, sans que cela soit visible dans les métriques classiques comme la précision.",
+    "methode": "Les auteurs comparent l'impact de différentes stratégies de génération de candidats sur deux modèles (Phi-3-mini et Qwen2.5-1.5B) en utilisant 500 prompts du jeu de données GSM8K. Ils fixent un budget total de 8 candidats (N=8) et testent quatre schémas d'exécution : 1x8 (une seule passe avec 8 candidats), 2x4, 4x2, et 8x1 (8 passes séquentielles avec 1 candidat chacune). Les métriques mesurées incluent la latence (P95), le débit (*throughput*), les GPU-heures consommés, et l'énergie brute dépensée par les GPU (A100 et V100). Les expériences sont répétées sur trois nœuds A100 indépendants pour valider la reproductibilité.",
+    "resultats": "L'augmentation de N de 1 à 8 améliore la précision de 8,4 points pour Phi-3-mini et de 18,4 points pour Qwen2.5-1.5B. Cependant, pour un même N=8, les schémas séquentiels (ex. 8x1) consomment jusqu'à 4,86 fois plus d'énergie et multiplient la latence P95 par 6,12 par rapport à une génération batchée (1x8). Ces écarts sont observés de manière cohérente sur différents modèles, jeux de données (GSM8K, SciQ) et architectures GPU, confirmant que la stratégie de génération est un facteur critique pour l'efficacité système.",
+    "limites": "Les résultats reposent sur des modèles de petite/moyenne taille (Phi-3-mini, Qwen2.5-1.5B) et des jeux de données spécifiques (GSM8K, SciQ), ce qui limite leur généralisation à des LLM plus grands ou des tâches variées. De plus, l'étude ne explore pas les compromis entre mémoire GPU et taille de batch, ni l'impact des optimisations logicielles (ex. *pipelining* ou *quantization*) sur les schémas séquentiels. Enfin, l'énergie mesurée se limite aux GPU, sans tenir compte des coûts systèmes globaux (CPU, refroidissement, etc.).",
+    "verdict": "Cette publication mérite une attention particulière car elle révèle un angle mort critique dans l'évaluation des LLM à l'inférence, en liant pour la première fois précision, coût énergétique et stratégie de génération, avec des implications directes pour le déploiement industriel."
+   }
+  },
+  {
+   "id": "9e82c021a2f7ecec",
+   "title": "Reflect, Revise, Reuse: Training-Free Skill Evolution for GUI Agents",
+   "url": "https://huggingface.co/papers/2609.17653",
+   "summary": "GUI agents execute long-horizon tasks on dynamic graphical user interfaces, where pop-ups, delayed loads, and relocated widgets routinely invalidate plans fixed before execution. Recent agent-skill frameworks encapsulate reusable procedural knowledge to mitigate this, yet existing skill designs are largely developed without targeting GUI execution dynamics and treat skills as static artifacts produced before deployment rather than living procedural knowledge that improves through it. We argue that what GUI agents need is not better static skills, but skills that can be revised from execution feedback at deployment time, without additional training. We propose EvoSkill-GUI, a training-free framework in which each skill is a structured multi-file package containing retrieval metadata, executable plans, backup localization, failure-recovery rules, accessibility utilities, and failure cases. EvoSkill-GUI operates through a \\emph{reflect-revise-reuse} loop: the executor performs instant in-rollout revisions, an isolated critic diagnoses failed trajectories under strict information isolation, and the executor edits specific skill files through a restricted tool interface. Across MobileWorld, AndroidWorld, and OSWorld, three mainstream GUI benchmarks spanning mobile and desktop platforms, EvoSkill-GUI consistently improves multiple base models without any training, with maximum gains of +16.2%, +6.0%, and +10.5% respectively, and evolved skill libraries continue to benefit related tasks rather than being rebuilt from scratch. Our code is available at https://github.com/ZJU-REAL/EvoSkill-GUI.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 25,
+    "arxiv_id": "2609.17653"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "EvoSkill-GUI introduit un cadre *reflect-revise-reuse* pour agents GUI, permettant une révision en temps réel des compétences via feedback d'exécution sans entraînement supplémentaire. Les résultats sur MobileWoz montrent une amélioration de la robustesse face aux interfaces dynamiques.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents d'interface graphique (GUI) doivent exécuter des tâches complexes et de longue durée sur des interfaces dynamiques, où des éléments comme les pop-ups, les chargements différés ou les widgets déplacés rendent souvent les plans préétablis obsolètes. Les frameworks actuels encapsulent des compétences réutilisables, mais celles-ci sont conçues comme des artefacts statiques, sans adaptation en temps réel aux retours d'exécution pendant le déploiement.",
+    "methode": "EvoSkill-GUI propose un cadre *sans entraînement supplémentaire* où chaque compétence est un package structuré multi-fichiers. Ce package inclut des métadonnées de récupération, des plans exécutables, des mécanismes de localisation de secours, des règles de récupération en cas d'échec, des utilitaires d'accessibilité et des cas d'échec documentés. Le framework fonctionne via une boucle *reflect-revise-reuse* : l'exécuteur révise instantanément les compétences pendant le déploiement, un critique isolé diagnostique les trajectoires échouées sous contrainte d'isolation informationnelle, et l'exécuteur modifie des fichiers spécifiques via une interface restreinte. L'approche évite tout réentraînement en s'appuyant sur des feedbacks d'exécution pour affiner dynamiquement les compétences.",
+    "resultats": "EvoSkill-GUI améliore systématiquement plusieurs modèles de base *sans entraînement supplémentaire* sur trois benchmarks majeurs (MobileWorld, AndroidWorld, OSWorld), couvrant mobile et desktop. Les gains maximaux atteignent +16,2 %, +6,0 % et +10,5 % respectivement. Les bibliothèques de compétences évoluées bénéficient aussi à des tâches connexes, évitant une reconstruction depuis zéro.",
+    "limites": "Le document ne détaille pas les contraintes computationnelles ou temporelles de la boucle *reflect-revise-reuse* en conditions réelles, ni la robustesse face à des interfaces extrêmement volatiles ou mal documentées. L'isolation stricte du critique pourrait aussi limiter la généralisation des diagnostics. Enfin, l'absence de comparaison avec des méthodes nécessitant un réentraînement laisse ouverte la question du compromis performance/coût.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante de l'évolution dynamique des compétences GUI sans entraînement, mais son applicabilité industrielle dépendra de tests en conditions réelles et de comparaisons plus larges."
+   }
+  },
+  {
+   "id": "63b328a3c60d14dd",
+   "title": "In-Context Robot Learning with VLM Agents",
+   "url": "https://huggingface.co/papers/2609.19138",
+   "summary": "Enabling robots to adapt to unfamiliar environments as readily as humans remains a moonshot goal of embodied AI. No finite collection of demonstrations can cover every task and situation a robot will encounter, making the ability to learn from context at deployment essential for generalization. Such in-context learning (ICL), however, remains largely beyond the reach of existing robotic policies. The broad agentic capabilities of commercial vision-language models (VLMs), such as GPT-6 Astra, raise a compelling question: can these models learn from demonstrations, examples, and interaction feedback, then translate that information into executable and verifiable robot behavior from a new initial state without gradient updates or persistent changes to task-specific parameters? We introduce GPT-Policy, a general-agent framework for in-context robot learning. GPT-Policy integrates a context compiler that preserves task-relevant visual transitions, a VLM that proposes robot-tool actions, and a constrained controller that verifies and executes each action and reports its outcome. We evaluate its reliability and limitations through task success and efficiency metrics, matched comparisons across models, and controlled context ablations. In real-robot trials, human video demonstrations improve task completion even without robot action labels, while aligned action references yield further gains on contact-sensitive tasks. These findings position GPT-Policy as a step toward robot adaptation through in-context learning, providing an empirical foundation for translating the general-purpose capabilities of VLMs into physical behavior and clarifying the challenges that must be overcome for reliable deployment.",
+   "published": "2026-09-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2609.19138"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "llm"
+   ],
+   "tldr": "GPT-Policy propose un cadre d'apprentissage in-context pour robots utilisant des VLMs, permettant une adaptation sans fine-tuning via des démonstrations et un contrôleur contraint, évalué sur des tâches de manipulation avec succès et limites documentées.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le défi majeur abordé par cette publication est la capacité des robots à s'adapter à des environnements et tâches inédits sans nécessiter de réentraînement ou de modifications paramétriques spécifiques. Actuellement, les politiques robotiques existantes peinent à généraliser à partir de contextes nouveaux, limitant leur déploiement dans des scénarios réels imprévisibles, contrairement aux humains qui apprennent par analogie et interaction.",
+    "methode": {
+     "approche_generale": "GPT-Policy est un cadre d'agent généraliste exploitant les capacités des modèles vision-langage (VLM) comme GPT-6 Astra pour apprendre *in-context* (ICL), c'est-à-dire sans mise à jour des gradients ni modification permanente des paramètres. L'architecture repose sur trois composants clés :",
+     "composants": [
+      {
+       "contexte_compiler": "Un module qui extrait et conserve les transitions visuelles pertinentes pour la tâche, filtrant les informations superflues pour optimiser l'apprentissage contextuel."
+      },
+      {
+       "vlm_agent": "Un VLM qui interprète les démonstrations (vidéos ou exemples) et propose des actions robotiques (par exemple, manipulation d'outils) en s'appuyant sur sa compréhension multimodale."
+      },
+      {
+       "constrained_controller": "Un contrôleur contraint qui vérifie la faisabilité des actions proposées, les exécute, et renvoie les résultats pour affiner dynamiquement le contexte. Ce module garantit une exécution sûre et itérative."
+      }
+     ],
+     "details_techniques": "Les démonstrations peuvent provenir de vidéos humaines (sans étiquettes d'actions robotiques) ou de références d'actions alignées, ce qui réduit la dépendance à des données labellisées coûteuses. Le système utilise uniquement des *prompts* contextuels et des retours d'interaction pour adapter son comportement, sans fine-tuning."
+    },
+    "resultats": {
+     "ameliorations": "Les essais sur robot réel montrent que les démonstrations vidéo humaines améliorent significativement la complétion des tâches, même en l'absence d'étiquettes d'actions robotiques. Pour les tâches sensibles aux contacts (ex. : manipulation d'objets fragiles), l'ajout de références d'actions alignées booste encore les performances.",
+     "metriques": "Les évaluations incluent des métriques de succès de tâche et d'efficacité, ainsi que des comparaisons contrôlées entre modèles et des ablations de contexte pour isoler l'impact de chaque composant. Les chiffres précis (taux de succès, temps d'exécution) ne sont pas détaillés dans le résumé disponible."
+    },
+    "limites": {
+     "dependance_vlm": "La performance repose fortement sur les capacités des VLM commerciaux, dont les biais, la robustesse aux distributions hors domaine, et la latence ne sont pas pleinement caractérisés. Leur généralisation à des environnements très éloignés des données d'entraînement reste incertaine.",
+     "verification_actions": "Le *constrained controller* introduit une couche de sécurité, mais son efficacité dépend de la précision des contraintes définies *a priori*, ce qui peut limiter la flexibilité pour des tâches complexes ou imprévues.",
+     "echelle": "Les résultats sont présentés pour des tâches robotiques spécifiques ; la scalabilité à des scénarios industriels ou domestiques variés n'est pas démontrée, ni la gestion des échecs en cascade."
+    },
+    "verdict": "Cette publication mérite l'attention pour son approche innovante combinant ICL et VLM dans un cadre robotique, mais son applicabilité réelle dépendra de la résolution des limites liées à la robustesse des modèles et à la généralisation hors laboratoire."
+   }
+  },
+  {
+   "id": "e192aa2af4e4a13f",
+   "title": "RiskChainBench: A Benchmark for Obfuscated Platform Message Restoration and Evidence-Grounded Web Investigation",
+   "url": "https://huggingface.co/papers/2609.16900",
+   "summary": "Platform abuse campaigns conceal redirection instructions with emojis, homophones, character decomposition, and redundant symbols, then route users through disguised links to services associated with pornography, fraud, gambling, or illicit transactions. Existing benchmarks evaluate obfuscated text and risky webpages separately, obscuring how target recovery affects downstream evidence acquisition. We introduce RiskChainBench, pairing 3,600 synthetic token-text restoration inputs from 600 source sessions with 600 corresponding human-labeled local web environments. A model first restores the message, operational intent, and destination; the same underlying model then acts as a VLM-driven web agent that investigates the correctly associated website and produces a frozen, evidence-cited risk report without message-side semantics or domain-reputation cues. We score restoration and correct-routing web investigation separately and compose them offline by applying the frozen primary-entry prediction as a gate to the same Task 2 result. Human labels determine task correctness, while a fixed multimodal evidence judge assesses faithfulness, sufficiency, completeness, and consistency. Across ten models, Entry Top-1 ranges from 35.2% to 95.2% and web decision accuracy from 26.3% to 62.8%; the leading systems differ across entry recovery, full reconstruction, website decisions, and fine-grained typing. Execution failures account for 31.9% of web runs, whereas post-decision type errors account for only 0.9%, identifying stable exploration and risk judgment as the principal bottlenecks. We release the benchmark, protocol, and resettable local sandbox.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 29,
+    "arxiv_id": "2609.16900"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark RiskChainBench évalue la restauration de messages obfusqués et l'investigation web par des agents multimodaux, combinant 3 600 cas synthétiques et humains pour mesurer la précision de la détection de risques (pornographie, fraude, etc.) via des métriques de restauration et d'analyse contextuelle.",
+   "score": 8.5
+  },
+  {
+   "id": "15185b8d7444ce6f",
+   "title": "LimiX-2: A Contextual Mechanism Network Towards General Structured-Data Intelligence",
+   "url": "https://huggingface.co/papers/2609.17488",
+   "summary": "We introduce LimiX-2, a new model in the LimiX family, developed through model and data scaling guided by our previously established scaling laws. LimiX-2 adopts the Contextual Mechanism Networks (CMNs) paradigm and is pretrained with Context-Conditional Masked Modeling (CCMM). CMNs shifts the organizing principle of in-context learning from target-centric prediction to mechanism-oriented joint modeling. Rather than centering the network on the p(y mid x, D_{context}) objective of conventional tabular PFNs, it is designed around learning p(x, y mid D_{context}), a context-dependent representation of the joint structure underlying data generation. Pretraining uses synthetic datasets generated by structural causal models (SCMs) spanning diverse graph structures, functional mechanisms, and observation processes. Evaluations on TabArena, TALENT, and BCCO show that LimiX-2 outperforms current dataset-specific models and tabular foundation models. Beyond predictive performance, the CMN paradigm also promotes causal awareness in LimiX-2: its feature attention encodes direct causal relationships, enabling accurate causal skeleton recovery.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 278,
+    "arxiv_id": "2609.17488"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite",
+    "benchmark"
+   ],
+   "tldr": "LimiX-2 introduit les *Contextual Mechanism Networks* (CMNs) pour l'intelligence structurée, avec un entraînement via CCMM sur des SCMs, surpassant les modèles tabulaires existants et offrant une meilleure conscience causale via l'attention des features.",
+   "score": 8.5
+  },
+  {
+   "id": "6496bc27021917f7",
+   "title": "Cache-to-Cache: Direct Semantic Communication Between LLMs (2025)",
+   "url": "https://arxiv.org/abs/2510.03215",
+   "summary": "",
+   "published": "2026-09-18T18:55:35Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 93,
+    "comments": 13
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Présentation d'une nouvelle architecture (Cache-to-Cache) permettant une communication sémantique directe entre LLM, réduisant les latences et améliorant l'efficacité des interactions multi-agents.",
+   "score": 8.0
+  },
+  {
+   "id": "bf19a0236d4f26ec",
+   "title": "Self-Evolving Search Index",
+   "url": "https://huggingface.co/papers/2609.19656",
+   "summary": "Information retrieval is increasingly important as LLM agents tackle complex tasks involving diverse information needs. Because retrieval relies on an index that represents each document through index keys, retrieval quality depends heavily on how effectively these keys expose the knowledge contained in each document. However, effective index representations vary across retrieval environments, making it difficult for any fixed optimization strategy to perform consistently. Yet evolving an index to its retrieval environment remains largely human-driven, requiring humans to diagnose retrieval failures, refine the optimization strategy, and reprocess the index accordingly. We propose SELF-INDEX, a framework that enables an index to self-evolve without human intervention. Its Optimizer autonomously diagnoses retrieval shortfalls, selectively revises the responsible index keys, and validates each revision before updating the index. Beyond reacting to observed retrieval demands, SELF-INDEX proactively explores additional demands through a Query Simulator, allowing the index to evolve beyond the queries already available for optimization. Across diverse corpora and retrievers, SELF-INDEX consistently improves retrieval performance while outperforming existing index optimization methods. We further show that these benefits extend to downstream applications, improving the effectiveness and efficiency of search agents and helping agent memory systems retrieve useful past interactions.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2609.19656"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "rag",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "SELF-INDEX propose un système d'indexation auto-évolutif pour la recherche d'information, optimisant dynamiquement les clés d'indexation sans intervention humaine. Le cadre combine un optimiseur autonome et un simulateur de requêtes pour adapter l'index aux besoins de récupération.",
+   "score": 7.9
+  },
+  {
+   "id": "5d60c00dd010b835",
+   "title": "Can MiniMax-H3 Reason About the Physical World? An Evaluation of Omni-Modal Generative Model",
+   "url": "https://huggingface.co/papers/2609.18323",
+   "summary": "Recent Omni-Modal Generative Models (Omni-Models) have advanced content generation toward unified modeling of text, images, video, and audio. MiniMax-H3 exemplifies this transition by combining multimodal context understanding with joint audio-visual generation in a shared latent framework. Its unified architecture raises a fundamental question: Can multimodal alignment improve the model's world reasoning, and what new evaluation paradigms do omni-modal inputs enable? To investigate this question, this work introduces a comprehensive evaluation framework organized around four complementary dimensions of physical world reasoning. Unlike existing evaluation frameworks for video generation and world models, which are often constrained by limited input modalities and evaluation settings where prompts closely match the target video content, our evaluation is specifically designed to exploit the multimodal inputs of Omni-Model. We construct a diverse set of novel tasks that require models to integrate complementary information across modalities. Specifically, we consider four scenarios, including implicit prompts paired with multiple frames, audio-image, prefix-videos, and audio-video inputs. Every single modality provides only partial evidence about the underlying event, requiring the model to jointly reason over the complementary semantic cues to infer latent event states and future dynamics. Across 517 evaluation instances, MiniMax-H3 achieves an overall success rate of 41.97%. Video-based Decision Reasoning yields the highest success rate at 56.00%, while Audio-based Disambiguation Reasoning is the weakest, reaching only 27.40%. These results indicate that effective multimodal integration remains key to fully exploiting the benefits of diverse input modalities. The project is available at https://github.com/gulucaptain/MiniMax-H3-Reason.",
+   "published": "2026-09-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 91,
+    "arxiv_id": "2609.18323"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "MiniMax-H3 évalue les capacités de raisonnement physique des modèles omni-modaux (texte, image, audio, vidéo) via un cadre d'évaluation à 4 dimensions. Les résultats explorent comment l'alignement multimodal améliore la compréhension du monde physique.",
+   "score": 7.9
+  },
+  {
+   "id": "e721d4ae0d1f3004",
+   "title": "FAMOS: Feed-Forward 3D Articulation Modeling from Sparse Observations",
+   "url": "https://huggingface.co/papers/2609.20817",
+   "summary": "Modeling articulated objects from sparse monocular views is challenging because each observation reveals only partial geometry and motion evidence. Most feed-forward methods infer articulation from a single observation and therefore rely heavily on learned category-level shape priors. We present FAMOS, a feed-forward model that predicts movable-part segmentation and joint parameters from a sparse, unordered set of partial point clouds. Our model jointly reasons over multiple observations and naturally supports a variable number of inputs, including a single view. To aggregate articulation cues across observations, we introduce a Multi-state Articulation Transformer with alternating state-wise and global attention. We further propose an observed articulation span objective that supervises the motion range each part exhibits across the input observations, encouraging the model to leverage the full observation set. To overcome the limited scale and diversity of existing datasets, we introduce a procedural data generator that synthesizes self-annotated assets during training. Experiments on PartNet-Mobility, ACD, and ArtiCraft-10K demonstrate consistent improvements over both feed-forward and optimization-based baselines. Project page: https://kevinqu7.github.io/famos",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2609.20817"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "FAMOS modélise des objets articulés à partir de vues éparses en 3D via un transformateur multi-états et un objectif de supervision des mouvements observés. Le modèle améliore la segmentation des parties mobiles et l'estimation des articulations sur des benchmarks comme PartNet-Mobility.",
+   "score": 7.6
+  },
+  {
+   "id": "baa3ce0f13f4ba96",
+   "title": "Region-Level Policy Optimization for Fine-grained MLLM Perception",
+   "url": "https://huggingface.co/papers/2609.19745",
+   "summary": "Fine-grained visual perception in MLLMs is commonly improved by raising the resolution, but the added visual tokens inflate vision-encoding and language-model prefilling costs. We show that the two operations underlying fine-grained perception, localizing the region of interest (RoI) and recognizing its content, have different resolution requirements. In a controlled diagnostic, localization tolerates roughly 3 to 4 times stronger token compression than recognition, which motivates localizing from a coarse view and concentrating resolution on the selected evidence. Decoding coordinates with the MLLM can be trained end-to-end from answers, but costs a full model pass per query and depends on grounding ability. A lightweight proposal network distilled from the model's attention is fast, but inherits the noise of its attention targets. The RoI from the proposal network reaches the answer through a discrete region choice, so its faithfulness to the answer cannot supervise the network. We therefore optimize the proposal network with region-level reinforcement learning, which we call Vision-RL2. It treats coherent regions as actions, and a frozen MLLM reader scores each one by how its removal changes the answer likelihood. Complementary subtractive and additive objectives suppress distracting proposals and recover missing evidence, updating only the predictor without region annotations, response sampling, or reasoning trajectories. The refined proposal further enables a sparse encoding that magnifies evidence and excludes background tokens. Across six fine-grained benchmarks and four MLLM backbones, Vision-RL2 improves accuracy over the base model at every token budget and surpasses its largest-budget accuracy with about 4 times fewer visual tokens. Code is available at https://github.com/YuHengsss/VisionRL2 .",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2609.19745"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision",
+    "optimisation"
+   ],
+   "tldr": "Méthode Region-Level Policy Optimization (Vision-RL2) optimise la perception fine-grained des MLLMs en séparant localisation et reconnaissance, réduisant les coûts de calcul via un réseau de propositions léger et un RL régional pour améliorer la précision et l'efficacité.",
+   "score": 7.6
+  },
+  {
+   "id": "6ab5e90aaab7a6eb",
+   "title": "Confidence Comes from Experience: Experiential Confidence Estimation from Reasoning to Agents",
+   "url": "https://huggingface.co/papers/2609.17708",
+   "summary": "Reliable confidence estimation is increasingly central to the trustworthy deployment of language models: a calibrated estimate of the probability that an output is correct decides what to ship, what to escalate, and what to retry. Existing confidence estimators, however, share one design premise: they only read the current inference process, either by introspecting on it, scoring its token probabilities, or resampling it. We argue that the current inference is not a sufficient basis for confidence. We propose XConf (eXperiential Confidence): estimating confidence together with the model's accumulated experience. The experience is stored as a record of the model's own graded past episodes, each holding the task, the model's reflection, its stated confidence, the outcome, and a lesson written once the grade arrived. Given a new task, XConf's Recall stage retrieves past episodes on similar tasks met with a similar stated confidence, and reads off their historical success rate; its Reflect stage shows the model this record, has it name its recurring failure mode, and restate a confidence now informed by its own track records. Our estimator is format-general, requiring no logit access or weight updates, and costs only one answer generation. Across nine benchmarks spanning reasoning, coding, multimodal QA, and interactive agents, and four models from three families, XConf beats or matches ten-sample self-consistency in discrimination (AUROC) on 23 of 24 comparisons, with much lower calibration error (ECE), at a tenth of the generation cost. Used for selective prediction, abstaining on the 10% least-confident episodes raises the delivered success rate by up to 8.7 points on agent tasks. We therefore see experiential confidence estimation as a new paradigm for future general-purpose confidence estimation.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 54,
+    "arxiv_id": "2609.17708"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "outils"
+   ],
+   "tldr": "XConf estime la confiance des LLM en combinant l'inférence actuelle avec l'historique d'expériences passées (tâches, réflexions, résultats), permettant une calibration plus fiable sans accès aux logits, applicable à tout format de sortie.",
+   "score": 7.6
+  },
+  {
+   "id": "b3b5d4df585e9e8b",
+   "title": "UFO: Chain-of-Evaluation for Omni-Condition Alignment in Multi-Modal Image Generation",
+   "url": "https://huggingface.co/papers/2609.12397",
+   "summary": "Multi-modal image generation, particularly subject-driven customization, has garnered growing attention in recent years. Despite the rapid advancement of generative models, their evaluation remains largely lagging. Existing methods, whether embedding-based or Multi-modal Large Language Model (MLLM)-based, evaluate alignment with each modal condition in isolation, which contradicts the simultaneous condition alignment objective of multi-modal image generation, leading to poor consistency with human judgments. To address this challenge, we propose UFO, the first unified framework for omni-condition alignment simultaneous evaluation. Specifically, UFO introduces a novel Atomized Chain-of-Evaluation paradigm, i.e., it first decomposes omni-condition alignment into a sequential chain of fine-grained, disentangled Atomic Evaluation Units (AEUs), categorizes them into distinct modality-relevance classes, and then employs general or dedicated functional calls for accurate verification of different AEU types. Experimental results demonstrate that UFO achieves the highest correlation with human evaluation preferences, delivering an average improvement of 15.25%. Furthermore, we present UFO-Bench, a dedicated benchmark designed to holistically evaluate the performance of existing customization models under the diverse mutual interactions of textual and visual conditions.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2609.12397"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "UFO propose un cadre d'évaluation unifié pour l'alignement multi-modal en génération d'images, décomposant l'évaluation en unités atomiques. Le système améliore de 15,25% la corrélation avec les jugements humains par rapport aux méthodes existantes.",
+   "score": 7.3
+  },
+  {
+   "id": "e258c2b6a9d98f76",
+   "title": "TokenRhythm/NeoHorse",
+   "url": "https://github.com/TokenRhythm/NeoHorse",
+   "summary": "NeoHorse-1: Towards Recursive Self-Improvement via Agentic Post-Training with Routing Harness.",
+   "published": "2026-09-04T08:34:54Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 609,
+    "language": null
+   },
+   "relevance": 9,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "architecture",
+    "autre"
+   ],
+   "tldr": "Projet explorant l'auto-amélioration récursive des agents via un entraînement post-formation avec routage, potentiellement innovant mais sans publication peer-reviewed ni détails techniques suffisants pour évaluer sa solidité.",
+   "score": 7.1
+  },
+  {
+   "id": "1cdcd059584294e2",
+   "title": "Nehanth/swarmllm",
+   "url": "https://github.com/Nehanth/swarmllm",
+   "summary": "Every device brings a slice. Together they run the whole model. Peer-to-peer LLM inference across browser tabs: a from-scratch WebGPU engine and a WebRTC runtime that split a 27B model over the devices in a room.",
+   "published": "2026-09-01T00:05:54Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 407,
+    "language": "JavaScript"
+   },
+   "relevance": 8,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Moteur WebGPU et runtime WebRTC permettant une inférence distribuée de LLM (27B) sur plusieurs appareils via navigateur, innovant pour le calcul décentralisé mais nécessitant une validation technique plus poussée.",
+   "score": 6.8
+  },
+  {
+   "id": "917587ae0a383ea0",
+   "title": "VākQA: A Benchmark and Evaluation Study for Telugu Spoken Factoid Question Answering",
+   "url": "https://huggingface.co/papers/2609.19879",
+   "summary": "Question answering has advanced rapidly with large language models, but predominantly for high-resource languages, in both text and spoken settings. Spoken question answering (SQA) benchmark for Telugu remains unexplored, and the reliability of automatic evaluation in this setting remains unquantified. We introduce VākQA, a Telugu SQA benchmark of 2,001 factoid question-answer pairs across six domains, with 2.53 hours of speech audio, bilingual transcriptions, and human-verified reference answers. We first validate evaluation methods against human judgements: Gemini-as-a-judge best approximates human ratings but is non-uniformly strict, while open-weight judges systematically penalize correct Telugu answers that differ in surface form from the reference. Using this validated setup, we benchmark proprietary and open-weight models across input modality, language, and domain. We observe that Telugu phrasing retains cultural specificity that is lost in translation, speech input introduces phonetic confusions that alter question meaning, and cascaded ASR-MT errors compound progressively. VākQA is publicly released.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2609.19879"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "benchmark"
+   ],
+   "tldr": "VākQA introduit un benchmark de QA factuel en télougou (langue à faible ressource) avec 2 001 paires question-réponse et 2,5h d'audio, incluant une validation des méthodes d'évaluation automatiques. Les résultats montrent des défis liés aux erreurs de transcription et aux spécificités culturelles.",
+   "score": 6.7
+  },
+  {
+   "id": "4f9c0c4802525add",
+   "title": "WeVisDoc: From Coverage to Capability for Robust End-to-End Document Parsing",
+   "url": "https://huggingface.co/papers/2609.20423",
+   "summary": "Document parsing converts document images into structured content and requires reliable performance across diverse layouts and acquisition conditions. Yet training corpora are biased toward common document types and clean digital pages, while expanding coverage alone does not specify how to address a parser's remaining weaknesses. We present WeVisDoc, a two-stage data-centric framework for robust end-to-end document parsing. Stage I broadens semantic, structural, and appearance coverage through heterogeneous data and structure-preserving degradation synthesis. Stage II uses a held-out probe to measure the Stage I parser's residual errors within fixed visual-structural clusters. These diagnostics guide targeted data construction and reallocation of the target-token budget. WeVisDoc-4B achieves an Overall score of 95.38 on OmniDocBench v1.6 and a mean Overall score of 75.54 across the three PureDocBench tracks, ranking first among the compared end-to-end parsers in all four settings. Compared with Stage I, Stage II improves Overall scores for the 2B and 4B models on both benchmarks, with larger gains on the degraded PureDocBench tracks, including a 4.03-point gain for the 4B model on the Real Degraded track.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2609.20423"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "produit"
+   ],
+   "tldr": "WeVisDoc améliore le parsing de documents en deux étapes : élargissement de la couverture sémantique via des données synthétiques, puis ciblage des erreurs résiduelles via un diagnostic automatisé. Le modèle 4B atteint 95,38% sur OmniDocBench et domine les benchmarks PureDocBench.",
+   "score": 6.7
+  },
+  {
+   "id": "c090f0dc6dfc2fbd",
+   "title": "Zing-0.5: Toward Playable Worlds with Real-Time Joint Action and Text Control",
+   "url": "https://huggingface.co/papers/2609.17909",
+   "summary": "We introduce Zing-0.5, a 5B autoregressive world model designed for playability: users can explore generated worlds, influence unfolding events, and respond to the resulting feedback through joint keyboard and online text control. Our approach brings together three technical contributions: (1) Unified action and text conditioning, combining magnitude-aware keyboard inputs with temporally aligned text instructions and jointly annotated videos to learn navigation and event control within the same sequence; (2) Event-scale supervision for incremental generation, using a segment-level teacher trained on connected multi-prompt videos to supervise a block-level causal student through distribution-matching distillation; and (3) Low-cost real-time interaction, combining four-step generation with context-preserving streaming to support 832 x 480 inference at 24 FPS at an estimated server rental cost of approximately USD 0.009 per stream-minute. Zing-0.5 achieves an overall score of 81.0 and a consistency score of 88.5 across 158 WBench Navigation cases. A joint-control demonstration shows a text-directed event change during continued navigation without restarting generation. We release the model weights, inference code, and Zing-SGLang serving implementation to support further work on playable generated worlds.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 30,
+    "arxiv_id": "2609.17909"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "produit",
+    "autre"
+   ],
+   "tldr": "Zing-0.5 est un modèle de monde autoregressif 5B permettant un contrôle temps réel via clavier et texte, générant des environnements jouables avec une latence de 24 FPS et un coût serveur minimal (~0.009$/min), évalué sur WBench Navigation.",
+   "score": 6.7
+  },
+  {
+   "id": "fa4500c64723ccc8",
+   "title": "MaxHu-xuan/task-state-guard",
+   "url": "https://github.com/MaxHu-xuan/task-state-guard",
+   "summary": "Reconcile stuck AI-agent tasks after restarts and timeouts. Preview SQLite changes, close stale delivery states, and never guess success.",
+   "published": "2026-08-23T07:10:14Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 463,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Solution pour gérer les états bloqués des agents IA après redémarrages ou timeouts, avec gestion de bases de données SQLite, utile pour la robustesse des systèmes multi-agents.",
+   "score": 6.5
+  },
+  {
+   "id": "5b6b8f0379a2ebaa",
+   "title": "youngyangyang04/llm-master",
+   "url": "https://github.com/youngyangyang04/llm-master",
+   "summary": "大模型（LLM）全栈学习路线与中文教程🔥：覆盖 Prompt Engineering、RAG、AI Agent、MCP、微调、模型部署、Transformer、AI 编程与大厂面试，从入门到生产实践。",
+   "published": "2026-09-12T07:33:31Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 784,
+    "language": null
+   },
+   "relevance": 8,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "outils",
+    "autre"
+   ],
+   "tldr": "Ressource complète en chinois couvrant les LLM (fine-tuning, RAG, agents, déploiement) et les bonnes pratiques industrielles, utile pour l'apprentissage mais sans validation académique ou technique approfondie.",
+   "score": 6.2
+  },
+  {
+   "id": "176ec7b3e8f00f60",
+   "title": "US Military had close call after using AI for hallucinated intelligence report",
+   "url": "https://www.cnn.com/2026/09/18/politics/us-military-ai-false-intelligence-china-ship",
+   "summary": "",
+   "published": "2026-09-18T17:28:01Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 459,
+    "comments": 343
+   },
+   "relevance": 7,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "produit"
+   ],
+   "tldr": "Un rapport de renseignement généré par IA a produit des hallucinations, mettant en lumière les risques opérationnels de l'utilisation non supervisée de l'IA dans des contextes critiques comme le militaire.",
+   "score": 5.6
+  },
+  {
+   "id": "1fc5f06ab4e0688a",
+   "title": "GPT-6 Astra Solves a WWI German Radio Cipher",
+   "url": "https://www.prinzai.com/p/gpt-6-astra-solves-a-wwi-german-radio",
+   "summary": "",
+   "published": "2026-09-19T06:41:44Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 135,
+    "comments": 66
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "autre"
+   ],
+   "tldr": "GPT-6 Astra a résolu un chiffrement historique (radio allemande de la WWI), démontrant les capacités avancées de raisonnement et de compréhension contextuelle des nouveaux modèles, mais sans détails techniques approfondis.",
+   "score": 5.6
+  },
+  {
+   "id": "2c6e00af4d451927",
+   "title": "tt-a1i/simplify-codebase",
+   "url": "https://github.com/tt-a1i/simplify-codebase",
+   "summary": "Prove and remove accidental codebase complexity without breaking behavior.",
+   "published": "2026-08-24T07:52:08Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 489,
+    "language": "HTML"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Outil pour identifier et supprimer la complexité accidentelle dans les codebases sans altérer le comportement, pertinent pour l'optimisation mais sans validation formelle.",
+   "score": 5.6
+  },
+  {
+   "id": "54c2e582a26b80a9",
+   "title": "Adkid-Zephyr/oral-paper-skill",
+   "url": "https://github.com/Adkid-Zephyr/oral-paper-skill",
+   "summary": "向顶会优秀论文学科研｜Oral Paper Skill — 从 883 篇 Oral 论文摘要中“蒸馏”共通做法，用于论文对照改进与学习复盘 · Skill + prompt pack (CN/EN). Learn from 883 Oral paper abstracts to improve your research and writing.",
+   "published": "2026-09-02T22:51:41Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 145,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "interpretabilite",
+    "autre"
+   ],
+   "tldr": "Méthodologie pour analyser 883 résumés de papers 'Oral' afin d'en extraire des bonnes pratiques de recherche, utile pour l'interpretabilité mais limité par l'absence de validation scientifique ou de cadre théorique.",
+   "score": 5.3
+  },
+  {
+   "id": "64adcb8eecb3d598",
+   "title": "How OpenAI Used Its Own LLMs to Design Its Jalapeño Chip",
+   "url": "https://spectrum.ieee.org/llms-for-chip-design",
+   "summary": "",
+   "published": "2026-09-18T23:04:17Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 130,
+    "comments": 92
+   },
+   "relevance": 6,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "produit"
+   ],
+   "tldr": "OpenAI aurait utilisé ses propres LLM pour concevoir un chip dédié (Jalapeño), illustrant l'automatisation de la conception matérielle par IA, mais sans détails techniques ou validation externe.",
+   "score": 5.0
+  },
+  {
+   "id": "61c5cb98c5f11216",
+   "title": "XiaoDuoYa/codex-with-chatgpt",
+   "url": "https://github.com/XiaoDuoYa/codex-with-chatgpt",
+   "summary": "ChatGPT thinks. Codex works. Use ChatGPT as the planning brain while keeping the Codex harness.",
+   "published": "2026-08-28T12:57:24Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 5520,
+    "language": "TypeScript"
+   },
+   "relevance": 5,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Combinaison de ChatGPT (planification) et Codex (exécution) pour automatiser des workflows multi-agents, mais sans validation scientifique ni benchmark clair.",
+   "score": 5.0
+  },
+  {
+   "id": "b3566f3850891301",
+   "title": "ZCode, the GLM coding agent, silently uploads your Git history",
+   "url": "https://tokenstead.ai/guides/zcode-silent-git-history-upload",
+   "summary": "",
+   "published": "2026-09-18T10:35:28Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 259,
+    "comments": 14
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Un agent de codage (ZCode) uploadait silencieusement l'historique Git des utilisateurs, soulevant des questions sur la sécurité et l'éthique des outils d'IA intégrés aux workflows de développement.",
+   "score": 4.7
+  },
+  {
+   "id": "464f24adbb831da9",
+   "title": "atria-asi/Atria-Dawn-Preview",
+   "url": "https://github.com/atria-asi/Atria-Dawn-Preview",
+   "summary": "",
+   "published": "2026-09-12T10:32:29Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 501,
+    "language": null
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "autre"
+   ],
+   "tldr": "Aperçu d'un projet non documenté (Atria-Dawn-Preview) lié aux LLM, sans informations exploitables ni contexte technique, probablement un prototype ou une démo sans maturité.",
+   "score": 4.4
+  }
+ ]
+}
