@@ -1,0 +1,679 @@
+{
+ "date": "2026-09-21",
+ "digest": {
+  "headline": "Les architectures MoE et les agents autonomes dominent l'innovation IA avec des avancées en efficacité et scalabilité",
+  "overview": "Ce 21 septembre 2026, les publications mettent en avant des optimisations architecturales pour les modèles de langage et des progrès significatifs dans le domaine des agents autonomes. Les travaux sur les Mixture-of-Experts (MoE) et les méthodes de distillation ciblent l'équilibre entre performance et efficacité, tandis que les benchmarks et environnements pour agents révèlent des défis en scalabilité et sécurité.",
+  "highlights": [
+   {
+    "title": "IntBMoE et Cal-OPD : optimisation des architectures et de la distillation",
+    "text": "IntBMoE introduit un conditionnement par blocs pour les MoE, découplant participation et exécution des experts afin d'améliorer l'efficacité sans perte de performance. Cal-OPD, quant à lui, affine la distillation on-policy en calibrant la divergence enseignant-étudiant, évitant ainsi la propagation des biais. Ces méthodes sont cruciales pour réduire les coûts computationnels tout en maintenant la qualité des modèles, notamment pour les tâches de raisonnement."
+   },
+   {
+    "title": "Agents autonomes : scalabilité et évaluation rigoureuse",
+    "text": "Code2Skill et MintAct illustrent des avancées majeures dans l'acquisition et l'exécution de compétences agentiques. Code2Skill extrait automatiquement des compétences vérifiées à partir de code, tandis que MintAct unifie la navigation multi-environnements (mobile, desktop, web) via des modèles vision-langage et du RL asynchrone. APort Vault et CodeMidas complètent ces travaux en proposant des benchmarks pour évaluer la sécurité des paiements et l'entraînement RL des agents de codage, soulignant l'importance de la robustesse et de la scalabilité."
+   },
+   {
+    "title": "Fiabilité des MLLMs et compression des modèles",
+    "text": "HEAL propose une méthode causale pour identifier et atténuer les hallucinations dans les MLLMs en analysant les heads d'attention, offrant une piste pour améliorer la fiabilité des modèles multimodaux. Parallèlement, la quantification post-entraînement de Cellpose-SAM démontre qu'une approche W4/W8 mixte préserve les performances en microscopie cellulaire, réduisant significativement les besoins en stockage. Ces travaux sont essentiels pour déployer des modèles efficaces dans des contextes critiques."
+   },
+   {
+    "title": "Environnements et benchmarks pour agents hybrides",
+    "text": "RecreationWorld et OmniVChat introduisent des cadres pour évaluer les agents hybrides (GUI + codage) et les dialogues audio-visuels natifs. RecreationWorld se distingue par des environnements vérifiables et des récompenses basées sur l'exécution, tandis qu'OmniVChat propose un benchmark pour les réponses multimodales sans transcription externe. Ces initiatives répondent au besoin croissant d'évaluer les agents dans des tâches numériques complexes et réalistes."
+   },
+   {
+    "title": "Robotique et génération d'assets déformables",
+    "text": "DeformSmith génère des assets déformables pour la robotique en intégrant des contraintes physiques, facilitant la création de contenus interactifs réalistes. En parallèle, une méthode de 'Movement Trend Guidance' améliore les politiques de diffusion 3D pour la robotique, augmentant les performances sur des benchmarks comme RoboTwin2.0 et LIBERO-40 avec un surcoût minimal. Ces travaux sont déterminants pour la simulation et la manipulation robotique."
+   }
+  ],
+  "trend": "L'IA se dirige vers une intégration accrue de mécanismes d'optimisation architecturale et d'autonomie agentique, avec un accent sur la scalabilité, la sécurité et l'efficacité computationnelle. Les benchmarks et environnements vérifiables deviennent des outils clés pour évaluer et améliorer les performances dans des contextes réalistes."
+ },
+ "items": [
+  {
+   "id": "815ef92643437d72",
+   "title": "IntBMoE: Integrating Block-Level Conditioning into Expert Composition for Full-Participation Mixture-of-Experts",
+   "url": "https://huggingface.co/papers/2609.21346",
+   "summary": "Mixture-of-Experts (MoE) scales capacity, but existing designs cannot set three quantities independently. For a single token, participation is how many experts contribute knowledge to its output, execution is how many are actually computed (compute cost), and materialization is how many expert-sized parameter sets must be built and stored (memory cost). Sparse routing keeps execution and materialization low, but shrinks participation: for each token, only a few experts contribute. Dense output-mixing restores full participation, but its execution grows with the number of experts. Parameter-merging keeps execution at one expert, but its materialization grows with the number of routing decisions. We propose IntBMoE, a block-conditioned MoE that decouples all three by pairing dense expert composition with sparse block execution. Its blocks come from a small learned codebook, one per entry. At each internal layer, a lightweight hypernetwork merges all expert bases in that layer's pool into one composed expert. Participation is full, because every composed expert draws on the entire pool. Execution stays sparse, because a router sends each token to only a few blocks. Materialization is bounded, because the codebook, not the input, fixes how many blocks exist. Dual-Path Residual Gating (DPRG) further couples two independently composed paths through multiplicative gating. Experiments on image classification show consistent gains over representative sparse and dense MoE baselines. Additional experiments on language modeling and sequential recommendation validate its generalization beyond vision. IntBMoE is fully deployed in AMap's generative recommendation system, serving hundreds of millions of users under a 60ms latency budget, with a 2.4% relative UVCTR gain in online A/B testing. Our code is available at https://github.com/AMAP-ML/DreamX-Rec/.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 88,
+    "arxiv_id": "2609.21346"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "IntBMoE introduit un MoE conditionné par blocs pour découpler participation, exécution et matérialisation des experts, combinant composition dense et exécution sparse afin d'optimiser l'efficacité sans sacrifier la performance.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le modèle Mixture-of-Experts (MoE) permet d'augmenter la capacité des réseaux de neurones en activant dynamiquement des sous-ensembles d'experts, mais les approches existantes ne parviennent pas à dissocier trois métriques critiques : la participation (nombre d'experts contribuant à la sortie d'un token), l'exécution (coût calculatoire effectif) et la matérialisation (coût mémoire lié au stockage des paramètres). Les solutions actuelles optimisent une ou deux de ces métriques au détriment des autres, limitant leur efficacité globale.",
+    "methode": "IntBMoE (Integrated Block-conditioned Mixture-of-Experts) propose une architecture découplant ces trois métriques via une approche en deux étapes. D'abord, une *composition dense d'experts* est réalisée à l'échelle des blocs : un hyperréseau léger fusionne dynamiquement l'ensemble des bases d'experts d'une couche pour former un expert composé, garantissant une participation totale. Ensuite, un *routage sparse* dirige chaque token vers un petit nombre de blocs pré-appris (issus d'un codebook), limitant le coût calculatoire. La matérialisation est contrôlée par la taille fixe du codebook, indépendante des entrées. Une innovation supplémentaire, *Dual-Path Residual Gating (DPRG)*, combine deux chemins composés indépendamment via un gating multiplicatif pour enrichir les interactions.",
+    "resultats": "Les expériences en classification d'images montrent des gains constants par rapport aux MoE sparses et denses de référence. En modélisation du langage et en recommandation séquentielle, IntBMoE confirme sa généralisation au-delà de la vision. Déployé en production chez AMap pour un système de recommandation générative, il sert des centaines de millions d'utilisateurs avec une latence inférieure à 60 ms, tout en améliorant le UVCTR (User View Click-Through Rate) de 2,4 % en A/B testing. Le code est open-source et disponible sur GitHub.",
+    "limites": "Le document ne détaille pas les coûts spécifiques en mémoire ou calcul du codebook et des hyperréseaux, ni leur impact sur l'entraînement. L'efficacité de DPRG dépend fortement de la qualité du gating, un mécanisme potentiellement sensible aux biais de données. Enfin, la validation en production se limite à un cas d'usage (recommandation), laissant ouverte la question de la scalabilité pour des modèles plus larges ou des tâches plus complexes.",
+    "verdict": "IntBMoE mérite une attention particulière pour son approche innovante du découplage des métriques critiques en MoE, avec des résultats prometteurs en production, mais son applicabilité à grande échelle et ses coûts cachés nécessitent une analyse plus approfondie."
+   }
+  },
+  {
+   "id": "02316229a5f7b620",
+   "title": "Calibrating Teacher--Student Discrepancy for On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2609.21619",
+   "summary": "On-policy distillation (OPD) improves reasoning models by learning the token-level discrepancy between a stronger teacher and an on-policy student. However, this discrepancy does not purely reflect the capability gap between the teacher and the student: it also contains deviations arising from the teacher itself, which are consequently mixed into the observed teacher--student discrepancy and indiscriminately learned by standard OPD during training. This issue is further exacerbated by privileged OPD, where privileged information induces larger teacher-side likelihood shifts, thereby encouraging the student to learn more of the teacher's own deviation. We introduce Calibrated On-Policy Distillation (Cal-OPD), which estimates the teacher's self-deviation region through positive and negative privileged interventions and calibrates the original teacher--student discrepancy by retaining only the component that lies beyond this region. Experiments on mathematical reasoning benchmarks show that, while retaining only about 52--65\\% of the original teacher--student discrepancy as the optimization signal, Cal-OPD consistently outperforms standard OPD and its variants across model scales.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.21619"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Cal-OPD améliore la distillation on-policy en calibrant la divergence enseignant-étudiant pour éviter l'apprentissage des biais propres à l'enseignant. Pertinent pour l'optimisation efficace des modèles de raisonnement avec des gains mesurables sur des benchmarks mathématiques.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La distillation on-policy (OPD) vise à améliorer les modèles de raisonnement en apprenant l'écart au niveau des tokens entre un enseignant (teacher) plus performant et un étudiant (student) suivant sa propre politique. Cependant, cet écart ne reflète pas uniquement le fossé de capacité entre les deux modèles : il inclut aussi des déviations propres à l'enseignant, qui sont involontairement apprises par l'étudiant. Ce problème s'aggrave avec l'OPD privilégié, où des informations supplémentaires amplifient les variations de probabilité côté enseignant, poussant l'étudiant à reproduire ses biais.",
+    "methode": "Les auteurs proposent *Calibrated On-Policy Distillation* (Cal-OPD), une méthode qui estime la région de déviation propre à l'enseignant via des interventions privilégiées positives et négatives. Concrètement, ils identifient les tokens où l'enseignant s'écarte de son propre comportement de référence, puis calibrent l'écart enseignant-étudiant en ne conservant que la partie située en dehors de cette région. Cela permet de filtrer les biais de l'enseignant et de se concentrer sur les écarts liés à la supériorité réelle du modèle enseignant. La technique repose sur une analyse fine des distributions de probabilité et une intervention ciblée sur les tokens problématiques.",
+    "resultats": "Les expériences menées sur des benchmarks de raisonnement mathématique montrent que Cal-OPD, bien qu'utilisant seulement 52 à 65 % de l'écart enseignant-étudiant original comme signal d'optimisation, surpasse systématiquement l'OPD standard et ses variantes, et ce à différentes échelles de modèles. Les gains de performance sont cohérents, suggérant une meilleure généralisation grâce à la suppression des biais de l'enseignant.",
+    "limites": "Le contenu disponible ne précise pas les détails des interventions privilégiées (nature exacte, coût computationnel) ni la robustesse de la méthode face à des enseignants très bruités ou instables. De plus, l'hypothèse selon laquelle les déviations de l'enseignant sont systématiquement nuisibles mériterait une validation plus poussée, car certaines pourraient être bénéfiques dans des contextes spécifiques.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à améliorer l'efficacité de la distillation en filtrant les artefacts indésirables, mais son applicabilité à d'autres domaines que le raisonnement mathématique reste à démontrer."
+   }
+  },
+  {
+   "id": "c94a86f58bbdc527",
+   "title": "Grounded Skill Synthesis from Code at Scale for Agentic Intelligence",
+   "url": "https://huggingface.co/papers/2609.05571",
+   "summary": "Reusable skills give agents transferable procedural knowledge, making scalable acquisition essential for extending agents beyond prior experience. Existing methods face two limitations: trajectory-based synthesis requires interactions with specific environments, while document-derived skills may lack executable evidence and verification. Source code offers a complementary path: it requires no prior agent experience yet provides executable evidence for grounding abstractions. We present Code2Skill, a fully automated pipeline that transforms selected code units into implementation-anchored records of atomic operations, composite workflows, and recurring patterns, then verifies each record through source-body-blind reconstruction and source-aware comparison. Applied to 19,769 popular, actively maintained GitHub repositories, Code2Skill produces CodeSkillBank, a grounded bank of 1,006,822 accepted records with workflow, boundary, provenance, and source-evidence metadata. Across 72 protocol-matched evaluations covering nine model settings and eight benchmarks, models augmented with retrieved CodeSkillBank skills improve by 11.7% on average over matched baselines and outperform them in 57 cases. Under a unified downstream interface, Code2Skill also outperforms trajectory-derived skill banks on all seven shared benchmarks, showing that repository-derived skills can provide useful procedural knowledge before agents accumulate sufficient interaction experience. Skills synthesized from tested AI-generated code achieve a 93.50% pass rate, compared with 93.00% for human-written code, providing initial evidence that the pipeline can expand with the growing volume of AI-generated software. Overall, Code2Skill transforms procedural knowledge embedded in repositories into grounded, verifiable, and transferable agent skills.",
+   "published": "2026-09-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 74,
+    "arxiv_id": "2609.05571"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Code2Skill extrait automatiquement des compétences exécutables à partir de code source, créant une banque de 1M+ compétences vérifiées. Révolutionnaire pour l'acquisition scalable de compétences agentiques avec preuve d'exécution.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le développement d'agents intelligents capables d'acquérir et de réutiliser des compétences procédurales à grande échelle est limité par deux approches existantes : les méthodes basées sur les trajectoires nécessitent des interactions coûteuses avec des environnements spécifiques, tandis que les compétences dérivées de documents manquent souvent de preuves exécutables et de vérification. Cela freine l'extension des agents au-delà de leur expérience initiale, en particulier dans des contextes variés ou nouveaux.",
+    "methode": "Code2Skill propose une pipeline entièrement automatisée qui extrait des unités de code (fonctions, workflows, motifs récurrents) depuis des dépôts GitHub populaires et maintenus. Chaque compétence extraite est ancrée dans une implémentation concrète et vérifiée via deux mécanismes : une reconstruction aveugle au corps du code source (pour valider la cohérence structurelle) et une comparaison consciente du code source (pour garantir la fidélité sémantique). Le pipeline génère ensuite *CodeSkillBank*, une banque de compétences enrichie de métadonnées (provenance, limites, workflows, preuves sources). L'approche exploite 19 769 dépôts GitHub, sans nécessiter d'interactions préalables avec un environnement, et inclut une évaluation systématique des compétences via des benchmarks standardisés.",
+    "resultats": "Code2Skill produit une banque de 1 006 822 compétences vérifiées, couvrant des opérations atomiques, des workflows composites et des motifs récurrents. Dans 72 évaluations protocolaires (9 configurations de modèles et 8 benchmarks), les modèles augmentés avec *CodeSkillBank* améliorent leurs performances de 11,7 % en moyenne par rapport aux baselines, avec une supériorité dans 57 cas. Sur 7 benchmarks partagés, Code2Skill surpasse également les banques de compétences dérivées de trajectoires. Enfin, les compétences synthétisées à partir de code généré par IA atteignent un taux de réussite de 93,50 %, comparable aux 93,00 % du code écrit par des humains.",
+    "limites": "La dépendance aux dépôts GitHub populaires et maintenus pourrait introduire un biais vers des compétences déjà optimisées ou redondantes, limitant la diversité des cas d'usage. La vérification automatique, bien que robuste, ne garantit pas l'absence d'erreurs sémantiques subtiles ou de dépendances contextuelles non capturées. Enfin, l'évaluation se concentre sur des benchmarks techniques, sans exploration approfondie des limites en conditions réelles ou des interactions multi-agents.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à démocratiser l'acquisition de compétences procédurales à grande échelle, mais son adoption devra être validée par des tests en environnements réels et une diversification des sources de code."
+   }
+  },
+  {
+   "id": "f21d10d087255cd4",
+   "title": "MintAct: A Unified Visual Agent for Digital Environments",
+   "url": "https://huggingface.co/papers/2609.22083",
+   "summary": "We present MintAct, a family of vision-language models that unifies UI grounding, multi-step navigation across mobile, desktop, and web, and visual tool use, trained at 2B, 4B, and 8B scales. Through careful design of our environments, data, and training recipes, MintAct models match the performance of per-domain specialists across all of these capabilities. To enable this, we develop a scalable environment and reinforcement learning (RL) infrastructure. On the environment side, we host hundreds of concurrent instances across heterogeneous per-domain backends, serving both trajectory data collection and online RL. To enable efficient and scalable RL training, an asynchronous framework keeps explicit control over the cross-domain training distribution and remains stable under noisy environment feedback and off-policy drift. Experimental results show that MintAct achieves state-of-the-art performance (48.9 on OSWorld-Verified) across a wide range of benchmarks at comparable model sizes.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.22083"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "llm",
+    "vision"
+   ],
+   "tldr": "MintAct est une famille de modèles vision-langage (2B-8B) unifiant la navigation multi-environnements (mobile, desktop, web) et l'utilisation d'outils visuels via RL asynchrone. Il atteint des performances SOTA sur OSWorld-Verified (48.9) en combinant des environnements scalables et une infrastructure RL stable, malgré des perturbations.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "MintAct vise à résoudre la fragmentation des agents d'interface utilisateur (UI) spécialisés par domaine (mobile, desktop, web), en proposant un modèle unifié capable de gérer simultanément le *grounding* visuel, la navigation multi-étapes et l'utilisation d'outils visuels. Le défi est d'éviter la multiplication de modèles dédiés tout en maintenant des performances comparables à des solutions spécialisées.",
+    "methode": "L'approche repose sur une famille de modèles vision-langage (VLM) entraînés à des échelles de 2B, 4B et 8B paramètres, combinant des données multi-domaines et un entraînement par renforcement (RL). Une infrastructure scalable a été développée pour héberger des centaines d'instances d'environnements hétérogènes (mobile, desktop, web) en parallèle, servant à la fois à la collecte de trajectoires et à l'apprentissage en ligne. Le cadre RL asynchrone permet de contrôler explicitement la distribution d'entraînement cross-domaine et de stabiliser l'apprentissage malgré le bruit des retours environnementaux et la dérive *off-policy*. Les détails techniques sur l'architecture exacte des modèles ou les algorithmes RL spécifiques (ex: PPO, SAC) ne sont pas précisés dans le résumé.",
+    "resultats": "MintAct atteint des performances de pointe sur plusieurs benchmarks, avec un score de 48,9 sur OSWorld-Verified, surpassant ou égalant les modèles spécialisés par domaine à taille comparable. Les résultats couvrent des tâches variées comme le *grounding* UI, la navigation multi-étapes et l'utilisation d'outils visuels, validant l'approche unifiée. Aucune comparaison détaillée des performances par échelle de modèle (2B vs 8B) ou par domaine n'est fournie dans le résumé.",
+    "limites": "Le résumé ne mentionne pas les limites potentielles, mais on peut identifier des zones d'ombre : la robustesse face à des interfaces inconnues ou dynamiques, la généralisation hors des benchmarks évalués, ou encore le coût computationnel de l'infrastructure RL asynchrone. L'absence de détails sur les données d'entraînement (diversité, biais) ou les mécanismes de stabilisation RL mérite aussi un scepticisme technique.",
+    "verdict": "À suivre de près pour son ambition unificatrice et ses performances prometteuses, mais une lecture critique du papier complet est indispensable pour évaluer sa maturité technique et ses limites réelles."
+   }
+  },
+  {
+   "id": "ccb07cb353669ce9",
+   "title": "APort Vault: Benchmarking AI Agent Payment Authorization with the Open Agent Passport",
+   "url": "https://huggingface.co/papers/2609.22076",
+   "summary": "APort Vault is a benchmark for payment authorization in tool-using AI agents. It replays 4,371 attacks written by humans against a live payment agent during a public capture-the-flag event, across 14 models from 8 labs, five policy configurations and two replay tracks, with and without a deterministic pre-action check implementing the Open Agent Passport (OAP) specification. 225,964 evaluations completed. We report five distinct events per evaluation, because collapsing them is how an agent benchmark produces a number that does not survive review. Requests are common and their rate differs far more across configurations than across models, though each attack exists at exactly one configuration so policy and attack cohort vary together: 10.9% of model-alone evaluations at Level 1, 3.0% at Level 2, 0.1% at Level 3, 79.4% at Level 4. On the 1,293 Level 4 prompts, each evaluated on every model, request rates run from 71.2% to 84.3%, and 809 prompts (62.6%) elicited a request from all fourteen models, each ending in a successful payment to the level's allowlisted recipient. The authorization boundary is where the conditions diverge. At Levels 2 to 4, transfers to recipients the passport did not permit number 140 of 76,842 with the model alone and 0 of 69,297 behind the layer, and 105 against 0 on 68,970 matched model, prompt and track triples. The zero spans 790 source sessions, giving a per-session upper bound of 0.38%. It was not obtained by refusing payments: 25,370 payments executed behind the layer, while the policy denied 187 of the 25,640 transfer calls it evaluated, 148 of them for a forbidden recipient. We release the 225,964 evaluations, the level passports, the scoring code and the analysis script at huggingface.co/datasets/aporthq/vault-benchmark-v1 .",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2609.22076"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark APort Vault évalue la sécurité des agents IA dans l'autorisation de paiements via 225 964 évaluations sur 14 modèles et 5 configurations de politiques, révélant des taux de requêtes variables selon les niveaux de sécurité et l'impact de l'Open Agent Passport (OAP) sur la réduction des attaques.",
+   "score": 8.8
+  },
+  {
+   "id": "3c4cb783d1d9896f",
+   "title": "CodeMidas: Scaling Agentic Coding RL Environments from Code Itself",
+   "url": "https://huggingface.co/papers/2609.22068",
+   "summary": "Training capable coding agents via reinforcement learning (RL) requires diverse tasks with reliable verifiers. Open-source codebases offer a rich source of such tasks, while existing methods typically rely on development artifacts such as issues and commits, limiting the range of tasks that can be extracted. To better scale RL environments, we present CodeMidas, an agentic pipeline that turns implemented functionality in existing codebases into executable RL environments using source code as its only task-specific input. CodeMidas allocates agentic compute to every stage of environment construction: agents explore implemented functionality to formulate behavioral specifications, construct tests grounded in execution of the original code, and validate and filter candidate tasks through execution checks and repeated solution rollouts. The resulting dataset has 5,545 training tasks from 3,185 open-source codebases spanning 23 programming languages and 15 technical domains. Training MiMo-V2.5 on these tasks with GRPO improves performance on all five diverse benchmarks, covering issue repair (DeepSWE + 11.7%), whole-program construction (ProgramBench +17%), and terminal work (Terminal-Bench v2.1 +8.5%). Ablations show that increasing the number of high-quality training tasks improves performance. Trajectory analysis shows the RL-trained agent demonstrates better behaviors like increasing codebase exploration and more diverse self-verification. These results establish source code as a scalable foundation for constructing RL environments that improve coding agents across diverse software tasks.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 65,
+    "arxiv_id": "2609.22068"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "CodeMidas automatise la création d'environnements RL pour le codage à partir de bases de code existantes, avec une amélioration mesurable des agents sur divers benchmarks. Clé pour l'entraînement scalable d'agents de codage via RL.",
+   "score": 8.8
+  },
+  {
+   "id": "ada9529c2506bc57",
+   "title": "MLLMs Hallucinate when Information Distribution Drifts in Synergy Heads",
+   "url": "https://huggingface.co/papers/2609.09206",
+   "summary": "Multimodal Large Language Models (MLLMs) often struggle with hallucinations, thus hindering their reliable practical applications. Existing attention-based mitigation methods mainly rely on indirect signals (e.g., attention weights) that fail to accurately reflect the actual information shift underlying hallucination generation. In this paper, we propose HEAL, Head-lEvel information disentAnglement and caLibration for identifying and mitigating hallucinations. HEAL first employs causal noise intervention on multi-head outputs to filter out causally redundant heads. Subsequently, it disentangles information distribution within the remaining heads via the counterfactual Difference-in-Differences, categorizing heads into four types. Through analysis, we observe: hallucinations happen when information distribution drifts away from a healthy equilibrium in synergy heads, not strongly correlated with the quantity or strength of modality-specific heads. Motivated by this insight, HEAL injects dynamic information calibration factors into the value vectors of synergy heads, and actively regulates visual-language dependencies, steering the output distribution towards factual evidence. Extensive experiments demonstrate that HEAL effectively reduces hallucinations across multiple MLLMs, offering a simple and interpretable pathway to enhance model trustworthiness.",
+   "published": "2026-09-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.09206"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "HEAL propose une méthode causale pour identifier et atténuer les hallucinations dans les MLLMs en analysant la distribution d'information dans les heads d'attention. Intéressant pour comprendre les mécanismes de génération d'hallucinations et améliorer la fiabilité des modèles multimodaux.",
+   "score": 8.5
+  },
+  {
+   "id": "0cb20a725b77ba8a",
+   "title": "Retention-Constrained Post-Training Quantization of Cellpose-SAM for Stem Cell Microscopy",
+   "url": "https://huggingface.co/papers/2609.21038",
+   "summary": "Induced pluripotent stem cell (iPSC) culture increasingly relies on segmentation foundation models, yet deployment on laboratory CPUs and edge hardware requires compression schemes that are both efficient and auditable. We present a deployment-oriented evaluation of compressed Cellpose-SAM using a pre-specified retention criterion: the 95% cluster-bootstrap interval of mean change from FP32 must remain above a fixed -0.02 margin for every imaging modality. On a stratified 176-field panel spanning BBBC038 nuclei, BBBC039 U2OS fluorescence, and NIST iPSC images across density regimes, weight-only W8A16 preserves instance F1 across all modalities. A sensitivity-guided mixed W4/W8 scheme, using four INT8 exceptions, achieves a 6.76x reduction in weight storage with no observed catastrophic failures (0/176 fields), matching W8A16 at this sample size. In contrast, ternary weight-only quantization achieves 12.08x compression but fails catastrophically on 169/176 fields. These results demonstrate that compression should be evaluated by modality-stratified downstream retention rather than single-number accuracy, and establish a reproducible protocol for auditing compressed foundation models in regulated stem-cell imaging.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.21038"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Retention-Constrained Post-Training Quantization évalue la compression de Cellpose-SAM pour la microscopie sur cellules souches, démontrant qu'une quantification W4/W8 mixte préserve la performance avec une réduction de 6.76x du stockage des poids, contre des échecs catastrophiques en ternaire.",
+   "score": 8.2
+  },
+  {
+   "id": "d57e2a274b35936e",
+   "title": "DeformSmith: Physics Harness-Guided Hierarchical Generation of Deformable Assets for Robot Manipulation",
+   "url": "https://huggingface.co/papers/2609.18620",
+   "summary": "Creating deformable assets for robot manipulation requires jointly specifying their geometry, appearance, and physical properties. This is especially challenging for deformable objects, since text and images provide limited evidence about how they deform and respond to contact, yet these responses directly affect their suitability for interaction. Automated generation therefore needs to resolve coupled physical requirements and use interaction evidence to guide construction and refinement. We present DeformSmith, a framework that enables automated generation of interactive, physically credible deformable assets from text or a single image. Through hierarchical agentic construction and a shared physics-grounded harness, it progressively builds, tests, and refines geometry, physical models, material behavior, and robot interaction until the resulting asset is ready for simulation and manipulation. Robot interaction closes the generation loop through manipulation feedback and replayable interaction data. Results show that DeformSmith generates assets with better visual quality and physical plausibility than state-of-the-art baselines, including PhysGen3D, PhysGM, and PhysX-Omni, while supporting the synthesis of data for robotic manipulation of deformable objects. Project page: https://can-lee.github.io/deformsmith-web/",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.18620"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "DeformSmith génère automatiquement des assets déformables pour la robotique en intégrant des contraintes physiques et des interactions robotiques. Innovant pour la création de contenus interactifs réalistes, avec des applications en simulation et manipulation.",
+   "score": 8.2
+  },
+  {
+   "id": "b824ee6002f4910c",
+   "title": "EvoOntology: A Self-Evolving Ontology Layer for Data Agents",
+   "url": "https://huggingface.co/papers/2609.15779",
+   "summary": "Data agents aim to fulfill natural-language instructions over heterogeneous data, including tables, files, and databases. However, data agents face a challenging agent-data gap: heterogeneous data resides outside the agent, while the agent can access it (e.g., column names and file paths) only through generic tools. Existing approaches either let agents directly explore raw data sources or inject manually constructed semantic layers into prompts. However, neither scales well to large heterogeneous data sources nor adapts to different agent behaviors. In this paper, we introduce EvoOntology, a self-evolving ontology layer for data agents. EvoOntology encapsulates the ontology as an MCP server comprising a schema layer, a content layer, and a tool layer, enabling agents to actively query and interact with the ontology at runtime. To this end, we introduce a builder agent for autonomous ontology construction and a self-evolution loop that continuously refines the ontology through attribution-guided typed edits that are accepted only after a backbone-conditional paired evaluation. Experiments on three well-adopted data-agent benchmarks with four LLM backbones demonstrate that EvoOntology consistently outperforms strong baselines and existing semantic-layer approaches, effectively bridging the agent-data gap and enabling more effective interaction with heterogeneous data. Code: https://github.com/ruc-datalab/EvoOntology",
+   "published": "2026-09-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 61,
+    "arxiv_id": "2609.15779"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "EvoOntology propose une ontologie auto-évolutive pour les agents de données, permettant une adaptation dynamique aux sources de données hétérogènes. Pertinent pour améliorer l'autonomie et la scalabilité des agents dans des environnements complexes.",
+   "score": 8.2
+  },
+  {
+   "id": "c4361f05adb81ecd",
+   "title": "RecreationWorld: Scalable and Verifiable Environments for Hybrid Computer-Use Agents",
+   "url": "https://huggingface.co/papers/2609.22000",
+   "summary": "Computer-use agents (CUAs) have advanced along two separate lines: graphical interaction and software development through code and the command line. Real digital work requires both, interleaved rather than stacked end to end. We study hybrid CUAs that autonomously decide when to explore an interface, implement software, and run and visually verify their artifacts. We introduce RecreationWorld, a five-platform framework built around recreation: given a running reference, an agent must discover its behavior and build a faithful implementation with no prescribed workflow. RecreationWorld provides reproducible environments on Ubuntu, macOS, Windows, Android, and Web, plus a unified harness with native GUI control and coding tools. The running reference serves as an oracle for hidden behavioral tests, providing execution-grounded rewards. We scale trajectory generation with high-quality open-source applications. Models trained on these trajectories improve across five out-of-distribution coding and hybrid computer-use benchmarks and more frequently verify their rendered outputs, providing evidence of transfer beyond recreation. For held-out evaluation, we introduce RecreationBench, comprising 250 diverse tasks across domains and platforms. Reference-grounded programmatic and visual assertions cover action-conditioned outcomes at multiple interaction depths; each is validated on the reference and by human reviewers before the suite is frozen for automatic scoring. GPT-6 Astra leads at 58.1% overall, but passes all programmatic tests on just 2.8% of tasks. Agents reproduce static interface structure more reliably than interactions and computed outputs, while generated applications remain smaller and more monolithic than their references. We release the benchmark, environments, and test suites.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 52,
+    "arxiv_id": "2609.22000"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "RecreationWorld introduit un cadre pour les agents hybrides (GUI + codage) avec des environnements vérifiables et des récompenses basées sur l'exécution. Essentiel pour évaluer les agents capables de travail numérique complexe.",
+   "score": 8.2
+  },
+  {
+   "id": "f3d034d98b307685",
+   "title": "Learning Foresight without Explicit Trajectories for 3D Diffusion Policies",
+   "url": "https://huggingface.co/papers/2609.20669",
+   "summary": "3D diffusion policies are strong at generating geometrically grounded actions from current observations, but successful manipulation requires not only knowing what motion is feasible now, but also anticipating where the interaction is heading. Existing policies largely leave such foresight to emerge implicitly from action learning. We introduce Movement Trend Guidance, a simple but effective way to provide this foresight without introducing an explicit plan. From a short observation history, the policy learns a compact latent representation of interaction evolution. During training, sparse future gripper states supervise this representation; at inference, only the latent is retained as future-oriented conditioning alongside the current observation. The latent provides global conditioning for action generation, while an additional gated FiLM branch is used only at the UNet bottleneck. Despite adding only 3.52% more parameters to DP3, our method preserves the original dense-action and receding-horizon formulation and consistently improves upon DP3 across RoboTwin2.0, LIBERO-40, and DexArt. It reaches 62.8% vs. 56.1% in 50-task RoboTwin2.0 mixed training, 71.93% vs. 37.08% on LIBERO-40, and 72.0% vs. 49.0% on five real-robot tasks. These results show that a diffusion policy can benefit substantially from knowing where an interaction is heading, without being told exactly where to move.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.20669"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Méthode 'Movement Trend Guidance' pour les politiques de diffusion 3D en robotique, améliorant la prévision des interactions sans plan explicite. Améliore significativement les performances sur RoboTwin2.0 (62.8% vs 56.1%) et LIBERO-40 (71.93% vs 37.08%) avec un surcoût minimal (3.52%).",
+   "score": 8.2
+  },
+  {
+   "id": "f1b9ca72e91a7e3a",
+   "title": "OmniVChat: Synthesizing, Benchmarking, and Training for Native Audio-Visual Dialogue",
+   "url": "https://huggingface.co/papers/2609.21465",
+   "summary": "We define OmniVChat (Omni Video Chat) as the task of native audio-visual dialogue between a user and an omni model. In OmniVChat, omni models directly and simultaneously receive audio and video from a user and return text. The user's query is embedded in the audio and video, without a separate text question, external captioning, or speech recognition. Direct audio-visual input reduces external latency and computation while preserving perceptual cues. However, research on OmniVChat faces two constraints: data availability and evaluation. Recordings of people using their own devices are scarce. Furthermore, a good reply often needs to account for the user's surroundings, facial expressions, and nearby objects, and such responses can be expressed in many different ways, making keyword matching unreliable for evaluating reply quality. Recent progress in agent systems and video generation makes generation for comprehension viable, which means using synthesized dialogues for training and evaluation. Therefore, we present OmniVChat-Studio, a multi-agent data engine for synthesizing single- and multi-turn audio-visual dialogues. We use synthesized dialogues to build OmniVChat-Bench, an evaluation benchmark that evaluates omni models' basic dialogue abilities across five ability categories. We also present OmniVChat-RL, a reinforcement learning reward design that jointly targets reply correctness, efficiency, and style in OmniVChat. Training Qwen3-Omni-Instruct with OmniVChat-RL on synthesized dialogues improves its performance on both OmniVChat-Bench and the human-recorded OmniVChat-Bench-Human. These gains validate the reward design and show transfer to real-world dialogues in training and evaluation.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2609.21465"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "agents"
+   ],
+   "tldr": "OmniVChat définit une tâche de dialogue audio-visuel natif où les modèles traitent directement l'audio et la vidéo sans transcription externe, avec un moteur de synthèse multi-agents (OmniVChat-Studio) et un benchmark (OmniVChat-Bench) pour évaluer les réponses multimodales.",
+   "score": 7.6
+  },
+  {
+   "id": "a0cf98207b642aeb",
+   "title": "GraphSkillEvo: Evolutionary Optimization of Graph-Structured Agent Skills",
+   "url": "https://huggingface.co/papers/2609.21749",
+   "summary": "Skills can improve the performance of Large Language Model (LLM) agents by providing task-specific procedural guidance, while skill optimization further improves their effectiveness through iterative refinement. However, existing skill optimization methods typically represent skills as unstructured natural-language instructions, creating two key challenges: 1) Unstructured skills often lack explicit workflow-level guidance and contain substantial redundancy, making them difficult for LLMs to execute; 2) the vast search space of unconstrained natural-language skills makes skill optimization ineffective. To address these challenges, we propose representing skills as graph-structured natural-language artifacts. In graph-structured skills, each node represents an execution step together with its operational guidance, while directed edges encode context-dependent transitions between steps. Compared to unstructured skills, graph-structured skills can provide clear workflow-level guidance. Moreover, the proposed graph-structured skill can also facilitate skill optimization. Building on this structured representation, we introduce GraphSkillEvo, a population-based evolutionary optimization framework with mutation and crossover operators for graph-structured skills. By maintaining multiple candidate skills and combining effective components, GraphSkillEvo enables broader and more comprehensive exploration of the structured skill space than purely LLM-based iterative self-refinement. Extensive experiments across five agent benchmarks demonstrate that GraphSkillEvo consistently outperforms the strong skill optimization baseline SkillOpt, improving average accuracy by 4.01% on GPT-5.4-nano and 1.76% on GPT-5.4. Our code is available at https://github.com/ruisun7/GraphSkillEvo.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2609.21749"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "GraphSkillEvo optimise les compétences des agents LLM sous forme de graphes structurés, réduisant la redondance et améliorant l'exécution des workflows. Approche prometteuse pour l'optimisation des compétences agentiques.",
+   "score": 7.6
+  },
+  {
+   "id": "263140939282c943",
+   "title": "Refinement Is Inherently Editable: Training-Free Prompt-to-Prompt Image Editing with Generative Refinement Network",
+   "url": "https://huggingface.co/papers/2609.20633",
+   "summary": "Text-guided image editing must introduce the requested changes while preserving unrelated source content. Diffusion-based editors rely on spatial controls whose inaccuracies can leave edits incomplete or alter unrelated regions. Causal autoregressive editors face a further constraint: their fixed decoding order limits revision of earlier decisions. We introduce RefineEdit, a training-free prompt-to-prompt image editing framework built on a Generative Refinement Network. Our key idea is to couple edit localization with content generation through the global refinement of binary image codes, allowing editing evidence to be reassessed as the image evolves. RefineEdit initializes an editing branch from an intermediate source state, reusing the emerging layout. We compare the probabilities assigned by the two branches to the same source-sampled bits, using their signed differences to select editable positions and bits. Selected bits follow editing refinement, while the remaining bits copy the evolving source state. To stabilize editing across refinement steps, adaptive spatial freezing limits unnecessary mask expansion, while finite bit locking keeps recently selected bits editable. The framework requires no additional training, external masks, or attention control. Across nine editing categories of PIE-Bench, RefineEdit achieves the best background-preservation scores in PSNR, LPIPS, MSE and SSIM, together with the highest whole-image and edited-region CLIP scores among the evaluated methods.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.20633"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "RefineEdit propose un framework d'édition d'images sans entraînement basé sur un réseau de raffinement génératif, permettant des modifications locales tout en préservant les régions non ciblées via un mécanisme de masquage adaptatif et de verrouillage des bits.",
+   "score": 7.3
+  },
+  {
+   "id": "70aed16e0942462c",
+   "title": "When AI Reviews Train AI Reviewers: Scientific-Judgment Collapse and Mitigation",
+   "url": "https://huggingface.co/papers/2609.20942",
+   "summary": "Large language models (LLMs) increasingly participate in scientific evaluation, both as automated reviewers and as assistants to human reviewers. As model-generated reviews enter public data and future training corpora, AI peer review can become recursive: later reviewers learn from judgments produced by earlier models. We study one step of this feedback loop in a controlled setting. Starting from Llama 3.1 8B, we first fine-tune a reviewer on official ICLR reviews from 2018--2023 and then train four successor models on ICLR 2024 data with systematically varied mixtures of official and model-generated reviews. Our study shows that introducing synthetic reviews compresses rating distributions and reduces both same-paper and corpus-level semantic diversity. We call this pattern scientific-judgment collapse. To mitigate this failure mode, we introduce TrustReviewer, an open-source LLM-based system for generating peer reviews of AI and machine learning papers. TrustReviewer intervenes at two complementary stages. For training-time prevention, we train the core reviewer in a single stage on a curated corpus designed to reduce low-quality and semantically degenerate supervision. For test-time correction, paired activation steering aims to further mitigate residual tendencies toward collapsed judgments without further training or additional expert annotation. Together, these results characterize a concrete risk of recursive reviewer training and provide practical interventions for preserving judgment diversity and improving recommendation alignment in AI-assisted scientific evaluation.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.20942"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "regulation"
+   ],
+   "tldr": "Étude sur la 'scientific-judgment collapse' : l'intégration de revues générées par IA dans les données d'entraînement réduit la diversité sémantique et la qualité des évaluations. Propose TrustReviewer comme solution pour éviter cette dérive en phase de formation.",
+   "score": 7.0
+  },
+  {
+   "id": "0027d4c7d0f5ba00",
+   "title": "Geometry of Values: Task Vector Composition for Ethical Preference Alignment in Language Models",
+   "url": "https://huggingface.co/papers/2609.21094",
+   "summary": "Large Language Models (LLMs) are increasingly deployed in applications that must weigh clashing moral values, yet even strong models exhibit hidden biases and brittle instruction-following across languages. We introduce a 12,000-instance dataset of two-option dilemmas covering pairwise three value conflicts: Honesty vs. Justice, Justice vs. Autonomy, and Autonomy vs. Honesty, along with their translations into Hindi, Arabic, Spanish, and Chinese, to probe cross-lingual behavior. Benchmarking on GPT-5-mini reveals that it consistently favors Honesty over Autonomy across all five languages when no policy is given. The Llama-3.2-1/3B models exhibit strong first-option bias; however, both plain fine-tuning and Direct Preference Optimization fine-tuning effectively remove this bias, increasing accuracy to greater than 98%. In order to decouple the effect of learning correlations in the dataset from abstract values, we propose a task vector transfer based experiment where after computing the task vectors for a direction of value preference we orthogonalize it with respect to the general instruction following vector. Our experiment shows that this method is effective in isolating the direction of the specific value preference that can successfully be used to conduct task arithmetic to obtain a model with the opposite stance.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.21094"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Geometry of Values explore l'alignement éthique des LLM via un dataset de 12 000 dilemmes moraux multilingues, montrant que la composition de vecteurs de tâches permet de découpler les préférences de valeurs des biais de formatage et d'améliorer la robustesse interlinguistique.",
+   "score": 6.7
+  },
+  {
+   "id": "eb90bae637aacd31",
+   "title": "FRAUDSkill: Structured Frozen-Weight Skill Optimization for Audio Anti-Fraud Detection",
+   "url": "https://huggingface.co/papers/2609.18766",
+   "summary": "Large audio-language models have shown promise for anti-fraud detection by directly processing speech and reasoning over fraud-related evidence. Their deployment, however, requires predictions to follow a predefined label space and a structured decision protocol consisting of service-scenario identification, fraud detection, and conditional fraud-type classification. Existing fine-tuning and prompt-based approaches typically encode task knowledge, constraints, and decision rules into model parameters or manually maintained prompts, making them difficult to adapt as fraud patterns and labeling policies evolve. To this end, we propose FRAUDSkill, a structured frozen-weight adaptation framework that leaves the underlying audio-language model unchanged while optimizing an external layer of skill programs, route-specific policies, and decision rules. We further combine structured output control with validation-guided multi-path inference to ensure protocol-compliant predictions. On the TeleAntiFraud benchmark, FRAUDSkill achieves 73.50% Macro-F1, outperforming the shared frozen-model baseline by 31.96% while reducing invalid outputs to 1.94%. Extensive experiments demonstrate that external skill optimization provides an effective and adaptable solution for structured audio anti-fraud detection without modifying the underlying model. The source code is available at https://anonymous.4open.science/r/FRAUDSKILL-114514.",
+   "published": "2026-09-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.18766"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "outils"
+   ],
+   "tldr": "FRAUDSkill propose un cadre d'adaptation structuré pour la détection de fraudes audio dans les télécoms, optimisant des couches externes de règles et politiques sans modifier le modèle sous-jacent, améliorant le Macro-F1 de 31.96% tout en réduisant les sorties invalides à 1.94%.",
+   "score": 6.7
+  },
+  {
+   "id": "d8990f410db174cd",
+   "title": "OmniVBench: A Benchmark and Large-Scale Dataset for Omni Reference-to-Video Generation",
+   "url": "https://huggingface.co/papers/2609.22069",
+   "summary": "Reference-to-video (R2V) generation is evolving toward increasingly general and versatile reference control, giving rise to the emerging paradigm of omni R2V generation. However, existing benchmarks fall short of these emerging capabilities: their test cases cover limited reference types and compositions, and their evaluation protocols largely assess holistic reference consistency, overlooking whether reference factors are properly preserved, disentangled, and routed. Meanwhile, the high cost of constructing omni R2V training data makes suitable training resources scarce. To address these gaps, we introduce OmniVBench and the Omni-R2V Dataset for evaluating and training omni R2V models. OmniVBench expands R2V evaluation across broader reference types, fine-grained control tasks, and richer reference compositions, covering 7 task families and 18 fine-grained tasks spanning content, motion, style, structure, narrative, and multi-reference settings. We introduce factor-grounded evaluation with 12,172 case-specific checklist items, assessing whether intended reference factors are faithfully preserved, correctly disentangled and bound to their targets, and properly realized according to the instruction. We further introduce the Omni-R2V Dataset, bringing industrial-grade training resources for diverse R2V tasks to the broader research community. Drawing primarily on a large-scale corpus of professional video footage, it comprises 340K processed training samples spanning diverse reference types and multi-reference compositions. We develop task-specific pipelines for reference-target pair construction, offering a practical and scalable recipe for omni R2V data construction. Extensive evaluation of advanced open- and closed-source R2V models reveals clear performance gaps across task families and evaluation dimensions on OmniVBench, highlighting remaining limitations of current R2V models.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2609.22069"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "OmniVBench propose un benchmark et un dataset pour la génération vidéo contrôlée par références multiples, avec une évaluation factorisée. Utile pour les modèles de vidéo générative, mais limité par la complexité de l'évaluation.",
+   "score": 6.7
+  },
+  {
+   "id": "d1b27e26fd9f4d42",
+   "title": "Show HN: Mini-AGI – Dynamic continual learning model trained on 8GB VRAM",
+   "url": "https://github.com/volotat/mini-AGI/",
+   "summary": "",
+   "published": "2026-09-21T04:42:37Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 168,
+    "comments": 30
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Mini-AGI propose un modèle d'IA dynamique avec apprentissage continu optimisé pour tourner sur 8 Go de VRAM, ce qui est pertinent pour l'inférence efficace des LLM. L'approche mérite attention malgré un contexte HN peu fiable.",
+   "score": 6.2
+  },
+  {
+   "id": "0825469d72c3c51b",
+   "title": "TeleAntiFraud 2.0: A Refreshable, Profile-Grounded, and Audio-Based Benchmark for Telecom Fraud Detection",
+   "url": "https://huggingface.co/papers/2609.18748",
+   "summary": "Telecom fraud scripts evolve rapidly and are often designed to resemble routine service conversations, creating two key requirements for audio-based telecom-fraud evaluation. First, benchmarks must incorporate newly observed scam patterns without overwriting previously established test sets. Second, they must distinguish fraud from lawful, near-domain calls rather than relying on topic-separated negative examples. We present TeleAntiFraud 2.0, constructed with our Mixed-Tree Anti-Fraud Generation Pipeline and evaluated under a monthly frozen evaluation protocol. The pipeline transforms online fraud-case abstracts into profile-grounded scenarios, expands them through mixed-tree generation, realizes fraud and non-fraud dialogue paths under shared contexts, renders validated dialogues as role-matched speech, and freezes the resulting audio, labels, prompts, manifests, and provenance records for each monthly evaluation set. Each frozen set contains 900 Chinese calls, comprising 600 fraud and 300 near-domain non-fraud cases. Controlled text experiments show that three classifiers achieve perfect macro-averaged F1 (Macro-F1) when evaluated against unrelated or ordinary negatives, but drop to 0.65-0.68 with near-domain sibling negatives. Full-set audio and automatic-speech-recognition plus large-language-model (ASR+LLM) evaluations further reveal class-prior shortcuts, prediction collapse, and snapshot sensitivity. Together, these findings establish near-domain construction and collapse-aware reporting as core requirements for evaluating audio-based telecom-fraud models under realistic confusable conditions. The accompanying research artifact includes the construction code, evaluation scripts, manifests, and documentation. Our dataset and code are available at https://anonymous.4open.science/r/TeleAntiFraud-2_0-EEB2/.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.18748"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "autre"
+   ],
+   "tldr": "MoME introduit un mécanisme de mémoire contextuelle basé sur un mélange d'embeddings (Mixture of Memory Embeddings) pour améliorer la représentation des tokens polysémiques, démontrant une meilleure scalabilité et interprétabilité sémantique dans des expériences contrôlées.",
+   "score": 6.1
+  },
+  {
+   "id": "9e97cb59bf0fdec6",
+   "title": "Paint-Anything: Unified Any-Color Control for Image Generation and Editing",
+   "url": "https://huggingface.co/papers/2609.20816",
+   "summary": "Professional design requires any-color control: the ability to specify an object's target color with any 24-bit hex value for image generation and editing. Prior work has explored color generation, editing, and colorization, but often relies on dedicated color representations or specialized inference procedures. Advances in large language models offer a simpler starting point: even compact models can associate hex values with color semantics. We present Paint-Anything, which learns a shared hex-prompt interface for generation and editing through object-level color supervision. We develop a data pipeline that constructs Paint-500K from real images through object grounding, perceptual color labeling, and editing-pair synthesis. Since shadows make real-image labels only approximate colors, we complement this supervision with pure-color anchors whose pixels exactly match their paired hex values. These anchors are used only at high-noise timesteps, leaving low-noise training to natural images. We further introduce Any Color Benchmark (ACBench), comprising ACBench-T2I and ACBench-Edit, to measure object-level hex color fidelity across both tasks. On FLUX.2-4B, Paint-Anything improves ACBench-T2I and ACBench-Edit scores by 85.3% and 28.3%, respectively, relative to the base model, with ablations supporting the training recipe. It also achieves the highest average CompColor score among the compared methods.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2609.20816"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "produit"
+   ],
+   "tldr": "Paint-Anything introduit un contrôle précis des couleurs (hex) pour la génération et l'édition d'images via un modèle unifié. Utile pour les applications de design professionnel, mais limité par son approche empirique et l'absence de contributions théoriques majeures.",
+   "score": 6.1
+  },
+  {
+   "id": "e3a46c74703ab0ad",
+   "title": "Training-Adaptive Convolutional Sparse Coding via Information Bottleneck for Robust Visual Representation",
+   "url": "https://huggingface.co/papers/2609.19122",
+   "summary": "Visual signals require compact yet sufficient representations for robust downstream prediction. Convolutional sparse coding (CSC) provides an explicit mechanism for suppressing redundant components while preserving signal content, but its sparsity coefficient is typically fixed and manually selected. We propose a training-adaptive convolutional sparse coding framework for robust visual signal representation. Specifically, we unfold the CSC optimization with the Fast Iterative Shrinkage-Thresholding Algorithm (FISTA) and treat the sparsity coefficient as a differentiable variable jointly learned with the network parameters. From the information bottleneck perspective, this coefficient controls the trade-off between information retention and compression: the sparsity term promotes compact representations, while the reconstruction term together with task loss preserves task-relevant signal content. We further introduce a label-free post-training strategy that adjusts the compression strength for corrupted inputs with the main network parameters fixed. Experiments on CIFAR and ImageNet demonstrate competitive clean-data recognition and greatly improved robustness under different input perturbations.",
+   "published": "2026-09-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.19122"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "Training-Adaptive Convolutional Sparse Coding utilise le principe du goulot d'étranglement informationnel pour adapter dynamiquement la parcimonie des représentations visuelles, améliorant la robustesse aux corruptions tout en maintenant des performances compétitives sur CIFAR et ImageNet.",
+   "score": 5.8
+  },
+  {
+   "id": "513f706570e26166",
+   "title": "Kev: Tiny Jev-like family of decision models built on top of Qwen3.5",
+   "url": "https://github.com/jaredpalmer/kev/tree/main",
+   "summary": "",
+   "published": "2026-09-21T07:11:55Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 186,
+    "comments": 86
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Kev est une famille de modèles de décision légers (type Jev) construits sur Qwen3.5, intéressant pour l'optimisation des LLM et leur intégration dans des agents. La crédibilité est limitée par le contexte HN.",
+   "score": 5.3
+  },
+  {
+   "id": "0c06593fa9d7c8f6",
+   "title": "yibie/awesome-jev",
+   "url": "https://github.com/yibie/awesome-jev",
+   "summary": "A curated list of public projects, integrations, and discussions built on Jev — TypeSafe AI's System One model for typed decisions.",
+   "published": "2026-09-17T14:23:21Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 845,
+    "language": "Python"
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Liste curatée de projets et outils basés sur Jev (modèle de décision de TypeSafe AI), utile pour explorer des architectures d'agents légers. Fiabilité moyenne.",
+   "score": 4.7
+  },
+  {
+   "id": "4eb343e53d9b4a30",
+   "title": "v-modal/awesome-jev-tools",
+   "url": "https://github.com/v-modal/awesome-jev-tools",
+   "summary": "A curated list of tools built for Jev — TypeSafe AI's System One model for typed decisions.",
+   "published": "2026-09-19T16:48:59Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 606,
+    "language": null
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Liste d'outils dédiés à Jev, modèle de décision de TypeSafe AI, pour des applications d'agents. Intéressant mais crédibilité limitée.",
+   "score": 4.7
+  },
+  {
+   "id": "b54de4c0d11677fd",
+   "title": "wfzyx/von",
+   "url": "https://github.com/wfzyx/von",
+   "summary": "The open-source System One decision model. Sub-15ms, non-autoregressive, local drop-in alternative to TypeSafe Jev.",
+   "published": "2026-09-18T05:03:47Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 312,
+    "language": "Python"
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Alternative open-source non-autoregressive au modèle System One de TypeSafe, avec un temps d'inférence sous 15ms, mais sans documentation technique approfondie ni validation peer-reviewed.",
+   "score": 4.7
+  },
+  {
+   "id": "5d800f2558a10756",
+   "title": "I turned Jev into a (lousy) chatbot",
+   "url": "https://github.com/kyle-pena-nlp/jevchat/",
+   "summary": "",
+   "published": "2026-09-20T17:51:27Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 157,
+    "comments": 44
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Transformation d'un modèle de décision (Jev) en un chatbot basique, explorant des cas d'usage d'agents conversationnels. Intéressant mais peu fiable.",
+   "score": 4.4
+  }
+ ]
+}
