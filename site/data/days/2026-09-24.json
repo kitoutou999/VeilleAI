@@ -1,0 +1,734 @@
+{
+ "date": "2026-09-24",
+ "digest": {
+  "headline": "Les modèles de monde et la calibration des LLM émergent comme critères clés pour des systèmes IA fiables et généralisables en 2026.",
+  "overview": "La journée du 24 septembre 2026 met en lumière des avancées majeures en compression de modèles, évaluation des LLM, et intégration de priors physiques en robotique. Les benchmarks et frameworks proposés révèlent des limites structurelles dans les approches actuelles, notamment en cohérence temporelle, calibration et généralisation hors distribution.",
+  "highlights": [
+   {
+    "title": "Compression des transformers sans entraînement : GeoPair et MicroQonv",
+    "text": "GeoPair introduit une factorisation géométrique préservant les propriétés des couches pour compresser les transformers sans réentraînement, surpassant les méthodes heuristiques en efficacité. MicroQonv optimise quant à lui la quantification microscaling pour les convolutions, réduisant mémoire et calcul (×2 à ×9) avec une perte de précision minimale. Ces travaux adressent le besoin croissant d'inférence efficace sur edge, sans sacrifier la fidélité fonctionnelle."
+   },
+   {
+    "title": "Calibration et évaluation des LLM : un impératif négligé",
+    "text": "Deux papiers soulignent l'importance critique de la calibration des LLM, absente des benchmarks standards malgré son impact sur la fiabilité en production. Parallèlement, *Schrödinger's Code Repository* et *How Sensitive Are LLM Leaderboard Claims* révèlent des biais de mémorisation et des lacunes statistiques dans les évaluations actuelles, remettant en cause la robustesse des claims de performance. Ces travaux appellent à une refonte des protocoles d'évaluation."
+   },
+   {
+    "title": "Modèles de monde et raisonnement spatial : des benchmarks révélateurs",
+    "text": "HappyWorld-Bench et Spatial-Interactor exposent les limites des modèles de monde (world models) en cohérence temporelle et raisonnement spatial. Le premier évalue 1 138 prompts vidéo et 300 scènes pour tester la fiabilité des interactions prolongées, tandis que le second propose un curriculum d'apprentissage par interaction physique. Ces benchmarks montrent que les VLMs peinent à généraliser au-delà des données d'entraînement, soulignant le besoin de nouvelles architectures."
+   },
+   {
+    "title": "Intégration de priors physiques et agents incarnés",
+    "text": "InternW0 et *Embedding Physics Priors in Robot Learning* illustrent l'importance des priors physiques pour améliorer l'efficacité et l'interprétabilité des systèmes robotiques. InternW0 combine prédiction visuelle et contrôle continu via une architecture asymétrique, tandis que le survey classe les méthodes d'intégration de contraintes physiques. Ces approches visent à réduire la dépendance aux données et à améliorer la généralisation en robotique."
+   },
+   {
+    "title": "Agents et systèmes multi-agents : scalabilité et sécurité",
+    "text": "Agensh propose un cadre auto-organisé pour des systèmes multi-agents (jusqu'à 1024 agents) sans orchestrateur central, améliorant les taux de réussite sur ProgramBench. PASTABench évalue quant à lui la sécurité proactive des agents LLM via 1 139 trajectoires multi-tours, révélant des lacunes majeures en détection de risques. Ces travaux adressent les défis de scalabilité et de fiabilité des systèmes autonomes."
+   }
+  ],
+  "trend": "Les avancées récentes convergent vers une intégration accrue de contraintes physiques, temporelles et statistiques dans les architectures et évaluations, reflétant un besoin de systèmes IA plus robustes, interprétables et généralisables au-delà des benchmarks traditionnels."
+ },
+ "items": [
+  {
+   "id": "f2fc2dab3ae3ca26",
+   "title": "GeoPair: Geometry-Preserving Cross-Layer Factorization for Training-Free Transformer Compression",
+   "url": "https://huggingface.co/papers/2609.25963",
+   "summary": "Transformer architectures exhibit cross-layer redundancies, yet post-training compression pipelines typically optimize layers in isolation or rely on heuristic grouping strategies that disregard layer-specific activation geometries. We introduce a principled, training-free framework that sequentially optimizes cross-layer weight pairings and shared-dictionary factorizations. Rather than forcing weights of adjacent layers to share a basis or heuristically merging activation statistics, our approach identifies structurally compatible projections and learns a shared representation that better preserves each layer's distinct calibration geometry. Coupled with structured sparsity, this yields highly efficient weight decompositions without sacrificing functional fidelity. Across diverse architectures, scales, and modalities, our method achieves state-of-the-art results, consistently outperforming independent structured weight decompositions and alternative pairwise weight factorizations, which operate under heuristic grouping strategies. By replacing heuristic engineering strategies with a convergent, optimization-driven pipeline, we establish a theoretically grounded foundation for scalable, transformer compression across different modalities.",
+   "published": "2026-09-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2609.25963"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "GeoPair introduit une méthode de compression sans entraînement des transformers basée sur une factorisation géométrique préservant les propriétés des couches, surpassant les approches heuristiques en efficacité et fidélité fonctionnelle, avec des résultats SOTA sur divers modèles et modalités.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les architectures Transformer présentent des redondances entre couches, mais les méthodes actuelles de compression post-entraînement optimisent généralement les couches de manière isolée ou utilisent des stratégies de regroupement heuristiques qui ignorent la géométrie spécifique des activations de chaque couche. Cela limite l'efficacité de la compression sans perte de performance.",
+    "methode": "GeoPair propose un cadre théorique sans réentraînement qui optimise séquentiellement les appariements de poids entre couches et des factorisations par dictionnaire partagé. Plutôt que d'imposer un partage de base entre couches adjacentes ou de fusionner des statistiques d'activation de manière heuristique, la méthode identifie des projections structurellement compatibles et apprend une représentation partagée préservant la géométrie de calibration propre à chaque couche. Cette approche est couplée à une sparsité structurée pour obtenir des décompositions de poids efficaces. Le pipeline est convergent et piloté par l'optimisation, remplaçant ainsi les stratégies heuristiques.",
+    "resultats": "La méthode atteint des résultats de pointe sur diverses architectures, échelles et modalités, surpassant systématiquement les décompositions de poids structurées indépendantes et les factorisations par paires alternatives basées sur des regroupements heuristiques. Aucun chiffre précis n'est fourni dans le résumé disponible, mais l'amélioration est présentée comme constante et significative.",
+    "limites": "Le résumé ne détaille pas les contraintes computationnelles ou les hypothèses sous-jacentes (ex : type de données, architectures compatibles). L'absence de chiffres concrets limite l'évaluation quantitative. La robustesse face à des architectures très hétérogènes ou des tâches hors distribution reste une zone d'ombre.",
+    "verdict": "À suivre de près pour son approche rigoureuse et ses promesses de compression scalable, mais des validations empiriques plus larges et des benchmarks détaillés sont nécessaires pour confirmer son avantage pratique."
+   }
+  },
+  {
+   "id": "35af078e7b3a66d3",
+   "title": "PackLab: A Comprehensive Framework for Developing, Training, and Evaluating MLLMs in Robotic Bin Packing",
+   "url": "https://huggingface.co/papers/2609.23784",
+   "summary": "Robotic bin packing requires long-horizon sequential decision-making, as each object placement affects the available space for subsequent packing. Existing methods primarily rely on hand-crafted geometric heuristics that optimize predefined objectives or reinforcement learning policies learned through trial and error over predefined training configurations. Despite recent advances in multimodal large language models (MLLMs) for this task, their potential for closed-loop sequential decisions across heterogeneous packing configurations remains underexplored. To address this gap, we introduce PackLab, a comprehensive framework for developing, training, and evaluating MLLMs for closed-loop robotic bin packing. PackLab-Suite provides a physics-based simulation platform for scalable generation of diverse training packing trajectories and evaluation of their physical outcomes. PackLab-VLM is a packing-specialized MLLM that understands the evolving object and container states to jointly select objects and predict placements in a closed-loop manner. PackLab-Bench provides standardized packing scenarios at multiple difficulty levels for systematic evaluation. Extensive experiments demonstrate that, on average, PackLab-VLM outperforms conventional packing heuristics, traditional reinforcement learning methods, and general-purpose MLLMs across object sets and container configurations, highlighting the potential of MLLMs for long-horizon robotic packing. The code, model, dataset, and benchmark are available at https://github.com/Correr-Zhou/PackLab .",
+   "published": "2026-09-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2609.23784"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "llm"
+   ],
+   "tldr": "PackLab propose un framework complet pour entraîner et évaluer des MLLM spécialisés dans le bin packing robotique, incluant un simulateur physique, un modèle dédié (PackLab-VLM) et des benchmarks standardisés, démontrant des performances supérieures aux méthodes existantes (heuristiques ou RL).",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé par PackLab concerne l'optimisation du *bin packing* robotisé, une tâche complexe nécessitant une prise de décision séquentielle à long terme. Les méthodes existantes reposent principalement sur des heuristiques géométriques manuelles ou des politiques d'apprentissage par renforcement, limitées par des configurations d'entraînement prédéfinies et une faible adaptabilité aux environnements hétérogènes. Les modèles multimodaux de langage (MLLM) actuels n'exploitent pas pleinement leur potentiel pour des décisions en boucle fermée dans ce contexte.",
+    "methode": "PackLab propose un cadre complet structuré en trois composants : 1) **PackLab-Suite**, une plateforme de simulation physique générant des trajectoires d'entraînement variées et évaluant les résultats physiques ; 2) **PackLab-VLM**, un MLLM spécialisé pour le *bin packing*, capable d'interpréter l'évolution des états des objets et du conteneur pour sélectionner conjointement les objets et prédire leurs placements en boucle fermée ; 3) **PackLab-Bench**, un benchmark standardisé avec des scénarios de difficulté progressive pour une évaluation systématique. L'approche combine des données synthétiques générées par simulation, un entraînement supervisé ou par renforcement, et une architecture multimodale intégrant vision et langage pour la prise de décision.",
+    "resultats": "Les expériences montrent que PackLab-VLM surpasse en moyenne les heuristiques de *bin packing* classiques, les méthodes traditionnelles d'apprentissage par renforcement, ainsi que les MLLM généralistes, sur divers ensembles d'objets et configurations de conteneurs. Les détails quantitatifs précis (métriques comme le taux de remplissage ou le nombre d'objets placés) ne sont pas fournis dans le résumé disponible, mais l'amélioration est présentée comme significative et reproductible via le benchmark proposé.",
+    "limites": "Le résumé ne précise pas les limites techniques ou conceptuelles de l'approche, comme la dépendance à la qualité de la simulation physique, la généralisation à des objets ou conteneurs non vus pendant l'entraînement, ou le coût computationnel des MLLM. De plus, l'absence de détails sur les architectures neuronales sous-jacentes ou les hyperparamètres empêche une évaluation critique approfondie. La robustesse en conditions réelles (hors simulation) reste également une zone d'ombre.",
+    "verdict": "PackLab mérite une attention particulière pour son approche systématique et reproductible, combinant simulation, spécialisation des MLLM et benchmarking, mais son adoption dépendra de la validation de ses performances en environnements réels et de sa scalabilité."
+   }
+  },
+  {
+   "id": "fa4018eec153851b",
+   "title": "HappyWorld-Bench",
+   "url": "https://huggingface.co/papers/2609.24308",
+   "summary": "Evaluating world models requires assessing both the quality of the worlds they generate and their consistency and responsiveness under exploration, interaction, and modification. We introduce HappyWorld-Bench, a comprehensive benchmark that evaluates whether generated worlds remain reliable as agents interact with them. Our design is built on a hierarchical capability framework of six world capabilities (W1-W6), from generative construction to unified world modeling, instantiated across three independent evaluation tracks: video world models, spatial world models, and embodied world models. HappyWorld-Bench comprises 1,138 video prompts, 300 spatial scenes, and 254 embodied test cases. Across all three tracks, we build and operate HappyWorld-Arena to organize human A/B comparisons and derive model-level Elo ratings, which complement newly designed automated metrics that capture behavioral correctness. We evaluate 14 video world models, 9 spatial systems, and 8 embodied candidates under this unified framework. Results reveal remaining reliability gaps across all three tracks: video models exhibit reduced consistency during extended rollouts and revisits, spatial models achieve at best 70.14% placement accuracy and 73.33% edit execution, and embodied models struggle to preserve state across multi-step actions and respond precisely to altered action conditions and physical rules. These findings highlight the need to evaluate world models not only by visual quality, but also by state consistency and the correctness of their responses to actions and interventions.",
+   "published": "2026-09-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 36,
+    "arxiv_id": "2609.24308"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "HappyWorld-Bench propose un cadre hiérarchique pour évaluer la fiabilité des modèles de monde (world models) à travers 1 138 prompts vidéo, 300 scènes spatiales et 254 cas d'usage embodied, révélant des lacunes persistantes en cohérence lors d'interactions prolongées.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le benchmark HappyWorld-Bench vise à résoudre le manque d'évaluation systématique des modèles de monde (world models) en IA, qui ne se limite pas à la qualité visuelle des environnements générés. Il cherche à mesurer leur fiabilité, leur cohérence et leur réactivité face à des interactions, explorations ou modifications dynamiques, un aspect souvent négligé dans les évaluations existantes.",
+    "methode": {
+     "cadre_capacites": "Le benchmark s'appuie sur un cadre hiérarchique de six capacités (W1 à W6), allant de la construction générative basique (W1) à la modélisation unifiée de mondes complexes (W6). Ces capacités sont déclinées en trois pistes d'évaluation indépendantes : les modèles de monde vidéo (génération de séquences visuelles), les modèles spatiaux (scènes 3D interactives) et les modèles incarnés (embodied, intégrant des agents physiques).",
+     "infrastructure": "HappyWorld-Bench inclut 1 138 prompts vidéo, 300 scènes spatiales et 254 cas de test incarnés. Pour évaluer les modèles, il combine des métriques automatisées (mesurant la correction comportementale) et des comparaisons A/B humaines organisées via HappyWorld-Arena, permettant de calculer des scores Elo au niveau des modèles.",
+     "evaluation": "Les modèles sont testés sur leur capacité à maintenir la cohérence de l'état du monde lors de rollouts prolongés, de réexplorations, ou après des interventions (ex. : modifications physiques ou actions multi-étapes). Les métriques automatisées ciblent spécifiquement la précision des réponses aux actions et la préservation de l'état."
+    },
+    "resultats": {
+     "video": "Les modèles vidéo montrent une cohérence réduite lors de rollouts étendus ou de revisites, révélant des lacunes dans la persistance de l'état du monde généré.",
+     "spatial": "Les systèmes spatiaux atteignent au mieux 70,14 % de précision pour le placement d'objets et 73,33 % pour l'exécution d'édits, indiquant des difficultés à gérer les interactions complexes.",
+     "embodied": "Les modèles incarnés peinent à préserver l'état du monde après des actions multi-étapes et à s'adapter précisément à des conditions d'action ou des règles physiques modifiées.",
+     "global": "Les résultats soulignent que les modèles actuels, bien que performants visuellement, échouent souvent à garantir une fiabilité comportementale, justifiant l'approche multi-dimensionnelle du benchmark."
+    },
+    "limites": {
+     "subjectivite": "Les comparaisons A/B humaines, bien que utiles, introduisent une variabilité subjective dans les scores Elo, limitant leur reproductibilité stricte.",
+     "couverture": "Le benchmark se concentre sur des capacités spécifiques (W1-W6) et des pistes prédéfinies, ce qui peut exclure des cas d'usage émergents ou des modèles hybrides non couverts.",
+     "metriques": "Les métriques automatisées, bien que novatrices, pourraient ne pas capturer pleinement la complexité des interactions dans des mondes ouverts ou non déterministes."
+    },
+    "verdict": "HappyWorld-Bench mérite une attention particulière pour son approche holistique et rigoureuse, comblant un vide critique dans l'évaluation des modèles de monde, mais ses limites méthodologiques appellent à des validations complémentaires."
+   }
+  },
+  {
+   "id": "1465c773d5dfb431",
+   "title": "Calibration as a First-Class Criterion in LLM Evaluation",
+   "url": "https://huggingface.co/papers/2609.26489",
+   "summary": "Calibration of language models -- the alignment between expressed or implicit confidence and empirical correctness -- is a well-studied subfield within NLP. Methods to measure it already exist. The problem is adoption: outside this subfield, NLP research regularly introduces new models, datasets, and benchmarks without checking whether the model's confidence scores are meaningful. We argue that this adoption gap is a major obstacle to trustworthy LLM evaluation. Miscalibration causes problems in two distinct areas: at deployment, where overconfident mistakes cause real harm, and inside the research pipeline, where methods like LLM-as-a-judge, synthetic data generation, and active learning rely on calibrated confidence without verifying it. Standard calibration metrics only require two inputs per example: a confidence score and a correctness judgment. Most benchmarks in use today already provide both, meaning calibration can be reported immediately. For open-ended generation, however, defining these two inputs is still an open challenge. We argue that each NLP subfield should pair its main performance metric with a calibration score and call for treating calibration as an essential property of every model rather than a niche topic.",
+   "published": "2026-09-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.26489"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Ce papier souligne l'importance de la calibration des LLM comme critère d'évaluation essentiel, rarement intégré dans les benchmarks actuels malgré ses impacts critiques sur la fiabilité en production et dans les pipelines de recherche (ex : LLM-as-a-judge). Il propose d'ajouter systématiquement des métriques de calibration aux évaluations existantes, avec une attention particulière aux défis posés par la génération ouverte.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le manque d'adoption généralisée de la calibration dans l'évaluation des modèles de langage (LLM). Bien que la calibration (alignement entre la confiance exprimée par un modèle et sa précision empirique) soit un sujet étudié en NLP, elle est souvent négligée dans les benchmarks et les recherches en dehors de ce sous-domaine. Cela pose des risques en production (erreurs surconfiantes causant des dommages) et dans la recherche (méthodes comme LLM-as-a-judge ou l'apprentissage actif dépendent de confiances non vérifiées).",
+    "methode": "Les auteurs soulignent que les métriques de calibration standard ne nécessitent que deux entrées par exemple : un score de confiance et un jugement de correction. Ces données sont déjà disponibles dans la plupart des benchmarks actuels, ce qui permet d'intégrer immédiatement des scores de calibration. Pour la génération ouverte (open-ended generation), la définition de ces entrées reste un défi non résolu. Ils proposent que chaque sous-domaine du NLP associe sa métrique principale de performance à un score de calibration, afin de normaliser cette pratique. Aucune méthode technique nouvelle n'est introduite, mais une standardisation de l'évaluation est préconisée.",
+    "resultats": "Aucun résultat expérimental ou chiffre clé n'est fourni dans le contenu disponible. La publication se concentre sur une analyse critique et une proposition de standardisation plutôt que sur des résultats concrets.",
+    "limites": "La principale limite réside dans l'absence de solutions concrètes pour la calibration dans les tâches de génération ouverte, un cas d'usage majeur des LLM. De plus, l'argument repose sur une adoption volontaire par la communauté, sans mécanisme contraignant pour garantir cette intégration. Enfin, les benchmarks existants pourraient nécessiter des adaptations pour fournir des scores de confiance exploitables.",
+    "verdict": "Cette publication mérite l'attention car elle met en lumière un angle mort critique dans l'évaluation des LLM, bien que son impact dépende de l'adhésion de la communauté à ses recommandations."
+   }
+  },
+  {
+   "id": "9a441e63f76a4798",
+   "title": "EmbodiedSWE: Coding Agents for Long Horizon Dexterous Robotics",
+   "url": "https://huggingface.co/papers/2609.27308",
+   "summary": "We study coding agents for long-horizon, dexterous robotics and ask whether their solutions can provide scalable supervision for learning general robot policies. To test this, we develop EMBODIEDSWE-BENCH, a simulation benchmark for coding agents spanning contact-rich manipulation, deformable objects, and long-horizon tasks requiring up to half an hour of continuous interaction. We find that frontier coding agents can solve complex long-horizon tasks and transfer prior solutions across both tasks and embodiments. We also design supporting tools that help agents more effectively solve these tasks. However, the resulting solutions require substantial iterative interaction and are typically specialized to individual task instances. We therefore introduce EMBODIEDSWE-GEN, which expands a single solution from coding agent into large diverse trajectories for training a VLA. VLA performance improves with more generated demonstrations, and agent-aided diversification improves generalization to held-out task variations. We also show that a VLA finetuned solely on coding-agent-generated simulation demonstrations completes a long-horizon task on real robot. Together, our framework uses coding agents to solve complex robotics tasks and turn verified solutions into scalable supervision for robot policies.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.27308"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "EmbodiedSWE-Bench évalue des agents codeurs pour la robotique dexterous sur des tâches long-horizon, démontrant leur capacité à générer des démonstrations scalables pour entraîner des modèles VLA et transférer des solutions en simulation et sur robot réel.",
+   "score": 8.8
+  },
+  {
+   "id": "c4e8cfc5063c6427",
+   "title": "InternW0: A Foundational Physical World Model for Efficient Real-World Interactions",
+   "url": "https://huggingface.co/papers/2609.27656",
+   "summary": "Physical intelligence requires more than predicting how the world may evolve: predictions must remain actionable as the world continues to change. We introduce InternW0, the first instantiation of the InternW physical world model series from Shanghai AI Laboratory, built around omnimodal interfaces, asynchronous multi-frequency processing, and local physical modeling under partial observations and external influences. InternW0 jointly learns future visual dynamics and continuous robot control through an asymmetric video--action architecture with flow matching. A high-capacity video expert provides longer-horizon predictive context, while a lightweight action expert operates at a faster timescale. Instead of regenerating the future for every action update, InternW0 reuses layerwise K/V and adapts it to newly observed states through observation-conditioned context routing. Domain-specific interfaces and soft prompts support heterogeneous embodiments, while contact-aware post-training incorporates force and tactile signals for contact-rich manipulation. We train InternW0 on approximately 7,200 hours of heterogeneous robot and egocentric data, including EgoLab, a 275-hour real-laboratory egocentric dataset. Evaluation spans simulation benchmarks and real-world scientific tasks, including a 15-stage metal--organic framework synthesis workflow and 5-stage contact- and force-aware dexterous manipulation for general-purpose quantitative pipetting. These results advance scalable, asynchronous, and science-native physical world models for universal and efficient real-world interactions.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.27656"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "InternW0 introduit un modèle physique omnimodal pour des interactions robotiques efficaces, combinant prédiction visuelle et contrôle continu via une architecture asymétrique vidéo-action. Entraîné sur 7200 heures de données hétérogènes, il gère des observations partielles et des signaux tactiles, avec des interfaces adaptables pour différentes morphologies robotiques.",
+   "score": 8.8
+  },
+  {
+   "id": "47c6654446be5a88",
+   "title": "Agensh: Scaling Organizational Intelligence to 1,024 Agents",
+   "url": "https://huggingface.co/papers/2609.26781",
+   "summary": "A multi-agent system can reduce latency on complex tasks by executing work concurrently. Several pioneering harness frameworks support multi-agent systems. However, the scalability of current multi-agent harnesses is often constrained by a central orchestrator's capacity to allocate tasks and coordinate workers. To address this limitation, we introduce Agensh, a scalable self-organized multi-agent harness without a central orchestrator: concurrent workers execute a multi-agent cooperation loop, continuously gathering context, claiming and self-assigning sub-tasks, taking action and sharing findings, verifying results, and merging progress in an asynchronous manner. The loop is supported by the agentic organization infrastructure comprising three components: a shared workspace holds proposed, ongoing, and completed work; a message interface lets workers communicate; and shared context retains reusable findings and work intentions. To test the scalability of Agensh, we evaluate it on the five hardest ProgramBench tasks with GPT-5.6-sol (high). Scaling from 1 to 128 agents raises the mean final test-pass rate from 19.31% to 28.78%, an approximately 49% relative improvement. Larger organizations reach comparable test-pass rates earlier. On pandoc, scaling from 1 to 1,024 agents raises the final test-pass rate from 33.89% to 55.06%. Worker trajectories further show that different forms of self-organized cooperation gradually emerges and standardizes as the organization grows. These results reveal the number of agents as a new scaling dimension for multi-agent organizations to expand the frontier of general intelligence, offering a practical solution for complex tasks under hard latency constraints or time budgets.",
+   "published": "2026-09-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.26781"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Agensh propose un cadre auto-organisé pour des systèmes multi-agents (jusqu'à 1024 agents) sans orchestrateur central, améliorant les taux de réussite de 19.31% à 28.78% sur ProgramBench via une boucle de coopération asynchrone et une infrastructure partagée (espace de travail, interface de messages, contexte partagé).",
+   "score": 8.8
+  },
+  {
+   "id": "304797ed6cd3d8e0",
+   "title": "Computation Over Geometry: Meaning Identity Is Computed, Not Shipped in the Embeddings",
+   "url": "https://arxiv.org/abs/2609.28290v1",
+   "summary": "Meaning identity (whether two sentences say the same thing after wording changes) is treated in retrieval and RAG as a geometric fact about independently encoded sentence vectors. We show that, for frozen off-the-shelf encoders and language models, it is not: identity is computed when both sentences share one forward pass, and is not a property of the embedding geometry those systems ship. On overlap-matched PAWS-X, purpose-built encoders (BGE, E5, GTE, MiniLM, E5-Mistral-7B) reach English confirm AUC only 0.55-0.65 (dense peak 0.70). Independently encoded last-token states of Llama 3, Mistral, and Qwen do no better; late fusion of the two vectors stays near chance. The same probe on a joint forward pass reaches 0.90-0.96 from 1.5B to 32B, collapses under partner shuffle, is mid-depth, saturates near 0.94 by 3B, and appears more weakly in GPT-2 XL (0.76). The gap holds beyond Llama-style models on other causal LMs, bidirectional encoders (DeBERTa, RoBERTa), and encoder-decoders (Flan-T5, T5, BART). Fixed or linear readers over frozen independent encodings never unlock identity; nonlinear pair readers recover part of it only on the full 49k-pair PAWS train split (0.68-0.87). Off-the-shelf rerankers split: BGE-reranker-large reaches 0.94, while MS-MARCO and Jina stay at 0.55-0.64. Independently trained families compute the same relation and a 1.5B joint reader can distill it from unlabelled teacher scores, while no linear function of the teachers own independent vectors can. Bi-encoders can be fine-tuned to fit PAWS (0.87-0.93), but transfer and STS-B suffer. Cosine compares wording neighbourhoods; identity is a cheap computed operator, not a property of either sentence vector.",
+   "published": "2026-09-23T15:36:20+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiaqi Deng"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "rag"
+   ],
+   "tldr": "Cet article démontre que l'identité sémantique entre phrases (ex: PAWS-X) n'est pas une propriété géométrique des embeddings pré-entraînés, mais nécessite un traitement conjoint des deux phrases via une passe forward unique. Les résultats montrent des performances quasi-aléatoires (AUC 0.55-0.65) avec des embeddings indépendants, contre 0.90-0.96 avec un traitement joint, remettant en cause les approches RAG classiques basées sur des embeddings statiques.",
+   "score": 8.6
+  },
+  {
+   "id": "fba87773b9c6e39f",
+   "title": "Predicting Quantization Price for Selecting PTQ Configurations Before Deployment",
+   "url": "https://arxiv.org/abs/2609.28270v1",
+   "summary": "Weight-space post-training quantization (PTQ) must choose finite formats, granularities, quantizer families, transformations, and bits before the completed quantized model reveals its output-distribution drift. Existing PTQ methods predict important pieces of this degradation, including reconstruction error, Hessian sensitivity, transformation effects, and downstream loss, but these pieces are usually scored after fixing the quantization geometry or inside separate configuration families. We formulate weight-space PTQ as pre-deployment configuration selection using priced layer-output error. Each admissible layer configuration is treated as an error generator with a deployment cost, which induces a layer-output error covariance $\\boldsymbolΣ_l(α_l)$, and the full-precision model prices that covariance by downstream curvature, $\\widehatρ_l(α_l)=\\frac{1}{2}\\operatorname{Tr}\\left(\\widehat{\\mathbf{H}}_l\\,\\widehat{\\boldsymbolΣ}_l(α_l)\\right)$. The price follows from full-precision-to-quantized forward KL, whose first-order term cancels at the reference model. It turns reconstruction and diagonal scores into reduced proxies that drop price factors, while finite formats, codebooks, granularities, and equivalent transformations become comparable candidates through the covariances they induce and the costs they pay. A trace reduction then yields a calibration-time price table and a budgeted price-guided selector, making fixed-geometry bit allocation a special case rather than the organizing problem.",
+   "published": "2026-09-23T15:25:44+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Junbin Qiu, Jian Mu, Weitong Zhang, Yao Shu"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Nouvelle méthode pour prédire le 'coût de quantification' (erreur de dérive de sortie) des configurations de PTQ (Post-Training Quantization) avant déploiement, en utilisant une métrique basée sur la courbure du modèle en pleine précision. Permet une sélection optimale des paramètres de quantification (bits, granularité) sans évaluation exhaustive.",
+   "score": 8.6
+  },
+  {
+   "id": "6fb67b6b8e291bb5",
+   "title": "Spatial-Interactor: Learning Spatial Reasoning through Interaction with the Observable Physical World",
+   "url": "https://huggingface.co/papers/2609.23038",
+   "summary": "Spatial reasoning is essential for vision-language models (VLMs) to understand and act in the physical world. Reasoning in dynamic environments requires VLMs to perceive local state transitions caused by object motion and viewpoint changes and integrate them over long trajectories to maintain an updated spatial state, yet existing VLMs remain limited in both capabilities. Current spatial training primarily focuses on static questions about object attributes and spatial relations, providing limited direct supervision for state transitions; in contrast, interaction trajectories naturally connect a preceding observation, an action, and a subsequent observation, offering direct supervision for local state transitions, while complete trajectories reveal dependencies among consecutive transitions. We therefore introduce Spatial-Interactor, a framework that trains VLMs to model physical-world state transitions through interaction, organizing this learning process into a three-level curriculum covering L1 passive world-state transitions, L2 active self-state transitions, and L3 long-horizon interaction trajectories. Accordingly, we construct the Learning from Spatial Interaction dataset (LSI-108K) from simulated and real interaction trajectories, with tasks aligned with the objective of each level. Our two-stage training strategy applies Supervised Fine-Tuning (SFT) to L1 and L2 for local transition modeling, and On-Policy Distillation (OPD) then uses privileged self-distillation: a teacher branch given segment-level transition descriptions supervises the student's on-policy CoT, helping the student learn to integrate consecutive transitions over L3 long trajectories. Experiments across multiple VLMs and spatial benchmarks show consistent gains in local transition modeling and long-horizon integration.",
+   "published": "2026-09-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 34,
+    "arxiv_id": "2609.23038"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "Spatial-Interactor introduit un curriculum en 3 niveaux pour entraîner les VLMs à raisonner spatialement via l'interaction physique, exploitant les trajectoires d'action-observation pour superviser directement les transitions d'état, avec un jeu de données dédié (LSI) et des évaluations sur des tâches dynamiques.",
+   "score": 8.5
+  },
+  {
+   "id": "8b33e56e6c3e24a8",
+   "title": "WhatWorkedBench: Benchmarking Experimental Understanding in AI Agents",
+   "url": "https://huggingface.co/papers/2609.27490",
+   "summary": "AI research agents need reliable knowledge of how their experiments change outcomes. We introduce WhatWorkedBench to measure experimental understanding, the accuracy of predictions about component changes after budgeted experimentation. Agents inspect code, select measurements, and submit a response surface, a table predicting scores for every configuration of component settings. Exhaustive CPU execution supplies reference effects for changing each component while holding the others fixed. These effects capture combinations of changes across 36 tasks from 30 data sources and 8 workflow types, with 1248 configuration records. Core evaluation combines 4,206 numerical-control records across all eight families and 108 agent episodes across the original six. At eight new measurements, pair-effect ridge selects an optimum on 15 of 22 sources and limits every effect error to 10% of score range on three. Fitting a Gaussian process (GP) to the same agent observations raises effect recovery, accuracy relative to true effect magnitude, from 0.632 to 0.698 in the original Flash cohort and from 0.621 to 0.720 in an additional cohort. On six completed beat-detection and graph submissions, the same-observation GP raises family-macro recovery from 0.303 to 0.455. On six workflows with six binary options at 20 new measurements, encoding code equivalences, configurations with identical behavior, raises GP recovery from 0.248 to 0.462. WhatWorkedBench supports research on experimental agents, adaptive experimental design, numerical inference, and use of program structure.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2609.27490"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "WhatWorkedBench évalue la capacité des agents IA à prédire l'impact de modifications de composants après expérimentation, via un benchmark de 36 tâches et 1248 configurations. Les résultats montrent que les agents améliorent leur précision avec des méthodes comme la sélection d'effets par ridge ou les processus gaussiens, soulignant l'importance de la compréhension expérimentale pour l'optimisation des modèles.",
+   "score": 8.5
+  },
+  {
+   "id": "d7d551bcf3c89850",
+   "title": "Schrödinger's Code Repository: Have LLMs Learned SWE-bench or Memorized It?",
+   "url": "https://huggingface.co/papers/2609.27891",
+   "summary": "Repository-level coding benchmarks have become the standard for evaluating coding agents, yet they inherently suffer from data leakage because they are built upon popular open-source repositories repeatedly used for training. Consequently, strong performance may reflect memorization of canonical repository cues rather than robust repository reasoning. We propose SchrodingerRepo (Schrödinger's Repository), an evaluation framework for testing coding agents under dynamically instantiated repository representations. Instead of repeatedly using a static representation of the test repository, SchrodingerRepo treats the test repository as an evaluation-time latent variable that is dynamically instantiated only when the agent enters the evaluation environment. The instantiated repository preserves the original executable behavior while eroding familiar cues such as naming conventions, file layouts, and implementation patterns through four transformation levels: problem statement reconstruction, namespace remapping, intra-file layout reordering, and functionality-preserving code rewriting. We evaluate popular LLMs on SWE-bench Verified and SWE-QA. Results show that removing familiar repository cues consistently degrades agent performance and substantially increases interaction costs across models. Further analysis reveals that the additional cost is primarily caused by increased difficulty in repository exploration and localization. These findings suggest that current coding agents may partially rely on memorized repository-side cues, highlighting the need for evaluation under dynamically instantiated repository representations.",
+   "published": "2026-08-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2609.27891"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Schrödinger's Code Repository évalue la robustesse des agents de codage face à des dépôts dynamiquement transformés (remappage de noms, réécriture de code, etc.), révélant que les performances élevées sur SWE-bench reposent souvent sur la mémorisation plutôt que sur un raisonnement généralisable.",
+   "score": 8.5
+  },
+  {
+   "id": "e8ca78fa84706d76",
+   "title": "Embedding Physics Priors in Robot Learning: A Survey",
+   "url": "https://huggingface.co/papers/2609.22319",
+   "summary": "The rapid progress of artificial intelligence is reshaping robotics and accelerating the adoption of learning-based approaches. While purely data-driven methods have achieved remarkable success in computer vision and natural language processing, robotics remains constrained by limited data, complex real-world interactions, and the need for reliable operation. These challenges have motivated the exploration of physics-embedded robot learning, which embeds physics priors into learning algorithms. By encoding the underlying physical laws and constraints, physics priors can complement limited data with robotics-specific inductive biases, potentially improving generalization, interpretability, and sample efficiency. However, the literature on physics-embedded robot learning remains fragmented across terminology, methodologies, and application domains, making it difficult to assess this growing body of work. This survey reviews physics-embedded robot learning across a broad range of physics priors, robotics applications, and machine learning models, from single-layer perceptrons to generative foundation models. We adopt a unified taxonomy that classifies existing approaches according to their physics embedding: physics-guided inputs, data, and representations; physics-encoded model architectures; and physics-informed training loss functions. Building on this taxonomy, we review methods for robot dynamics learning, trajectory planning, prediction, control, and estimation, together with the corresponding open-source software ecosystem. We identify key open challenges, and outline promising future research directions. Overall, we argue that physics priors provide a particularly relevant robotics-specific inductive bias, complementing rather than replacing data-driven learning, and paving the way toward more generalizable, data-efficient, and trustworthy robotic systems.",
+   "published": "2026-09-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.22319"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "interpretabilite"
+   ],
+   "tldr": "Ce survey classe les méthodes d'apprentissage robotique intégrant des priors physiques (lois de la physique, contraintes) pour améliorer généralisation, interprétabilité et efficacité d'échantillonnage, couvrant des approches allant des perceptrons aux modèles génératifs.",
+   "score": 8.5
+  },
+  {
+   "id": "42b86321c7d13767",
+   "title": "RoboFollow: Unveiling the Instruction Following Mirage in Embodied Agents",
+   "url": "https://huggingface.co/papers/2609.25636",
+   "summary": "Modern embodied agents achieve impressive success rates, yet their actual instruction-following ability is far weaker than these numbers suggest. We trace this illusion to a structural property we term low scene entropy: when a visual scene admits only one valid task, language becomes redundant and a policy can score highly while barely using it. We introduce RoboFollow, a diagnostic benchmark with three principles: (1) High Scene Entropy: each training scene supports multiple kinematically distinct task branches, making vision alone insufficient and forcing reliance on language. (2) Hierarchical Diagnostic Protocol: a four-level protocol (L0--L3) progressively perturbs visual layout and semantics, probing whether equivalent instructions yield consistent behavior and distinct ones yield discriminable behavior across spatial relations, attributes, trajectory constraints, and logic. (3) Confound-Controlled Diagnosis: we simplify interaction objects, restrict actions to the trained repertoire and report stage-wise Intent and Execution scores, isolating comprehension from motor execution. Evaluation of nine VLA and WAM policies shows that strong L0 performance, where attained, does not reliably transfer to L1--L3 under our fine-tuning setup. Representative mitigations, including stronger VLM backbones, QA co-training, LangForce, and Classifier-Free Guidance, all fail to close this gap. RoboFollow exposes genuine instruction following as a critical, overlooked bottleneck. Code and dataset are available at https://github.com/AutoLab-SAI-SJTU/RoboFollow and https://huggingface.co/datasets/AutoLab-SJTU/robofollow-data.",
+   "published": "2026-09-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.25636"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "RoboFollow démontre que les agents incarnés (VLA/WAM) surestiment leurs capacités de suivi d'instructions via des scènes à faible entropie visuelle. Le benchmark introduit une protocole hiérarchique (L0-L3) pour évaluer la compréhension linguistique indépendamment de la motorisation, révélant des faiblesses structurelles.",
+   "score": 8.5
+  },
+  {
+   "id": "e76bceff2b563646",
+   "title": "ImIR: Image-Instruction Tuning for All-in-One Image Restoration",
+   "url": "https://huggingface.co/papers/2609.25267",
+   "summary": "Degradations vary widely across images, so a practical restoration system has to handle many degradation types with one model. A recent and effective recipe adapts a large pretrained image-editing model to restoration using a small low-rank adapter with a text prompt. We replace that prompt with an instruction derived from the degraded image itself. The image reaches the editor through two paths: its structure comes from the model's VAE, and its semantic instruction comes from a lightweight token mapper that shifts the degraded image's vision-language embedding toward the embedding a clean image would produce. Because the instruction is a continuous vector, scaling it yields a family of valid restorations for tasks whose target is not unique, such as low-light enhancement. We adapt one Qwen-Image-Edit model to six tasks with a single adapter trained in about three hours on one GPU. The image instruction outperforms text conditioning under a matched comparison, and it supports task agnostic restoration without a degradation label, which the text variant does not.",
+   "published": "2026-09-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.25267"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "ImIR propose une méthode d'adaptation d'un modèle d'édition d'image (Qwen-Image-Edit) pour la restauration d'images via un *low-rank adapter* et une instruction sémantique dérivée de l'image dégradée elle-même. Cette approche permet une restauration multi-tâches (6 types de dégradations) avec un seul modèle, sans étiquetage explicite de la dégradation, et offre une flexibilité via le *scaling* de l'instruction pour des tâches aux cibles non uniques.",
+   "score": 8.5
+  },
+  {
+   "id": "02f3f71bd5dc7ab5",
+   "title": "MicroQonv: Reshaping Convolution Tensors for Efficient Microscaling in Training and Inference",
+   "url": "https://arxiv.org/abs/2609.28358v1",
+   "summary": "Microscaling quantization techniques are increasingly used to represent neural network parameters with 8 bits or fewer while preserving near-full precision accuracy. However, applying these methods efficiently in convolutional layers is not straightforward. A naive approach transfers full-precision weights and activations to processing units and quantizes each tensor twice, resulting in much more memory movement than expected. Additional overhead comes from the activation tensors, whose sizes grow substantially because of the im2col transformation applied before quantization. We propose MicroQonv, a way to combine microscaling with convolutional layers' forward and backward operations by quantizing each tensor only once and quantizing the activation tensor before applying a modified version of im2col: channel-batch-first im2col. MicroQonv reduces the quantization cost by a factor of $\\times2$ for weights and gradients, and by up to $\\times9$ for activations, at a negligible accuracy cost. It reduces memory movement and storage by up to $\\times7.53$ compared to their full-precision counterparts. This way, MicroQonv reduces microscaling-quantized activation memory movement by $\\times3.5$ for state-of-the-art object detection models YOLOV8nano and $\\times2.2$ for YOLOV26nano. It also enables 4-bit microscaling in a quantized latent replay strategy for continual learning at the edge, improving accuracy by +5.7% to +11%.",
+   "published": "2026-09-23T16:30:48+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Romain Facq, Sami Ben Ali, Olivier Sentieys"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "MicroQonv optimise la quantification microscaling pour les couches convolutives, réduisant les coûts mémoire/calcul (×2 à ×9) avec une perte de précision négligeable. Solution technique majeure pour l'inférence efficace sur edge.",
+   "score": 8.3
+  },
+  {
+   "id": "8657570c61a0fa0f",
+   "title": "Complementary Roles of Activation and Parametric Memory in Few-Shot Learning",
+   "url": "https://arxiv.org/abs/2609.28250v1",
+   "summary": "At test time, large language models (LLMs) can encode historical information in activation memory (i.e., KV caches) and parametric memory (i.e., updated parameters). While activation memory is generally considered effective for factual recall and parametric memory for learning new tasks, their interplay remains unclear. In this work, we systematically investigate the role of memory in few-shot learning through controlled experiments. We find that activation memory is superior for recalling facts, whereas parametric memory does not consistently outperform activation memory in task learning. Moreover, our experiments show that the composite task, Conditional Arithmetic, requires the synergy of both memory types. Through neuron-level analysis, we find that the model activates distinct sets of neurons when accessing the same historical information through activation versus parametric memory. When both memory types are combined, the model recruits neurons from both sets, which is crucial for solving Conditional Arithmetic. These findings suggest that neither memory mechanism alone is sufficient for this composite task, highlighting the importance of their collaboration.",
+   "published": "2026-09-23T15:11:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Miaohe Niu, Runsong Zhao, Xinyu Liu, Bo Jin, Yucheng Qiao, Chunliang Zhang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude démontre expérimentalement que les LLMs exploitent deux types de mémoire en *few-shot learning* : la mémoire d'activation (KV caches) pour le rappel de faits et la mémoire paramétrique (poids ajustés) pour l'apprentissage de tâches, avec une synergie nécessaire pour des tâches composites comme l'arithmétique conditionnelle. Une analyse neuronale révèle des ensembles de neurones distincts selon le type de mémoire utilisé.",
+   "score": 8.3
+  },
+  {
+   "id": "1f4116a04746bfeb",
+   "title": "PASTABench: Proactive Assessment of Sequential Trajectories for Agent Safety",
+   "url": "https://arxiv.org/abs/2609.28197v1",
+   "summary": "As Large Language Models (LLMs) evolve into autonomous agents that alter real-world states, ensuring operational safety across multi-step workflows has become a critical challenge. While recent work has moved beyond single-turn evaluation toward multi-turn paradigms, key limitations persist: step-level methods treat actions in isolation, missing how risks accumulate, while trajectory-level evaluations operate post-hoc, offering no opportunity for timely intervention. To address these limitations, we formalize Decoupled Proactive Safety Monitoring along three dimensions: whether to intervene, when to intervene, and what the risk is. We introduce PASTABench, a benchmark of 1,139 multi-turn trajectories spanning 5 risk categories and 13 subcategories. We further propose the Optimal Intervention Window (OIW), anchored by annotated Earliest-Signal and Trigger turns, to quantify intervention timeliness. Evaluation of 16 LLMs reveals that proactive intervention remains largely unsolved, with the best model achieving only 40.74% optimal-timing interventions. Fine-grained diagnosis further uncovers pervasive lexical overfitting: competitive safety scores of smaller models mask keyword hypersensitivity rather than genuine risk comprehension, as their proactive capability largely collapses once hazard vocabulary is neutralized.",
+   "published": "2026-09-23T14:34:45+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiapeng Sun, Yujin Zhou, Han Zhu, Pengcheng Wen, Jiayi Zhou, Sirui Han"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "PASTABench évalue la sécurité proactive des agents LLM via 1 139 trajectoires multi-tours couvrant 5 catégories de risques. Le benchmark introduit la notion de *Optimal Intervention Window* pour quantifier la pertinence des interventions, révélant des lacunes majeures (meilleur modèle à 40.74% d'interventions optimales) et un surapprentissage lexical.",
+   "score": 8.3
+  },
+  {
+   "id": "671af66af68a3cc0",
+   "title": "How Sensitive Are LLM Leaderboard Claims to Hidden Model Selection?",
+   "url": "https://arxiv.org/abs/2609.28177v1",
+   "summary": "LLM leaderboard gains can reflect selection among privately evaluated model variants, yet neither the number of variants nor their dependence is public. We ask how many hidden variants a published margin can support while retaining statistical evidence of a provider's advantage over a fixed comparator. For a fixed candidate family under a Gaussian margin model, we derive a sensitivity curve that reports this maximum count as a function of a lower bound on within-family correlation. The relevant correlation must match the score used for ranking and the sampling model: in a controlled family, pooled item correlation is 0.90, whereas composite-score correlation is 0.46 under item resampling and 0.92 when MMLU subjects are resampled. An item-based audit of 394 adjacent-rank claims on the Open LLM Leaderboard finds that 391 lack statistical support even before accounting for selection. Among claims that pass the uncorrected test, certification can depend on assumptions about the hidden family's correlation. The resulting curves make these assumptions explicit without estimating the unobserved search size.",
+   "published": "2026-09-23T14:23:01+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chen Yang, Xianyang Zhang, Jun Chen"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Analyse critique des claims des leaderboards LLM (ex: Open LLM Leaderboard) montrant que 99% des gains publiés manquent de support statistique, même sans tenir compte de la sélection de modèles cachés. Met en lumière les biais de publication et les limites des benchmarks publics.",
+   "score": 8.3
+  },
+  {
+   "id": "2ecf579e682115e7",
+   "title": "Uranus: Building the Next-Generation Simulation Infrastructure for Embodied AI",
+   "url": "https://huggingface.co/papers/2609.24815",
+   "summary": "Scalable simulation is essential for robot data generation, policy training, evaluation, and safe iteration, yet real-world interaction is costly and conventional simulators require labor-intensive construction. We present Uranus, a data-driven robot simulator built around a joint-trajectory-conditioned autoregressive diffusion model. Uranus offers three key capabilities: (1) streaming, open-ended rollout, which receives future joint-position trajectories online and autoregressively generates one latent frame per step, corresponding to four RGB frames, without a fixed horizon; (2) low-latency generation, achieving 24 FPS after inference optimization; and (3) scalable, extensible robot control, providing a unified interface for synchronized multi-view generation across diverse robot embodiments and camera configurations. We conduct comprehensive quantitative and qualitative evaluations on both in-distribution and out-of-distribution data, providing an objective assessment of Uranus and clearly identifying its current limitations. We release the code and model weights to empower the community with practical tools and insights.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.24815"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Uranus présente un simulateur robotique basé sur un modèle de diffusion autorégressif conditionné par des trajectoires articulaires, offrant des rollouts ouverts, une génération à basse latence (24 FPS) et une interface unifiée pour le contrôle multi-robots, avec une évaluation quantitative et qualitative de ses limites.",
+   "score": 8.2
+  },
+  {
+   "id": "8f308b0e1d8ffeb1",
+   "title": "Just-in-Time Memory: Learning to Curate Task-Adaptive Memory for LLM Agents",
+   "url": "https://huggingface.co/papers/2609.27334",
+   "summary": "Agentic memory systems reuse past experience to improve future performance, yet most existing designs curate memory at write time: once a task is completed, its trajectory is distilled into a fixed artifact, such as a reflection, workflow, skill, or reasoning strategy, that is later retrieved by similarity. This forces the system to decide what is worth remembering before the future query is known, irreversibly discarding information and producing a query-independent summary that must serve many possible downstream tasks. Learning such a write-time curator is also difficult because the value of a storage decision may only become apparent when a relevant query arrives, potentially many tasks later, creating a long-horizon credit-assignment problem. We instead retain raw trajectories and defer curation until read time, when the current task is known. Given the retrieved traces and the new task, a memory curator synthesizes a compact, task-adaptive payload tailored to the immediate need. Because this payload is consumed on the same task, the curator can be trained directly from immediate task success, avoiding delayed utility signals and the need to artificially group related tasks. Across ALFWorld, WebShop, and τ^2-bench, our Just-in-Time Memory (JitMem) consistently outperforms no-memory agents as well as heuristic and learned write-time memory methods, improving over the strongest baseline by 16.2, 16.3, and 3.9 absolute success-rate points, respectively. Notably, even an untrained curator is already competitive with or surpasses these baselines, showing that task-adaptive read-time curation itself is a major source of the gain; training the curator further compounds the improvement.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.27334"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Just-in-Time Memory introduit une mémoire adaptative pour agents LLM, différant la curation des traces brutes jusqu'au moment de la requête, améliorant ainsi la pertinence des informations récupérées sans perte irréversible.",
+   "score": 8.2
+  },
+  {
+   "id": "0eb66f53b87f05ae",
+   "title": "MemBodied: Recurrent Associative Memory for Vision-Language-Action Models",
+   "url": "https://huggingface.co/papers/2609.28256",
+   "summary": "Vision-Language-Action models provide a strong foundation for general-purpose robot control, yet a vast majority of policies do not preserve and leverage episode-level information beyond the current observation. This limitation is consequential in history-dependent manipulation tasks that depend on information available only in past observations. Retaining past observations in context can aid in recovering this information, but at the significant cost of ever-growing, bloated context and inference latency. We thus introduce MemBodied, a fixed-size episodic memory with two complementary components: an associative state that records interactions across policy calls and an episode anchor that preserves a compact representation of the initial scene as a reference. At each policy call, the model conditions action generation on the current input and the memory components, rather than directly using past observations. Across five evaluated RMBench tasks requiring memory, MemBodied achieves 7.81times the mean success rate of a stateless policy and 2.98times of vanilla recurrent memory, while outperforming the strongest memory-augmented baseline by 1.3times with 10times fewer added parameters. On the fully observable LIBERO-Long suite, it reached 90.6%, a 5.4% improvement over the stateless π_0 policy. These findings support MemBodied as a practical alternative to expanding the policy context for history-dependent manipulation.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2609.28256"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "MemBodied propose une mémoire épisodique compacte pour les modèles Vision-Language-Action, améliorant de 7.81x le taux de succès sur des tâches de manipulation dépendant de l'historique, avec une latence réduite.",
+   "score": 8.2
+  },
+  {
+   "id": "47502742256348c0",
+   "title": "Verifiable Hidden Dynamics Play: Generating Agentic RL Environments from Solved Mechanisms",
+   "url": "https://huggingface.co/papers/2609.27321",
+   "summary": "Language-model agents increasingly face long-horizon tasks with evolving state, interdependent decisions, and delayed outcomes. Scaling their training requires diverse agentic environments, dependable outcome signals, and low extension cost. Existing generation pipelines commonly construct an environment before defining its outcome rule or annotating its trajectories, leaving dynamics and evaluation to be aligned post hoc. VHD-Play reverses this dependency by sampling and solving a mathematical model before a corpus-grounded setter renders its decision process as stateful tools. The executable dynamics and trajectory-scoring reference are inherited from the same solved model. The pipeline produces 3,300 diverse agentic environments at a cost of a few cents each. Training Qwen3.6-35B-A3B on three families raises its mean agentic score from 0.204 to 0.815 in a five-family diagnostic. Gains also appear on held-out instances from all three training families and eight unseen mechanism families, then extend beyond the generated substrate to external benchmarks for general function calling, travel planning, and 365-day e-commerce. On E-Commerce Bench, the trained checkpoint completes every run without bankruptcy and exceeds Qwen3.7-Max. We compare written-out problems with stateful versions that reveal or hide their parameters. The comparison shows that most of the learnable gap lies in stateful interaction rather than underlying problem solving. A frozen 35B setter realizes larger environments, and scale-matched training retains gains as mechanism size and horizon grow, indicating the potential for an evolving training substrate.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.27321"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "VHD-Play génère des environnements RL agentiques à partir de modèles mathématiques résolus, produisant 3 300 environnements à faible coût et améliorant significativement les scores d'agents sur des tâches variées.",
+   "score": 8.2
+  },
+  {
+   "id": "e3c0890a2c567e8a",
+   "title": "Where Should I Join? Robot Group Joining via Language-Guided Goal Prediction",
+   "url": "https://arxiv.org/abs/2609.28467v1",
+   "summary": "Social navigation typically assumes a specified goal and focuses on reaching it while respecting social conventions, whereas robot group joining requires predicting where to join based on the group's real-time activity and formation. This is a highly semantic task, yet an important capability for applications such as robotic guide dogs and autonomous mobility scooters. We formulate language-grounded robot group joining: given an observation and a natural-language description of a target group, the robot identifies the relevant group members and predicts socially compliant joining poses. For grounding, we generate structured candidate subsets through recursive spectral partitioning and rank them with a language-conditioned image--geometry model. Given the grounded group, a goal predictor leverages human-formation priors to produce a multimodal energy--orientation map over feasible robot poses. Experiments on conversations, queues, and audiences across varying group sizes, crowd densities, and visual ambiguities show that our method achieves competitive grounding accuracy with sub-second inference and outperforms all baselines in joining-pose prediction. Real-robot experiments further demonstrate group joining in both static and dynamically changing interactions.",
+   "published": "2026-09-23T17:55:48+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zilin Fang, Zishuo Wang, Gim Hee Lee, David Hsu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents",
+    "llm"
+   ],
+   "tldr": "Méthode pour prédire où un robot doit rejoindre un groupe humain en temps réel via un guidage par langage naturel, combinant segmentation spectrale et modélisation géométrique, avec validation sur des scénarios réels.",
+   "score": 8.0
+  },
+  {
+   "id": "376d9538844bb34f",
+   "title": "Agent-Editing World Model: Rethinking World Modeling for LLM Agents",
+   "url": "https://arxiv.org/abs/2609.28416v1",
+   "summary": "Recent advances in large language models (LLMs) have enabled agents to tackle long-horizon tasks across diverse environments. To further improve agent performance, existing language world models typically predict environment observations, yet reconstructing high-entropy, execution-dependent tool responses offers limited value when real feedback is available. Meanwhile, agents suffer from \\emph{task-state contamination}, where unsupported assumptions and outdated plans persist in history and distort subsequent decisions. We propose the \\textbf{Agent-Editing World Model (AEWM)}, which models how reasoning and actions shape future task progress rather than simulating tool responses. AEWM combines \\textbf{Action Judge} to distinguish \\textsc{Critical}, \\textsc{Exploratory}, and \\textsc{Noisy} decisions with \\textbf{State Revision} to edit noisy reasoning--action continuations from the same observed history. \\textbf{EditAct} integrates these capabilities with real execution, directly changing the state underlying subsequent decisions rather than merely providing critiques. We train AEWM across Search, Terminal, and Software Engineering through mid-training and supervised fine-tuning. AEWM achieves 70.5\\% macro-F1 on our Action Judge benchmark, exceeding the strongest frontier baseline by 10.6 points. Across six benchmarks and three agent backbones, EditAct improves average scores by 3.2--6.7 points over the strongest baseline. Furthermore, rejection sampling fine-tuning on verified EditAct trajectories, termed \\textbf{AEWM-RFT}, improves over Self-RFT by 2.2--2.6 points across three domains without online AEWM guidance.",
+   "published": "2026-09-23T17:18:26+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shuang Sun, Guoxin Chen, Fanzhe Meng, Jia Deng, Huatong Song, Jinhao Jiang"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "AEWM remplace la simulation d'observations par un modèle de révision d'état basé sur l'historique, distinguant les actions critiques/non critiques pour améliorer la prise de décision des agents LLM dans des tâches long-horizon.",
+   "score": 8.0
+  },
+  {
+   "id": "9bb95970cefc38fe",
+   "title": "tigerless-labs/agent-memory",
+   "url": "https://github.com/tigerless-labs/agent-memory",
+   "summary": "Long-term memory runtime for AI agents — plain Markdown as the source of truth, local ranked retrieval, and an independent sleep-time Manage layer. Claude Code and Codex share one store. No API key.",
+   "published": "2026-09-01T21:52:29Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 966,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Framework open-source de mémoire long-terme pour agents IA, utilisant du Markdown comme source de vérité et un système de récupération locale. Pertinent pour les systèmes multi-agents et la gestion de contexte.",
+   "score": 8.0
+  },
+  {
+   "id": "95301d7d65963b54",
+   "title": "FLEET: From Logits Entropy to Enhanced Trajectories in Text Generation",
+   "url": "https://huggingface.co/papers/2609.27657",
+   "summary": "Solutions based on large language models (LLMs) often rely on temperature sampling to improve accuracy and stability by aggregating multiple samples from the completion distribution. However, this memoryless approach is inherently suboptimal: because it lacks awareness of prior generations and their evaluations, it produces an increasing proportion of semantically duplicate answers as more samples are drawn, leading to diminishing returns. To address this limitation, we introduce FLEET, a novel method that integrates a memory mechanism into the generation process. FLEET represents each generation as a sparse trajectory through states whose entropy exceeds a predefined threshold and uses these trajectories to infer per-token utility scores that adjust the logits. Benchmark evaluations demonstrate that FLEET achieves the same accuracy as the repeated sampling baseline, with a 3x speedup, and substantially improves accuracy on complex coding tasks (LiveCodeBench Pass@32 increases from 59.9% to 66.2%) under the same budget. Furthermore, in the greedy-decoding configuration evaluated here, the approach is deterministic and uses a single calibration pass to derive its principal hyperparameters, requiring only minimal modifications to existing LLM pipelines.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.27657"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "FLEET améliore l'efficacité de l'inférence des LLM en intégrant une mémoire des trajectoires de génération pour ajuster dynamiquement les logits, réduisant les redondances sémantiques et accélérant l'inférence (x3) sans perte de précision, avec des gains significatifs sur des tâches complexes comme le code (LiveCodeBench Pass@32 +6,3 points).",
+   "score": 7.9
+  },
+  {
+   "id": "56b35df7aa8226f1",
+   "title": "The Past Frames the Future: Memory for Autoregressive Video Generation",
+   "url": "https://huggingface.co/papers/2609.28466",
+   "summary": "Advances in generative models have improved video fidelity, enabling long-horizon generation, interactive world modeling, and evolving visual environments. Autoregressive (AR) video generation extends visual sequences through causal rollouts. However, a fundamental bottleneck emerges: as the generated sequence expands, practical models must operate under strictly bounded context windows, storage, and computational limits. Consequently, critical historical information, e.g., entity identities, dynamic states, and intervention-induced causal changes, often leaves the active context long before its relevance diminishes. Overcoming this limitation and maintaining temporal persistence constitutes a fundamental memory problem. We present a systematic and comprehensive review of memory mechanisms in AR video generation. We formulate memory operationally as persistent historical information maintained across outer AR steps, capable of influencing future generation even after the originating evidence is no longer locally accessible. Building upon this unified framework, we organize the literature through five complementary perspectives: (I) Forms, the representational carriers of history; (II) Functions, the specific semantic and physical information requiring preservation; (III) Operations, the lifecycle of writing, reading, updating, managing, and integrating memory; (IV) Learning, the optimization of memory behaviors under closed-loop rollouts; and (V) Evaluation, the paradigms for diagnosing genuine memory capabilities. We conclude by synthesizing open challenges, including composable and resource-aware memory architectures, trustworthy state updating, self-rollout learning, and standardized evaluation. By bridging representations, mechanisms, and learning paradigms, this paper establishes a structured foundation for developing reliable, memory-conditioned video generation systems.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 34,
+    "arxiv_id": "2609.28466"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Ce travail formalise le problème de mémoire dans la génération vidéo autoregressive (AR), où les fenêtres de contexte limitées font perdre des informations critiques. Une revue systématique propose un cadre unifié pour classer les mécanismes de mémoire (formes, opérations, etc.) et améliorer la persistance temporelle dans les modèles AR.",
+   "score": 7.9
+  },
+  {
+   "id": "31bc82ef2cc0397a",
+   "title": "Fine-Tuning LLMs for Translation: General Forgetting Mitigation Does Not Preserve MT-Specific Instruction Following",
+   "url": "https://arxiv.org/abs/2609.28395v1",
+   "summary": "Fine-tuning large language models on parallel data improves translation quality but can cause catastrophic forgetting. Mitigation methods are generally evaluated by retention on general benchmarks. We ask whether these findings transfer to machine translation (MT) fine-tuning and to MT-specific instruction following (MT-IF): instructions that modify a translation, such as formality, grammatical gender, and length control. We compare methods anchored to auxiliary data, to model outputs, and to the base model parameters, first in a screening study with Llama 3.2 1B Instruct, then on Llama 3.1 8B Instruct fine-tuned on bidirectional Arabic-English or Spanish-English data. Elastic Weight Consolidation preserves general capabilities best in both stages; on the 8B Spanish model the average score on general benchmarks drops 1.7 points versus 11.0 for standard fine-tuning, yet its scores for formality and grammatical gender control remain close to standard fine-tuning. Only data mixing with control-task examples preserves these controls, but its gains do not transfer to unseen prompts for the same task.",
+   "published": "2026-09-23T17:02:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Niklas Scholz, David Thulke, Abdallah Nasir, Will Allred, Evgeny Matusov, Hermann Ney"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "L'étude montre que les méthodes de mitigation de l'oubli (comme EWC) préservent mieux les capacités générales lors du fine-tuning pour la traduction, mais échouent à conserver les instructions MT-spécifiques sans données de contrôle.",
+   "score": 7.7
+  },
+  {
+   "id": "890785b5305fd59a",
+   "title": "AnchorReasoning: A Visual Grounding and Causal Reasoning Dataset in Long-Tail Autonomous Driving Scenarios",
+   "url": "https://arxiv.org/abs/2609.28366v1",
+   "summary": "Vision-language models (VLMs) offer a promising approach to long-tail autonomous driving, but existing driving datasets provide limited supervision for connecting decision-critical visual evidence with reasoning and planning. We introduce AnchorReasoning, a visually grounded reasoning dataset built on WOD-E2E, containing 416,119 annotated frames and 395,379 decision-critical elements across four major categories and 19 fine-grained types. Each frame is organized as a visually grounded chain-of-thought (VG-CoT) that links decision-critical element identification and localization, element attributes and implications, driving-action rationale, and action and trajectory planning. We further develop a curriculum supervised fine-tuning strategy that progressively learns these hierarchical capabilities, together with an object-size-aware grounding metric for evaluating localization quality. Experiments across eight general-purpose, embodied-AI, and AV-specific backbones show that VG-CoT supervision improves grounded reasoning and trajectory prediction. Across models, 5-s ADE and FDE decrease by 7.84 and 11.86, while RFS Frame and Cluster improve by 1.66 and 1.70. These gains are achieved with 18.5 fewer reasoning tokens and 0.32 s/frame lower inference latency on average, demonstrating the value of visually grounded, decision-focused supervision for VLM reasoning and planning in long-tail autonomous driving.",
+   "published": "2026-09-23T16:38:06+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhipeng Bao, Wenjie Zhao, Tianle Zhu, Haohua Que, Chence Yang, Geng Yuan"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Dataset AnchorReasoning pour l'IA autonome en scénarios rares, combinant raisonnement causal, ancrage visuel et planification de trajectoire. Améliore significativement les performances (ADE/FDE) via un entraînement progressif par chaîne de pensée visuelle.",
+   "score": 7.7
+  }
+ ]
+}
