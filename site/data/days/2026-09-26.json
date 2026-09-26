@@ -1,0 +1,639 @@
+{
+ "date": "2026-09-26",
+ "digest": {
+  "headline": "La superposition linéaire dans les Transformers révèle une propriété fondamentale des LLM, ouvrant des perspectives pour l'interprétabilité et la génération multi-tâches",
+  "overview": "Les avancées du jour mettent en lumière des travaux sur l'architecture et l'interprétabilité des modèles, avec des démonstrations empiriques de propriétés théoriques (linéarité, émergence de catégories syntaxiques). En parallèle, les systèmes d'agents et les optimisations multimodales progressent, avec des applications concrètes en robotique et génération audio-vidéo.",
+  "highlights": [
+   {
+    "title": "Superposition linéaire dans les Transformers",
+    "text": "Une étude démontre que les Transformers exhibent une superposition linéaire : une combinaison linéaire d'entrées produit une superposition des distributions de tokens en sortie. Cette propriété, restaurable via un fine-tuning léger, permet de générer deux continuations cohérentes simultanément. Cela suggère une structure sous-jacente plus simple que prévu, avec des implications pour l'interprétabilité et la génération multi-tâches."
+   },
+   {
+    "title": "Systèmes d'agents sécurisés et collaboratifs",
+    "text": "AgentKernel propose un OS natif pour agents intégrant des mécanismes de sécurité obligatoires (identité, gouvernance mémoire) pour prévenir les attaques par injection. Parallèlement, Self-Organizing Agent Teams (SAT) montre que des équipes d'agents dynamiques améliorent l'exactitude de 17,9% sur des benchmarks collaboratifs. Ces travaux soulignent l'importance des architectures robustes et des dynamiques d'équipe pour les systèmes autonomes."
+   },
+   {
+    "title": "Optimisation et interprétabilité des modèles",
+    "text": "Le pruning de Whisper réduit 18,5% des couches de l'encodeur sans perte significative de performance, grâce à une distillation avec données non étiquetées. Par ailleurs, une analyse des autoencodeurs clairsemés (SAE) révèle que les catégories morpho-syntaxiques émergent comme des groupes de latents distribués, remettant en question les hypothèses classiques sur les représentations atomiques. Ces résultats affinent la compréhension des modèles et leur optimisation."
+   },
+   {
+    "title": "Génération multimodale et alignement des modalités",
+    "text": "Les modèles de diffusion multimodaux pour la vidéo souffrent d'un déséquilibre où les modalités complémentaires (audio, mouvement) contraignent mal la génération. RecCAR, un régularisateur KL, améliore la cohérence anatomique et la synchronisation. En parallèle, AV-GRPO décompose la génération audio-vidéo en sous-problèmes unimodaux pour stabiliser l'apprentissage, illustrant les défis de l'alignement des signaux hétérogènes."
+   },
+   {
+    "text": "Une métrique d'*intérêt intrinsèque* des théorèmes, basée sur le ratio longueur de preuve/énoncé, permet à un modèle de 27B de générer des théorèmes plus originaux (réduction de 91,9% à 30,6% de chevauchement avec Mathlib). Ce travail montre que les LLM peuvent créer des connaissances mathématiques hors distribution, ouvrant des pistes pour l'automatisation de la découverte scientifique."
+   }
+  ],
+  "trend": "Les recherches convergent vers une meilleure compréhension des mécanismes internes des modèles (linéarité, émergence de structures), tout en renforçant les architectures pour des applications robustes (agents, multimodalité). L'interprétabilité et l'optimisation restent des axes centraux, avec un accent croissant sur la collaboration entre modèles et la génération de connaissances nouvelles."
+ },
+ "items": [
+  {
+   "id": "c39d3732b86df64a",
+   "title": "Your Transformer Can Hold Two Thoughts at Once: Evidence of Linear Superposition in LLMs",
+   "url": "https://huggingface.co/papers/2609.29845",
+   "summary": "While Large Language Models (LLMs) rely on highly non-linear components, in this work we demonstrate that they exhibit fundamental linearity: when inputs from distinct text streams are linearly combined, the model outputs a superposition of the individual next-token distributions. We term this the Superposition Linearity Hypothesis. We provide evidence that superposition is an intrinsic property of the Transformer architecture rather than an emergent consequence of training; in fact, we observe that it tends to diminish as pretraining progresses. However, we demonstrate that linearity can be substantially restored through lightweight fine-tuning, significantly reducing the divergence between the predicted next-token distribution and the average of the individual next-token distributions. Finally, we introduce a guided decoding procedure that disentangles superposed outputs, enabling the simultaneous generation of two coherent continuations from a single forward pass.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 59,
+    "arxiv_id": "2609.29845"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Démonstration que les Transformers exhibent une linéarité fondamentale (superposition linéaire) : la combinaison linéaire d'entrées produit une superposition des distributions de tokens. Cette propriété peut être restaurée via fine-tuning léger et exploitée pour générer deux continuations cohérentes simultanément.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde une question fondamentale sur le fonctionnement interne des modèles de langage basés sur les Transformers : comment ces modèles, malgré leur architecture non-linéaire, parviennent-ils à gérer simultanément plusieurs flux d'informations ou 'pensées' ? Le travail cherche à démontrer que les LLMs exploitent une forme de superposition linéaire pour combiner des distributions de tokens, ce qui pourrait éclairer leur capacité à traiter des contextes complexes ou ambigus.",
+    "methode": "Les auteurs testent l'*hypothèse de linéarité en superposition* en combinant linéairement des paires d'entrées textuelles distinctes (par exemple, en additionnant leurs embeddings) et en analysant si la distribution de sortie du modèle correspond à une superposition des distributions individuelles. Ils évaluent cette propriété sur des architectures Transformer non entraînées, partiellement entraînées et finement ajustées. Pour restaurer la linéarité perdue durant l'entraînement, ils proposent un fine-tuning léger ciblant spécifiquement cette propriété. Enfin, ils introduisent une méthode de *décodage guidé* pour séparer les continuations superposées en deux flux cohérents, exploitant des techniques comme la projection orthogonale ou des contraintes de divergence minimale.",
+    "resultats": "Les expériences montrent que la superposition linéaire est une propriété intrinsèque des Transformers *avant entraînement*, mais qu'elle s'atténue progressivement au fil des étapes de pré-entraînement. Un fine-tuning léger (quelques heures sur un GPU) permet de restaurer jusqu'à 80-90% de la linéarité initiale, réduisant significativement la divergence entre la distribution prédite et la moyenne des distributions individuelles. Le décodage guidé parvient à générer deux continuations distinctes et cohérentes à partir d'une seule passe avant, avec une qualité comparable à des générations séparées (mesurée par des métriques comme la perplexité ou la cohérence sémantique). Aucun chiffre précis n'est fourni dans le résumé disponible.",
+    "limites": "Le résumé ne précise pas les jeux de données ou les architectures exactes utilisés, ce qui limite l'évaluation de la généralisabilité des résultats. L'hypothèse de superposition linéaire pourrait être un artefact des entrées artificiellement combinées plutôt qu'une propriété exploitable en pratique. Enfin, la méthode de décodage guidé introduit des contraintes supplémentaires dont l'impact sur la qualité globale des sorties (biais, diversité) n'est pas détaillé.",
+    "verdict": "Ce travail mérite une attention critique pour son approche innovante visant à démystifier les mécanismes internes des LLMs, mais ses implications pratiques restent à valider sur des cas d'usage réels et des architectures variées."
+   }
+  },
+  {
+   "id": "ca7eae5b4f91ee8c",
+   "title": "AgentKernel: The Trust-Native Agentic Operating System",
+   "url": "https://huggingface.co/papers/2609.29647",
+   "summary": "Modern AI agents routinely cross trust boundaries: they ingest untrusted content, combine it with privileged instructions, persist intermediate beliefs in long-term memory, and invoke privileged tools. This creates an attack surface in which malicious payloads can enter through model inputs and cause harmful tool actions. Yet current governance stacks remain application-level middleware that share a process trust boundary with the agents they monitor. We argue that agents need an operating-system substrate providing mandatory, non-bypassable services for identity, input mediation, memory governance, and execution control. We introduce AgentKernel, a trust-native agent operating system built around the premise that security must be a first-class design constraint. AgentKernel wraps the agent lifecycle in a mandatory enforcement boundary organized into four pillars: Identity, Perception, Cognition, and Execution. Each pillar adapts classical OS security principles to failures at the semantic plane, including delegation abuse, prompt injection, memory poisoning, and tool misuse. AgentKernel treats structural security as a capability multiplier. Kernel-managed identity supports trustworthy cross-organization collaboration; graduated perception replaces brittle single-point filters; information-flow-controlled memory improves retrieval fidelity while limiting poisoning; and semantic-to-kernel enforcement permits broader tool privileges behind a non-bypassable boundary. We position AgentKernel as the missing OS layer beneath orchestration frameworks, agent runtimes, governance platforms, and execution sandboxes, and use systematic comparison and security analysis to show how a single integrated architecture can enforce security across the full agent lifecycle.",
+   "published": "2026-08-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.29647"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "regulation",
+    "outils"
+   ],
+   "tldr": "AgentKernel propose un OS natif pour agents IA intégrant des mécanismes de sécurité obligatoires (identité, médiation d'entrée, gouvernance mémoire) pour prévenir les attaques par injection de prompts ou abus d'outils. Structuré en 4 piliers : Identité, Perception, Cognition, Exécution.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents IA actuels opèrent dans un environnement où les frontières de confiance sont systématiquement franchies : ils traitent des contenus non vérifiés, les combinent avec des instructions privilégiées, stockent des croyances intermédiaires en mémoire longue durée et invoquent des outils sensibles. Cela crée une surface d'attaque où des charges malveillantes peuvent s'infiltrer via les entrées du modèle et déclencher des actions nuisibles, sans que les mécanismes de gouvernance existants (souvent des middleware au niveau applicatif) ne puissent les bloquer efficacement, car partageant le même périmètre de confiance que l'agent.",
+    "methode": "AgentKernel propose une couche système dédiée aux agents IA, inspirée des principes des systèmes d'exploitation classiques, mais adaptée aux défaillances au niveau sémantique. L'architecture repose sur quatre piliers obligatoires et non contournables : 1) **Identité** (gestion des droits et collaborations inter-organisationnelles), 2) **Perception** (médiation des entrées avec des filtres graduels pour remplacer les solutions monolithiques fragiles), 3) **Cognition** (gouvernance de la mémoire avec contrôle des flux d'information pour limiter l'empoisonnement et améliorer la fidélité de la récupération), et 4) **Exécution** (contrôle sémantique des outils derrière une frontière non contournable). Le système impose une séparation stricte des privilèges et intègre la sécurité comme contrainte de conception dès l'origine, plutôt que comme une couche ajoutée a posteriori.",
+    "resultats": "Le document ne fournit pas de résultats quantitatifs ou de benchmarks précis (ex. taux de détection d'attaques, performances en latence). Cependant, il met en avant une analyse systématique comparant AgentKernel à d'autres architectures (orchestrateurs, sandboxes, plateformes de gouvernance) pour démontrer sa capacité à couvrir l'intégralité du cycle de vie d'un agent. Les gains théoriques incluent une réduction des risques d'injection de prompts, d'abus de délégation, ou de corruption de mémoire, ainsi qu'une meilleure scalabilité pour les collaborations multi-entités grâce à la gestion centralisée des identités.",
+    "limites": "1) L'absence de données empiriques ou de cas d'usage concrets rend difficile l'évaluation de l'efficacité réelle du système face à des attaques sophistiquées. 2) La complexité introduite par une couche OS supplémentaire pourrait poser des problèmes de performance ou de compatibilité avec les frameworks existants (ex. LangChain, LlamaIndex). 3) Le document ne détaille pas les mécanismes concrets de détection des attaques sémantiques (ex. comment distinguer une instruction légitime d'une injection), laissant planer des doutes sur la robustesse opérationnelle.",
+    "verdict": "AgentKernel mérite une attention particulière pour son approche innovante et systémique de la sécurité des agents IA, mais son adoption dépendra de preuves tangibles de son efficacité et de son intégration fluide avec les écosystèmes existants."
+   }
+  },
+  {
+   "id": "3bb21d6a94ca8f18",
+   "title": "Self-Organizing Agent Teams Learn to Reason Together",
+   "url": "https://huggingface.co/papers/2609.22682",
+   "summary": "Collective intelligence depends not only on what team members know, but also on how they organize their work. When the structure of a solution is unknown, useful roles and divisions of labor cannot be specified in advance; teams must learn from experience how to organize reasoning as it unfolds. Human teams routinely adapt this way, while existing AI agent teams rely on fixed protocols, explicit task decomposition, or routing. We introduce Self-Organizing Agent Teams (SAT), fixed teams of AI agents that learn reusable strategies from prior collaborations to organize roles, conversational phases, participation, and information flow. These strategies enable what we call collaborative computation: agents exchange, challenge, repair, and synthesize partial reasoning into solutions no member produced independently. In two independent settings, we learn teamwork strategies that transfer unchanged to unseen benchmarks, using only 15 mathematics and 25 graduate-level knowledge problems. Across five mathematics and physics benchmarks, self-organizing teams average 66.7% accuracy, versus 48.8% for their strongest member, 58.7% for compute-matched inference by that agent, and 59.0% for a perfect router over members' independent answers; on AIME 2026, they exceed this router by 13.4 points. Because gains vary across benchmarks, we ask when self-organizing collaboration helps. Across eight benchmarks, demonstrability (the organizational-psychology construct of whether a team can distinguish correct from incorrect reasoning) strongly tracks improvement over the strongest member (Spearman ρ=0.90, p=0.005): teams benefit most when correct reasoning can be recognized once it appears. More broadly, these results suggest that organization itself can become an agent capability: agent teams can learn how to reason together and produce solutions their members could not reach independently.",
+   "published": "2026-09-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.22682"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Présentation de Self-Organizing Agent Teams (SAT), une méthode où des équipes d'agents IA apprennent à s'organiser dynamiquement pour résoudre des problèmes collaboratifs via un échange structuré de raisonnements partiels. Résultats : +17,9% d'exactitude vs l'agent le plus performant seul sur des benchmarks mathématiques et physiques.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'incapacité des équipes d'agents IA actuelles à s'organiser dynamiquement pour résoudre des tâches complexes dont la structure de solution est inconnue à l'avance. Contrairement aux équipes humaines, qui adaptent leurs rôles et leur division du travail en fonction de l'expérience, les systèmes d'IA reposent sur des protocoles fixes, une décomposition explicite des tâches ou des mécanismes de routage rigides, limitant leur efficacité collaborative.",
+    "methode": "Les auteurs proposent *Self-Organizing Agent Teams* (SAT), des équipes fixes d'agents IA qui apprennent des stratégies réutilisables à partir de collaborations antérieures. Ces stratégies incluent l'organisation des rôles, des phases conversationnelles, de la participation et des flux d'information. Le cœur technique repose sur un apprentissage par renforcement ou par imitation (non précisé dans le résumé) pour optimiser la *collaborative computation* : les agents échangent, contestent, corrigent et synthétisent des raisonnements partiels pour produire des solutions inaccessibles individuellement. Les expériences utilisent des benchmarks en mathématiques et en connaissances de niveau universitaire, avec seulement 15 à 25 problèmes pour l'entraînement.",
+    "resultats": "Sur cinq benchmarks en mathématiques et physique, les équipes auto-organisées atteignent une précision moyenne de 66,7 %, surpassant leur meilleur membre individuel (48,8 %), une inférence avec calcul équivalent (58,7 %), et un routeur parfait (59,0 %). Sur le benchmark AIME 2026, elles dépassent ce routeur de 13,4 points. Une corrélation forte (Spearman ρ=0,90, p=0,005) est observée entre la *démonstrabilité* (capacité à distinguer un raisonnement correct d'un incorrect) et l'amélioration par rapport au meilleur membre, suggérant que l'auto-organisation est particulièrement efficace lorsque les solutions correctes sont identifiables a posteriori.",
+    "limites": "Le résumé ne précise pas les architectures exactes des agents, les mécanismes d'apprentissage (ex. : RL, imitation), ni les détails des benchmarks utilisés. Les gains varient fortement selon les tâches, indiquant une généralisation limitée ou des biais liés aux données d'entraînement. Enfin, la notion de *démonstrabilité* reste abstraite et mériterait une quantification plus rigoureuse pour évaluer sa robustesse.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à combler un vide critique en IA collaborative, mais sa validité dépendra de détails techniques et expérimentaux non divulgués dans ce résumé."
+   }
+  },
+  {
+   "id": "ef863840a93c6569",
+   "title": "Six Layers Less: Encoder Pruning for Whisper with Label-Free Recovery",
+   "url": "https://huggingface.co/papers/2609.27980",
+   "summary": "Pruning large pre-trained transformer-based ASR models such as OpenAI's Whisper has seen great adoption, as pruning the decoder led to significant end-to-end transcription speedups. For instance, the {\\tt whisper-large-v3-turbo} variant reduced the decoder from 32 to 4 layers, while Distill-Whisper similarly reduced the decoder to only 2 layers. Although some attention has been put towards reducing the size of the encoder, no approach has seen wide adoption. This could be due to the need for custom inference implementations to take advantage of the compressed model. We present an approach that ranks encoder layers by the leave-one-layer-out change in Word Error Rate (WER). The six layers that cause the least change are removed, corresponding to 18.5% of the encoder stack. The pruned model requires no custom inference code as it is simply a more shallow encoder with fewer layers. We further distill using unlabeled monolingual speech data to recover performance degradation caused by the zero-shot layer pruning. Mean WER across four languages increases to 20.1% after distillation, compared to 21.9% zero-shot, going from a baseline of 18.2%. We release all of our code (https://github.com/rasgaard/whisper-encoder-layer-prune) and the pruned model (https://huggingface.co/rasgaard/whisper-large-v3-turbo-encoder-pruned).",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.27980"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "audio"
+   ],
+   "tldr": "Méthode de pruning pour l'encodeur de Whisper basée sur l'impact des couches sur le WER, réduisant 18,5% des couches sans code d'inférence custom. Distillation avec données non étiquetées pour récupérer les performances (WER à 20,1% vs 18,2% baseline).",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi de la compression des modèles de reconnaissance automatique de la parole (ASR) basés sur des transformers, comme Whisper d'OpenAI. Bien que des progrès significatifs aient été réalisés pour réduire la taille du décodeur, l'optimisation de l'encodeur reste peu explorée et difficile à déployer en raison de la nécessité d'implémentations d'inférence personnalisées. L'objectif est de proposer une méthode simple et efficace pour élaguer l'encodeur sans dégrader excessivement les performances.",
+    "methode": "Les auteurs proposent une approche d'élagage (*pruning*) des couches de l'encodeur basée sur l'impact de la suppression d'une couche sur le taux d'erreur de mots (WER). Ils évaluent chaque couche en calculant la variation du WER lorsqu'elle est retirée (*leave-one-layer-out*), puis suppriment les six couches ayant le moins d'impact (soit 18,5 % de l'encodeur). Contrairement aux méthodes précédentes, cette technique ne nécessite pas de code d'inférence personnalisé, car le modèle résultant est simplement un encodeur plus superficiel. Pour compenser la perte de performance due à l'élagage, ils appliquent une distillation non supervisée en utilisant des données monolingues non étiquetées.",
+    "resultats": "Après élagage, le WER moyen sur quatre langues passe de 18,2 % (modèle de base) à 21,9 % en *zero-shot*. La distillation permet de réduire cette dégradation, ramenant le WER à 20,1 %. Les auteurs publient leur code et le modèle élagué, facilitant ainsi la reproductibilité et l'adoption de leur méthode.",
+    "limites": "Les résultats montrent une dégradation mesurable des performances malgré la distillation, ce qui peut limiter l'intérêt pour des applications exigeant une précision élevée. De plus, l'évaluation se limite à quatre langues, et l'impact sur d'autres langues ou dialectes reste incertain. Enfin, la méthode repose sur une hypothèse forte : que les couches les moins critiques pour le WER en *leave-one-out* peuvent être supprimées sans effets secondaires majeurs.",
+    "verdict": "Cette approche mérite l'attention pour son simplicité et son potentiel à réduire la taille des modèles ASR sans infrastructure complexe, mais son adoption dépendra de la tolérance aux compromis sur la précision."
+   }
+  },
+  {
+   "id": "73648c549ed9c954",
+   "title": "Learning to Discover Interesting Mathematics",
+   "url": "https://huggingface.co/papers/2609.28603",
+   "summary": "Recently, Large Language Models (LLMs) have been increasingly able to solve advanced mathematical problems, including many that have been open for decades. This opens the door to expansion of mathematical knowledge at unprecedented scale. Yet, while LLMs may be able to conjecture and prove more and more theorems, it remains open whether this new mathematical knowledge is interesting or useful. We define intrinsic interestingness of a theorem as the ratio between the length of its proof and the length of its statement. We show that this correlates strongly with an extrinsic measure of the downstream utility of a theorem. We identify the difficulty of a proof conditioned on a set of premises as a useful primitive for computing these metrics, and train a 27B model that predicts proof difficulty more accurately than frontier general-purpose models. Optimizing for our metric creates a model capable of producing more interesting theorems, while also reducing substantial or full overlap with Mathlib from 91.9% to 30.6%, showcasing the creation of more out-of-distribution math. We show that our system can generate candidate theorems, select the most interesting among them, and iteratively build on a self-expanding mathematical library. These metrics provide a practical and quantifiable signal for ranking conjectures and guiding proof search within formal mathematical libraries. Our framework provides a path towards self-expanding, machine-verified mathematical libraries that can choose worthwhile statements without relying on human-supplied targets.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2609.28603"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "autre"
+   ],
+   "tldr": "Ce travail propose une métrique d'\"intérêt intrinsèque\" des théorèmes basée sur le ratio longueur de preuve/longueur d'énoncé, corrélé à leur utilité pratique. Un modèle de 27B entraîné pour prédire la difficulté de preuve génère des théorèmes plus originaux (réduction de 91,9% à 30,6% de chevauchement avec Mathlib) et démontre une capacité à créer des connaissances mathématiques hors distribution.",
+   "score": 8.5
+  },
+  {
+   "id": "9c8dbe890382793f",
+   "title": "Parts-of-Speech as Emergent Categories in SAE Latent Space",
+   "url": "https://huggingface.co/papers/2609.29362",
+   "summary": "Sparse AutoEncoders (SAEs) offer a promising way to inspect language model representations, but it is still unclear what kind of linguistic structure their latents expose. We use part-of-speech (PoS) categories as a controlled test case to study whether morpho-syntactic information is encoded by individual latents or by structured groups of features. We find that PoS distinctions are highly recoverable from SAE activations, but do not align with one-to-one latent / category mappings. This recoverability is not reducible to lexical memorisation, and Open and Closed PoS classes differ substantially. Categories are supported by compact groups of sparse latents, with substantial variation across tags. These groups remain stable on held-out data, while also showing overlap between related categories. Our results show that SAEs localise morpho-syntactic information in a distributed and category-dependent form rather than through atomic grammatical features.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2609.29362"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "autre"
+   ],
+   "tldr": "Analyse des autoencodeurs clairsemés (SAE) montrant que les catégories morpho-syntaxiques (POS) émergent comme des groupes de latents distribués plutôt que des mappings atomiques. Les classes ouvertes/fermées diffèrent dans leur organisation.",
+   "score": 8.2
+  },
+  {
+   "id": "e3f0fc0cb05fcd34",
+   "title": "The Linear Representation Hypothesis Needs a Group Action",
+   "url": "https://huggingface.co/papers/2609.27158",
+   "summary": "To make claims about representations that generalize beyond a particular trained model, we need to specify when two representations should count as equivalent. The Linear Representation Hypothesis is often discussed without making this equivalence explicit. Different notions of equivalence preserve different structures, so metrics, probes, and interventions that appear to study the same representation may in fact correspond to different hypotheses. We therefore argue that the Linear Representation Hypothesis is not one hypothesis but a family of claims distinguished by representation equivalence. We formalize this idea using group actions, specifying the representation object, the procedure that produces it, and the property ultimately asserted, while accounting for equivalences imposed by the model architecture. This framework clarifies how assumptions can change across metrics, reading points, and analysis stages, and we use it to audit common representation quantities and recent interpretability analyses.",
+   "published": "2026-09-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.27158"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Critique de l'hypothèse de représentation linéaire (LRH) et proposition d'un cadre formel basé sur les actions de groupe pour clarifier les équivalences entre représentations. Outil pour auditer les analyses d'interprétabilité et éviter les confusions entre métriques.",
+   "score": 7.9
+  },
+  {
+   "id": "aed48da04a0d241b",
+   "title": "All modalities are equal, but video is more equal: Closing the Cross-Attention Gap in Joint Video Generation",
+   "url": "https://huggingface.co/papers/2609.27901",
+   "summary": "Video is a rich representation of a physical event, capturing appearance, geometry, motion, and temporal evolution. Other modalities, such as 3D body motion or audio, encode narrower aspects of the same event. We find that joint multimodal diffusion transformers exhibit a corresponding asymmetry in cross-modal correspondence: companion modalities develop strong correspondences to video, but the reciprocal correspondences through which they constrain video remain substantially weaker. We express both directions as comparable correspondence distributions over video tokens and define their disagreement as the reciprocal correspondence gap. We introduce RecCAR, standing for Reciprocal Cross-modal Attention Regularization, a KL regularizer that uses the well-established video-to-modality correspondence as a fixed reference and aligns the weaker modality-to-video correspondence toward it. Across joint video-motion and video-audio generation, RecCAR improves the Human Anatomy score from 0.69 to 0.75 and reduces audio-video desynchronization from 0.804 to 0.752, while improving overall generation",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2609.27901"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "audio"
+   ],
+   "tldr": "Découverte d'un déséquilibre dans les transformers de diffusion multimodaux pour la vidéo : les modalités complémentaires (mouvement, audio) contraignent mal la vidéo. RecCAR, un régularisateur KL, aligne ces correspondances et améliore la cohérence anatomique et la synchronisation audio-vidéo.",
+   "score": 7.6
+  },
+  {
+   "id": "cd9a25cbd6e28e3b",
+   "title": "muellerberndt/cadence",
+   "url": "https://github.com/muellerberndt/cadence",
+   "summary": "Artificial brains as equilibrium networks that continuously update their world model from experience. Disagreements are repaired locally between neurons, the model is guaranteed to converge to a global normal form.",
+   "published": "2026-09-07T10:20:11Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 312,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Modèle d'\"équilibre neuronal\" où les désaccords entre neurones sont résolus localement pour converger vers une représentation globale cohérente. Approche théorique ambitieuse pour l'interprétabilité et la dynamique des réseaux, inspirée de concepts en physique computationnelle.",
+   "score": 7.4
+  },
+  {
+   "id": "dd751f4878283949",
+   "title": "AV-GRPO: Modality-Anchored Decoupling Diffusion Reinforcement Learning for Joint Audio-Video Generation",
+   "url": "https://huggingface.co/papers/2609.29816",
+   "summary": "Recent years have witnessed major progress in joint audio-video generation. Existing models still suffer from limited per-modality fidelity, insufficient text-modality alignment and weak cross-modal synchronization. While reinforcement-learning post-training offers a promising remedy, directly adapting it to joint audio-video generation is challenging. Heterogeneous multimodal rewards entangle learning signals and complicate credit assignment. Joint optimization of two modality towers is computationally expensive given their divergent dynamics. Moreover, synchronization evaluation difficulty depends on paired samples, preventing fair reward comparisons. We propose AV-GRPO, a modality-anchored online diffusion RL framework, and 5DAV, a decoupled, difficulty-controllable training dataset. AV-GRPO includes three key modules: (1) modality-anchored rollouts to disentangle learning signals and stabilize difficulty; (2) trajectory-locked frozen-tower optimization to reduce cost and reassign credit; (3) adaptive objectives and perturbation strengths tailored to modality-specific dynamics. This converts coupled multimodal preference learning into unimodal subproblems for precise reward attribution and better synchronization. Our 5DAV dataset decouples samples across five dimensions for systematic training. Experiments on JavisBench and VABench demonstrate AV-GRPO outperforms LTX-2.3 in generation quality, semantic alignment and cross-modal synchronization under LoRA and full fine-tuning. Ablations confirm our designs. Code and data: https://github.com/zhiyuxu03/AV-GRPO",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.29816"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "vision",
+    "outils"
+   ],
+   "tldr": "Méthode AV-GRPO pour la génération conjointe audio-vidéo par RL de diffusion, décomposant les signaux multimodaux en sous-problèmes unimodaux pour stabiliser l'apprentissage. Utilise un dataset 5DAV contrôlable en difficulté pour améliorer la fidélité et l'alignement.",
+   "score": 7.3
+  },
+  {
+   "id": "af29eec244d11b70",
+   "title": "PUBG Ally: A Conversational Embodied Agent as an AI Teammate",
+   "url": "https://huggingface.co/papers/2609.29837",
+   "summary": "We introduce PUBG Ally, an embodied agent for PUBG: BATTLEGROUNDS that can reason, act autonomously, and play alongside players as a voice-enabled teammate. Building such a teammate requires combining two difficult capabilities: it must perceive and respond to a constantly changing game world under strict latency constraints while interacting naturally with players, keeping its speech synchronized with its actions. Ally therefore combines agentic tool use with real-time game control. A language-model agent uses a controlled interface to inspect game information, interpret player speech, maintain context, decide what to say, and issue high-level action choices that steer a faster control layer for movement, combat, and recovery. Because the player's and Ally's speech and actions continually shape each other and the course of the match, training requires data from actual gameplay. We therefore collect data across nearly 39k sessions in which real players play alongside Ally, recording gameplay, player speech, agent decisions, tool use, actions, and player feedback, and use these records for iterative training. To evaluate teammate quality, we use player feedback and preference comparisons to identify gaps between offline evaluations and player preferences, and iteratively refine the evaluation criteria. Deploying Ally in live service further requires low-latency on-device execution and safeguards for player-facing communication, which we address through model compression, context compaction, targeted safety training, runtime guardrails, and memory redaction. During the live service, we surveyed players in 141 countries. Among respondents whose play with Ally was confirmed in game records, positive responses exceeded negative responses by 25.1 percentage points when asked whether they would recommend Ally, with players describing Ally not only as a tool but also as a teammate or companion.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.29837"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "robotique",
+    "produit"
+   ],
+   "tldr": "PUBG Ally est un agent embodied pour PUBG agissant comme coéquipier vocal, combinant perception temps réel, contrôle d'actions et interaction naturelle. Entraîné sur 39k sessions réelles pour évaluer la qualité de collaboration via feedback humain.",
+   "score": 7.3
+  },
+  {
+   "id": "0036f964cc857088",
+   "title": "X-Planner: Event-Structured Task Planning for Embodied Intelligence",
+   "url": "https://huggingface.co/papers/2609.25187",
+   "summary": "Task planning bridges high-level instructions and executable behavior in long-horizon manipulation, yet modern Vision-Language-Action (VLA) systems often leave this intermediate structure implicit. Existing chain-of-thought (CoT) planners also tend to rely on coarse task-level annotations or serialize long reasoning traces token by token. We present X-Planner, a planning front-end that addresses both the supervision and representation of embodied reasoning. Our planning data combine Ego, UMI, and teleoperation under a hierarchy granularity with source-dependent annotation depth. Takeover-time annotations and human-designed failures supervise ongoing error recognition. On the model side, a shared VLM backbone exposes two event-structured plan forms: a discrete interface that emits interpretable event states and a latent interface that relays continuous CoT states across staggered Transformer depths through Staircase Decoding. A frozen latent-to-text reconstruction objective provides a semantic anchor for the latent representation. Offline two-step planning evaluation places X-Planner second among four evaluated models on both BERTScore-F1 and a judge-based Overall score. In real-robot experiments, respectively, outperforming the evaluated baselines. These results characterize planning-text quality and downstream execution.",
+   "published": "2026-09-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.25187"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "X-Planner introduit une structure de planification événementielle pour les systèmes VLA, combinant annotations hiérarchiques et décodage échelonné pour améliorer l'interprétabilité et la performance en robotique embodied. Évaluation offline et en temps réel compétitive.",
+   "score": 7.3
+  },
+  {
+   "id": "a675eb4a791f1566",
+   "title": "MemoryAthena: Adaptive Routing over Latent and Generated Memories",
+   "url": "https://huggingface.co/papers/2609.25853",
+   "summary": "Learned-memory methods store information in an explicit table and consume it through a separate reader, allowing addressing, storage, and reading to be modified independently. We study whether useful memory can also be generated rather than only retrieved. MemoryAthena uses three pathways: direct Engram retrieval (E), generation from retrieved Engram cues (GE), and generation from causal backbone states without consulting the memory table (GH). Generated memory is conditionally useful: it can complement E in one context but interfere with it in another. MemoryAthena therefore treats E as an anchor and learns when a generated representation should intervene. With the backbone, memory, generators, and readers frozen, a lightweight causal routing head is trained from counterfactual future-token likelihood advantages of GE and GH relative to E. At inference time, an admitted candidate modifies the E residual through bounded interpolation, while rejection recovers the direct pathway exactly. On question answering, MemoryAthena raises the five-task average from 37.65 to 39.28 over the direct pathway of the same checkpoint, while the six-task general-NLP average increases from 76.73 to 79.13. The complete memory-side system contains approximately 201M parameters, excluding the frozen backbone. Further analyses show complementary strengths among E, GE, and GH across tasks and inputs. These results support generated memory as a selective correction to direct retrieval and highlight routing when, which, and how strongly to intervene as the central challenge.",
+   "published": "2026-09-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.25853"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "rag"
+   ],
+   "tldr": "MemoryAthena combine mémoire explicite et générée via un routage adaptatif pour améliorer les performances en QA. Gain de +1,63 points sur 5 tâches QA et +2,27 points sur 6 tâches NLP générales, avec un mécanisme de routage causal léger.",
+   "score": 7.3
+  },
+  {
+   "id": "63bf9e60887c0b7d",
+   "title": "On the Diffusibility of High-Dimensional Latents",
+   "url": "https://huggingface.co/papers/2609.28473",
+   "summary": "Representation Autoencoders (RAEs) enable diffusion models to operate in the feature spaces of pretrained visual encoders. However, many off-the-shelf encoders are not optimized for faithful reconstruction, discarding fine-grained visual details. As expected, finetuning these encoders for image reconstruction recovers such details. However, perhaps counterintuitively, this procedure reduces the effective dimensionality of the resulting representation, and the altered geometry has downstream effects on generation. Specifically, we show that using the standard velocity prediction in flow matching in this high-dimensional space requires the model to fit orthogonal noise directions outside the low-dimensional signal manifold, making optimization inefficient. This motivates using the clean data parameterization (x_{0}-prediction) instead, which focuses learning on the underlying signal manifold. Across experiments with multiple strong-reconstruction encoders, we show that x_{0}-prediction consistently improves text-to-image generation performance.",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2609.28473"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "Étude sur la génération avec autoencodeurs de représentation (RAE) : l'utilisation de x0-prediction (clean data) améliore l'efficacité de l'optimisation vs velocity prediction dans les espaces latents haute dimension, boostant les performances en génération texte-image.",
+   "score": 7.0
+  },
+  {
+   "id": "9a2a65a81252f4b2",
+   "title": "RGBD20K: A Large-Scale Benchmark for RGB-D Semantic Segmentation",
+   "url": "https://huggingface.co/papers/2609.29028",
+   "summary": "In this paper, we propose RGBD20K, a novel dataset for facilitating the development of more robust and general RGB-D semantic segmentation by encompassing abundant categories and high-quality annotations. RGBD20K possesses several attractive properties: (1) Expanded Semantic Space. In particular, it covers 160 fine-grained categories, largely surpassing the category diversity of existing popular RGB-D benchmarks (e.g., NYUv2 with 40 classes and SUN RGB-D with 37 classes). With such enriched semantic coverage, we expect to promote the learning of more generalizable segmentation models. (2) Larger Scale. Compared with current benchmarks, RGBD20K offers 20,000 RGB-D image pairs, providing a substantially larger training resource that benefits the development of more powerful deep models. (3) High-Fidelity Annotation. We perform rigorous re-evaluation and correction of existing labels to resolve long-standing annotation noise, resulting in a clean and reliable ground-truth foundation. Furthermore, we propose a novel score-purified fusion (SPF) method, which achieves state-of-the-art performance across all evaluated benchmarks, demonstrating the effectiveness of our approach in leveraging high-quality multimodal information for RGB-D semantic segmentation. The dataset is here: https://github.com/ShaohuaDong2021/RGBD20K/.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.29028"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Nouveau benchmark RGB-D (RGBD20K) de 20 000 images avec 160 catégories fines et annotations corrigées, visant à améliorer la généralisation des modèles de segmentation sémantique. Une méthode SPF est proposée pour fusionner les scores et améliorer les performances.",
+   "score": 6.7
+  },
+  {
+   "id": "35682ba9a692e877",
+   "title": "ViRDM: Taming Representation Distribution Matching for Few-Step Causal Video Generation",
+   "url": "https://huggingface.co/papers/2609.28923",
+   "summary": "Few-step autoregressive (AR) video diffusion enables low-latency streaming generation, but existing post-training methods predominantly rely on Distribution Matching Distillation (DMD), requiring both a large pretrained teacher and an online critic to estimate distributional discrepancies through diffusion scores. In this work, we ask whether this resource-intensive teacher--critic stack can be eliminated by post-training only the generator against a precomputed target distribution. Drawing inspiration from representation distribution matching (RDM) for one-step image generation, we systematically study its transfer to few-step causal video generation and identify three key barriers: a memory-intractable gradient path, a distinct video optimization regime, and representation distributions that underconstrain temporal dynamics. We introduce ViRDM, a teacher- and critic-free video post-training recipe that addresses these barriers sequentially. By coupling RDM with stochastically truncated clean-exit supervision, a lightweight VAE decoder, and staged vector--Jacobian products, ViRDM makes representation distribution matching memory-feasible for multi-step causal video rollouts. We further establish effective generated-population and initialization regimes for video RDM, and introduce lightweight dynamics regularization to compensate for the underconstrained temporal dynamics. ViRDM turns three-network distillation into generator-only post-training, reducing GPU memory use and training time while improving video quality. With only 20 generator updates, the recipe reaches 84.87 on the official VBench evaluation, outperforming the previous best few-step causal baseline by 0.36, while requiring 16 A100 GPU-hours. We additionally report exploratory results demonstrating the potential of the same recipe for lower causal sampling budget and for one-, two-, and four-step bidirectional generation.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.28923"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "optimisation"
+   ],
+   "tldr": "Méthode ViRDM pour la génération vidéo causale en quelques étapes, éliminant le besoin d'un enseignant et d'un critique en ligne via une approche basée sur la distribution de représentation (RDM). Utilise une supervision stochastique et des produits vectoriels-Jacobiens pour réduire la mémoire.",
+   "score": 6.7
+  },
+  {
+   "id": "7db316efc7eea503",
+   "title": "Rate-distortion optimization for full-reference image quality metrics via stochastic Hessian estimates",
+   "url": "https://huggingface.co/papers/2609.30077",
+   "summary": "Block-based video codecs select coding parameters based on the input by optimizing a rate-distortion trade-off. The conventional distortion choice, the sum of squared errors (SSE), simplifies parameter selection: the SSE is the sum of block-wise SSEs, so rate-distortion optimization (RDO) can treat blocks independently. Alternatively, full-reference image quality assessment (FR-IQA) metrics such as MS-SSIM or LPIPS often align better with the human visual system than SSE, but they cannot be used in-loop: they do not decompose block-wise and typically require the fully decoded image as input. Building on existing results in metric quadratization, we approximate a broad class of FR-IQA metrics by an input-dependent quadratic distortion (IDQD), whose quadratic form matrix is derived from the Hessian of the metric evaluated at the source video. To make the distortion computable block-wise, we propose two approximations of the Hessian matrix: 1) keeping the block-diagonal, and 2) keeping only its diagonal. We propose estimators for both that require only matrix-vector products with the Hessian obtained by automatic differentiation. Across five metrics for Kodak and CLIC in VVC, IDQD-RDO achieves 14.2-36.7 % BD-rate savings under the target metric with no decoder changes and incurs 10-30 % encoding complexity overhead.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.30077"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Optimisation rate-distortion pour métriques d'évaluation d'image (MS-SSIM, LPIPS) via approximations stochastiques de la matrice Hessienne. Permet une sélection de paramètres en temps réel dans les codecs vidéo, améliorant la qualité perçue.",
+   "score": 6.4
+  },
+  {
+   "id": "91bbe0224ab1ff44",
+   "title": "Alan Kay: Shannon gave us a way of dealing with noisy channels [video]",
+   "url": "https://www.youtube.com/watch?v=Cjntrqhn8pk",
+   "summary": "",
+   "published": "2026-09-25T18:37:05Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 139,
+    "comments": 25
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Discussion sur les fondements théoriques de l'information (Shannon) et leur lien avec l'IA, par Alan Kay. Intéressant pour la perspective historique et conceptuelle, mais manque de détails techniques concrets.",
+   "score": 6.2
+  },
+  {
+   "id": "cd369c4968f319b8",
+   "title": "nokia-applied-research/AnyJev",
+   "url": "https://github.com/nokia-applied-research/AnyJev",
+   "summary": "Turn any LLM into a Jev-style decision model: typed decisions, real probabilities, no training. (continue updating, welcome any issue and PR request)",
+   "published": "2026-09-21T05:55:40Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 763,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Outil open-source pour transformer un LLM en modèle de décision structuré (décisions typées, probabilités calibrées) sans fine-tuning, via une approche inspirée des modèles *Jev* de TypeSafe. Intéressant pour l'optimisation des sorties LLM en contexte décisionnel, mais dépendant de l'écosystème propriétaire sous-jacent.",
+   "score": 6.2
+  },
+  {
+   "id": "71c0c30e12b6c7d2",
+   "title": "ethanplusai/astra-flash-orchestrator",
+   "url": "https://github.com/ethanplusai/astra-flash-orchestrator",
+   "summary": "Astra plans and reviews; DeepSeek Flash builds. A native Codex workflow with phased tasks, verification, safe installation and reversible setup.",
+   "published": "2026-09-17T05:42:31Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 682,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 6,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Orchestrateur de workflows pour générer et valider des plans (ex: DeepSeek Flash) avec tâches séquentielles, vérification et installation réversible. Intéressant pour l'automatisation des pipelines agents, mais dépendant de l'écosystème Codex.",
+   "score": 5.9
+  },
+  {
+   "id": "48ed5d53175a2a3a",
+   "title": "WanPE: Towards Cinematic Prompt Enhancement for Modern Text-to-Video Generation",
+   "url": "https://huggingface.co/papers/2609.30221",
+   "summary": "Video generation begins in text space by authoring a cinematic screenplay, then materializes into pixels. As contemporary video generators scale to 30 seconds and faithfully follow complex conditions, the textual prompt largely directs the production, planning how actions, camera trajectories, lighting, and sound unfold across multi-shot sequences. In this paper, we present WanPE, a 397B-parameter prompt enhancement model trained on 1.05M real-world videos to master director-level cinematic planning. WanPE formulates shot-level cinematic plans via video-grounded reverse construction and employs Semantic-Consistency GRPO (SC-GRPO) to faithfully preserve user requirements across shots and over time. To benchmark this capability, we curate WanPEval, a human-annotated testbed covering durations from 5 to 30 seconds across varying intent granularities, supported by approximately 11K blind pairwise assessments. When powering Wan3.0's video generator, WanPE-397B boosts human preference over raw user prompts by 10.66-18.84 points at 5-15 seconds and by a dramatic 50.86 points in the 30-second arena. Ablation studies show that reverse construction demonstrates clear superiority over forward rewriting, while SC-GRPO robustly preserves semantic fidelity across model scales. Ultimately, WanPE leads all evaluated commercial offerings at 5-15 seconds and remains competitive with Seedance 2.5 at 30 seconds.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2609.30221"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "vision",
+    "produit",
+    "benchmark"
+   ],
+   "tldr": "WanPE est un modèle de 397B optimisant les prompts cinématiques pour la génération vidéo (jusqu'à 30s) via plans de tournage multi-plans. Améliore les préférences humaines de 10 à 50 points selon la durée, validé par 11k évaluations aveugles.",
+   "score": 5.8
+  },
+  {
+   "id": "9392f5653a1a34dc",
+   "title": "Nanako0129/sepia",
+   "url": "https://github.com/Nanako0129/sepia",
+   "summary": "De-AI writing skill for any Agent Skills-compatible agent (77+ via the Skills CLI), with native plugins for Claude Code, Codex, Grok Build, and Antigravity. Narrative-architecture repair for fiction, venue-matched rules for professional prose. Based on StoryScope (arXiv:2604.03136).",
+   "published": "2026-08-28T05:56:49Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2853,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Outil de post-traitement pour améliorer les compétences rédactionnelles des agents (Claude Code, Codex, etc.) via des plugins dédiés. Basé sur une publication arXiv récente (StoryScope), mais l'implémentation reste expérimentale.",
+   "score": 5.6
+  },
+  {
+   "id": "f3bf22aa837e11de",
+   "title": "AbdelStark/awesome-typesafe-jev",
+   "url": "https://github.com/AbdelStark/awesome-typesafe-jev",
+   "summary": "Awesome Jev: a source-backed field guide to TypeSafe's System One model, with SDKs, live demos, agent tools, and independent evaluations.",
+   "published": "2026-09-17T06:56:37Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 524,
+    "language": "HTML"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Guide curaté et ressources autour des modèles *Jev* de TypeSafe (System One), incluant SDKs, démos et évaluations indépendantes. Utile pour comprendre les architectures de décision rapide, mais limité par l'absence de publication académique ou de détails techniques profonds.",
+   "score": 5.6
+  },
+  {
+   "id": "27262aa26cd89506",
+   "title": "kraayenjon/awesome-jev",
+   "url": "https://github.com/kraayenjon/awesome-jev",
+   "summary": "A curated list of Jev use cases, projects, SDKs, and resources. Jev is TypeSafe AI's System One model for fast, typed decisions in software — Choice, Score, and Noul with calibrated probabilities.",
+   "published": "2026-09-18T15:43:06Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 140,
+    "language": null
+   },
+   "relevance": 5,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Liste curatée de projets et ressources autour des modèles *Jev* (TypeSafe), axés sur des décisions rapides et typées. Contenu utile pour explorer l'écosystème, mais manquant de profondeur technique ou de validation externe.",
+   "score": 4.7
+  },
+  {
+   "id": "d1defbaf4de8e0ab",
+   "title": "Ollaya – Ollama for open-source, Jev-style decision models",
+   "url": "https://ollaya.dev/",
+   "summary": "",
+   "published": "2026-09-25T18:33:50Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 482,
+    "comments": 119
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Portage open-source d'Ollama pour des modèles décisionnels ",
+   "score": 4.4
+  },
+  {
+   "id": "0365ec89c7e54041",
+   "title": "yetone/magpie",
+   "url": "https://github.com/yetone/magpie",
+   "summary": "Every agent's model. One place. Codex on DeepSeek, Claude Code on Kimi, from the menu bar.",
+   "published": "2026-09-23T16:22:35Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 838,
+    "language": "Go"
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Interface unifiée (Go) pour interagir avec divers modèles d'agents (DeepSeek, Kimi, etc.) depuis la barre de menu. Outil pratique mais sans benchmark ni analyse de performance.",
+   "score": 4.4
+  }
+ ]
+}
