@@ -1,0 +1,767 @@
+{
+ "date": "2026-09-28",
+ "digest": {
+  "headline": "AgentWorld et InternW0-Δ redéfinissent les benchmarks pour les agents LLM et les modèles d'action robotique",
+  "overview": "La journée du 2026-09-28 met en lumière des avancées majeures en optimisation des LLM, en robotique autonome et en évaluation des systèmes multi-agents. Les travaux couvrent à la fois des améliorations algorithmiques ciblées et des cadres d'évaluation systématiques, avec une emphase sur la scalabilité et la robustesse en conditions réelles.",
+  "highlights": [
+   {
+    "title": "Quantification des têtes de sortie des LLM sans perte de performance",
+    "text": "La méthode de *softmax reparameterization* propose une post-quantification des logits via une recherche unidimensionnelle, réduisant significativement les distorsions de prédiction pour les LLM quantifiés en W4. Elle améliore la divergence de Kullback-Leibler (ex: 0.936 → 0.256 sur Phi-4-mini) sans modifier le décodeur pré-entraîné, offrant une solution clé pour le déploiement efficace des modèles sur matériel contraint."
+   },
+   {
+    "title": "AgentWorld : benchmark pour la collaboration longue durée entre agents LLM",
+    "text": "AgentWorld introduit un benchmark de 100 tâches humaines dans un environnement MMORPG sandbox, évaluant la collaboration multi-agents à long terme via une métrique *CCE* (efficacité causale). Les résultats révèlent des lacunes systémiques même chez les modèles avancés (GPT-5 Mini, DeepSeek R1-70B), soulignant le besoin de progrès en planification et coordination distribuée."
+   },
+   {
+    "title": "InternW0-Δ : un modèle d'action unifié pour la robotique",
+    "text": "InternW0-Δ est un *World Action Model* (WAM) pré-entraîné sur 20 000+ heures de données ouvertes, intégrant dynamiques visuelles, sémantique 4D et génération d'actions via un cadre *Mixture-of-Transformers*. Il surpasse les méthodes existantes en simulation et sur plateformes réelles, marquant une étape vers des systèmes robotiques autonomes et généralisables."
+   },
+   {
+    "title": "Optimisation des architectures : attention sparse et inférence adaptative",
+    "text": "PISA propose une attention sparse par blocs avec complexité log-linéaire via une sélection hiérarchique Top-K, optimisée pour le matériel, tandis que *Continuous Depth Batching* (CDB) permet une inférence adaptative en profondeur pour les modèles récurrents (looped LMs) avec des gains de vitesse jusqu'à 99%. Ces approches adressent des goulots d'étranglement critiques pour les LLM à contexte long et les architectures récurrentes."
+   },
+   {
+    "title": "Mémoire persistante et outils pour agents LLM",
+    "text": "Le dépôt *okf-memory* implémente une mémoire persistante native pour agents de codage avec une recherche BM25 ultra-rapide (<300µs) et une réduction de 80% des tokens, tandis que *SLCA-GRPO* résout le problème de mauvaise attribution de crédit dans l'optimisation RL des agents utilisant des outils. Ces contributions améliorent l'efficacité et la stabilité des systèmes multi-agents."
+   },
+   {
+    "title": "Évaluation des LLM en environnements compétitifs et bancaires",
+    "text": "Game Arena évalue les LLM dans des environnements compétitifs (échecs, poker) via des matchs head-to-head, révélant des différences stratégiques sous incertitude. *IndicBankBench* teste la fiabilité des assistants bancaires en contexte indien, avec des métriques strictes montrant des écarts entre succès ponctuels et fiabilité durable (43.7% à 58.2% de *strict pass^3*)."
+   }
+  ],
+  "trend": "Les avancées convergent vers une intégration plus poussée des LLM dans des systèmes autonomes et distribués, avec un accent sur l'optimisation matérielle, la robustesse des interactions multi-agents, et l'évaluation systématique des performances en conditions réelles. La robotique et les agents collaboratifs émergent comme des domaines clés pour les prochaines générations de modèles."
+ },
+ "items": [
+  {
+   "id": "15ae8a3506bb3798",
+   "title": "Softmax Reparameterization for Output-Head Quantization",
+   "url": "https://huggingface.co/papers/2609.31291",
+   "summary": "Large vocabularies make output heads a substantial inference cost in small language models. We propose softmax reparameterization, a post-training method that selects a functionally equivalent output head before quantization. The method subtracts a scalar multiple of the vocabulary-row mean from every output row and selects the coefficient by validation KL separately for RTN, activation-weighted MSE, and full-Hessian GPTQ. This one-dimensional search includes the original head and fixed mean-centering, preserves the full-precision softmax distribution, and leaves the trained decoder unchanged; a rank-one correction handles nonlinear logit paths such as soft-capping. Across seven heads, W4 gains concentrate where baseline quantization substantially distorts predictions: on Phi-4-mini, AW-MSE KL falls from 0.936 to 0.256. The gains survive stronger GPTQ calibration and remain complementary to exact per-channel scaling and affine quantization. Across four heads and three W4 quantizers, frozen WikiText-selected coefficients also transfer to C4 and OpenWebMath, outperforming mean-centering in all 18 comparisons where the frozen coefficient differs from 1 and matching it in the remaining six. At W2, used as a compression stress test, benefits broaden across nearly the full model--quantizer matrix. Matched residual analysis shows that improved fidelity can accompany greater logit reconstruction error while reducing the residual's Fisher-weighted cost. For shift-compatible heads, reparameterization adds no inference operation and preserves packed W4 execution: with the decoder held in BF16, quantizing the Phi output head reduces batch-one generation latency by 10.8% relative to the BF16-head baseline.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2609.31291"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode de post-quantification pour les têtes de sortie des LLM (softmax reparameterization) qui réduit les distorsions de prédiction en ajustant les logits via une recherche unidimensionnelle, améliorant significativement les gains de quantification W4 (ex: KL passe de 0.936 à 0.256 sur Phi-4-mini) sans modifier le décodeur pré-entraîné.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage de petite taille voient leur coût d'inférence significativement impacté par la taille des vocabulaires, qui rend la couche de sortie (output head) coûteuse en calcul. La quantification de cette couche introduit des distorsions importantes dans les prédictions, dégradant les performances du modèle.",
+    "methode": "La méthode proposée, appelée *softmax reparameterization*, est une technique post-entraînement qui sélectionne une tête de sortie fonctionnellement équivalente avant la quantification. Elle soustrait un multiple scalaire de la moyenne des lignes du vocabulaire à chaque ligne de sortie, puis optimise ce coefficient via une recherche unidimensionnelle basée sur la divergence de Kullback-Leibler (KL) sur un jeu de validation. Cette approche est appliquée séparément pour trois méthodes de quantification : RTN (Round-To-Nearest), AW-MSE (Activation-Weighted Mean Squared Error) et GPTQ (avec matrice Hessienne complète). La méthode préserve la distribution *softmax* en précision complète et n'altère pas le décodeur entraîné. Une correction de rang un est ajoutée pour gérer les chemins non linéaires des logits, comme le *soft-capping*.",
+    "resultats": "Les gains en quantification W4 (4 bits) sont particulièrement marqués là où la quantification de base déforme fortement les prédictions. Par exemple, sur le modèle Phi-4-mini, la divergence KL pour AW-MSE passe de 0,936 à 0,256. Ces améliorations persistent même avec un calibrage GPTQ plus agressif et restent complémentaires à des techniques comme la mise à l'échelle exacte par canal ou la quantification affine. Sur quatre têtes de sortie et trois quantifieurs W4, les coefficients optimisés sur WikiText se transfèrent bien à d'autres jeux de données (C4, OpenWebMath), surpassant systématiquement le *mean-centering* dans 18 cas sur 24. En quantification W2 (stress test), les bénéfices s'étendent à presque toute la matrice modèle-quantifieur. Une analyse des résidus montre que la fidélité améliorée peut coexister avec une erreur de reconstruction des logits plus élevée, tout en réduisant le coût pondéré par la matrice de Fisher. Enfin, pour les têtes compatibles avec le décalage, la méthode n'ajoute aucune opération d'inférence et préserve l'exécution en W4 compacté, réduisant la latence de génération en batch-1 de 10,8 % par rapport à une tête en BF16.",
+    "limites": "Le contenu disponible ne permet pas d'évaluer la robustesse de la méthode face à des vocabulaires très hétérogènes ou des architectures de modèles radicalement différentes. De plus, l'impact sur des tâches spécifiques (ex : génération longue, raisonnement complexe) n'est pas détaillé. Enfin, la généralisation des coefficients optimisés sur un jeu de données à d'autres domaines reste à valider plus largement, malgré les résultats encourageants sur C4 et OpenWebMath.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à réduire significativement les coûts d'inférence des petits modèles sans sacrifier la qualité des prédictions, surtout en quantification basse précision."
+   }
+  },
+  {
+   "id": "3bf72abad2b3370b",
+   "title": "AgentWorld: Benchmarking Long-Horizon Collaboration of Multi-agent LLMs",
+   "url": "https://huggingface.co/papers/2609.31590",
+   "summary": "Existing multi-agent benchmarks primarily test in competitive settings, short-horizon interactions under 20 steps, or simply aggregate individual performance, failing to isolate and highlight genuine collaboration capabilities of LLM-based agents. We introduce AgentWorld, a benchmark of 100 human-annotated tasks (with 100 augmented variants) for evaluating long-horizon, multi-agent collaboration. Tasks span 50+ interaction rounds across a rich MMORPG sandbox and require 3-20 agents with asymmetric roles and abilities to coordinate through communication, joint planning, and resource sharing under a blackbox setting where each agent acts independently without access to others' internal states. To quantify collaboration effectiveness in addition to conventional binary task success, we propose Causal Collaboration Effectiveness (CCE), a graph-based metric that traces causal dependencies between agent actions and measures what fraction of a team's effort actually contributed to the outcome. Experiments with Gemini 3 Flash, Claude Haiku 4.5, GPT-5 Mini, and DeepSeek R1-70B show that even the best model achieves only 52.0% task success, with systematic failure modes including communication breakdowns, role confusion, and inability to maintain shared plans across rounds. AgentWorld is fully open-source.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.31590"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "AgentWorld introduit un benchmark de 100 tâches annotées par des humains pour évaluer la collaboration à long terme entre agents LLM dans un environnement sandbox MMORPG. Il propose une métrique CCE pour mesurer l'efficacité causale de la collaboration, révélant des lacunes systémiques même chez les modèles avancés comme GPT-5 Mini ou DeepSeek R1-70B.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les benchmarks actuels pour les systèmes multi-agents basés sur les LLM se concentrent principalement sur des scénarios compétitifs, des interactions à court terme (moins de 20 étapes) ou évaluent simplement la performance individuelle des agents. Ils ne permettent pas d'isoler et de mesurer véritablement les capacités de collaboration à long terme entre agents, un enjeu crucial pour des applications complexes comme les environnements virtuels ou les systèmes autonomes distribués.",
+    "methode": {
+     "benchmark": "AgentWorld propose un benchmark de 100 tâches annotées par des humains, complétées par 100 variantes augmentées, conçues pour évaluer la collaboration multi-agents sur des horizons longs (plus de 50 tours d'interaction).",
+     "environnement": "Les tâches se déroulent dans un environnement sandbox de type MMORPG, où 3 à 20 agents aux rôles et capacités asymétriques doivent coordonner leurs actions via la communication, la planification conjointe et le partage de ressources.",
+     "contraintes_techniques": "Les agents opèrent dans un cadre *blackbox* : chaque agent agit de manière indépendante, sans accès aux états internes des autres agents, ce qui impose une collaboration explicite et robuste.",
+     "metrique_innovante": "Pour quantifier l'efficacité collaborative au-delà du simple succès binaire des tâches, les auteurs introduisent le *Causal Collaboration Effectiveness* (CCE), une métrique basée sur des graphes de dépendances causales. Celle-ci mesure la fraction des actions d'une équipe qui contribuent effectivement à l'issue de la tâche, en traçant les liens de causalité entre les actions des agents."
+    },
+    "resultats": {
+     "performance": "Les expériences menées avec des modèles comme Gemini 3 Flash, Claude Haiku 4.5, GPT-5 Mini et DeepSeek R1-70B révèlent que même le meilleur modèle n'atteint que 52,0 % de succès sur les tâches proposées.",
+     "echecs_systematiques": "Les modèles échouent principalement à cause de ruptures de communication, de confusions de rôles ou d'une incapacité à maintenir des plans partagés sur plusieurs tours d'interaction.",
+     "disponibilite": "Le benchmark AgentWorld est entièrement open-source, ce qui permet une reproductibilité et des extensions futures par la communauté."
+    },
+    "limites": {
+     "representativite": "Le benchmark se limite à un environnement de type MMORPG, ce qui peut restreindre la généralisabilité des résultats à d'autres domaines (ex : robotique collaborative, systèmes industriels).",
+     "metrique_CCE": "Bien que la métrique CCE soit innovante, sa robustesse et son interprétation restent à valider sur des cas d'usage variés, notamment pour des tâches où les dépendances causales sont moins explicites.",
+     "biais_humain": "Les tâches sont annotées par des humains, ce qui peut introduire des biais dans la conception des scénarios ou des attentes en matière de collaboration."
+    },
+    "verdict": "AgentWorld représente une avancée significative pour évaluer la collaboration multi-agents à long terme, mais son adoption dépendra de sa capacité à s'étendre au-delà des jeux virtuels et à convaincre de la pertinence de sa métrique CCE."
+   }
+  },
+  {
+   "id": "c4afdfa0e44d015d",
+   "title": "InternW0-Δ: A World Action Model Bridging Predictive Dynamics and Actions with 20K+ Hours of Open Data",
+   "url": "https://huggingface.co/papers/2609.31394",
+   "summary": "World Action Models (WAMs) jointly model visual dynamics and action generation for generalist robot manipulation. A central challenge is to integrate priors from large-scale pretrained models---including visual dynamics, scene semantics, geometry, and motion---into a unified framework for robot action generation. We introduce InternW0-Δ, a unified WAM pretrained on a heterogeneous corpus that outperforms prior methods across simulation benchmarks and real-robot platforms. InternW0-Δ combines pretrained visual dynamics, scene-level semantics, 4D geometric and motion priors, and action generation within a Mixture-of-Transformers (MoT) framework. A pretrained video expert and an action expert interact under semantic guidance from a frozen VLM, while a pretrained 4D foundation model injects geometric and motion priors through training-only distillation. We further introduce Causal Imprint, which learns future-relevant scene changes from training-only future supervision and provides predictive representations directly to the action expert without future-video rollout at inference. For large-scale joint training, we construct a heterogeneous corpus of robot demonstrations, UMI data, egocentric human demonstrations, and Ego2Robot data, curated and aligned under a common state-action representation. The resulting corpus contains over 20K hours of processed training data, to our knowledge the largest open-source corpus of its kind. We pretrain InternW0-Δ on this corpus and demonstrate strong performance across simulation benchmarks and real-robot platforms. We will open source the training code, model weights, infrastructure, data-processing pipeline, and processed data where licenses permit. Project page: https://internrobotics.github.io/InternW0-Delta/",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2609.31394"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "InternW0-Δ est un modèle de type World Action Model (WAM) unifié, pré-entraîné sur 20 000+ heures de données ouvertes, intégrant dynamiques visuelles, sémantique, géométrie 4D et génération d'actions via un cadre Mixture-of-Transformers. Il surpasse les méthodes existantes en simulation et sur plateformes robotiques réelles.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le modèle InternW0-Δ vise à résoudre le défi de la manipulation robotique généraliste en intégrant simultanément la prédiction des dynamiques visuelles et la génération d'actions. Actuellement, les approches peinent à combiner efficacement des connaissances préalables issues de modèles pré-entraînés (dynamiques visuelles, sémantique des scènes, géométrie 4D, mouvements) dans un cadre unifié pour la génération d'actions robotiques.",
+    "methode": "InternW0-Δ propose une architecture basée sur un *Mixture-of-Transformers* (MoT) qui fusionne plusieurs experts pré-entraînés : un expert vidéo pour les dynamiques visuelles, un expert d'action pour la génération de commandes, et un modèle de fondation 4D pour les priors géométriques et de mouvement. Un modèle de langage visuel (VLM) figé guide sémantiquement l'interaction entre ces experts. La technique *Causal Imprint* permet d'apprendre les changements de scène pertinents pour le futur à partir de supervisions futures pendant l'entraînement, évitant ainsi les rollouts vidéo coûteux lors de l'inférence. Le modèle est pré-entraîné sur un corpus hétérogène de plus de 20 000 heures de données (démonstrations robotiques, données UMI, démonstrations humaines égocentriques, et données Ego2Robot), alignées sous une représentation commune état-action.",
+    "resultats": "InternW0-Δ surpasse les méthodes existantes sur des benchmarks en simulation et des plateformes robotiques réelles. Le corpus de 20 000 heures de données d'entraînement est présenté comme le plus grand ensemble de données open-source de ce type. Les auteurs annoncent la publication du code d'entraînement, des poids du modèle, de l'infrastructure, du pipeline de traitement des données et des données traitées (sous réserve des licences).",
+    "limites": "Les détails techniques sur l'évaluation comparative (métriques précises, protocoles) et les performances en conditions réelles restent flous. La dépendance à des modèles pré-entraînés (VLM, 4D) pourrait introduire des biais ou des limitations non explicitées. Enfin, l'alignement des données hétérogènes et la généralisation à des tâches non couvertes par le corpus ne sont pas pleinement discutés.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche unifiée et son échelle inédite en données open-source, mais son impact réel dépendra de la transparence des évaluations et de la reproductibilité des résultats."
+   }
+  },
+  {
+   "id": "c438a74ad1833676",
+   "title": "Tactile-JEPA: Topology-Aware Self-Supervised Representation Learning for Distributed Tactile Sensors",
+   "url": "https://huggingface.co/papers/2609.24385",
+   "summary": "Tactile sensing is an essential modality for robots performing contact-rich, dexterous manipulation, particularly under visual occlusion. While pre-trained image encoders are standard in robot learning pipelines, tactile encoders are still commonly trained from scratch from raw, noisy signals, which might limit their expressivity. Existing self-supervised learning (SSL) approaches focus predominantly on vision-based tactile sensors, leaving distributed electronic skins largely unaddressed. These sensors, however, have a distinctive property: their sensing elements are sparse and irregularly arranged over the surface they cover, which makes direct reuse of visual SSL methods suboptimal. We present Tactile-JEPA, an efficient self-supervised pre-training method that uses the spatial arrangement of tactile sensors to learn topology-aware representations. Specifically, it is trained to predict the embeddings of masked sensing elements from the unmasked remainder, using the sensor connectivity graph to guide spatial masking. Our analysis shows that effective tactile representations require capturing both local contact details and the global state of the tactile surface, which we achieve through dual-scale masking. Across three diverse datasets spanning magnetic and piezoresistive sensors, different robot embodiments, and single- and paired-sensor configurations, Tactile-JEPA reduces force estimation error by 6.3% and in-hand orientation error by 20.8% over the prior state-of-the-art, with consistent gains in other downstream applications, including policy learning. Overall, our results demonstrate that the benefit of tactile sensing depends critically on the quality of encoder pre-training, a problem which Tactile-JEPA addresses directly. Code is available at https://github.com/E-Kovtun/tactile.",
+   "published": "2026-09-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2609.24385"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "Tactile-JEPA propose une méthode d'auto-apprentissage (SSL) pour les capteurs tactiles distribués, exploitant leur topologie spatiale via un graphe de connectivité pour apprendre des représentations efficaces. Intéressant pour la robotique et l'IA sensorielle, où les données tactiles brutes sont coûteuses à traiter.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "La publication aborde le défi de l'apprentissage de représentations efficaces pour les capteurs tactiles distribués, notamment les peaux électroniques (e-skins). Ces capteurs, souvent irréguliers et clairsemés, ne bénéficient pas des méthodes d'auto-supervision (SSL) optimisées pour les capteurs tactiles visuels (comme les caméras tactiles), ce qui limite leur expressivité et leur performance dans des tâches robotiques complexes comme la manipulation fine sous occlusion visuelle.",
+    "methode": {
+     "approche_generale": "Tactile-JEPA est une méthode d'auto-supervision inspirée de JEPA (Joint-Embedding Predictive Architecture), adaptée aux spécificités des capteurs tactiles distribués. Elle exploite la topologie des capteurs via un graphe de connectivité pour guider le masquage spatial des éléments de détection.",
+     "details_techniques": [
+      "Le modèle est entraîné à prédire les embeddings des éléments masqués à partir des éléments non masqués, en utilisant la structure du graphe pour capturer les relations spatiales entre capteurs.",
+      "Une stratégie de masquage à double échelle est employée pour capturer à la fois les détails locaux (contacts fins) et l'état global de la surface tactile.",
+      "La méthode est évaluée sur des capteurs de types variés (magnétiques, piézorésistifs) et des configurations robotiques différentes (mono- ou multi-capteurs).",
+      "L'architecture s'appuie sur des embeddings appris sans supervision explicite, ce qui permet une généralisation accrue pour des tâches en aval comme l'estimation de force ou l'orientation d'objets."
+     ]
+    },
+    "resultats": {
+     "ameliorations_quantitatives": "Tactile-JEPA réduit l'erreur d'estimation de force de 6,3 % et l'erreur d'orientation en main de 20,8 % par rapport à l'état de l'art précédent.",
+     "generalisation": "Les gains sont cohérents sur trois jeux de données distincts, couvrant des capteurs, des robots et des configurations variés, ainsi que dans des applications comme l'apprentissage de politiques (policy learning).",
+     "conclusion_pratique": "Les résultats démontrent que la qualité du pré-entraînement des encodeurs tactiles est un facteur critique pour exploiter pleinement le potentiel des capteurs tactiles en robotique."
+    },
+    "limites": {
+     "manque_de_details": "Le document ne précise pas les architectures exactes des encodeurs ou des décodeurs utilisés, ni les hyperparamètres clés (taille des masques, poids des pertes, etc.).",
+     "generalisation_incertaine": "Bien que les résultats soient prometteurs sur plusieurs jeux de données, la robustesse face à des capteurs ou des tâches radicalement différents (ex. : textures ultra-fines, dynamiques rapides) reste à évaluer.",
+     "comparaison_incomplete": "Aucune comparaison directe avec des méthodes hybrides (ex. : SSL visuel adapté aux e-skins) n'est présentée, ce qui laisse ouverte la question de l'optimalité de l'approche."
+    },
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et ses résultats solides, mais son adoption nécessitera des validations supplémentaires sur des cas d'usage plus variés et une transparence accrue sur les détails techniques."
+   }
+  },
+  {
+   "id": "58bbc4f762db131c",
+   "title": "Block Sparse Attention with Log-Linear Complexity",
+   "url": "https://huggingface.co/papers/2609.31093",
+   "summary": "Scaling language models to long contexts is limited by the quadratic cost of self-attention. Block sparse attention offers an efficient alternative, but selecting the retained blocks remains a bottleneck. Conventional block selection requires scoring all query-block pairs and therefore remains quadratic in sequence length. To address this issue, we propose PISA, a block-sparse attention mechanism that employs a pyramid Top-K selection strategy. The main idea is to gradually narrow down the candidates across different levels, making it more efficient to find the most relevant keys. Specifically, we construct a coarse-to-fine hierarchy of keys and perform selection from the coarsest level. At each level, LogSumExp scoring is applied to a bounded candidate set to select candidates for the next finer level, continuing until the finest level is reached. Through pooling, we construct O(log N) levels of keys, yielding an overall complexity of O(Nlog N), where N denotes the sequence length. We develop hardware-aware Triton kernels for both training and inference, fusing hierarchical routing and LogSumExp scoring without materializing the query-key score matrix. We further evaluate our method on language modeling tasks. Compared with the baseline, our method achieves comparable performance on benchmarks such as commonsense reasoning while delivering better results on retrieval tasks.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2609.31093"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "PISA propose une attention sparse par blocs avec une complexité log-linéaire via une sélection hiérarchique Top-K, optimisée pour le matériel. Approche majeure pour l'optimisation des LLM à contexte long.",
+   "score": 8.5
+  },
+  {
+   "id": "c9515cbd2e634ffd",
+   "title": "FuseReg: Regularizing Layer Fusion Mitigates the Reconstruction-Generation Gap in Representation Autoencoders",
+   "url": "https://huggingface.co/papers/2609.31620",
+   "summary": "Representation autoencoders (RAEs) reuse features from a pretrained visual encoder as reconstruction and diffusion latents, integrating strong visual representations into image generation. However, RAEs still need to decide which encoder layers form the shared latent space for the generator and pixel decoder. This choice involves a trade-off. Shallower layers tend to preserve fine pixel details better, while deeper layers tend to yield better generation metrics. A fixed heuristic layer fusion therefore couples two stages that benefit from different information. We introduce FuseReg, which replaces heuristic feature selection with training over random subsets of encoder layers. We theoretically analyze the underlying mechanism: subset sampling explicitly penalizes sensitivity to cross-layer disagreement. On ImageNet-256 with DINOv3-L, a single FuseReg decoder reconstructs from full, sparse, and single-layer fusions without retraining, achieving higher PSNR than decoders specialized to fixed fusions. This flexibility also benefits generation: decoder replacement alone reduces unguided gFID by 27% with an unchanged RAEv2 DiT-XL generator. The same regularization principle extends to diffusion training, with joint regularization of both stages reducing unguided gFID by 29% on DiT-Base. These results show that training downstream models for layer-fusion robustness narrows the reconstruction-generation gap without modifying the pretrained encoder.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 110,
+    "arxiv_id": "2609.31620"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "FuseReg régularise la fusion des couches dans les autoencodeurs de représentation pour réduire l'écart reconstruction-génération. En échantillonnant aléatoirement des sous-ensembles de couches, il améliore PSNR et réduit gFID de 27% sur ImageNet-256 sans réentraînement, démontrant une flexibilité inédite.",
+   "score": 8.5
+  },
+  {
+   "id": "e1c0cd7fd37ae0b6",
+   "title": "MOPD-Router: Rethinking Teacher Routing in Multi-Teacher On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2609.30837",
+   "summary": "Multi-teacher on-policy distillation (MOPD) integrates specialized capabilities into a single student, but existing practice typically hard-routes each prompt to a domain-matched teacher for the entire rollout. This dependence on prompt-level domain labels restricts using unlabeled training mixtures and leaves complementary signals from other teachers unused. We introduce MOPD-Router, a framework that routes supervision over the full teacher pool at each token, without domain labels or training a separate routing model. Its plug-in interface supports different metrics for selecting and weighting teacher-specific OPD signals. Within this interface, we propose ExpertAlign, which scores each teacher by whether its correction to the student at the current token expresses the specialization that teacher acquired during post-training, and compare it against two reference metrics built on teacher confidence (Entropy) and teacher-student discrepancy (Novelty). Experiments on unlabeled and domain-labeled training mixtures under strong-to-weak and same-size distillation scenarios show that ExpertAlign achieves the strongest overall performance in all four settings. On unlabeled data, it improves the overall score by 5.88 (+12.3%) points over Mean aggregation; on domain-labeled data, it outperforms standard MOPD by 3.95 (+7.8%) points without using available domain labels. These results demonstrate token-level routing can exploit cross-domain complementary supervision, and reduce exclusive reliance on prompt-level domain assignment. Code is available at: https://github.com/TURLEing/MOPD-Router.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.30837"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Nouvelle approche de *routing* dynamique (MOPD-Router) pour la distillation multi-enseignants en ligne, utilisant un mécanisme *ExpertAlign* qui sélectionne les enseignants en fonction de leur spécialisation actuelle, améliorant les performances sur des mélanges non étiquetés et des scénarios de distillation forte-à-faible.",
+   "score": 8.2
+  },
+  {
+   "id": "134238b9828cf990",
+   "title": "Depth-adaptive Inference of Looped Language Models via Continuous Depth Batching",
+   "url": "https://huggingface.co/papers/2608.09444",
+   "summary": "A main promise of looped language models is depth-adaptive inference. By looping a block of shared layers a variable number of times, the model can use less compute for \"easy\" tokens and more for \"hard\" ones. However, tokens with different numbers of loops cannot share a uniform forward pass and therefore cannot be handled by standard batching systems such as vLLM. The practical value of depth-adaptive inference thus hinges on whether batching can be made efficient. We introduce the first efficient method for depth-adaptive looped LMs via continuous depth batching (CDB), which forms new batches between loop steps. Our method dynamically schedules looped and non-looped parts of the architecture, manages looped KV-caching, and predicts which tokens will exit the loop in advance so it can prepare batches asynchronously. Experiments on Ouro 1.4B and Huginn 3.5B show that fully looped architectures are best suited to depth-adaptive inference, as large non-looped layers outside the recurrent core (e.g., token embedding, LM head, and unshared transformer blocks) slow down and complicate scheduling. Overall, CDB realizes up to 99% of the estimated maximum speedup available, leaving further gains primarily dependent on model architecture and exit behavior.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2608.09444"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Méthode *Continuous Depth Batching* (CDB) pour l'inférence adaptative en profondeur des modèles de langage récurrents (looped LMs), permettant un *batch* efficace malgré des nombres variables de boucles, avec des gains de vitesse jusqu'à 99% du maximum estimé sur des architectures comme Ouro 1.4B et Huginn 3.5B.",
+   "score": 8.2
+  },
+  {
+   "id": "885ccb6985891d43",
+   "title": "SLCA-GRPO: Resolving Cross-Segment Credit Misattribution in Tool-Calling RL",
+   "url": "https://huggingface.co/papers/2609.29050",
+   "summary": "Tool-calling agents produce heterogeneous outputs, interleaving structured tool invocations with user-facing natural language summaries. This output heterogeneity presents a structural failure mode in standard on-policy Reinforcement Learning (RL): algorithms like GRPO indiscriminately broadcast a homogeneous trajectory-level scalar advantage to all tokens. Consequently, gradient noise from summary generation leaks into tool-decision tokens, causing cross-segment credit misattribution and brittle optimization. In this work, we propose SLCA-GRPO, a framework incorporating Segment-Locked Credit Assignment (SLCA). To enable scalable exploration without costly real APIs and stable training, we first construct the Schema-Guided LLM Simulator (SGLS) as foundational training infrastructure. Building on this, SLCA decouples advantage estimation at the structural segment level within a single group of rollouts, without requiring additional rollouts from intermediate states. Supported by Hierarchical Rewards (HierR), SLCA routes execution advantages to tool tokens and preference advantages to summary tokens, eliminating advantage contamination (the dominant cross-segment credit misattribution channel) within each policy update. On a 7B backbone, SLCA-GRPO accelerates convergence and outperforms standard GRPO, ToolPO, and RLTR by +2.53 pp on in-domain evaluation, +1.36 pp on the Berkeley Function-Calling Leaderboard (BFCL), and +9.15 pp on τ^2-Bench under the same training budgets, achieving higher accuracy with reduced tool redundancy and costs.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2609.29050"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "SLCA-GRPO résout le problème de mauvaise attribution de crédit dans l'optimisation RL des agents utilisant des outils en segmentant les avantages par type de token (outils vs résumés). Le cadre inclut un simulateur SGLS pour un entraînement stable et élimine la contamination des gradients entre segments.",
+   "score": 8.2
+  },
+  {
+   "id": "3f9b6098913cf206",
+   "title": "Morphometric Imitation: From Morphology and Contact Aware Hand Retargeting to Sim-to-Real Visuomotor Policy",
+   "url": "https://huggingface.co/papers/2609.28660",
+   "summary": "Human hand-object interactions (HOIs) provide a rich source of demonstrations for dexterous manipulation, but learning directly from them presents challenges in bridging morphology gaps, ensuring dynamical feasibility, and sim-to-real deployment. We present Morphometric Imitation, a three-stage framework that transforms reconstructed HOIs into zero-shot sim-to-real visuomotor policies. First, morphometric optimization (MMO) kinematically retargets human motion across hand morphologies while preserving demonstrated contacts. Second, residual reinforcement learning (RL) refines the kinematic reference using object pose and contact information from the human motion to produce dynamically feasible robot demonstrations. Third, these demonstrations are distilled into visuomotor policies. Across three robot hands and ten HOIs, MMO improves contact F1 over the strongest of five baselines by at least 8 points for every hand, while also improving the success rate of downstream dynamic retargeting by as much as 35 points. Ablations on the residual RL show complementary benefits from using object pose and contact information. Finally, the visuomotor policies achieve 89.3% zero-shot success in 300 real-world trials on 30 objects. Project page: https://morphometricimitation.github.io{this https URL}",
+   "published": "2026-09-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.28660"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "Morphometric Imitation transforme des démonstrations d'interactions main-objet humaines en politiques visuomotrices sim-to-real via un pipeline en 3 étapes : retargeting morphologique, RL résiduel pour la faisabilité dynamique, et distillation. Résultats : +8 points F1 de contact et 89,3% de succès zéro-shot sur 10 tâches.",
+   "score": 8.2
+  },
+  {
+   "id": "7beb3c57cefb7ce0",
+   "title": "VLA-Precision: Asymmetric Co-Bootstrapping for Efficient Real-World Online RL of Vision-Language-Action Models",
+   "url": "https://huggingface.co/papers/2609.04355",
+   "summary": "Pretrained vision-language-action (VLA) models enable broad manipulation but remain unreliable in tasks demanding precision and repeatability. Applying real-world online reinforcement learning (RL) to VLA post-training enables autonomous trial-and-error improvement beyond demonstrations alone, but exposes two bottlenecks: 1) unreliable value signals can induce policy drift; 2) large-VLA overhead constrains throughput and sample efficiency. To address these challenges, we present VLA-Precision, an efficient real-world online RL framework featuring the Asymmetric Co-Bootstrapping (ACoB) algorithm and the ACoB-Stream architecture. Specifically, ACoB establishes asymmetric co-bootstrapping across timescales: early intervention-guided behavioral learning rapidly improves policy performance while enhancing online experience quality. As autonomous experience accumulates, global return propagation and local preference ranking progressively calibrate value estimates, yielding relative action advantages for reference-regularized policy improvement while suppressing drift. To enable ACoB on large VLAs, we develop ACoB-Stream, a closed-loop experience--policy architecture that establishes invariant-state decoupling and on-demand streaming as design principles, delivering up to 10.9times improvements in throughput and computational efficiency. Extensive evaluations on nine high-precision chemistry tasks across four categories and four robot embodiments show that VLA-Precision achieves 98.3\\% mean success rate in 45.8 min/task, with 27.6 s episodes running at 1.2times and 1.8times the speeds of VLA and RL baselines. Resources are available at https://vla-precision.github.io.",
+   "published": "2026-09-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.04355"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "robotique",
+    "outils"
+   ],
+   "tldr": "Framework *VLA-Precision* pour l'apprentissage par renforcement en ligne efficace des modèles Vision-Language-Action (VLA), combinant *Asymmetric Co-Bootstrapping* (ACoB) pour éviter les dérives de politique et améliorer l'échantillonnage, avec une architecture *ACoB-Stream* pour gérer les grands modèles.",
+   "score": 7.6
+  },
+  {
+   "id": "fea216899b5e3acc",
+   "title": "CARD: Cluster-level Adaptation with Reward-guided Decoding for Personalized Text Generation",
+   "url": "https://huggingface.co/papers/2601.06352",
+   "summary": "Adapting large language models to individual users remains challenging due to the tension between fine-grained personalization and scalable deployment. We present CARD, a hierarchical framework that achieves effective personalization through progressive refinement. CARD first clusters users according to shared stylistic patterns and learns group-specific LoRA adapters, enabling robust generalization and strong low-resource performance. To capture individual differences within each cluster, we propose an implicit preference learning mechanism that contrasts user-authored text with cluster-level generations, allowing the model to infer user-specific style preferences without manual annotation. At inference time, CARD injects personalization exclusively at decoding via lightweight user preference vectors and low-rank logit corrections, while keeping the base model frozen. Experiments on the LaMP and LongLaMP benchmarks show that CARD achieves superior generation quality compared to baselines, while significantly improving efficiency and scalability for practical personalized text generation.",
+   "published": "2026-09-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2601.06352"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "CARD propose une adaptation hiérarchique des LLM pour la personnalisation via des clusters d'utilisateurs et des mécanismes de préférence implicite, avec une inférence légère. Approche efficace pour l'optimisation des LLM personnalisés.",
+   "score": 7.6
+  },
+  {
+   "id": "21ecfe4e5e41fe91",
+   "title": "Do Implicit Personalization and Explicit Styles Conflict? PsPLUG: A Lightweight Plug-in for Balancing Personalization and Style in Customized LLMs",
+   "url": "https://huggingface.co/papers/2601.06362",
+   "summary": "Personalized large language models are often expected to follow explicit style instructions, yet we find that such instructions can undermine the user-specific characteristics that personalization methods aim to preserve. We call this failure mode personalization collapse: explicit style control can conflict with implicit user preferences. To address this challenge, we propose PsPLUG, a lightweight plug-in that learns a user-specific residual after accounting for the requested style. PsPLUG also allows us to tune personalization strength at inference time. Our experiments show that explicit style instructions can diminish personalization in existing methods, whereas PsPLUG better preserves user preferences while providing precise control over the balance between personalization and style adherence.",
+   "published": "2026-09-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2601.06362"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "PsPLUG résout le conflit entre personnalisation implicite et styles explicites dans les LLM, en permettant un équilibrage dynamique. Solution technique pertinente pour l'optimisation des LLM personnalisés.",
+   "score": 7.6
+  },
+  {
+   "id": "f31be0c625cb8e92",
+   "title": "okf-memory/okf-agent-memory",
+   "url": "https://github.com/okf-memory/okf-agent-memory",
+   "summary": "Git-native persistent memory for AI coding agents. Implements Google OKF v0.2 with sub-300µs in-memory BM25 search, embedded MCP server, and progressive disclosure. Slashes token bloat by 80% with zero external databases or dependencies. Built in pure Go.",
+   "published": "2026-09-05T21:26:04Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 734,
+    "language": "Go"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Mémoire persistante native pour agents de codage, implémentant OKF v0.2 avec recherche BM25 ultra-rapide (<300µs) et réduction de 80% des tokens. Solution technique solide pour optimiser l'efficacité des agents, avec une architecture Go robuste.",
+   "score": 7.4
+  },
+  {
+   "id": "2ff7a4aef33bfe94",
+   "title": "Game Arena: Strategic LLM Evaluation in Competitive Environments",
+   "url": "https://huggingface.co/papers/2609.31473",
+   "summary": "We introduce Kaggle Game Arena, an open and ever-expanding platform to evaluate large language models (LLMs) through competitive games. Different from static benchmarks, game arena enables models to play head-to-head matchups in structured environments where the gameplay strength naturally increases as models evolve, preventing performance saturation. This technical report details the infrastructure behind Game Arena and describes the three pilot game environments: Chess, Poker, and Werewolf. These environments span perfect information, imperfect information, and multiplayer game settings, enabling a systematic study of models' strategic planning, adaptation, and robustness under uncertainty. For each game, we provide a detailed description of the environment, evaluation metrics, and results from running full competitions across models. Through robust infrastructure and large-scale ground-truth based evaluation, Game Arena ensures reproducibility, transparency and generalizability to new games and variants over time.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.31473"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "benchmark",
+    "agents"
+   ],
+   "tldr": "Game Arena propose une plateforme dynamique pour évaluer les LLM dans des environnements compétitifs (échecs, poker, loup-garou) avec des matchs head-to-head et une infrastructure reproductible. Les résultats montrent des différences stratégiques entre modèles sous incertitude ou information parfaite/imparfaite.",
+   "score": 7.3
+  },
+  {
+   "id": "af584b5e7b3d34c3",
+   "title": "IndicBankBench: Evaluating Safety and Reliability of Language Model Assistants in Indian Retail Banking",
+   "url": "https://huggingface.co/papers/2609.29167",
+   "summary": "Banking assistants must use account-specific information to answer requests and, in many cases, take actions through tools. Evaluating only the final response misses important errors. An assistant may ask for information it already has, rely on stale context, select the wrong account, or write an invalid value after stating the correct one. We introduce IndicBankBench, a 799-case benchmark for Indian retail banking spanning five operational domains, a capability/refusal domain, and twenty primary axes. Cases are evaluated at four stages: safety, action and tool use, response adequacy, and advisory quality. Tool use and most safety checks are deterministic. A narrow resolver handles only ambiguous confirmation-before-write cases, while a separate LLM judge evaluates semantic response adequacy. We run every case three times and report strict pass^3, which requires success on all trials. Across the eleven evaluated models, strict reliability ranges from 43.7% to 58.2%, whereas at-least-once success ranges from 60% to 74%. This gap shows that at-least-once success can overstate dependable banking behavior. The case-level diagnostics also distinguish systems that ask unnecessary questions from those that act but fail to reconcile customer context or fully resolve the request. We release the cases, mock environment, and evaluation harness.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.29167"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "produit",
+    "regulation"
+   ],
+   "tldr": "Benchmark *IndicBankBench* (799 cas) pour évaluer la fiabilité et la sécurité des assistants bancaires basés sur des LLM dans le contexte indien, couvrant 5 domaines opérationnels et 20 axes d'évaluation, avec des métriques strictes (*strict pass^3*) révélant des écarts entre succès ponctuels et fiabilité durable (43.7% à 58.2%).",
+   "score": 7.0
+  },
+  {
+   "id": "069b086445c2f2b6",
+   "title": "CodeGraph: Open-Taxonomy Knowledge Graph for Source Code with Wikidata Grounding",
+   "url": "https://huggingface.co/papers/2609.29474",
+   "summary": "Public software repositories, like GitHub and Software Heritage Archive, store billions of files, yet extracting their implicit engineering knowledge ---i.e., the algorithms they implement, the paradigms they follow, the patterns they instantiate, and the application domains they serve--- remains challenging, as current tools are constrained to syntactic and token-level analysis. We present a pipeline for building an open-taxonomy semantic annotation of source code using a code-specialised Large Language Model. The extracted entities are grounded in Wikidata through a three-stage linking procedure: a deterministic SPARQL stage handles unambiguous entities, a Deep Research Agent resolves the residual long tail, and a hierarchy-rollup stage imports the parent-of closure of each resolved Wikidata identifier. The resulting annotations are materialised as a source-code-specific open-taxonomy knowledge graph. We further introduce a calibrated quality-assurance protocol that quantifies annotation precision by combining a small human gold set with an LLM-as-a-judge filter. We applied our pipeline to the 167 million files of the Stack-Edu corpus, creating the first known large-scale open-taxonomy knowledge graph for source code. Our graph, named CodeGraph, contains approximately 158 million nodes, which include around 145 million files, about 63,000 extracted concept entities (such as algorithms, paradigms, design patterns, and application domains), and roughly 19,800 grounded Wikidata entities. Furthermore, CodeGraph features approximately 1 billion typed edges that connect files to their respective concepts, link these concepts to their grounded Wikidata identifiers, and relate them to their parent categories, covering 14 programming languages.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.29474"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "autre"
+   ],
+   "tldr": "Pipeline pour construire un graphe de connaissances sémantiques open-taxonomy sur le code source (167M de fichiers) en utilisant un LLM spécialisé et un agent de recherche profond pour lier les entités à Wikidata, avec un protocole de qualité basé sur un ensemble de référence humain et un juge LLM.",
+   "score": 6.7
+  },
+  {
+   "id": "7dd240f9e1071207",
+   "title": "TRACE: Temporal Audit and Condition-aware Evaluation of Streaming Video Understanding",
+   "url": "https://huggingface.co/papers/2609.30670",
+   "summary": "Streaming video understanding requires models to interpret evidence as it arrives, yet current evaluations often report task scores without specifying when evidence becomes valid, how visual history is maintained, or how responses are triggered. As a result, similar scores may correspond to different workloads, failure modes, and operational behavior. We introduce TRACE (Temporal Audit and Condition-aware Evaluation), a condition-aware benchmark and evaluation framework that makes these factors explicit. TRACE combines temporally audited visual tasks with evidence timing and instruction-dependent trigger annotations, a unified causal Core--Adapter protocol that controls information availability while recording actual history processing and response events, and multidimensional reporting of answer quality, timeliness, response-selection behavior, workload, completion, and reliability. On 1,240 records from 517 videos, we evaluate eight publicly available models or systems in eight configurations. We find that nearly identical QA accuracy can mask substantial differences in completion, answer validity, and generation workload, while proactive performance separates into response quality, response delay, false alarms (responses emitted while no target window is currently valid and a later one remains), and missed target windows. These results show that streaming-video performance should be interpreted as execution-conditioned system behavior rather than a single score. Our benchmark and code can be accessed at https://github.com/om-ai-lab/trace-bench{https://github.com/om-ai-lab/trace-bench}.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.30670"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "TRACE introduit un cadre d'évaluation pour la compréhension vidéo en streaming, analysant la gestion du temps, de l'historique et des déclencheurs. Utile pour évaluer les modèles de vision temporelle, mais moins pertinent pour les centres d'intérêt principaux de l'utilisateur.",
+   "score": 6.7
+  },
+  {
+   "id": "9672729407b4c772",
+   "title": "Enhancing Photogrammetric Digital Surface Models with Pretrained Diffusion Models and Multimodal Conditioning",
+   "url": "https://huggingface.co/papers/2609.31199",
+   "summary": "Large-scale Digital Surface Models (DSMs) can be produced cost-effectively from satellite images via stereo-photogrammetry. However, the resulting 3D maps are often contaminated by noise, outliers, and voids. On the other hand, aerial LiDAR provides high-accuracy elevation measurements at a substantially higher cost. In this work, we study diffusion models conditioned both on photogrammetric DSMs and Pléiades imagery to refine vertically co-registered DSMs. We introduce a modified Stable Diffusion 3 architecture with a pruned text stream and a patch-wise normalization strategy, enabling stable training on LiDAR data and transfer from natural images to elevation maps. Experiments in French cities demonstrate that multimodal conditioning improves elevation accuracy, reducing Dense Urban RMSE from 6.00 to 3.45 m in the in-context cities and from 4.16 to 2.77 m in the held-out city of Bordeaux.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2609.31199"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "autre"
+   ],
+   "tldr": "Méthode de raffinement des modèles numériques de surface (DSM) photogrammétriques via des modèles de diffusion conditionnés par imagerie satellite et LiDAR, réduisant l'erreur RMSE de 6.00m à 3.45m dans des villes françaises, avec une architecture modifiée de Stable Diffusion 3 adaptée aux données d'élévation.",
+   "score": 6.4
+  },
+  {
+   "id": "22159f2ce87279c5",
+   "title": "Imp is a full port of DSPy to the BEAM",
+   "url": "https://github.com/deepfates/imp",
+   "summary": "",
+   "published": "2026-09-27T19:28:23Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 89,
+    "comments": 8
+   },
+   "relevance": 8,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "outils",
+    "optimisation"
+   ],
+   "tldr": "Port complet de DSPy (framework de programmation des LLM) sur la BEAM (plateforme Erlang/Elixir), visant l'efficacité et la modularité. Intéressant pour l'optimisation des workflows LLM, mais manque de validation peer-reviewed.",
+   "score": 6.2
+  },
+  {
+   "id": "97c136e29d6d3ca9",
+   "title": "Simreal-AI/Simreal-MLBench",
+   "url": "https://github.com/Simreal-AI/Simreal-MLBench",
+   "summary": "[Public preview] Externally scored agentic ML research benchmark: 60 tasks, real competition ground truth. Open protocol, operated evaluation.",
+   "published": "2026-09-21T11:29:47Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 160,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark agentique externe (MLBench) évaluant 60 tâches avec vérité terrain compétitive. Protocole ouvert et évaluation externe, pertinent pour la recherche sur les agents IA et les benchmarks.",
+   "score": 6.2
+  },
+  {
+   "id": "616966846f91a9dd",
+   "title": "Promethe-us/awesome-jev",
+   "url": "https://github.com/Promethe-us/awesome-jev",
+   "summary": "A source-backed Jev / System One knowledge map: projects, papers, evaluations, robotics, and social discovery.",
+   "published": "2026-09-20T11:59:48Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 133,
+    "language": null
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "autre"
+   ],
+   "tldr": "Ressources open-source structurées autour des modèles de décision (Jev/System One), incluant projets, papiers et évaluations. Intéressant pour cartographier l'écosystème LLM, mais fiabilité limitée par l'absence de vérification indépendante des performances.",
+   "score": 6.2
+  },
+  {
+   "id": "e2a08a52d1859bac",
+   "title": "logicrw/awesome-jev-projects",
+   "url": "https://github.com/logicrw/awesome-jev-projects",
+   "summary": "Awesome Jev: source-backed open-source ecosystem radar, plain-language project discovery, and automatic GitHub sync",
+   "published": "2026-09-18T06:41:50Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 597,
+    "language": "JavaScript"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "autre"
+   ],
+   "tldr": "Cartographie open-source de l'écosystème Jev/System One, avec découverte de projets et synchronisation GitHub automatique. Bon pour la veille, mais fiabilité réduite par l'absence de vérification indépendante.",
+   "score": 6.2
+  },
+  {
+   "id": "9a8025219d91b620",
+   "title": "kydlikebtc/awesome-jev",
+   "url": "https://github.com/kydlikebtc/awesome-jev",
+   "summary": "1207 public resources for Jev, TypeSafe AI's System One decision model, indexed by decision pattern. Source citations, dated link checks and scheduled call-site text checks; runtime and performance are not independently tested here. EN/中文, JSON schema and platform compatibility.",
+   "published": "2026-09-22T02:22:54Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 582,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "autre"
+   ],
+   "tldr": "Base de données de 1207 ressources publiques sur les modèles de décision (Jev/System One), avec citations et vérifications de liens. Intéressant pour la veille, mais performances non testées indépendamment.",
+   "score": 6.2
+  },
+  {
+   "id": "5a1773ab728ed548",
+   "title": "Paragraph Boundaries Are Not White Space:Compression Depth as the Signature of Hierarchical Structure",
+   "url": "https://huggingface.co/papers/2609.23551",
+   "summary": "Standard positional encodings represent position as a one-dimensional reading-order coordinate, but reading order alone does not determine hierarchical textual structure. We use a hierarchical rotary positional encoding (hRoPE) that represents paragraph, sentence, and token indices as separate channels, hold the token sequence fixed, intervene on the paragraph coordinate p1, and measure cross-paragraph attention with a token-distance-exact estimator. Attention is compressed relative to a token-distance-matched baseline in every corpus, but compression alone is not diagnostic of true structure: an architecturally identical channel with density-matched random labels is compressed too, more shallowly. What distinguishes real structure is the depth of compression, which is greater and corpus-dependent while the control's is not. Comparing eight corpus-only quantities across three constructs (lexical persistence, paragraph length, embedding-based coherence), none fully reproduces the cross-corpus ordering of depth, though embedding-based coherence comes closest. Compression depth, not its location, is the reproducible signature of genuine paragraph structure in our setting.",
+   "published": "2026-09-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.23551"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Étude sur l'encodage positionnel hiérarchique (*hRoPE*) montrant que la *compression depth* (profondeur de compression) des attentions croisées entre paragraphes est un indicateur robuste de la structure hiérarchique réelle, distincte des artefacts aléatoires, avec des comparaisons sur 8 corpus et 3 constructions.",
+   "score": 6.1
+  },
+  {
+   "id": "9534d8b61b007a3c",
+   "title": "ZooWork-ShopRanker: An Open, Preference-Aligned E-Commerce Reranker",
+   "url": "https://huggingface.co/papers/2609.31002",
+   "summary": "Open rerankers trained for general web retrieval transfer imperfectly to e-commerce, where ranking decisions depend not only on topical relevance but also on user preferences, product constraints, and comparative product fit. These preference signals are difficult to supervise at scale: real search traffic provides authentic queries and candidates but no clean pairwise labels. We present ZooWork-ShopRanker, a family of e-commerce rerankers (0.6B, 4B, and 8B) aligned to judge-labeled shopping preference. Training pairs are labeled by a panel of reasoning large language models (LLMs) from different families acting as a preference oracle, with position-debiased judgments and agreement tiers, and the rerankers are trained on these labels. The aligned 8B flagship then serves as a distillation teacher for the efficient 4B and 0.6B models, which are fit to its scores and sharpened on judged pairs. To measure progress, we introduce ShopRank-Bench, a contamination-limited benchmark of ~10,000 private-traffic preference pairs in both text formats, tiered by how many judge families committed to each label. ZooWork-ShopRanker-8B and -4B significantly outperform the strongest open reranker baseline, every model significantly beats its own un-aligned base, and ZooWork-ShopRanker-0.6B beats its size peer; the gains hold in both formats and extend to common MTEB benchmarks. We release the models and the dual-format ShopRank-Bench to facilitate further research.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.31002"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "produit"
+   ],
+   "tldr": "ZooWork-ShopRanker propose des modèles de reranking pour le e-commerce alignés sur des préférences utilisateurs, avec distillation pour des versions efficaces. Intéressant pour l'optimisation des LLM dans des applications commerciales, mais limité en scope.",
+   "score": 6.1
+  },
+  {
+   "id": "497952f79f0cc4e5",
+   "title": "FoMo: Forking Moment in Generative Trajectory as a Perceptual Distance",
+   "url": "https://huggingface.co/papers/2609.25716",
+   "summary": "Reference-based image quality assessment (IQA) metrics aim to reflect how humans perceive the perceptual distance between a pair of images. To learn how the human visual system (HVS) operates, recent reference-based IQA metrics heavily rely on human-annotated data. Mean opinion score (MOS)-based pointwise scoring, which assigns a scalar quality value per image, is preferable for annotation but is prohibitively expensive to collect at scale and is known to be noisy due to inconsistent human judgments. As an alternative, two-alternative forced choice (2AFC) pairwise labels have gained popularity due to their reliability and efficiency, but they capture only relative comparisons between pairs. In this paper, we propose a fully automated data generation pipeline that generates pointwise perceptual distance labels between image pairs without any human annotation. Our approach exploits the generative dynamics of diffusion models as a perceptual distance proxy, where the coarse structure of an image is generated in the early timesteps and the fine details are generated in the later timesteps. Images that fork early in the generation process share only coarse structure and are perceptually far apart; images that fork late differ only in fine detail. We demonstrate that the diffusion trajectory aligns well with the human visual system, and use this forking moment, FoMo, as a reference-grounded distance label to supervise the training of a reference-based IQA metric. The pointwise labels, which support universal comparison between arbitrary image pairs, enable an information-rich training objective. Extensive experiments across diverse backbone architectures confirm the effectiveness of our generation pipeline, outperforming human-annotated datasets in multiple benchmarks.",
+   "published": "2026-09-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.25716"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "FoMo utilise la dynamique des modèles de diffusion pour générer des étiquettes de distance perceptuelle entre images sans annotation humaine. Approche innovante pour l'évaluation de la qualité d'image, mais moins alignée avec les centres d'intérêt principaux.",
+   "score": 6.1
+  },
+  {
+   "id": "750fadca302091bf",
+   "title": "TrackEverything: Long Horizon Dense Tracking via De-Duplicating 3D Scene Representations",
+   "url": "https://huggingface.co/papers/2609.30222",
+   "summary": "Existing point tracking models face a fundamental tradeoff: they can either track a sparse set of query points over long horizons, or track all points across only short clips. We introduce TrackEverything, a 3D point tracker that breaks this trade-off by representing videos as persistent 3D scene tracks in world coordinates. Grounded in the insight that videos are 2D projections of an underlying 3D world, TrackEverything decouples model complexity from video duration, allowing it to scale with unique physical scene geometry instead. Our approach introduces three key innovations. First, we employ a voxelization-based de-duplication mechanism at sliding-window boundaries to merge co-located tracks, preventing repeated observations of the same surface from redundantly accumulating. Second, we decompose tracking into an endpoint refiner that predicts each point's destination and static-versus-dynamic classification, followed by a lightweight trajectory refiner that decodes dense trajectories exclusively for dynamic points. Third, we propose 3D WAFT, replacing memory-prohibitive 4D correlation volumes with efficient feature sampling in the scene cloud. To the best of our knowledge, TrackEverything is the first 3D tracker capable of tracking all visible points across videos exceeding 1000 frames within 40 GB of GPU memory. On TAPVid-3D, TrackEverything outperforms all open-source all-frame dense 3D trackers by more than 20% APD on short clips, while remaining competitive with state-of-the-art sparse trackers on long sequences, despite tracking far more points.",
+   "published": "2026-09-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2609.30222"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "TrackEverything introduit un suivi dense 3D de points dans des vidéos longues via une dé-duplication et une représentation 3D persistante. Pertinent pour la vision par ordinateur et la robotique, mais moins aligné avec les centres d'intérêt principaux.",
+   "score": 6.1
+  },
+  {
+   "id": "68aab3278705623a",
+   "title": "LockedinLabs-AI/agent-console",
+   "url": "https://github.com/LockedinLabs-AI/agent-console",
+   "summary": "Local-first observability for AI coding agents. Every Claude Code and Codex session's tokens, cache, models and cost, on this machine and every machine you connect through a self-hosted team hub. Presenting mode, policy hooks, Apple-signed and notarized macOS builds, attested releases. MIT.",
+   "published": "2026-09-20T17:55:58Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 608,
+    "language": "JavaScript"
+   },
+   "relevance": 6,
+   "reliability": 6,
+   "tags": [
+    "llm",
+    "agents",
+    "produit"
+   ],
+   "tldr": "Outil d'observabilité local-first pour agents de codage (Claude Code/Codex), affichant tokens, cache et coûts en temps réel. Utile pour le monitoring, mais limité à l'écosystème spécifique des agents de codage.",
+   "score": 5.9
+  },
+  {
+   "id": "6352c31fe11c6c9f",
+   "title": "Show HN: TinyAIArena watch AI agents battle it out",
+   "url": "https://tinyaiarena.com/",
+   "summary": "",
+   "published": "2026-09-27T15:51:28Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 114,
+    "comments": 45
+   },
+   "relevance": 5,
+   "reliability": 1,
+   "tags": [
+    "agents",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "Show HN présentant TinyAIArena, une plateforme de benchmarking d'agents IA en compétition, sans détails techniques ni résultats concrets dans le résumé fourni.",
+   "score": 3.8
+  }
+ ]
+}
