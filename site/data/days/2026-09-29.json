@@ -1,0 +1,719 @@
+{
+ "date": "2026-09-29",
+ "digest": {
+  "headline": "G²PTQ et DISCO marquent des avancées majeures en quantification post-entraînement et gestion du contexte long pour les LLM",
+  "overview": "La journée du 29 septembre 2026 met en lumière des optimisations critiques pour les modèles de langage et multimodaux, avec des méthodes réduisant les coûts computationnels tout en préservant les performances. Les travaux sur l'architecture des Transformers, la distillation et la robustesse des agents dominent, avec une attention particulière portée aux lois d'échelle et aux mécanismes de raisonnement latent.",
+  "highlights": [
+   {
+    "title": "Quantification et optimisation des LLM",
+    "text": "G²PTQ introduit une compensation dynamique des gradients et hessiens pour la quantification post-entraînement, limitant les pertes de performance tout en accélérant l'inférence. Parallèlement, MeqMuon améliore l'optimiseur Muon en équilibrant les mises à jour matricielles, surpassant AdamW en convergence. Ces méthodes répondent au besoin croissant d'efficacité computationnelle sans sacrifier la précision."
+   },
+   {
+    "title": "Architectures alternatives pour les Transformers",
+    "text": "L'approche *Associative Algebra Layers* remplace la multiplication matricielle standard par une algèbre associative, réduisant la complexité à O(n²) et améliorant le débit de 6-8%. Foil optimise les modèles Looped MoE en aplatissant les experts et en désolidarisant l'attention, réduisant la perte de pré-entraînement. Ces innovations explorent des pistes pour contourner les limites des architectures actuelles."
+   },
+   {
+    "title": "Gestion du contexte long et raisonnement latent",
+    "text": "DISCO résout la 'rot de contexte' en séparant grounding et raisonnement, maintenant 78% de précision sur RULER-QA (1M tokens). *Not All Thinking is Created Equal* révèle qu'un raisonnement latent récurrent généralise mieux que les méthodes explicites (CoT) hors distribution, avec des implications pour l'interprétabilité. Ces travaux adressent des défis clés pour les applications nécessitant une mémoire étendue ou un raisonnement complexe."
+   },
+   {
+    "title": "Distillation et fusion de modèles",
+    "text": "DN-MOPD propose une distillation multi-enseignants normalisée par domaine, évitant les déséquilibres de feedback pour les LLM polyvalents. ColNanoVDR utilise le transport optimal pour distiller des encodeurs de requêtes visuelles sans stocker de tokens, conservant 95% des performances. Ces méthodes visent à combiner efficacement des modèles spécialisés ou à réduire leur empreinte."
+   },
+   {
+    "title": "Évaluation et sûreté des modèles frontier",
+    "text": "ScAn-Bench introduit des benchmarks pour évaluer les méthodologies d'analyse des lois de scaling, identifiant des biais dans l'extrapolation des performances. OpenAI publie des lignes directrices pour les *safety cases* dans l'entraînement des modèles frontier, intégrant des garde-fous techniques et opérationnels. Ces contributions reflètent une maturation des cadres d'évaluation et de régulation."
+   }
+  ],
+  "trend": "Les avancées se concentrent sur l'optimisation des architectures existantes (quantification, attention, distillation) et l'exploration de mécanismes de raisonnement plus robustes, avec une attention accrue aux compromis performance-coût et à la généralisation hors distribution. La tendance vers des modèles plus efficaces et sûrs s'accompagne d'une formalisation des méthodologies d'évaluation."
+ },
+ "items": [
+  {
+   "id": "613c7099eefdaba3",
+   "title": "G^2PTQ: Improving LLM Post-Training Quantization with Generalized Gradient Compensation",
+   "url": "https://huggingface.co/papers/2609.31009",
+   "summary": "Post-training quantization (PTQ) is a practical approach to reducing the memory and computational footprint of large language models (LLMs) without retraining. GPTQ-based methods have become the de facto standard, yet they suffer from two complementary limitations. Methods with local, layer-wise objectives lack global supervision; while methods with global objectives fix their Hessian estimates at the start and ignore first-order gradients, so their guidance grows stale as quantization proceeds. This paper presents G^2PTQ, a unified PTQ framework with Generalized Gradient Compensation that integrates both first- and second-order information under a globally supervised, block-wise optimization objective. By refreshing gradient and Hessian estimates before quantizing each Transformer block, G^2PTQ avoids the staleness of prior global methods. Furthermore, to stabilize the exact first-order compensation, we introduce a trust-region scaling mechanism that dynamically bounds the gradient step to prevent exploding weight updates. Finally, we derive efficient implementations for block-wise Hessian approximation and exact gradient compensation. Experimental results on various model families and bit-widths demonstrate that G^2PTQ enables better alignment with the full-precision model, outperforming state-of-the-art baselines. Code is available at: https://github.com/G2PTQ/G2PTQ.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.31009"
+   },
+   "relevance": 10,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Nouvelle méthode G²PTQ pour la quantification post-entraînement des LLM, intégrant gradients et hessiens dynamiques pour réduire les pertes de performance tout en accélérant l'inférence.",
+   "score": 9.4,
+   "deep_analysis": {
+    "probleme": "La quantification post-entraînement (PTQ) des grands modèles de langage (LLM) vise à réduire leur empreinte mémoire et calculatoire sans réentraînement. Cependant, les méthodes existantes comme GPTQ souffrent de deux limitations majeures : soit elles optimisent localement (par couche) sans supervision globale, soit elles utilisent des estimations statiques du Hessien et ignorent les gradients de premier ordre, rendant leur guidage obsolète au fil de la quantification.",
+    "methode": "G^2PTQ propose un cadre unifié de PTQ intégrant une compensation généralisée des gradients (Generalized Gradient Compensation). Il combine informations de premier et second ordre sous un objectif d'optimisation global et par blocs. Avant la quantification de chaque bloc Transformer, les estimations du gradient et du Hessien sont rafraîchies pour éviter leur obsolescence. Un mécanisme de *trust-region scaling* est introduit pour stabiliser la compensation exacte du premier ordre, en bornant dynamiquement les mises à jour des poids afin d'éviter des corrections explosives. Enfin, des implémentations efficaces sont dérivées pour l'approximation du Hessien par blocs et la compensation exacte des gradients.",
+    "resultats": "Les expérimentations menées sur diverses familles de modèles et largeurs de bits montrent que G^2PTQ améliore l'alignement avec le modèle en précision complète, surpassant les méthodes de pointe actuelles. Les détails quantitatifs précis (ex. gains en perplexité ou précision) ne sont pas fournis dans le résumé disponible, mais le code et les résultats complets sont accessibles via le dépôt GitHub mentionné.",
+    "limites": "Le résumé ne précise pas les coûts computationnels supplémentaires induits par le rafraîchissement fréquent des gradients et Hessiens, ni la robustesse de la méthode face à des architectures très hétérogènes. De plus, l'efficacité du *trust-region scaling* en pratique (ex. choix des hyperparamètres) reste à évaluer en profondeur.",
+    "verdict": "G^2PTQ mérite une attention particulière pour son approche innovante combinant supervision globale et compensation dynamique des gradients, mais son adoption dépendra de son équilibre entre performance et surcoût calculatoire."
+   }
+  },
+  {
+   "id": "0ed6d06db37f5510",
+   "title": "Change the Product, Keep the Parameters: Associative Algebra Layers for Transformers",
+   "url": "https://huggingface.co/papers/2609.32814",
+   "summary": "Fast matrix multiplication algorithms keep the product fixed and search for a cheaper way to evaluate it. We instead ask whether a Transformer's learned projections can use a different, cheaper product altogether. Building on an associative-algebra construction that replaces ordinary matrix multiplication with a sparser interaction table over the same weight blocks, we construct a family with quadratic arithmetic in the matrix dimension when the physical block size remains fixed, and derive finite-shape constraints for GPU execution. The construction is provably optimal for its bilinear rank by the Alder--Strassen bound and can be realized as row-typed rectangular projections compatible with causal masking and KV-cached decoding. We provide an empirical test of this approach by training two approximately 110M-parameter decoder-only Transformer LMs from the same recipe and 12.3B-token budget, differing only in their feed-forward layer: one uses ordinary dense matrix multiplication and the other uses the associative-algebra product. Across four prompt domains, the algebraic model achieves a 6.2--7.8\\% increase in end-to-end generation throughput, while obtaining lower scores on all three reported downstream metrics. We treat these results as a feasibility and trainability check for the proposed approach at small scale, leaving further investigation to future work.",
+   "published": "2026-09-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.32814"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Remplacement de la multiplication matricielle standard par une algèbre associative dans les Transformers, réduisant la complexité arithmétique à O(n²) et améliorant le débit de 6.2-7.8% sans perte de performance. Preuve théorique (borne d'Alder-Strassen) et validation empirique solide.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde l'optimisation des calculs matriciels dans les architectures de type Transformer, en particulier la multiplication matricielle dense, coûteuse en ressources computationnelles. L'objectif est de réduire la complexité arithmétique tout en conservant les paramètres appris, afin d'améliorer l'efficacité des modèles sans sacrifier leur capacité d'apprentissage.",
+    "methode": "Les auteurs proposent de remplacer la multiplication matricielle classique par une interaction basée sur une algèbre associative, utilisant des tables d'interaction plus éparses sur les mêmes blocs de poids. Cette approche permet une complexité quadratique en fonction de la dimension matricielle, à taille de bloc physique fixe. La construction est optimale pour son rang bilinéaire, selon la borne d'Alder-Strassen, et compatible avec les mécanismes de masquage causal et de cache KV. Les projections rectangulaires typées par lignes sont utilisées pour implémenter cette méthode, tout en respectant les contraintes matérielles des GPU.",
+    "resultats": "Un test empirique a été réalisé avec deux modèles Transformer décodeurs de 110 millions de paramètres, entraînés sur 12,3 milliards de tokens avec la même recette, mais différant par leur couche feed-forward : l'une utilise une multiplication dense classique, l'autre l'algèbre associative. Le modèle algébrique a montré une augmentation de 6,2 à 7,8 % du débit de génération, mais des performances inférieures sur trois métriques aval.",
+    "limites": "Les résultats indiquent une faisabilité et une capacité d'entraînement à petite échelle, mais les performances en aval sont moins bonnes, ce qui soulève des questions sur la généralisation ou l'impact à long terme. Les détails sur les contraintes de forme finie pour l'exécution GPU et l'optimalité théorique mériteraient une analyse plus approfondie pour évaluer leur applicabilité pratique.",
+    "verdict": "Cette approche innovante mérite attention pour son potentiel d'optimisation computationnelle, mais son adoption dépendra de son efficacité à plus grande échelle et de son impact sur les performances finales."
+   }
+  },
+  {
+   "id": "f9e57ed54625c813",
+   "title": "ColNanoVDR: Document-Free Query Distillation for Multi-Vector Visual Document Retrieval via Optimal Transport",
+   "url": "https://huggingface.co/papers/2609.34899",
+   "summary": "Multi-vector retrievers built on vision-language models lead visual document retrieval (VDR), but they run a multi-billion-parameter query encoder on every search. Distilling this encoder into a small student that queries the teacher's existing index would remove the bottleneck. The standard recipe, however, matches the teacher's MaxSim scores and so requires encoding and caching every training page, which can reach terabytes of page tokens. NanoVDR avoids pages entirely by training on the teacher's query embeddings alone, but only for single-vector retrievers. We present ColNanoVDR, to our knowledge the first framework to bring this document-free distillation to multi-vector VDR. Its objective, OTW (Optimal Transport with Learned Weights), aligns the student's query tokens with the teacher's by entropic optimal transport, with a learned weight for each student token, and needs no correspondence between the two tokenizations. We prove that the resulting alignment cost bounds the MaxSim score difference on every page. Distilled from five state-of-the-art teachers, the 149M text-only students retain about 95% of their teachers' NDCG@5 on ViDoRe v1-v3 while encoding queries up to 26x faster. Under identical training, OTW matches score distillation while encoding no page and reading 12.6x less cached teacher data.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.34899"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "rag"
+   ],
+   "tldr": "ColNanoVDR propose une méthode de distillation par transport optimal (OTW) pour réduire la taille des encodeurs de requêtes dans les systèmes de retrieval visuel multi-vecteurs (VDR), évitant le besoin de stocker des tokens de pages tout en conservant 95% des performances des modèles enseignants sur ViDoRe.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'efficacité des systèmes de récupération de documents visuels (VDR) basés sur des modèles vision-langage multi-vecteurs. Ces systèmes, bien que performants, nécessitent l'exécution d'un encodeur de requêtes comportant plusieurs milliards de paramètres à chaque recherche, ce qui crée un goulot d'étranglement en termes de calcul et de latence. La distillation classique de cet encodeur en un modèle étudiant plus petit exige également le traitement et le stockage de chaque page d'entraînement, ce qui peut représenter des téraoctets de données.",
+    "methode": "ColNanoVDR propose une méthode de distillation sans document pour les systèmes multi-vecteurs VDR. Son objectif, nommé OTW (Optimal Transport with Learned Weights), utilise le transport optimal entropique pour aligner les tokens de requête de l'étudiant avec ceux de l'enseignant. Chaque token de l'étudiant se voit attribuer un poids appris, et cette méthode ne nécessite aucune correspondance directe entre les tokenizations des deux modèles. Les auteurs démontrent que le coût d'alignement résultant borne la différence des scores MaxSim sur chaque page, assurant ainsi une fidélité théorique à la performance de l'enseignant.",
+    "resultats": "Les modèles étudiants, composés de 149 millions de paramètres et ne traitant que du texte, conservent environ 95 % de la performance NDCG@5 de leurs enseignants sur les jeux de données ViDoRe v1-v3. Ils encodent les requêtes jusqu'à 26 fois plus rapidement. En conditions d'entraînement identiques, OTW atteint des performances comparables à la distillation basée sur les scores, tout en évitant le traitement des pages et en réduisant de 12,6 fois la quantité de données enseignantes mises en cache.",
+    "limites": "Le contenu disponible ne précise pas les détails sur la robustesse de l'approche face à des requêtes ou des documents très variés ou hors distribution. De plus, bien que les gains en vitesse soient impressionnants, l'impact potentiel sur la qualité des embeddings dans des scénarios complexes ou bruités n'est pas clairement évalué. Enfin, la démonstration théorique de la borne sur la différence des scores MaxSim pourrait nécessiter des validations empiriques supplémentaires pour des cas d'usage spécifiques.",
+    "verdict": "ColNanoVDR mérite une attention particulière pour son innovation en distillation efficace et sans document, offrant un compromis prometteur entre performance et coût computationnel pour les systèmes de récupération de documents visuels."
+   }
+  },
+  {
+   "id": "9099ca10e7dd6c53",
+   "title": "How Far Are We from Removing the Visual Encoder? Scaling Laws for Encoder-Free Multimodal Pretraining",
+   "url": "https://huggingface.co/papers/2609.35457",
+   "summary": "Most modern multimodal large language models (MLLMs) build on a pretrained visual encoder that provides a strong visual prior. Encoder-free MLLMs instead learn visual representations directly from raw pixels, offering a simple and unified architecture, but their scaling behavior has not been systematically characterized. To fill this gap, we compare scaling laws for encoder-free and encoder-based MLLMs and report three main findings: (1) Removing the visual encoder shifts the compute-optimal allocation for the multimodal objective toward larger models, while leaving that for text nearly unchanged. (2) The two architectures exhibit nearly overlapping loss--compute frontiers on the text objective, but diverge on the multimodal objective: encoder-free models underperform at small scales yet are predicted to catch up at around 10^{22} FLOPs, well within practical pretraining budgets. (3) Without a visual encoder, the language model learns to take over its role via vision-specific adaptation: bidirectional interactions among visual tokens become increasingly beneficial as training compute grows, visual processing shifts toward earlier layers, and expert routing for visual tokens becomes more concentrated. Overall, our results indicate that the advantage of the visual prior provided by a pretrained encoder diminishes with scale, positioning encoder-free architectures as a promising direction for multimodal pretraining.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 50,
+    "arxiv_id": "2609.35457"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "llm",
+    "vision"
+   ],
+   "tldr": "Les modèles MLLM sans encodeur visuel (encoder-free) suivent des lois d'échelle différentes : bien que moins performants à petite échelle, ils deviennent compétitifs à partir de ~10^22 FLOPs, avec une réallocation optimale des ressources vers des modèles plus grands.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde une limitation majeure des modèles multimodaux actuels (MLLMs) : leur dépendance à un encodeur visuel préentraîné (comme CLIP ou ViT) pour fournir une représentation visuelle robuste. Bien que ces encodeurs offrent un *prior* visuel efficace, ils complexifient l'architecture et peuvent limiter la scalabilité ou l'adaptabilité des modèles. L'étude cherche à évaluer si une approche *encoder-free* (sans encodeur visuel dédié), où le modèle apprend directement à partir de pixels bruts, pourrait devenir compétitive à grande échelle.",
+    "methode": "Les auteurs comparent systématiquement les *scaling laws* (lois d'échelle) de deux architectures de MLLMs : l'une classique (avec encodeur visuel préentraîné) et l'autre *encoder-free* (où le modèle de langage multimodal traite directement les tokens visuels issus de pixels bruts). Ils analysent l'allocation optimale des ressources de calcul (FLOPs) entre la partie textuelle et multimodale, ainsi que l'évolution des performances en fonction de l'échelle. Pour cela, ils entraînent des modèles de tailles variées (jusqu'à des budgets de calcul de l'ordre de 10^22 FLOPs) et étudient des métriques comme la perte (*loss*) sur des objectifs textuels et multimodaux. Enfin, ils examinent les mécanismes d'adaptation du modèle de langage pour compenser l'absence d'encodeur, notamment via des interactions bidirectionnelles entre tokens visuels, un traitement précoce des informations visuelles, et un routage expert spécialisé.",
+    "resultats": "Trois résultats clés émergent : (1) L'architecture *encoder-free* nécessite une allocation de calcul plus importante pour atteindre un optimum sur l'objectif multimodal, sans affecter significativement l'optimum textuel. (2) Les deux architectures suivent des courbes de perte quasi identiques pour le texte, mais divergent pour le multimodal : les modèles *encoder-free* sous-performent à petite échelle, mais devraient rattraper leur retard vers 10^22 FLOPs, un budget réaliste pour des entraînements modernes. (3) Le modèle de langage développe des adaptations spécifiques pour la vision, comme une concentration accrue des interactions entre tokens visuels et un traitement plus précoce dans les couches du réseau.",
+    "limites": "Les résultats reposent sur des prédictions extrapolées à partir de données limitées (échelles intermédiaires), ce qui peut introduire des biais. De plus, l'étude ne compare pas directement les performances *downstream* (tâches finales comme la classification ou la génération d'images), se concentrant plutôt sur des métriques de perte. Enfin, l'hypothèse d'une convergence à 10^22 FLOPs reste théorique et n'a pas été validée empiriquement à cette échelle.",
+    "verdict": "Cette étude apporte des arguments solides pour reconsidérer l'utilité des encodeurs visuels préentraînés dans les MLLMs à grande échelle, mais ses conclusions nécessitent une validation expérimentale plus poussée avant d'envisager un changement de paradigme."
+   }
+  },
+  {
+   "id": "e0a4a87d39458670",
+   "title": "Learning Native Reflection in Unified Models with Interleaved Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2609.35767",
+   "summary": "Unified multimodal models can both look at and render images, so in principle they can repair their own generations: diagnose what an image gets wrong, revise it, observe the result, and diagnose again. Whether a revision helps is known only after it is rendered, so the reflection text and the image generation must be learned jointly, over the whole loop. Supervised fine-tuning (SFT) on reflection trajectories gives a cold start but does not find the high-success repair paths, and naive RL that optimizes only the renderer or only one head leaves most of the gain untapped. We introduce UMM-Reflection, which applies reinforcement learning (RL) to complete reflection trajectories inside one unified model: sibling trajectories share one initial image, so the group-relative advantage compares reflection strategies, and one trajectory-level advantage updates both the reflection tokens and the flow-based revisions, avoiding the combinatorial blow-up of per-round credit assignment. Unlike single-round editing or pipelines with an external critic, credit flows across rounds and to both roles of the same model, and no verifier is needed at inference. On BAGEL, UMM-Reflection improves GenEval by 12.05 points over SFT, and the gains transfer to WISE (+10.97), OneIG-Bench (+3.48), and T2I-CompBench++ (+4.63), none of which is used in training.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 30,
+    "arxiv_id": "2609.35767"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Propose UMM-Reflection, une méthode d'optimisation par RL pour des modèles multimodaux unifiés capable de s'auto-réviser via des boucles de réflexion intégrées, améliorant l'efficacité des corrections sans besoin d'un critique externe. Intéressant pour l'autonomie des agents et l'optimisation des LLM.",
+   "score": 9.1
+  },
+  {
+   "id": "db2a4a7528dcb279",
+   "title": "Beyond Teacher Assignment: Domain-Normalized Multi-Teacher On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2609.35347",
+   "summary": "Reinforcement learning can turn one language model into several specialists, each excellent at a single skill such as mathematics, coding or following instructions, but users need one model with all of these skills. Multi-teacher on-policy distillation (MOPD) merges them by letting the specialists teach one student: the student answers each prompt, and the specialist for that prompt's domain gives feedback on every token. This routing decides which specialist teaches, but not how strongly its feedback moves the shared student. In Qwen3.5 models at three sizes, we find that MOPD's student does not beat one taught by the best single specialist and gains little of the mathematics specialist's advantage. The feedback is unbalanced: instruction-following feedback is several times more spread out than mathematics feedback and dominates the student's updates. We propose Domain-Normalized MOPD (DN-MOPD), which keeps the routing and rescales each domain's feedback by its measured spread. On six public benchmarks, DN-MOPD improves the average score over MOPD at every size, across three random seeds and under two answer-length limits, and recovers most of the lost mathematics gain. Controls with fixed domain weights show that the gain comes mainly from turning down instruction-following feedback rather than turning up mathematics alone, and that fixed weights close to those DN-MOPD measures perform comparably. Combining specialists therefore requires deciding not only which one teaches, but also how strongly its feedback counts.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 108,
+    "arxiv_id": "2609.35347"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Propose DN-MOPD, une méthode de distillation multi-enseignants normalisée par domaine pour fusionner des spécialistes sans déséquilibres de feedback, améliorant les performances globales. Clé pour l'optimisation des LLM polyvalents.",
+   "score": 9.1
+  },
+  {
+   "id": "4085bf1c4d53a1c7",
+   "title": "DISCO: Distributed Long Context Scaling with Grounding-Reasoning Disaggregation",
+   "url": "https://huggingface.co/papers/2609.33485",
+   "summary": "While Large Language Models (LLMs) advertise million-token context windows, reasoning quality often collapses as inputs grow -- a phenomenon termed context rot. This failure stems from a structural entanglement in monolithic architectures, where the massive search burden of contextual grounding exhausts the representational capacity needed for complex reasoning. To resolve this, we propose Grounding-Reasoning Disaggregation via DIStributed long COntext scaling (DISCO). Inspired by distributed computing frameworks like Apache Spark, DISCO partitions long context across a fleet of Worker LLMs dedicated exclusively to parallel, localized grounding. A central Driver LLM, trained via Reinforcement Learning (GRPO) to optimize planning, orchestrates execution by dynamically mapping queries into atomic extraction tasks and reducing the gathered evidence to synthesize a final answer. By isolating reasoning from raw context noise, DISCO effectively eliminates context rot. On RULER-QA (1M tokens), it maintains 78.4% accuracy where standard baselines collapse. Furthermore, it outperforms full-context models by up to 9.8 points on LongBench v2 and matches frontier models like Gemini-3-Pro-Preview while reducing inference costs by over 80%, establishing a highly efficient paradigm for robust long-context inference.",
+   "published": "2026-09-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.33485"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Méthode DISCO pour contrer la 'rot de contexte' dans les LLM à long contexte en séparant le grounding (extraction parallèle) du raisonnement (orchestration centralisée), maintenant 78.4% de précision sur RULER-QA (1M tokens) contre 0% pour les baselines.",
+   "score": 8.8
+  },
+  {
+   "id": "856cc7e867ed7474",
+   "title": "WideSWE: Can Coding Agents Coordinate Changes Across Repositories?",
+   "url": "https://huggingface.co/papers/2609.33382",
+   "summary": "Coding-agent evaluation has progressed from resolving individual issues to carrying out long-horizon development, yet task completion is still largely assessed within a single codebase. In software ecosystems, many features and bug fixes require coordinated changes across multiple repositories. We introduce WideSWE to evaluate coding agents on such cross-repository tasks. Mining and reviewing changes across 103 software ecosystems yields 120 real-world tasks, balanced between 60 bug fixes and 60 features. We derive prompts from related issues and pull requests. We systematically review and adapt hidden tests to support diverse correct implementations while preserving required behavior and regression checks. Across seven agent configurations, full task success ranges from 10.83% to 42.50%, with the configuration pairing Codex CLI with GPT-5.6-sol achieving the highest rate. Trajectories show agents failing to identify necessary changes, recognizing changes but leaving them unfinished, or modifying the required repositories without fully satisfying the request. To examine whether working on one repository at a time can alleviate these difficulties, we compare it with joint execution under identical prompts. Independent execution mainly recovers omitted work and is less effective at correcting previously attempted but unsuccessful implementations. Joint execution can use information from related repositories to guide implementation and verification. Code is available at https://github.com/ZJU-ACES-ISE/WideSWE.",
+   "published": "2026-09-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2609.33382"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "WideSWE évalue les agents de codage sur des tâches multi-dépôts (120 tâches réelles), révélant des taux de succès de 10.83% à 42.50% selon la configuration, avec des difficultés persistantes dans la coordination des changements inter-répertoires.",
+   "score": 8.8
+  },
+  {
+   "id": "13df74abf8e560c4",
+   "title": "How to Loop MoE: Flatten the Experts, Untie the Attention",
+   "url": "https://arxiv.org/abs/2609.35751v1",
+   "summary": "Looped Transformers reuse one block of layers several times: by spending extra computation they push a model of fixed size further, and so use its parameters more fully; while sparse mixture-of-experts (MoE) models activate only a few of many experts for each token. Looped MoE bridges these two design philosophies and gives MoE models new potential for better expert usage, but it raises a question: how to loop a MoE? We answer it with Foil. With the expert parameters and the expert compute per token held fixed, Foil (1) flattens the experts, halving the expert layers, doubling the experts per layer and doubling the passes, so that every routing decision chooses from a larger pool, and (2) unties the attention, giving each pass its own attention parameters while the experts and routers stay shared. Experiments show that Foil clearly outperforms the unflattened looped baseline: at 20B tokens every Foil model has lower pretraining loss than the baseline; at 100B tokens the loss improves monotonically with the degree of flattening, the most flattened Foil ending 0.012 nat below the baseline at equal parameters and compute, with downstream accuracy on par or better; untying the attention also yields more balanced and more confident routing at equal shape. Our ablations analyse why Foil works and turn the findings into design guidance for looped MoE: the returns of looping and of widening the expert layers amplify each other, routing confidence tracks healthy expert use better than load balance, and a sparse looped MoE should therefore use more experts per layer and more passes. Code and configurations are available at https://github.com/SR-A-W/how-to-loop-moe.",
+   "published": "2026-09-28T17:58:03+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shouren Wang, Chuang Ma, Mohsen Hariri, Debargha Ganguly, Wang Yang, Xiaoqing Tong"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "llm"
+   ],
+   "tldr": "Foil propose une méthode pour optimiser les modèles Looped MoE en aplatissant les experts et en désolidarisant les paramètres d'attention, améliorant l'efficacité des experts et réduisant la perte de pré-entraînement de 0.012 nat à 100B tokens tout en maintenant des performances comparables.",
+   "score": 8.6
+  },
+  {
+   "id": "8cf4e3a227a097b1",
+   "title": "ScAn-Bench: Evaluating Scaling Analysis Methodology",
+   "url": "https://arxiv.org/abs/2609.35707v1",
+   "summary": "Recent progress in machine learning is driven by large-scale foundation models, where scaling laws and finding optimal scaling prescriptions for architecture, data, and hyperparameters are key in advancing the state-of-the-art. Therefore, it is surprising that no systematic study evaluates the methodology to obtain scaling laws and prescriptions across different model types. To shed light on this crucial blind spot and facilitate future research, we introduce the surrogate benchmarks ScAn-Bench-LLM and ScAn-Bench-VLM based on 4524 and 8024 checkpoints of language and vision-language model pipelines. On our benchmarks, we perform the first systematic evaluation of both data acquisition and extrapolation methodology for scaling analysis across different data modalities.",
+   "published": "2026-09-28T17:44:11+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Artin Sermaxhaj, Nastaran Alipour, Donat Sinani, Johannes Hog, Neeratyoy Mallik, Jenia Jitsev"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "ScAn-Bench propose les premiers benchmarks systématiques (ScAn-Bench-LLM et ScAn-Bench-VLM) pour évaluer les méthodologies d'analyse des lois de scaling et de prescription d'optimisation sur 4524 et 8024 checkpoints de modèles de langage et vision-langage. Intéressant pour comprendre les biais méthodologiques dans l'extrapolation des performances des modèles à grande échelle.",
+   "score": 8.6
+  },
+  {
+   "id": "fcee4b87c31ddf64",
+   "title": "What masking geometry works best for EEG foundation models?",
+   "url": "https://huggingface.co/papers/2609.33487",
+   "summary": "EEG foundation models hold promise for scalable brain-signal decoding across clinical and cognitive neuroscience applications, yet their pre-training pipelines remain poorly understood. Among design choices, the masking strategy is particularly critical: it determines what the network must predict and from which context. Yet it has never been ablated in isolation, as each new model bundles a new masking strategy with a new backbone and objective. In this paper, we formalize the design choices for spatio-temporal masking strategies and train various models with a single pipeline under varying masking configurations across two SSL frameworks (MAE and JEPA). We then systematically evaluate the resulting 58 pre-trained models on the 12 datasets of OpenEEGBench under a linear probe. Both frameworks agree on an optimal masking configuration and on shared failure modes. Outside these, performance is robust: 11 MAE and 9 JEPA configurations are statistically indistinguishable from the best. We further identify a novel JEPA-specific failure mode, tagged bias-inflation collapse, invisible to standard detectors. With a well-chosen mask, our pipeline reaches REVE-level downstream performance at a fraction of REVE's pre-training compute.",
+   "published": "2026-09-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2609.33487"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Analyse systématique des stratégies de masquage pour les modèles de fondation EEG, identifiant une configuration optimale et des modes de défaillance spécifiques (ex. *bias-inflation collapse*), avec validation sur 12 benchmarks. Travail méthodologique rigoureux pour comprendre les choix de pré-entraînement en SSL.",
+   "score": 8.5
+  },
+  {
+   "id": "cf468ec39dd67f09",
+   "title": "Towards safety cases for frontier AI training",
+   "url": "https://openai.com/index/towards-safety-cases-for-frontier-ai-training",
+   "summary": "Our early guidelines for safety cases in frontier AI training cover technical safeguards, operational practices, and investigating misalignment incidents",
+   "published": "2026-09-28T19:00:00+00:00",
+   "source": "openai-blog",
+   "source_label": "OpenAI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "regulation",
+    "architecture"
+   ],
+   "tldr": "OpenAI propose des lignes directrices pour les 'safety cases' dans l'entraînement des modèles frontier, intégrant des garde-fous techniques et opérationnels pour limiter les risques de désalignement, un sujet clé pour l'éthique et la sûreté des LLM.",
+   "score": 8.5
+  },
+  {
+   "id": "eead37cf78dd0175",
+   "title": "Telescopic Language Models",
+   "url": "https://arxiv.org/abs/2609.35769v1",
+   "summary": "One deployed language model must often serve many compute budgets, yet serving each budget still means a separate training or compression run per point. We train a Telescopic Language Model (TLM) to be that continuum: a nested-capacity Transformer supervised by stochastic prefix supervision with a full anchor. At every step, one randomly truncated prefix of the capacity axis is trained against the full next-token target, alongside one full-capacity pass, so the trained artifact is a valid language model at every depth. Two forward-backward passes per step, no architectural change, nothing extra at inference. Fixed-exit suites such as Matryoshka Language Model Suites (MLMS) occupy one point in this design space, and the point has a cost: supervising only a few fixed exits leaves the nested model at chance level everywhere else (perplexity 10^2-10^5 in our baselines). On a 200M proxy suite (20B FineWeb-Edu tokens, identical data stream for all methods), a single TLM run is a valid language model at every one of its twenty layer prefixes, in perplexity and on perplexity-sensitive downstream tasks, reducing the area under the quality-budget curve by 43-44% relative to the fixed-exit suites while matching them at full capacity, at ~12% lower GPU cost per run. The prefix sampling density is a dial: concentrating it on a few depths recovers fixed-exit quality there at the price of the continuum, so the operating points become a training-time choice rather than an architectural one. These results indicate that the training objective, not the nesting itself, is what makes a model elastic.",
+   "published": "2026-09-28T17:59:53+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhilin Guo, Boqiao Zhang, Hakan Aktas, Kyle Fogarty, Nursena Koprucu Aslan, Wenzhao Li"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "TLM introduit un modèle de langage 'téléscopique' entraîné pour fonctionner à différentes profondeurs de capacité via une supervision aléatoire des préfixes, réduisant de 43-44% la courbe qualité-budget par rapport aux approches à sorties fixes. Pertinent pour l'optimisation des LLM et l'inférence efficace.",
+   "score": 8.3
+  },
+  {
+   "id": "9d9a798c9cd02f23",
+   "title": "MeqMuon: Matrix-Equilibrating Muon for LLM Pretraining",
+   "url": "https://arxiv.org/abs/2609.35701v1",
+   "summary": "The success of large language models (LLMs) has been accompanied by continued growth in model size and pretraining costs. Muon offers high accuracy and training efficiency in LLM pretraining. Recent work introduces row-wise normalization into Muon to balance update magnitudes and improve pretraining performance. However, row-wise normalization alone cannot accommodate different imbalance patterns in update matrices. In this paper, we propose an improved Muon optimizer, called \\underline{m}atrix-\\underline{eq}uilibrating Muon~(MeqMuon), for LLM pretraining. MeqMuon balances both row and column magnitudes through normalization that can be automatically tailored to different imbalance patterns without manual intervention. Moreover, MeqMuon eliminates the need to store AdamW's second-moment estimates, reducing optimizer-state memory usage. Empirical results demonstrate that MeqMuon achieves better convergence performance than AdamW, Muon, and other baselines in LLM pretraining.",
+   "published": "2026-09-28T17:41:34+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chang-Wei Shi, Xu Wang, Wu-Jun Li"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "MeqMuon améliore l'optimiseur Muon pour le pré-entraînement des LLMs en équilibrant dynamiquement les magnitudes des mises à jour (lignes et colonnes) et en réduisant la mémoire des états d'optimisation (suppression des seconds moments d'AdamW). Les résultats montrent une convergence supérieure à AdamW et Muon sur plusieurs benchmarks de pré-entraînement.",
+   "score": 8.3
+  },
+  {
+   "id": "4af081d9b2674ceb",
+   "title": "Verifier Errors in RLVR: Reward Hacking, Limits of Feedback, and Selective Control",
+   "url": "https://arxiv.org/abs/2609.35677v1",
+   "summary": "In reinforcement learning with verifiable rewards (RLVR), imperfect verifiers can reward incorrect responses, creating opportunities for reward hacking. Using gradient flow with a fixed verifier, we characterize the conditions under which reward rises while correctness falls. We then show that the observations available during RLVR are, in general, insufficient to detect or identify accepted errors, or to guarantee their reduction without sacrificing correct responses. To address this limit, we construct a correction using additional feedback about correctness from audits. This correction achieves \\emph{selective control}: at the current policy, it lowers the probability of accepted errors and raises that of correct responses, provided it outweighs the pressure toward errors from verifier reward. Experiments with log linear and neural contextual bandits and with a language model support the analysis and show that selective control under partial auditing reduces accepted errors while increasing correctness.",
+   "published": "2026-09-28T17:30:24+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Christian Moya, Elliott Thornley, Guang Lin"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "L'étude analyse les erreurs des vérifieurs dans les systèmes RLVR (RL avec récompenses vérifiables), démontrant que les vérifieurs imparfaits peuvent induire des reward hacking et proposant une méthode de contrôle sélectif pour réduire les erreurs acceptées tout en améliorant la correction.",
+   "score": 8.3
+  },
+  {
+   "id": "7b6b20b7e50ed9c0",
+   "title": "PhoneCLI: From App Interfaces to Callable Commands for Mobile Agents",
+   "url": "https://arxiv.org/abs/2609.35671v1",
+   "summary": "Mobile GUI agents operate through a perception--action loop: at each step they screenshot the device, invoke a vision--language model (VLM), and emit an action. It is slow, costly, and brittle, yet most of what it does is navigation---and everyday navigation is static, ordered, and endlessly repeated. We present PhoneCLI, which compiles an app's GUI navigation into callable commands, without any app-internal API, runtime instrumentation, or model training. Offline, PhoneCLI explores a target app from the outside and distills its screens, interactive elements, and navigation edges into a semantically annotated map; each screen yields one deterministic command: a replay sequence that reaches it. Online, the agent selects a command, verifies it before execution, and then executes it deterministically in sub-second time at zero VLM cost; open-ended interaction and every failure of the compiled path fall back to the embedded VLM interpreter, exactly the pure VLM agent, so compilation can only help. On AndroidLab, PhoneCLI improves the task success rate while reducing steps and token consumption, and it transfers to AndroidWorld's official M3A agent with consistent efficiency gains. What PhoneCLI compiles is the app's navigation rather than one run, so it serves new tasks, not only repeated ones.",
+   "published": "2026-09-28T17:26:56+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yangqin Jiang, Lingrui Xu, Chao Huang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "vision"
+   ],
+   "tldr": "PhoneCLI compile les interfaces graphiques mobiles en commandes exécutables sans API interne ni entraînement, réduisant le coût et la latence des agents mobiles tout en améliorant leur taux de succès et leur efficacité énergétique.",
+   "score": 8.3
+  },
+  {
+   "id": "85d353764f519822",
+   "title": "Not All Thinking is Created Equal: Latent Reasoning Discovers a Recurrent Search Algorithm for Depth Generalization",
+   "url": "https://arxiv.org/abs/2609.35643v1",
+   "summary": "Large Language Models can perform multi-step reasoning and improve task performance through different forms of intermediate computation, from token-based traces to computation carried out in latent space. However, a question remains open: do these different forms of thinking rely on the same underlying mechanism? To address this, we train and compare five variants of the same GPTNeoX backbone from scratch on an extended multi-hop reasoning task (ProsQA-Ext): a vanilla model, a Chain-of-Thought (CoT) model, a Pause Token model, and two latent-reasoning models that are optimized end-to-end without intermediate reasoning traces. We find that, strong in-distribution (ID) performance does not guarantee depth generalization. Vanilla, CoT, and Pause Token models solve ID problems well, but rely largely on local graph features and generalize poorly to out-of-distribution (OOD) problems with longer hops. In contrast, latent variants generalize better and show internal dynamics consistent with forward reachability propagation on the graph. Causal interventions and circuit analysis localize this computation to a sparse recurrent search circuit in the bottleneck latent model: an attention head retrieves graph relations, an MLP and the residual stream update the reachability state across recurrent steps, while multiple attention heads together then do the candidate matching. Together, these results show that different thinking mechanisms can learn distinct computational solutions, even at similar ID performance. In this setting, latent recurrence supports a reusable forward-search algorithm that generalizes beyond the training depth.",
+   "published": "2026-09-28T17:12:30+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Huzi Cheng, Zhewei Zhang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Démontre que les modèles à raisonnement latent généralisent mieux que les approches explicites (CoT, Pause Token) sur des tâches de raisonnement multi-étapes hors distribution. Identifie un circuit récurrent de recherche dans les modèles à bottleneck latent, avec des analyses causales et de circuits.",
+   "score": 8.3
+  },
+  {
+   "id": "5a9a6488d2cf7e0b",
+   "title": "SANTA++: Sampling Attention through Representative Keys",
+   "url": "https://arxiv.org/abs/2609.35629v1",
+   "summary": "Attention often concentrates on a small subset of tokens in the context, but which subset matters changes from one query to the next. To exploit this changing structure, we introduce SANTA++, a training-free stochastic attention method that uses representative keys for memory-efficient selection without scanning the entire key-value (KV) cache. Cached keys are organized into teams, and the query scores one representative from each team to decide which teams to sample. We compute exact attention scores within the sampled teams and reweight each team's contribution by the inverse of its inclusion probability. This importance sampling correction estimates attention over the full cache, with a sampling budget that lets us trade memory reads for accuracy. Remarkably, with 32 or 64 sampled teams, SANTA++ uses 16% to 22% of dense attention's KV reads and retains 94% to 99% of the dense-attention baseline's scores on LongBench v2 and HELMET's retrieval-augmented generation subset, and 85% to 91% on RULER, with Qwen2.5-7B-Instruct at 32K context. With 31 sampled teams, our GPU implementation delivers a $1.69\\times$ attention speedup over the dense FlashAttention baseline at 32K context. By reducing the number of cache entries read, SANTA++ in principle complements architectures with compressed KV representations, such as multi-head latent attention. Our kernels are available at: https://github.com/OPUSLab/santapp-kernel-demo.git.",
+   "published": "2026-09-28T17:00:30+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kyle Lee, Christian Z. Pratt, Ruoyu Fang, Heekyung Lee, Avinash Lohitsa, Ryan Modafe"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Introduit SANTA++, une méthode d'attention stochastique basée sur des clés représentatives pour réduire la mémoire et accélérer l'inférence (jusqu'à 1.69x) sans perte majeure de performance. Pertinent pour l'optimisation des LLM à contexte long.",
+   "score": 8.3
+  },
+  {
+   "id": "9da740125d8c75be",
+   "title": "Cartridges++: KV Cache Compression without Off-Context Derailment",
+   "url": "https://arxiv.org/abs/2609.35621v1",
+   "summary": "Serving long documents to a Large Language Model (LLM) repeatedly is expensive: computations grow with context length, and the memory footprint of the key-value (KV) cache balloons. Compressed KV (CKV) representations aim to mimic the cache of a document and are typically computed once and for all, ahead of inference time. Methods to obtain CKVs range from drop mechanisms that reduce their number of columns, to learned approaches. Among the latter, Cartridges have emerged as a leading compression method, learning compact KV representations through distillation on relevant Q/A pairs. While existing evaluations focus primarily on whether Cartridges and other CKVs yield approximately similar responses to document-related, on-context queries, we investigate the crucial deployment question of whether they can handle off-context queries, something the native KV representation is particularly good at, thanks to the mechanics of attention. We observe a fundamental trade-off: while Cartridges perform better for on-context queries, heuristic-variants preserve better the original LLM's ability to operate off-context. We measure this through their capability to avoid context contamination in their response, retain general knowledge, and follow instructions. We propose Cartridges++, simple modifications to cartridges that retain off-context abilities at small or negligible cost. The router variant decides at inference time whether the query should use the learned long-context memory, while the data-mixing variant allocates a small fraction of training Q/As to queries outside the reference long document. Our study shows that assessing CKVs on document utility alone can mask substantial degradation in broader model capabilities, yet those issues can be fixed with benign changes to CKV inference or training.",
+   "published": "2026-09-28T16:57:36+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sonia Laguna, Joao Monteiro, Marco Cuturi, Pierre Ablin, Eleonora Gualdoni"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Cartridges++ analyse la compression du cache KV pour les LLM en évaluant leur robustesse aux requêtes hors-contexte, révélant un compromis entre performance sur-contexte et préservation des capacités hors-contexte. La méthode propose une solution pour éviter la contamination contextuelle lors de l'inférence.",
+   "score": 8.3
+  },
+  {
+   "id": "64ccf361ecf0801f",
+   "title": "Recursive Harness Distillation across Agents for Robot Manipulation",
+   "url": "https://huggingface.co/papers/2609.33378",
+   "summary": "A central goal in robotics is to enable manipulation across changing tasks and environments. Vision-language-action (VLA) models provide broad manipulation capabilities but can struggle when execution requires diagnosing failures and adapting behavior. Strong agents can discover effective interventions through interaction with these policies. We propose Recursive Harness Distillation to accumulate this experience as reusable guidance across agents. A strong agent distills its experience into a playbook for a light agent, then recursively refines the playbook using the light agent's execution feedback. The resulting playbook enables agents to reuse accumulated intervention knowledge in new task instances without updating model parameters. In real-world manipulation, the harness improves success from 37.3% to 64.0%. On SimplerEnv Bridge, the light agent with the playbook achieves 66.7% success, compared with 41.7% for the GR00T-only baseline, and outperforms the strong agent without a playbook. The same playbook also benefits the strong agent, which reaches 79.2% success. These results demonstrate the feasibility of harness distillation for robotics: intervention experience can be accumulated, refined through execution, and reused across agents to improve manipulation.",
+   "published": "2026-09-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2609.33378"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Méthode *Recursive Harness Distillation* pour distiller l'expérience d'agents robotiques en *playbooks* réutilisables, améliorant le taux de succès de 37.3% à 64.0% en manipulation réelle.",
+   "score": 8.2
+  },
+  {
+   "id": "1064395c10ed32f0",
+   "title": "An RL View of OPD: Least Square Policy Distillation for Sample-Efficient LLM Reasoning",
+   "url": "https://huggingface.co/papers/2609.35505",
+   "summary": "We study on-policy distillation (OPD) through the lens of reinforcement learning, establishing a connection between the reverse-KL objective in OPD and KL-regularized policy optimization. Building on this connection, we introduce Least-Square Policy Distillation (LSPD), an RL-inspired framework that brings optimistic exploration and off-policy data reuse from value-based RL into policy distillation. LSPD preserves policy diversity through exploration while improving rollout efficiency by repeatedly learning from previously collected trajectories. Our theoretical analysis connects LSPD to optimistic value-based learning and shows that its idealized formulation achieves a sharp mathcal O(log K) regret bound under online exploration. Empirically, LSPD consistently outperforms existing distillation baselines across six mathematical reasoning benchmarks and diverse teacher-student settings, with average gains of +1.59 points in Avg@16. Remarkably, through Pass@k evaluations up to k=64, we found that LSPD better preserves policy diversity by achieving stronger performance as k grows. Its fully off-policy variant achieves comparable performance to vanilla OPD using only the first 25% of rollout batches. Together, these results provide an RL perspective on OPD that offers both a principled interpretation and a practical route toward more effective and rollout-efficient language model distillation.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.35505"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Nouvelle méthode de distillation RL (*LSPD*) inspirée de l'exploration optimiste, réduisant la régret à O(log K) et améliorant les performances en raisonnement mathématique (+1.59 points Avg@16). Approche théorique et empirique robuste.",
+   "score": 8.2
+  },
+  {
+   "id": "d0b96db8dd25bc45",
+   "title": "QwenGyre: An Elastic Reinforcement Learning Framework for Training xLong-Horizon Agents",
+   "url": "https://huggingface.co/papers/2609.33848",
+   "summary": "Large language model (LLM) agents increasingly undertake extreme-long (xlong) horizon tasks, where a single execution can span hours, hundreds of model--environment interactions, and nearly 1M tokens per rollout. Applying online reinforcement learning (RL) to such executions poses two fundamental challenges: (1) severe execution variance and prolonged rollout delays cause massive GPU idling; and (2) complex non-linear branching generates massive trajectory redundancy, crippling training efficiency. To address these, we presents QwenGyre, an end-to-end framework for xlong-horizon online RL. QwenGyre elastically reallocates GPUs between rollout and training without interrupting live executions, while its trajectory processor reconstructs branching histories, scores partial progress, and deduplicates redundant paths to bound training costs. Scaled to our flagship model, Qwen~3.8 2.4T, with 700K tokens per rollout, QwenGyre yields a 6.0% absolute gain on NL2RepoBench (52.5% to 58.5%) in 48 steps. Across our evaluations on diverse domains of training datasets, QwenGyre delivers up to 1.85times and 1.78times speedups over Colocate and Async, respectively.",
+   "published": "2026-09-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2609.33848"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Framework élastique (*QwenGyre*) pour RL en horizon ultra-long (xlong), réduisant l'oisiveté GPU et la redondance des trajectoires. Gain de 6% sur NL2RepoBench et accélérations jusqu'à 1.85x vs. baselines. Adapté aux agents LLM complexes.",
+   "score": 8.2
+  },
+  {
+   "id": "1d549fa2109b5e7a",
+   "title": "On-Policy Self-Distillation for Multi-Turn Image Editing",
+   "url": "https://huggingface.co/papers/2609.35611",
+   "summary": "Instruction-based image editing has achieved strong performance in single-turn settings, yet practical editing is often iterative, with each instruction applied to the output of the previous turn. We find that existing editing models degrade rapidly under recursive editing and attribute this failure to a train-test mismatch in the conditioning distribution: models are trained on clean source images but must repeatedly condition on their own imperfect outputs at inference time. To address this, we propose MT-OPSD, an on-policy self-distillation framework that trains the model on self-generated conditioning states with editing supervision from a clean-conditioned teacher, without requiring multi-turn annotations. We further introduce LME-Bench, a benchmark of 100 ten-turn editing sessions for evaluating long-horizon robustness. Experiments across three editing backbones show that MT-OPSD substantially improves long-horizon editing success and reduces multi-turn collapse while largely preserving single-turn editing quality.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.35611"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "MT-OPSD, une méthode de distillation auto-supervisée pour l'édition d'images multi-tours, résolvant le problème de dégradation des modèles lors d'éditions itératives sans annotations multi-tours. Clé pour la robustesse des agents d'édition.",
+   "score": 8.2
+  },
+  {
+   "id": "ef8da9b961ee8a99",
+   "title": "Draft-KV: Learning Useful Latent Communication Between Language Models",
+   "url": "https://huggingface.co/papers/2609.34754",
+   "summary": "Latent communication passes internal states between language models instead of decoded text, but higher receiver accuracy does not show that the receiver used the message content. Across five method-dataset pairs, replacing each message with one from an unrelated question changes accuracy by at most 0.60 points, even when communication adds 15.44 points over the receiver alone. Thus the interface can supply the gain while making the sharer dispensable. Draft-KV instead sends the key-value states formed while the sharer drafts an answer to the current question. Linear projections place these states in a side memory read through a gated attention branch, and progressive training moves from message reconstruction to answer supervision under a guard on harm from mismatched messages. Both models remain frozen and the interface trains 1.05M parameters, 348x fewer than C2C. With a Qwen3-8B sharer, a frozen Qwen2.5-0.5B-Instruct receiver reaches 78.04% on MMLU-Redux, versus 37.45% alone and 36.40% with reassigned messages. At fixed interface size, scaling the sharer from 0.6B to 8B raises accuracy from 46.11% to 78.04%; communication also transfers to held-out tasks and can exceed both models when each holds different evidence.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2609.34754"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "agents"
+   ],
+   "tldr": "Draft-KV, une méthode de communication latente entre LLM via clés-valeurs gelées, transférant des capacités avec un surcoût minimal (1.05M paramètres). Pertinent pour les architectures multi-agents et l'efficacité des LLM.",
+   "score": 8.2
+  },
+  {
+   "id": "dcbe1f183aca9ad4",
+   "title": "Rethinking Circuit Evaluation: Do Circuits Explain Model Errors?",
+   "url": "https://arxiv.org/abs/2609.35686v1",
+   "summary": "Mechanistic interpretability (MI) aims to explain a model's behaviour through analyzing its internal computations; circuit-based explanations aim to isolate these computations with compact subnetworks validated by ablating the rest of the model. We show that circuits validated this way may fail to recover the underlying mechanism of the model's behaviour by closely reproducing its successful decisions while failing to account for most of its errors. Such explanations should account for the model's particular errors as well as its successes. We evaluate this requirement by measuring exact answer agreement separately on model successes and failures, across circuit sizes and ablation settings, on IOI, Docstring, and six model-task settings from the Mechanistic Interpretability Benchmark. We discover that many tested circuits closely replicate correct behaviour while missing most of the model's errors. On indirect object identification (IOI) for GPT-2 small, under mean ablation, the manual circuit and tested automated circuits, including one trained against the model's full output distribution, agree with the model on 97.3-99.5% of prompts it answers correctly but only 11.4-41.7% of errors. An IOI case study shows that lost errors are recoverable by restoring omitted attention-heads which raise error reproduction from 14.2% to 75.1% on a separate held-out set with 0.41 percentage point decrease on correct agreement, exceeding matched random extensions and scalar-biased control. Intervention traces show how omitted computations produce specific wrong answers for a reproducible subset of errors. In all, these findings show circuits can preserve task success without adequately explaining model's failures, and support exact error reproduction as a necessary, but not sufficient, test of circuit-based explanations of model behaviour.",
+   "published": "2026-09-28T17:34:45+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Li Zhang, Chuqin Geng, Mark Zhang, Chen Yang, Luke Zhang, Haolin Ye"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Cette étude critique les explications par circuits en interprétabilité mécanique : les circuits validés reproduisent souvent les succès des modèles mais échouent à capturer leurs erreurs, révélant un biais méthodologique majeur. Analyse approfondie sur IOI et d'autres tâches, avec des implications fortes pour l'évaluation des explications de modèles.",
+   "score": 8.0
+  },
+  {
+   "id": "8f1e884b5e55f21e",
+   "title": "Can LLMs Value the Right Evidence? Evidence-Value Misalignment in Dynamic Medical Diagnosis",
+   "url": "https://arxiv.org/abs/2609.35627v1",
+   "summary": "A correct diagnosis reached from insufficient or misleading evidence can pose a clinical hazard, yet outcome-based accuracy may reward such lucky guesses. We call this mismatch between diagnostic decisions and the value of available evidence Evidence-Value Misalignment (EVM). To disentangle evidential grounding independently from diagnostic accuracy, we introduce MedEVM, a dynamic benchmarking environment comprising 1,050 cases across 24 disease systems. Observations arrive turn by turn, requiring models to continuously calibrate its decision by deciding whether to wait for more evidence or submit a diagnosis. Across 9 LLMs, four interesting patterns are observed. (1) Miscalibrated evidence tracking. Making a diagnosis often fails to calibrate evidence sufficiency, even in more capable models, and even worsens in reasoning mode. (2) Misaligned diagnosis submission. Confidence in the correct diagnosis often fails to ensure timely submission despite sufficient evidence. (3) Evidence order matters. Reordering the same evidence changes diagnoses even when model confidence remains similar. (4) Misleading evidence remains influential. Added misleading evidence redirects diagnoses even after prior evidence becomes sufficient. We further verify that EVM predicts errors and that preventing premature submission improves accuracy. These findings motivate Evidence-Verified Diagnosis Harness (EVD-Harness). It decouples diagnosis generation from submission through an offline Contrastive Diagnostic Wiki and three online control stages, namely observation management, proposal and witness verification, and diagnosis submission control. Across five LLMs, EVD-Harness improves accuracy by 12.0--51.1 percentage points while mitigating EVM-related failures. Our results demonstrate that verifying evidential support before submission can make diagnostic decisions more reliable.",
+   "published": "2026-09-28T16:59:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kehua Feng, Yunsheng Lu, Yitong Qiao, Tiantian He, Lei Liu, Yue Shen"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Ce papier introduit le concept d'Evidence-Value Misalignment (EVM) pour évaluer la capacité des LLM à calibrer leur confiance en fonction de la qualité des preuves disponibles dans des diagnostics médicaux dynamiques. MedEVM, un benchmark de 1050 cas cliniques, révèle des lacunes persistantes même dans les modèles avancés, notamment une mauvaise calibration de la suffisance des preuves et une sensibilité à l'ordre des informations.",
+   "score": 8.0
+  },
+  {
+   "id": "b9c33ddddd632f0d",
+   "title": "Groupwise Agentic Grading and Advantage Redistribution for Code Agent RL",
+   "url": "https://huggingface.co/papers/2609.32577",
+   "summary": "Reinforcement learning (RL) for code agents often uses executable tests to provide binary rewards. With these rewards, Group Relative Policy Optimization (GRPO) assigns identical advantages to test-passing trajectories within each rollout group, overlooking differences in implementation quality and adherence to task requirements. This leaves the policy without a learning signal that favors clean, targeted implementations over those containing unnecessary or out-of-scope changes. We introduce GAGAR, a framework for quality-aware credit redistribution in code agent RL. Built on dynamic sampling that retains groups containing both passing and failing trajectories, GAGAR places all trajectories from each group in a shared workspace, where an SFT-trained agentic grader jointly inspects them and ranks the test-passing candidates. Based on this ranking, we downweight lower-ranked trajectories and proportionally rescale the advantages of all test-passing trajectories to restore their original sum. This sum-preserving redistribution retains the relative weights established by quality-based downweighting while shifting credit toward higher-quality implementations. We evaluate GAGAR at industrial scale using pre-RL SFT checkpoints of MiMo-V2.6-Flash (310B total parameters) and MiMo-V2.6-Pro (1.02T total parameters). Controlled code-only Flash experiments show improved code agent performance, reduced trajectory-length growth, and more stable training. We further apply GAGAR in large-scale mixed-task RL with both Flash and Pro. Our results support combining test-based verification with groupwise agentic grading to improve the quality and stability of code agent RL.",
+   "published": "2026-09-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 28,
+    "arxiv_id": "2609.32577"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Framework GAGAR pour redistribuer les récompenses en RL des agents codeurs via un système de notation dynamique, améliorant la qualité du code généré tout en maintenant l'efficacité.",
+   "score": 7.9
+  },
+  {
+   "id": "3fe78ee7e700c3f8",
+   "title": "When Do Model Internals Help? Exploring the Role of Representation Engineering in LLM Safety",
+   "url": "https://huggingface.co/papers/2609.34771",
+   "summary": "Reliable AI safeguards require both control mechanisms that reduce unsafe behavior and monitoring mechanisms that detect safety risks during model interactions. Established behavioral safeguards include alignment methods that optimize model outputs and text monitors that assess interaction text. Representation engineering instead reads or modifies internal model states, but the relative strengths of these approaches remain unclear because they are often evaluated under different settings. We present a matched evaluation across two tracks. For safety control, we compare DPO, a behavioral alignment method, with three representation steering methods across robustness, practicality, and granularity. DPO provides the strongest overall control and generally improves with increasing training data, although its safety can degrade after subsequent benign fine-tuning. Representation steering remains competitive primarily in low-data settings, particularly with high-quality contrastive data. For safety monitoring, we compare representation probes with fine-tuned and open-weight text monitors across full-response detection, early detection, and computational cost. Specialized text monitors achieve the strongest overall detection accuracy, while representation probes remain competitive at substantially lower marginal cost. Finally, monitor-guided interventions recover much of the safety lost by DPO after benign fine-tuning, with little additional over-refusal. Overall, representation engineering does not generally replace behavioral safeguards, but offers practical advantages under specific conditions and can provide complementary safety benefits.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.34771"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "outils"
+   ],
+   "tldr": "Cette étude compare les méthodes de contrôle et de monitoring de sécurité pour les LLM (DPO, steering de représentations, probes) et montre que le DPO domine en contrôle, tandis que les probes de représentations sont compétitives en monitoring, surtout avec peu de données.",
+   "score": 7.9
+  },
+  {
+   "id": "0e7430bc11dc3976",
+   "title": "KV-streams for Efficient Compaction in Agentic Reinforcement Learning",
+   "url": "https://arxiv.org/abs/2609.35750v1",
+   "summary": "Scaling the horizon of agentic LLMs is bottlenecked by the need to fit ever longer context traces in GPU memory. Context compaction has been the most popular mechanism to alleviate this issue, keeping GPU memory constant for a given trace. Unfortunately, most compaction strategies rely on prefilling the LLM context many times over, hindering training throughput. To alleviate this bottleneck and enable efficient trainable compaction, we propose KV-streams, a plug-and-play strategy compatible with any compaction strategy that substantially increases throughput while showing no evidence of hindering performance. KV-streams enable scalable compaction by streaming the KV cache forward rather than flushing it after each compaction. We show that KV-streams enable three different compaction strategies, achieving a 2.6 to 5x wall-clock speedup in training. Beyond efficiency, we find that the streamed KV cache can act as a recurrent state, carrying forward information that has long since disappeared from the context. Specifically, in a controlled setting we show that, contrary to prior work, RL alone is all that is needed for this behavior to emerge. Overall, we show KV-streams to be an efficient and lightweight plug-and-play addition to any post-training pipeline.",
+   "published": "2026-09-28T17:57:42+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Emiliano Penaloza, Dane Malenfant, Dheeraj Vattikonda, Roger Creus Castanyer, Siddarth Venkatraman, Abhay Puri"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "KV-streams introduit une stratégie de streaming du cache KV pour accélérer l'entraînement des agents LLM en réduisant les flushs de contexte, offrant un gain de 2.6 à 5x en vitesse sans perte de performance et permettant une mémoire récurrente émergente.",
+   "score": 7.7
+  },
+  {
+   "id": "7125bc6667cde5e6",
+   "title": "Improving Test-Time Scaling with Adaptive Looped Transformers",
+   "url": "https://arxiv.org/abs/2609.35748v1",
+   "summary": "Looped transformers have demonstrated promising parameter efficiency by reusing layers for latent computation. Prior studies compare looped and non-looped models at matched parameters or per-token FLOPs. However, to the best of our knowledge, whether looping improves test-time scaling as outputs grow longer remains underexplored. Through post-training looped transformers, we study the accuracy-compute slope, measured as the accuracy gain per doubling of test-time decoding FLOPs. We find that existing looped transformers often yield steeper slopes than their non-looped baseline, yet underperform it at matched compute. While fixed-depth looping spends extra iterations on every token, our analysis shows that many tokens do not benefit from extra iterations. We therefore propose TaH2, which enables the model to focus extra iterations on the tokens that benefit from looping. It jointly post-trains the backbone and an iteration decider through lookahead depth supervision, which uses online labels indicating whether further iteration improves the prediction. TaH2 improves both the efficiency and attainable accuracy of test-time scaling. On challenging AIME benchmarks, TaH2 improves the accuracy-compute slope by 53% (2.74 vs. 1.79) over the non-looped baseline, exceeding the baseline's peak accuracy by about 3.4 points at matched test-time compute. As the maximum iteration depth increases, existing looped models largely plateau, while TaH2's gain over the non-looped baseline continues to grow from +2.8 points at depth 2 to +3.9 points at depth 8. Our code is available at https://github.com/thu-nics/TaH.",
+   "published": "2026-09-28T17:56:55+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yichen You, Tianyu Fu, Aosong Feng, Xingtai Lv, Xuefei Ning, Ning Ding"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "TaH2 optimise les modèles Looped Transformers en ciblant les itérations supplémentaires sur les tokens bénéficiant réellement de boucles supplémentaires, améliorant à la fois l'efficacité et la précision sur des benchmarks complexes comme AIME.",
+   "score": 7.7
+  }
+ ]
+}
