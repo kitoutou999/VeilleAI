@@ -1,0 +1,748 @@
+{
+ "date": "2026-09-30",
+ "digest": {
+  "headline": "Les avancées en distillation multi-enseignants et en agents asynchrones redéfinissent l'optimisation et l'intégration des LLM en conditions réelles.",
+  "overview": "Ce 30 septembre 2026 marque une progression significative dans l'optimisation des modèles de langage (LLM) et leur déploiement en tant qu'agents autonomes. Les travaux sur la distillation on-policy, la gestion de mémoire persistante et les architectures asynchrones soulignent une maturation des techniques pour des applications temps réel et multi-tâches. Parallèlement, les benchmarks et analyses théoriques révèlent des limites critiques, notamment en matière de sécurité, de fidélité des plans et de robustesse des agents.",
+  "highlights": [
+   {
+    "title": "Distillation on-policy : mécanismes et limites",
+    "text": "Deux études complémentaires analysent la distillation on-policy (OPD) pour les LLM. PMOPD introduit une méthode géométrique pour réduire les interférences entre tâches en projetant les gradients dans des sous-espaces de faible dimension, améliorant la stabilité du fine-tuning multi-capacités. En parallèle, une analyse via *sparse crosscoders* révèle que l'OPD ne crée pas de nouvelles features mais réorganise l'utilisation des features existantes, avec un impact limité sur les features fréquentes (<20% modifiées). Ces travaux éclairent les compromis entre efficacité et préservation des capacités lors de la distillation."
+   },
+   {
+    "title": "Agents asynchrones et mémoire persistante",
+    "text": "Les LLM émergent comme des agents asynchrones généralisés, capables de gérer des flux concurrents (vidéo, jeux, monitoring) via des coroutines d'inférence, comme démontré par Qwen 3.x sans entraînement spécifique. APM-Bench et EpiCon abordent la mémoire persistante : le premier évalue la robustesse des assistants vidéo *egocentriques* face aux interruptions, tandis que le second propose une mémoire multimodale partagée pour l'apprentissage collectif d'agents. Ces approches sont cruciales pour des applications temps réel et des environnements dynamiques."
+   },
+   {
+    "title": "Sécurité et fidélité des agents outils",
+    "text": "SEAD formalise les attaques et défenses sur les agents utilisant des outils comme un problème de contrôle d'état partiellement observé, avec des frameworks comme DART (attaquant) et SAGE (défenseur). Parallèlement, UserProxyBench révèle des biais critiques dans les simulateurs d'utilisateurs pour les benchmarks multi-agents, comme la divulgation prématurée d'informations. Ces travaux soulignent la nécessité de mécanismes de sécurité robustes et d'évaluations rigoureuses pour les agents autonomes."
+   },
+   {
+    "title": "Optimisation des architectures et quantification",
+    "text": "Plusieurs méthodes d'optimisation se distinguent : WUSH-KV réduit la quantification des caches KV à 2 bits avec des transforms data-aware, tandis que STEPQuant et LeapQuant optimisent la quantification des états récurrents pour l'attention linéaire (6-8 bits). Par ailleurs, l'étude sur la quantification de la *softmax* pendant le pré-entraînement montre que des choix d'implémentation (calibration, interpolation) peuvent minimiser l'écart de perte par rapport à la softmax standard. Ces avancées sont essentielles pour le déploiement efficace des LLM sur des infrastructures contraintes."
+   },
+   {
+    "title": "Raisonnement et planification des agents",
+    "text": "ReImaGin utilise la génération d'images comme outil de raisonnement visuel pour les LLM multimodaux, surpassant les approches textuelles sur 6 tâches. En parallèle, une analyse du *Plan Declaration-Execution Gap* montre que les agents LLM n'exécutent pas toujours fidèlement leurs plans déclarés, avec des gains significatifs (+20 à +45%) via un routage déterministe. Ces travaux améliorent la cohérence et l'adaptabilité des agents dans des environnements complexes."
+   }
+  ],
+  "trend": "Les recherches convergent vers une intégration plus robuste et scalable des LLM en tant qu'agents autonomes, avec un accent sur l'optimisation des architectures, la gestion de mémoire persistante et la sécurité. Les analyses théoriques et les benchmarks révèlent cependant des limites persistantes, notamment en matière de fidélité des plans et de biais dans les interactions, nécessitant des approches plus rigoureuses pour les applications industrielles."
+ },
+ "items": [
+  {
+   "id": "a95a4cb4f5a61a83",
+   "title": "PMOPD: Task Ordering, Cycling, and Parameter-Update Subspace Protection in Multi-Teacher On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2609.34605",
+   "summary": "Multi-teacher on-policy distillation (MOPD) has emerged as a popular post-training paradigm for integrating specialized capabilities in frontier language models. Existing OPD research has primarily focused on optimizing single-task distillation through objective design, distillation scope, and teacher signal construction, whereas MOPD must aggregate multiple capabilities in shared parameters and address the resulting capability seesaw, in which improving one domain suppresses capabilities acquired from another. Inspired by the distinctive update geometry of OPD, we find that parameter updates from different tasks rapidly concentrate in their respective low-dimensional subspaces during MOPD, providing a direct geometric basis for identifying and controlling cross-task interference. We therefore propose PMOPD (Projection-based Multi-Teacher On-Policy Distillation), which constructs subspace memories from the cumulative parameter displacements of different tasks and projects both gradients and optimizer updates to remove components that interfere with protected task directions. We further develop a lightweight conflict probe to characterize task interactions and guide task ordering, together with a cycling strategy that balances subspace estimation and timely task revisitation. Experiments on representative Code, Reason, and Math tasks show that PMOPD improves every evaluated capability over MOPD, raising the average score across the three tasks by 2.54 points on Qwen2.5-7B and 2.09 points on Llama-3.1-8B. These consistent gains establish geometry-aware optimization as an effective and transferable approach to balanced multi-teacher distillation.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.34605"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "PMOPD propose une méthode de distillation multi-enseignants (MOPD) pour les LLM, basée sur l'analyse géométrique des mises à jour de paramètres dans des sous-espaces de faible dimension. Elle réduit les interférences entre tâches via une projection des gradients et des mises à jour d'optimiseur, avec un mécanisme de détection de conflits pour l'ordonnancement des tâches. Intéressant pour l'optimisation de modèles multi-capacités et la stabilité en fine-tuning.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé par cette publication est la distillation multi-enseignants *on-policy* (MOPD), où l'intégration de plusieurs capacités spécialisées dans un modèle de langage unique entraîne un phénomène de 'seesaw' (balancier). Cela signifie que l'amélioration d'une compétence dans un domaine spécifique supprime ou dégrade les performances dans d'autres domaines, en raison des interférences entre les mises à jour des paramètres partagés.",
+    "methode": {
+     "approche_generale": "PMOPD (Projection-based Multi-Teacher On-Policy Distillation) propose une solution géométrique pour gérer les interférences entre tâches en exploitant la structure des mises à jour des paramètres. Les auteurs observent que les mises à jour des paramètres pour différentes tâches se concentrent rapidement dans des sous-espaces de faible dimension, ce qui permet d'identifier et de contrôler les conflits.",
+     "details_techniques": [
+      "1. **Sous-espaces mémorisés** : PMOPD construit des 'sous-espaces mémoires' à partir des déplacements cumulatifs des paramètres pour chaque tâche, capturant ainsi les directions critiques pour chaque compétence.",
+      "2. **Projection des gradients et mises à jour de l'optimiseur** : Les gradients et les mises à jour de l'optimiseur sont projetés pour éliminer les composantes qui interfèrent avec les directions protégées des autres tâches, réduisant ainsi les conflits.",
+      "3. **Détection des conflits** : Un outil léger, le *conflict probe*, est développé pour caractériser les interactions entre tâches et guider l'ordre dans lequel les tâches sont traitées.",
+      "4. **Stratégie de *cycling*** : Une approche cyclique est utilisée pour équilibrer l'estimation des sous-espaces et la révision opportune des tâches, évitant ainsi la sur-optimisation d'une tâche au détriment des autres."
+     ]
+    },
+    "resultats": {
+     "ameliorations": "Les expériences menées sur des tâches représentatives en *Code*, *Reasoning* (raisonnement) et *Math* montrent des gains systématiques avec PMOPD par rapport à la distillation MOPD classique.",
+     "chiffres_cles": [
+      "Sur le modèle *Qwen2.5-7B*, PMOPD améliore le score moyen des trois tâches de **2,54 points**.",
+      "Sur *Llama-3.1-8B*, l'amélioration moyenne est de **2,09 points**.",
+      "Ces résultats démontrent que l'approche géométrique est à la fois efficace et transférable à différents modèles."
+     ]
+    },
+    "limites": [
+     "1. **Généralisation limitée** : Les résultats sont présentés pour trois types de tâches spécifiques (Code, Math, Reasoning). Il n'est pas clair si PMOPD serait aussi efficace pour d'autres domaines ou des tâches plus hétérogènes.",
+     "2. **Coût computationnel** : Bien que les auteurs soulignent la légèreté du *conflict probe*, la construction et la projection dans des sous-espaces mémoires pourraient introduire un surcoût computationnel non négligeable pour des modèles plus grands ou un nombre élevé de tâches.",
+     "3. **Dépendance à la qualité des enseignants** : Les performances de PMOPD reposent sur la qualité des modèles enseignants. Si ceux-ci sont biaisés ou sous-optimaux, les gains pourraient être limités."
+    ],
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et géométrique de la distillation multi-enseignants, offrant une solution prometteuse au problème persistant des interférences entre tâches, bien que des validations supplémentaires sur des cas d'usage plus variés soient nécessaires."
+   }
+  },
+  {
+   "id": "4ffa1c07ded533d9",
+   "title": "Understanding On-Policy Distillation: A Mechanistic Interpretability Perspective via Sparse Crosscoders",
+   "url": "https://huggingface.co/papers/2609.35210",
+   "summary": "On-policy distillation (OPD) is a widely adopted post-training technique for LLM reasoning. It is commonly believed to transfer knowledge from a stronger teacher, yet what OPD actually distills into the student's internal representations remains unclear. We study this question with sparse crosscoders, which learn one feature dictionary shared by the student before and after OPD and the teacher. Standard crosscoder analyses, however, identify model-specific features but cannot tell how a model's use of its features changes, since all models are encoded into one set of feature activations. We therefore propose the swap readout, which reads each student checkpoint's feature activations on its own, measuring how training changes the student's use of each feature, even for checkpoints unseen by the crosscoder. Across three OPD settings, we find that OPD neither creates features nor passes on the teacher's own, and leaves the firing rates of over 98% of the student's frequently used features within 20%. We further examine the SFT warm-up on the teacher's rollouts that commonly precedes OPD and makes it more effective. Rather than adding features, the warm-up reweights the shared ones in two ways. First, it already raises and lowers many of the features that OPD later raises and lowers, doing part of OPD's work in advance. Second, it changes features that OPD alone would not, notably those for conversation format, reasoning style, and mathematical notation, and these changes persist through OPD. Imposing this reweighting on a directly distilled student's features, without changing its weights, brings its accuracy close to that of the warmed-up student, whereas the same change on shuffled features does not. Together, these findings suggest that OPD reweights existing features rather than acquiring new ones: the student learns from the teacher how to use the features they already share.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.35210"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Analyse par *sparse crosscoders* et *swap readout* de la distillation on-policy (OPD) sur les LLM : montre que l'OPD ne crée pas de nouveaux features ni ne transfère ceux du teacher, mais réorganise l'utilisation des features existantes (98% des features fréquentes modifiées <20%). Étudie aussi l'impact du *SFT warm-up* sur le teacher's rollouts.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde une question fondamentale en apprentissage par distillation pour les grands modèles de langage (LLM) : comprendre ce que la distillation *on-policy* (OPD) transfère réellement des représentations internes d'un modèle enseignant vers un modèle étudiant. Bien que l'OPD soit couramment utilisée pour améliorer le raisonnement des LLM, les mécanismes précis de ce transfert restent mal compris, notamment au niveau des caractéristiques (features) apprises et de leur utilisation.",
+    "methode": {
+     "approche_generale": "Les auteurs utilisent des *sparse crosscoders* pour analyser les représentations internes des modèles avant et après distillation. Un crosscoder apprend un dictionnaire de caractéristiques partagé entre l'étudiant (avant/après OPD) et l'enseignant, permettant une comparaison directe des activations.",
+     "innovation_technique": "Pour surmonter la limitation des crosscoders classiques (qui ne distinguent pas comment un modèle utilise ses propres caractéristiques), ils introduisent la méthode *swap readout*. Celle-ci évalue les activations des caractéristiques de chaque checkpoint de l'étudiant *indépendamment*, même pour ceux non vus lors de l'entraînement du crosscoder. Cela permet de mesurer l'évolution de l'utilisation des caractéristiques au fil de l'OPD.",
+     "contexte_experimental": "L'étude examine trois configurations d'OPD et inclut une analyse du *SFT warm-up* (fine-tuning supervisé sur les sorties de l'enseignant), une étape préliminaire courante qui améliore l'efficacité de l'OPD. Les auteurs comparent aussi l'impact d'une réinitialisation aléatoire des caractéristiques pour valider leurs observations."
+    },
+    "resultats": {
+     "observations_cles": {
+      "OPD": "La distillation on-policy ne crée pas de nouvelles caractéristiques ni ne transfère celles de l'enseignant. Elle modifie principalement les poids des caractéristiques existantes de l'étudiant : plus de 98 % des caractéristiques fréquemment utilisées voient leur taux d'activation varier de moins de 20 % après OPD.",
+      "SFT_warm-up": "Cette étape préliminaire rééquilibre déjà les caractéristiques partagées, anticipant partiellement les ajustements ultérieurs de l'OPD. Elle cible aussi des caractéristiques spécifiques (format de conversation, style de raisonnement, notation mathématique) que l'OPD seule ne modifierait pas, et ces changements persistent après distillation.",
+      "validation": "En appliquant artificiellement ce rééquilibrage des caractéristiques à un étudiant distillé directement (sans warm-up), les performances se rapprochent de celles d'un étudiant ayant bénéficié du warm-up. Ce gain disparaît si les caractéristiques sont mélangées aléatoirement, confirmant l'importance de leur structure."
+     },
+     "chiffres": "Les variations des taux d'activation des caractéristiques sont quantifiées (ex. : 98 % des caractéristiques fréquemment utilisées restent dans un intervalle de ±20 %). Les gains de performance après rééquilibrage des caractéristiques sont mentionnés, mais sans valeurs numériques précises dans le résumé disponible."
+    },
+    "limites": {
+     "generalisation": "Les résultats sont basés sur trois configurations d'OPD et des modèles spécifiques. Leur validité pour d'autres architectures ou tâches (ex. : modèles multimodaux) n'est pas établie.",
+     "interpretabilite": "Bien que les crosscoders et le swap readout offrent une granularité fine, l'interprétation des caractéristiques reste sujette à des biais (ex. : polysémie des features, dépendance au dictionnaire appris).",
+     "causalite": "Les liens entre rééquilibrage des caractéristiques et performance sont corrélatifs. Une preuve causale plus robuste nécessiterait des interventions ciblées (ex. : ablation de features spécifiques)."
+    },
+    "verdict": "Cette étude mérite une attention particulière pour son éclairage mécanistique sur l'OPD, proposant une méthodologie reproductible et des conclusions contre-intuitives (ex. : absence de transfert de features), mais ses limites invitent à une validation sur des cas d'usage plus larges."
+   }
+  },
+  {
+   "id": "a76b0b490b976f53",
+   "title": "APM-Bench: Benchmarking Cross-session Persistent Memory for Egocentric Streaming Video Assistants",
+   "url": "https://huggingface.co/papers/2609.37559",
+   "summary": "To serve as real-world personal assistants, streaming video models need persistent memory that retains past experiences for later use. Yet existing streaming benchmarks and methods often focus on individual continuous videos or short clips, overlooking that real-world interactions are often intermittent and require memory to persist across interruptions. To fill this gap, we introduce APM-Bench, which reformulates real-world streaming interaction as multi-session life trajectories. It contains 549 sessions, 104 trajectories, and 2,719 candidates, spanning both objective and open-ended questions. Each session is a video with fine-grained annotations, and sessions within a trajectory revolve around related activities. Models then use persistent memory to answer questions about past sessions and provide proactive responses while maintaining real-time interaction. This raises challenges: persistent memory must be storable, selectively retain information, be injected at the right time, and remain efficient. Moreover, finite storage may leave required evidence unavailable, so assistants should recognize missing evidence. Therefore, we systematically evaluate general video models under different memory protocols and diverse specialized streaming memory systems, and test whether models acknowledge insufficient evidence. Our evaluation reveals a clear utility--latency--storage trade-off: existing methods still struggle to simultaneously achieve reliable long-term recall, low overhead, and effective proactive assistance across sessions. APM-Bench provides a comprehensive testbed for developing and comparing persistent memory systems under realistic streaming conditions. We hope it encourages future work that jointly considers utility, latency, and storage toward more practical persistent memory for real-world streaming assistants.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2609.37559"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "APM-Bench introduit un benchmark pour évaluer la mémoire persistante des assistants vidéo *egocentriques* sur des trajectoires multi-sessions, avec des défis liés à la sélection, au stockage et à l'injection d'informations passées. Évalue la robustesse des modèles face aux interruptions et aux contraintes de mémoire. Crucial pour les agents vidéo en conditions réelles.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi des assistants vidéo en streaming nécessitant une mémoire persistante pour conserver et réutiliser des expériences passées. Les benchmarks et méthodes actuels se concentrent principalement sur des vidéos continues ou des clips courts, ignorant que les interactions réelles sont souvent intermittentes et nécessitent une mémoire capable de persister malgré les interruptions.",
+    "methode": "Les auteurs introduisent APM-Bench, un benchmark qui reformule les interactions en streaming du monde réel sous forme de trajectoires de vie multi-sessions. APM-Bench comprend 549 sessions, 104 trajectoires et 2719 candidats, couvrant des questions objectives et ouvertes. Chaque session est une vidéo avec des annotations fines, et les sessions d'une trajectoire sont liées par des activités communes. Les modèles doivent utiliser une mémoire persistante pour répondre aux questions sur les sessions passées et fournir des réponses proactives tout en maintenant une interaction en temps réel. Les défis incluent le stockage de la mémoire, la rétention sélective d'informations, l'injection de mémoire au bon moment et le maintien de l'efficacité. Le benchmark évalue systématiquement des modèles vidéo généraux sous différents protocoles de mémoire et des systèmes spécialisés de mémoire en streaming.",
+    "resultats": "L'évaluation révèle un compromis clair entre utilité, latence et stockage: les méthodes existantes peinent à offrir simultanément un rappel fiable à long terme, une faible surcharge et une assistance proactive efficace entre les sessions. APM-Bench fournit un cadre complet pour développer et comparer des systèmes de mémoire persistante dans des conditions réalistes de streaming.",
+    "limites": "Le contenu disponible ne précise pas les performances quantitatives détaillées des modèles évalués ni les métriques exactes utilisées pour mesurer l'utilité, la latence et le stockage. De plus, les détails sur la manière dont les modèles reconnaissent les preuves manquantes restent flous, ce qui peut limiter la reproductibilité et l'analyse critique des résultats.",
+    "verdict": "Ce benchmark mérite une attention particulière pour son approche innovante et réaliste des défis de la mémoire persistante dans les assistants vidéo en streaming, bien que des détails techniques supplémentaires soient nécessaires pour une évaluation approfondie."
+   }
+  },
+  {
+   "id": "95a774222bc0d7ed",
+   "title": "Reasoning with Image Generation",
+   "url": "https://huggingface.co/papers/2609.16409",
+   "summary": "Chain-of-thought reasoning has revolutionized natural language processing by enabling large language models (LLMs) to decompose problems into intermediate steps before answering. Yet confining reasoning to the textual domain presents limitations for tasks requiring direct manipulation of visual representations. Recent efforts augment multimodal LLMs with external visual expert tools such as depth estimation or object detection modules, but these remain fundamentally limited by their reliance on narrow, rigid operations that cannot flexibly generate or transform visual content. We propose ReImaGin, which leverages image generation models as a flexible visual reasoning mechanism for multimodal LLMs: unlike fixed-function tools, they accept natural language commands and can perform open-ended visual operations, like removing an occlusion or generating a floorplan from multiple disjoint views of a room. Across six diverse visual reasoning tasks including multi-view spatial reasoning and collision prediction, ReImaGin consistently outperforms both text-only reasoning and specialist vision-tool baselines, with gains of up to 25\\%, demonstrating the advantage of flexible, generative visual reasoning.",
+   "published": "2026-09-14T18:29:03.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.16409"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "vision"
+   ],
+   "tldr": "ReImaGin utilise les modèles de génération d'images comme outil de raisonnement visuel flexible pour les LLM multimodaux, permettant des opérations ouvertes (ex: suppression d'occlusions, génération de plans). Surpasse les approches textuelles et les outils spécialisés sur 6 tâches de raisonnement visuel, avec des gains jusqu'à 25%. Innovant pour l'intégration des LLM avec des capacités visuelles génératives.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le raisonnement en chaîne de pensée (chain-of-thought) a amélioré les performances des grands modèles de langage (LLM) en décomposant les problèmes en étapes intermédiaires, mais cette approche reste limitée au domaine textuel. Pour les tâches nécessitant une manipulation directe de représentations visuelles, les solutions actuelles, comme l'intégration de modules spécialisés (détection d'objets, estimation de profondeur), sont rigides et incapables de générer ou transformer du contenu visuel de manière flexible et ouverte.",
+    "methode": "ReImaGin propose d'utiliser des modèles de génération d'images comme mécanisme de raisonnement visuel pour les LLM multimodaux. Contrairement aux outils spécialisés et figés, ces modèles acceptent des commandes en langage naturel et peuvent effectuer des opérations visuelles ouvertes, comme supprimer une occlusion ou générer un plan de sol à partir de vues disjointes d'une pièce. L'approche combine ainsi la flexibilité des LLM avec la capacité des modèles de génération d'images à produire et manipuler des représentations visuelles dynamiquement, sans dépendre de modules pré-entraînés pour des tâches spécifiques.",
+    "resultats": "Sur six tâches variées de raisonnement visuel, incluant le raisonnement spatial multi-vues et la prédiction de collisions, ReImaGin surpasse systématiquement les approches reposant uniquement sur du raisonnement textuel ainsi que les baselines utilisant des outils visuels spécialisés. Les gains de performance atteignent jusqu'à 25 %, démontrant l'avantage d'un raisonnement visuel génératif et flexible.",
+    "limites": "Le contenu disponible ne précise pas les architectures exactes des modèles de génération d'images utilisés ni les détails sur l'entraînement ou l'intégration avec les LLM. De plus, l'évaluation se limite à six tâches, ce qui peut ne pas couvrir tous les cas d'usage réels. Enfin, la robustesse face à des commandes ambiguës ou des artefacts visuels n'est pas explicitement abordée.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à combler les lacunes des LLM multimodaux actuels en matière de raisonnement visuel flexible, mais des détails techniques supplémentaires et une évaluation plus large seraient nécessaires pour en confirmer la généralisabilité."
+   }
+  },
+  {
+   "id": "5a0808072593ee38",
+   "title": "LLMs are General Asynchronous Agents",
+   "url": "https://huggingface.co/papers/2609.35427",
+   "summary": "Modern LLMs are increasingly capable as autonomous agents, but they follow sequential interaction cycles: read, think, reply or call tools, repeat. Many real-world use cases are not sequential: voice assistants, embodied agents, and monitoring systems receive new inputs while they think or perform another task. Modern LLMs address this with specialized architectures for voice interaction and video streams, VLAs for robot control, asynchronous tool calling for API usage, and others. In this work, we generalize from different asynchronous tasks to general asynchronous agents that can adapt to different types of concurrency. To achieve this, we develop an asynchronous LLM framework that lets users (or the agents themselves) define inference coroutines with overlapping memory states. We showcase that Qwen 3.x models are capable of asynchronous operation for streaming video understanding, videogames, and monitoring, without task-specific training.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 25,
+    "arxiv_id": "2609.35427"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Les LLM peuvent fonctionner comme des *agents asynchrones* généralisés, gérant des flux d'entrée/sortie concurrents (ex: vidéo, jeux, monitoring) via des coroutines d'inférence. Qwen 3.x démontre cette capacité sans entraînement spécifique à la tâche. Révolutionnaire pour les applications temps réel et les agents multimodaux.",
+   "score": 8.8
+  },
+  {
+   "id": "1d527ae219fa33d9",
+   "title": "SEAD: A State-Based Perspective on Attack and Defense in Tool-Using Agents",
+   "url": "https://huggingface.co/papers/2609.34518",
+   "summary": "Language-model agents increasingly use tools to act on external systems. Earlier actions can alter files, permissions, database records, or other state, making a later routine-looking action harmful. Yet the visible interaction may not reveal the underlying state needed to assess that action. We formulate attack and defense as partially observed state control in SEAD, deriving their design requirements from this shared execution process. Because attackers supply instructions while the target chooses concrete actions, DART decomposes harmful goals into locally plausible steps and uses feedback from actual tool execution to guide trajectory search. The defender must decide before execution with incomplete state evidence. SAGE can therefore investigate relevant state through read-only queries before allowing or blocking each action, including those proposed after a block. We construct an environment-verifiable dataset integrating controlled initial states, replayable tool environments, and task-specific executable checks. Across four target models, DART improves semantic attack success by 18.8--35.9 percentage points over the competing baseline, with consistent gains under executable verification. On recorded trajectories, SAGE preserves 95.79% of benign trajectories while intercepting 92.73% of harmful paths by the harm-enabling boundary. In online attack-defense evaluation, it reduces DART's executable attack success from 48.0% to 4.0%. SAGE remains effective across four attack methods and generalizes to out-of-domain environments. Our code and data is available at https://github.com/EverywhereSafety/SEAD.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.34518"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "SEAD formalise les attaques et défenses sur les agents utilisant des outils comme un problème de contrôle d'état partiellement observé, avec DART (attaquant) et SAGE (défenseur) pour évaluer et sécuriser les interactions. Intéressant pour la sécurité des LLM agents et l'optimisation des mécanismes de tool use.",
+   "score": 8.8
+  },
+  {
+   "id": "2bfa06ee097bbc57",
+   "title": "StructRL: Online Structured Reinforcement Learning for Long-Horizon Vision-Language-Action Tasks",
+   "url": "https://huggingface.co/papers/2609.36352",
+   "summary": "Vision-language-action (VLA) models perform well on shorter-horizon manipulation tasks but still struggle with long-horizon tasks that require multiple dependent manipulations from a single command. Online reinforcement learning (RL) can improve these policies through environment interaction, yet many existing methods provide reward only after the complete task succeeds. However, such terminal supervision is sparse and does not distinguish early failures from rollouts that make substantial partial progress. We propose StructRL, an online RL framework that constructs structured intermediate supervision from verifiable subtask completions. StructRL decomposes each task into verifiable subtasks, grants intermediate rewards only after the prerequisite subtasks have been completed, and scales each reward according to completion pace. Across RoboCasa365 and LIBERO-Long with GR00T-N1.5 and pi 0.5, StructRL consistently outperforms evaluated online RL baselines. These results show that verifiable, structured intermediate rewards improve long-horizon VLA post-training. Code is available at https://github.com/amazon-science/StructRL.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.36352"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "StructRL améliore l'apprentissage par renforcement en ligne pour les tâches VLA longues via des récompenses intermédiaires structurées, surpassant les baselines sur RoboCasa365 et LIBERO-Long. Pertinent pour l'optimisation des politiques robotiques et l'apprentissage efficace.",
+   "score": 8.8
+  },
+  {
+   "id": "954494d6de149838",
+   "title": "Context Language Models",
+   "url": "https://huggingface.co/papers/2609.37725",
+   "summary": "We introduce Context Language Models (CLMs), language models that natively manage their own context. We implement this by treating the context as a file and allowing the model to make unrestricted updates to this file. This allows the model to learn what is most important to maintain in context, and naturally extends to multi-agent systems where multiple agent contexts coexist as files. Building CLMs zero-shot with existing models outperforms SOTA context management strategies across a variety of tasks: 11.4% higher accuracy with 21.5% fewer FLOPs on BrowseComp-Plus, 5% higher scores with 59% fewer FLOPs on 12-hour EdgeBench, and 65% greater improvement with the same compute on a 24-hour multi-repository agent-swarm task. Moreover, by shifting context management from external harness control to intrinsic model behavior, CLMs naturally enable both in-context and parametric learning of context-management strategies. We show that CLMs can be steered with natural-language instructions evolved through a standard skill-optimization loop, improving held-out accuracy by up to 35.9 points on a context-management task while reducing compute. We also introduce an online reinforcement learning method for CLMs, improving Qwen3.5-9B performance on BrowseComp-Plus by 47.6% while using 12% fewer FLOPs. Finally, we co-design Suffix Cache Reuse for CLM serving, further reducing server-side compute by 35% relative to standard SGLang at matched performance.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2609.37725"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Introduit les *Context Language Models* (CLMs), des LLM capables de gérer leur propre contexte comme un fichier modifiable, améliorant les stratégies de gestion de contexte (jusqu'à +35.9 points d'accuracy) et réduisant les FLOPs (-59% sur EdgeBench). Permet un apprentissage in-context et paramétrique des stratégies de contexte.",
+   "score": 8.8
+  },
+  {
+   "id": "4275405ec7229c82",
+   "title": "Pretraining Transformers with Quantized Softmax in Attention",
+   "url": "https://huggingface.co/papers/2609.33591",
+   "summary": "Low-precision Transformer systems increasingly quantize attention matrix multiplications, while softmax often remains at higher precision. During pretraining, an approximate softmax changes the gradients that train the model as well as its forward computation. We study this interaction with K-interval attention, which approximates the exponential using K+1 grid values. We vary per-row grid calibration, interpolation versus hard rounding, and the placement of a straight-through surrogate relative to normalization. We derive the corresponding backward rules, including calibration derivatives, and compare these choices in pretraining experiments matched on model, data, and optimizer. Detaching the row extrema leaves the forward computation unchanged but produces a delayed increase in validation loss. With hard rounding at K=4, min-max calibration and a pre-normalization surrogate incur a large loss gap; changing either choice substantially reduces it. At 124M parameters and 2.5B training tokens, fixed-window calibration with a post-normalization surrogate yields a validation loss gap of +0.019 nats relative to softmax at K=4, and with a pre-normalization surrogate yields +0.004 nats at K=16.",
+   "published": "2026-09-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.33591"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Étudie l'impact de la quantification de la *softmax* dans l'attention des Transformers pendant le pré-entraînement, montrant que des choix d'implémentation (calibration, interpolation) peuvent réduire l'écart de perte par rapport à la softmax standard (+0.004 nats à K=4 avec un surrogate post-normalisation).",
+   "score": 8.8
+  },
+  {
+   "id": "a9d033b5e86e6aa7",
+   "title": "EpiCon: Collective Agent Learning through Co-Evolving Multimodal Memory",
+   "url": "https://huggingface.co/papers/2609.37923",
+   "summary": "Agents can learn from past executions, but enabling different agents to reuse and build on one another's experience remains challenging. We introduce EpiCon, a shared multimodal memory framework for agent collective learning without updating host model parameters. EpiCon links question-level memory evolution to a persistent experience bank through two independently trained 2B models: a memory controller and a tree self-organizer. The controller jointly refines textual guidance and visual evidence across attempts and selectively includes visual memory. The self-organizer consolidates lessons hierarchically and retrieves experience and rules for new problems. We evaluate EpiCon on eleven benchmarks spanning four multimodal task domains, using two harnesses and multiple backbones. A frozen bank improves other systems even with a single solving attempt. A second harness raises the original system's macro-average score by 2.6 points across eleven benchmarks. Across four host configurations, EpiCon improves macro-average scores by 1.7 to 4.9 points over No Memory and reduces memory-operation time by 67\\% to 74\\% relative to backbone-sized memory models.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.37923"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "EpiCon propose un cadre de mémoire multimodale partagée pour l'apprentissage collectif d'agents, améliorant les performances sur 11 benchmarks via un système de mémoire externe hiérarchique et un contrôleur dédié, sans modifier les paramètres du modèle hôte.",
+   "score": 8.8
+  },
+  {
+   "id": "af7a9531f19f2763",
+   "title": "EngiWorld: What Can Frontier Agents Deliver in Professional Engineering Environments?",
+   "url": "https://huggingface.co/papers/2609.37686",
+   "summary": "Autonomous agents have made rapid progress in general-purpose computer use, but reliable automation of professional industrial engineering remains out of reach, as engineering workflows demand reasoning over geometric and physical constraints and dependencies preserved across software and design stages. We present EngiWorld, the first benchmark structured around the complete design loop: 1,301 expert-curated tasks spanning 6 engineering domains (CAD, CAE, CAM, BIM, EDA, and 3D visualization) and 26 professional software platforms, with both GUI and CLI interfaces and 6 task types ranging from software-selection to open-ended tasks. We further introduce an artifact-centric evaluation methodology built on a unified domain-verifier suite, which programmatically checks the geometric validity, physical feasibility, and rule compliance of final and intermediate artifacts, and scores quantitative design tasks continuously by specification attainment rather than binary success. Evaluation of seven frontier models reveals a substantial capability gap: the strongest model achieves an EngiScore of only 44.3, and just 3.6% of multi-software attempts succeed. EngiWorld provides the first rigorous foundation for measuring progress toward agents that operate professional engineering software end to end.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2609.37686"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "produit"
+   ],
+   "tldr": "EngiWorld introduit un benchmark complexe (1 301 tâches, 6 domaines d'ingénierie) pour évaluer les agents autonomes dans des environnements professionnels, révélant un écart significatif entre les modèles frontaliers et les exigences industrielles.",
+   "score": 8.8
+  },
+  {
+   "id": "068752a7a64dc087",
+   "title": "Breakdown of Local Denoising as Semantic Speciation",
+   "url": "https://arxiv.org/abs/2609.38176v1",
+   "summary": "The dynamics of generative models exhibit two apparently distinct temporal windows: a speciation window, in which a sample commits to a semantic class, and a nonlocality window, in which local context windows become insufficient for generation. Motivated by evidence of their near-concurrence in a variety of frontier models, we investigate their relationship through the spatial distribution of semantic information. Under a \"common cause\" hypothesis, we prove that the nonlocality window must lie in the speciation window. This hypothesis postulates that semantic labels explain a fraction of the correlations between distant tokens, a condition that is natural for many real datasets. We further give conditions under which both windows shrink to a single limiting time as system size grows, defining a \"phase transition\", and verify this behavior analytically in Gaussian mixtures. Together, these results identify conditions under which semantic information explains the concurrence of speciation and nonlocality, connecting two complementary perspectives on the emergence of semantic structure in generative modeling.",
+   "published": "2026-09-29T17:59:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Guangkuo Liu, Mert Okyay, Yifan F. Zhang, Fangjun Hu, Rahul Nandkishore, Xun Gao"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Établit un lien théorique entre les fenêtres de spécification sémantique et de non-localité dans les modèles génératifs, démontrant que la non-localité doit survenir pendant la spécification, avec des preuves analytiques sur des mélanges gaussiens.",
+   "score": 8.6
+  },
+  {
+   "id": "19e6ee24edf72071",
+   "title": "Thinking Before Thinking: Scaling Agentic Inference Through Meta-Reasoning",
+   "url": "https://arxiv.org/abs/2609.38147v1",
+   "summary": "As agents take on longer and more complex problems, controlling the execution becomes a task in its own right. Each step in the run brings new control choices, like which partial work to build on, whether to start fresh, or when to stop. We introduce agentic meta-reasoning, an inference-time harness that makes these choices an explicit and structured reasoning process. Workers carry out the task-level computation, while a controller consolidates what the run has established, explores next options, assesses what each option is worth under the remaining budget, and dispatches the chosen work with context drawn from persistent memory. Between decisions the controller carries only a compact account of the run rather than replaying its full history. Our baselines span production coding agents and research harnesses, together with a Direct Control Agent using the same workers and compute budget allowance. On ProgramBench, which tests long-horizon agentic capability through program reconstruction, meta-reasoning achieves 71.5% with GPT-5.5 against 58.0% for Codex; with Opus 4.8 it achieves 67.2% against 65.5% for Claude Code. On the other benchmarks, spanning abstract reasoning, multi-domain long-horizon reasoning, and proof generation, it gains between 3.6 and 4.2 points over direct control, averaged across three frontier models. It keeps improving over the tested budget ranges where direct control plateaus, though its overhead can hurt at small budgets. Artifact-graph analysis reveals more reuse of earlier work, higher coverage of correct solutions in most settings, and nonuniform gains in final selection. These results indicate that spending computation on structured control becomes more important as agents scale to longer runs.",
+   "published": "2026-09-29T17:57:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Paras Dahal, Anton Bakhtin, Taco Cohen, Zhengxing Chen, Carole-Jean Wu, Rob Fergus"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Propose une approche de méta-raisonnement (agentic meta-reasoning) pour optimiser les décisions d'un agent IA en temps d'inférence, améliorant significativement les performances sur des tâches complexes (ex: reconstruction de programmes) grâce à un contrôle structuré et une mémoire persistante, avec des gains mesurés jusqu'à +13,5 pts vs baselines.",
+   "score": 8.6
+  },
+  {
+   "id": "3df76feef9647a20",
+   "title": "WUSH-KV: KV Cache Quantization with Data-Adaptive Transforms",
+   "url": "https://arxiv.org/abs/2609.38121v1",
+   "summary": "KV cache memory and bandwidth costs grow with context length and batch size, which limits efficient long-context inference. To address this bottleneck, we introduce WUSH-KV for low-bit KV-cache quantization. It adapts WUSH, which constructs a data-aware transform from the second-order statistics of both factors in a matrix product to reduce quantization error. WUSH-KV uses calibration data to construct separate key and value transforms, with the value transform folded into the model weights and the key transform applied after RoPE. The transforms can be paired with clipped quantizers. For one such quantizer, QuEST INT, we show that, under mild assumptions, the WUSH transform is near-optimal. With this quantizer, WUSH-KV reduces layerwise reconstruction error and achieves the lowest end-to-end perplexity among other tested transforms. For end-to-end evaluation, we integrate WUSH-KV into SGLang using OSCAR-style percentile-clipped affine quantization. At 2-bit, WUSH-KV performs comparably to or outperforms the OSCAR transform across all evaluated models and downstream tasks.",
+   "published": "2026-09-29T17:50:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiale Chen, Vage Egiazarian, Eldar Kurtić, Torsten Hoefler, Dan Alistarh"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "WUSH-KV, une méthode de quantification adaptative des caches KV (2 bits) utilisant des transforms data-aware (WUSH) et des quantizers optimaux (QuEST INT), réduisant les erreurs de reconstruction et surpassant les transforms existants en perplexité et performance en aval.",
+   "score": 8.6
+  },
+  {
+   "id": "f02d05f89d5928b7",
+   "title": "When do data mixtures improve scaling laws? Insights from high-dimensional regression",
+   "url": "https://arxiv.org/abs/2609.38011v1",
+   "summary": "Modern machine learning systems are trained on mixtures of data from different domains, and choosing the right mixture can substantially improve downstream performance. Despite an extensive literature on data mixing and reweighting, existing work is largely empirical and it remains unclear when auxiliary data genuinely improves scaling laws rather than merely providing more samples. To gain insight into this question, we study a high-dimensional mixed-data regression model with a shared regression function, heterogeneous covariances and noise levels, and dataset sizes that may grow at different rates. We establish the minimax risk under an ellipsoidal parameter constraint for the general covariance structure and derive deterministic equivalents for the test error of ridge regression under commutative covariances. We then specialize to a target domain and an auxiliary domain with aligned power-law covariance spectra, where the theory yields explicit scaling laws in terms of spectral decay, target regularity, and the relative growth of the two datasets. These laws identify regimes in which combining data mixtures provably yields a faster scaling rate than using either dataset alone. In particular, improving the scaling law requires a specific interplay between spectra and relative sample sizes of the domains. Our numerical experiments on language models exhibit the same qualitative phenomenon: appropriate data mixtures yield a faster decrease in target-domain test loss than training on either domain alone.",
+   "published": "2026-09-29T16:59:23+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Diyuan Wu, Lehan Chen, Theodor Misiakiewicz, Marco Mondelli"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Analyse théorique des lois de scaling pour les mélanges de données en régression haute dimension, identifiant des régimes où les données auxiliaires améliorent les performances. Fondamental pour comprendre l'impact des mélanges de données sur l'entraînement des LLM.",
+   "score": 8.6
+  },
+  {
+   "id": "a2d610e086ae0cef",
+   "title": "Diagnosing and Improving Probabilistic Reasoning in Large Language Models",
+   "url": "https://arxiv.org/abs/2609.38005v1",
+   "summary": "Large language models (LLMs) are increasingly proposed as decision assistants who must reason probabilistically from available evidence under explicit decision costs. We propose a decision-theoretic framework that decomposes LLMs' decision loss into two components: forming accurate beliefs from provided evidence and translating those beliefs into actions that optimize a provided utility function. Using a synthetic benchmark with known ground truth, we apply the decomposition to characterize probabilistic reasoning in frontier and open-sourced models. We further evaluate whether RL interventions targeting beliefs, decisions, or both improve these components across three domains, whether improvements transfer across components and elicitation formats, and whether decision performance can improve without improvement in belief formation. We find that targeting one component of probabilistic reasoning redistributes decision loss, improving the target without necessarily transferring to others, and that jointly targeting belief formation and decision-making improves both but hinges on matched formats between training and evaluation.",
+   "published": "2026-09-29T16:55:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Huaman Sun, Dingcheng Wang, Jason Hartline, Jessica Hullman"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Décompose la perte décisionnelle des LLM en composantes de croyance et d'action, évaluant l'impact des interventions RL sur chaque aspect. Fondamental pour améliorer le raisonnement probabilistique des LLM.",
+   "score": 8.6
+  },
+  {
+   "id": "a704b5cdb0b78c8a",
+   "title": "STEPQuant: When and Where Errors Matter in Delta-Rule Recurrent State Quantization",
+   "url": "https://arxiv.org/abs/2609.38169v1",
+   "summary": "Linear attention replaces growing KV caches with fixed-size recurrent states, yet these persistent states can become a substantial memory bottleneck under concurrent serving. Directly quantizing recurrent states to low precision often leads to severe accuracy degradation, as quantization errors propagate through successive state updates. We discover that the impact of these errors depends on two complementary dimensions: temporally, errors in long-lived memory can persist across many decoding steps; spatially, errors in different key rows affect model outputs differently, while state magnitudes vary substantially along both rows and columns. Motivated by these observations, we propose STEPQuant, a spatial-temporal post-training quantization framework for Delta-rule recurrent states. STEPQuant allocates precision according to error magnitude and memory lifetime, and jointly fits key-row and value-column scales based on state distributions and key-row impact on output error. Experiments on Qwen3.8-27B and Kimi-Linear-48B-A3B-Instruct across both long- and short-generation benchmarks show that STEPQuant closely matches FP32-state accuracy under a nominal 6-bit budget and outperforms uniform INT8 in its 4-bit configuration. Integrated into SGLang with optimized GPU kernels, 6-bit STEPQuant achieves over 5x recurrent-state compression and reduces total serving memory by up to 68.7%. Our code is available at https://github.com/Dreamer-Toby/STEPQuant.",
+   "published": "2026-09-29T17:59:40+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Bingchen Yao, Haobo Xu, Haokun Lin, Yichen Wu, Ziyu Guo, Renrui Zhang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Présente STEPQuant, une méthode de quantification post-entraînement pour les états récurrents des modèles linéaires d'attention (Delta-rule), optimisant la précision temporelle et spatiale pour réduire les erreurs d'accumulation sous 6 bits.",
+   "score": 8.3
+  },
+  {
+   "id": "2c15ac4b75d5ab0d",
+   "title": "LeapQuant: Efficient Linear Attention with Accurate Recurrent State Quantization",
+   "url": "https://arxiv.org/abs/2609.38166v1",
+   "summary": "Recent LLMs increasingly adopt hybrid designs that replace standard attention with linear attention, such as Gated DeltaNet (GDN) and Kimi Delta Attention (KDA). Although they compress the context into a fixed-size recurrent state and substantially reduce the cost of long-context processing, repeatedly reading and updating that state remains a major inference bottleneck. Quantization offers a natural way to reduce this cost, but can significantly degrade model quality, due to the accumulation of rounding errors and the presence of outlier rows and columns in the state. To address these challenges, we propose LeapQuant, a training-free method that achieves near-lossless performance under 8-bit recurrent-state quantization. First, to mitigate error accumulation, we propose per-window quantization, which leaps over a window of tokens and quantizes the state only once at its end. Within a window, outputs are computed from the fixed low-bit state together with high-precision buffered updates. Second, to reduce the error introduced by each quantization, LeapQuant retains the state's largest outliers as a few high-precision Compensator Tokens, which share the update path of real tokens. We then smooth the remaining residual before quantization to further reduce the error. Comprehensive experiments across the Qwen, Kimi, and GLM model families show that LeapQuant substantially reduces memory and compute costs during inference. With accuracy comparable to the FP32 baseline, it achieves average speedups of 2.05--3.70$\\times$ at the kernel level and 1.47$\\times$ for end-to-end inference on NVIDIA B200, RTX PRO 6000, and RTX 5090 GPUs.",
+   "published": "2026-09-29T17:59:34+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yi Pan, Haocheng Xi, Kan Zhu, Xingyang Li, Yibo Wu, Mayank Mishra"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Propose LeapQuant, une technique de quantification 8-bit des états récurrents pour l'attention linéaire, réduisant les erreurs via une quantification par fenêtre et des tokens compensateurs, avec des gains proches du FP32.",
+   "score": 8.3
+  },
+  {
+   "id": "7ed89b88c796097b",
+   "title": "Do LLM Agents Execute the Plans They Declare? From Planning-Mode Declaration to Pattern-Specific Execution",
+   "url": "https://arxiv.org/abs/2609.38108v1",
+   "summary": "Large language models (LLMs) enable agents to solve long-horizon tasks by generating a plan and then executing it in an environment. However, successful planning requires two distinct capabilities: selecting an appropriate plan for the task and executing it faithfully. Existing planner--executor systems can fail at either stage, while final task success alone cannot distinguish selection from execution failures. We therefore study the Plan Declaration--Execution Gap and introduce Planning-as-Routing, where an LLM declares one of four planning modes: Predefined, Sequential, Hierarchical, or Search, and a deterministic router dispatches the task to the corresponding pattern-specific executor. Across four benchmarks and three LLMs, we find three consistent patterns. First, generic Plan+ReAct often fails to preserve declared planning structure, especially for longer plans: across three benchmarks, only (22)--(45%) of trajectories preserve it, whereas pattern-specific executors enforce the intended structure. Second, planning-mode effectiveness varies across environments and models: Search performs best on ALFWorld, Hierarchical on SWE-bench, and the strongest pattern can vary across models within the same benchmark. Third, the largest gains come from execution: pattern-specific executors improve task success from (0.48) to (0.92) on ALFWorld and from (0.36) to (0.44) on SWE-bench Verified over Plan+ReAct. Current LLMs, however, do not reliably select the strongest mode for each task, although few-shot examples improve selection in some benchmark--model combinations. Overall, reliable agent planning requires both effective mode selection and faithful execution: routing substantially closes the execution gap, while task-specific mode selection remains open.",
+   "published": "2026-09-29T17:47:18+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Subba Reddy Oota, Francisco Herrera, Jordi Cabot Sagrera, Marcos López de Prado, Shadab Khan"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Analyse du 'Plan Declaration-Execution Gap' chez les agents LLM : les plans déclarés (Predefined, Sequential, etc.) ne sont pas toujours exécutés fidèlement. Une approche par routage déterministe (Planning-as-Routing) améliore la conformité aux structures planifiées (+20 à +45% de préservation) et adapte l'exécution au mode de planification optimal selon l'environnement.",
+   "score": 8.3
+  },
+  {
+   "id": "6cc7e3e38bbb137e",
+   "title": "UserProxyBench: Evaluating LLM User Simulators for Agent Benchmarks and Training",
+   "url": "https://arxiv.org/abs/2609.38043v1",
+   "summary": "Interactive agent benchmarks and multi-turn reinforcement learning increasingly place a second language model in the role of the user. This simulated user controls what information the agent receives and when, yet current benchmarks score only the agent and do not directly measure whether the user correctly executed its assigned role. We introduce UserProxyBench, an evaluation layer over the tau-bench family, and the User Fidelity Score (UFS), which measures adherence to the benchmark's private user instructions using task-grounded rubric criteria scored independently of agent success. Holding the agent fixed at GPT-5.5 and varying only the user proxy across 375 enterprise tasks changes mean task reward by 15.2 points, while 24.4% of successful episodes contain a user-specification violation. The dominant failure is premature disclosure: users provide information before it is requested. This behavior has little effect on task reward, yet among successful episodes it causes the agent to make 1.06 fewer tool calls on average, changing the interaction being evaluated while preserving the reward. Finally, across seven proxies we identify an empirical cost-fidelity frontier, enabling practitioners to select the least expensive simulator that satisfies a required fidelity level.",
+   "published": "2026-09-29T17:17:24+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ashish Jain, Armaan Sandhu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Introduit UserProxyBench et le User Fidelity Score (UFS) pour évaluer la fidélité des simulateurs d'utilisateurs (LLM) dans les benchmarks multi-agents, révélant des biais critiques (ex. divulgation prématurée) affectant les interactions. Essentiel pour la rigueur des évaluations d'agents.",
+   "score": 8.3
+  },
+  {
+   "id": "3e31ab603b50cf62",
+   "title": "Dr. OPD: Learning What to Follow for Optimal On-Policy Distillation of Large Language Models",
+   "url": "https://arxiv.org/abs/2609.38025v1",
+   "summary": "On-policy distillation (OPD) trains a student on its own generated responses using dense, token-level supervision from a stronger teacher. Vanilla OPD treats all teacher signals equally, assuming that the teacher's supervision is equally important for every token. However, teacher signals at different tokens may have very different effects on the student's performance: some correct important reasoning errors, while others have little effect on the final answer. Motivated by this observation, we introduce Dr. OPD (OPD Done Right), which defines the optimal weighted OPD to maximize the student's performance. We formulate Dr. OPD as a bilevel optimization problem in which the student learns from weighted teacher supervision, while the weights are selected to maximize the expected reward of the resulting student. To solve Dr. OPD, we develop an efficient iterative solver that updates the token weights and student policy alternatively. At each round, it updates weights in closed form and then takes one gradient step on the resulting weighted OPD objective. Under regularity conditions, we show that this weighted update achieves a higher expected reward than a vanilla OPD update. Empirically, across strong-to-weak and same-size distillation on math and code, Dr. OPD consistently outperforms all evaluated baselines. In particular, in the strong-to-weak distillation setting, Dr. OPD improves average math performance by $9.7$ points over vanilla OPD, and enables the smaller student to surpass its larger teacher.",
+   "published": "2026-09-29T17:07:00+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhenyu Wang, Tianze Wang, Linjun Zhang, Yifan Hu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Propose Dr. OPD, une méthode d'optimisation par distillation en ligne pondérée pour les LLM, maximisant la performance de l'étudiant via une bilevel optimization. Réduit les erreurs de raisonnement critiques en ciblant les tokens informatifs.",
+   "score": 8.3
+  },
+  {
+   "id": "e2f53c75d8ab1070",
+   "title": "AutoRef: Harness Optimization for Agentic Multi-Reference Image Generation",
+   "url": "https://huggingface.co/papers/2609.35530",
+   "summary": "Recent image generation models can take multiple reference images as input and combine them into a new image. However, multi-reference image generation remains challenging: models may omit or duplicate subjects from the references, or produce images in which multiple subjects appear unnaturally pasted. Recent work has proposed image generation agents that combine image generation models, reasoning models, and a harness, which is an executable program that specifies how reference images are interpreted, how generation is performed, how outputs are diagnosed, and how the final image is selected. In multi-reference generation, however, references play different roles and outputs must satisfy many criteria at once, such as fidelity to each reference and the naturalness of the whole image, so many parts of the harness could be improved, from how references are processed to how outputs are diagnosed. This makes it hard to predict which changes will improve performance and by how much, and good harnesses difficult to design by hand; indeed, human-written harnesses vary widely in performance. We therefore propose AutoRef, which optimizes the harness automatically while keeping both models frozen: a coding agent iteratively rewrites the harness code. AutoRef separates the tasks whose feedback informs proposals from the tasks used to select candidates, and continues the search from a beam of the top-ranked harnesses on the selection tasks. Using this procedure, we discover AutoRef-Harness, which improves the open-weight FLUX.2 [klein] 4B from 5.72 to 7.37 on held-out four-reference tasks of the MultiBanana benchmark, matching or exceeding proprietary models including Nano Banana Pro and GPT-Image-1.5. Without re-optimization, the same harness also improves results when the generator, number of references, benchmark, evaluator, or reasoning model differs from those used in the search.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.35530"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "vision"
+   ],
+   "tldr": "AutoRef automatise l'optimisation des *harnesses* (programmes exécutables) pour les agents de génération d'images multi-références, en utilisant des techniques d'optimisation pour améliorer la fidélité aux références et la cohérence globale. Réduit la variabilité des performances des harnesses manuelles et cible les conflits entre critères de qualité. Utile pour les systèmes agents en vision.",
+   "score": 8.2
+  },
+  {
+   "id": "71f690c6d184f5a5",
+   "title": "Asking for What Was Never Requested: Horizontal and Vertical Proactivity in Agents",
+   "url": "https://huggingface.co/papers/2609.37236",
+   "summary": "An agent that uses tools typically responds to what the user explicitly asks, yet completing the task may require information the user never requested. Work on proactive agents mainly studies whether and when an agent should act on its own, not what information it should pursue. We study a distinct axis of proactivity: its content. Horizontal proactivity pursues unstated information that the current context already identifies, and vertical proactivity pursues needs that only earlier evidence reveals. A need graph, recovered from a benchmark's own decomposition, records which needs depend on which, so both forms, and whether the agent stops at the right time, can be scored from a transcript without a model judge. To learn this behavior, we propose Q&D (questioner and drafter), which trains a questioner to prefer the question whose continuation retrieves more of the required evidence, with no reward model or judge. On held-out splits of three multi-hop question-answering benchmarks, at equal retrieval spend, the trained questioner improves both forms of proactivity over the same model, prompted, and outperforms a prompted model 15times larger in the same role on two of the three, and the gain persists after controlling for question volume and length. Without further training, we place the questioner in an interactive customer-service agent with a simulated customer, where it completes more tasks while asking fewer questions, and in retail it outperforms the 15times larger model with fewer follow-up turns from the customer. These results show that proactivity depends not only on whether an agent acts without being asked, but also on what it chooses to pursue and when it stops.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.37236"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Q&D introduit une approche pour entraîner des agents *proactifs* capables de poser des questions ciblées (horizontal/vertical) pour compléter des tâches sans requêtes explicites. Améliore la proactivité à coût de retrieval égal et surpasse des modèles 15x plus grands. Pertinent pour les agents autonomes et l'optimisation des interactions utilisateur.",
+   "score": 8.2
+  },
+  {
+   "id": "a6c28e6aa52450df",
+   "title": "SoL-Refiner: Speed-of-Light One-Step Refinement for High-Resolution Video",
+   "url": "https://huggingface.co/papers/2609.37969",
+   "summary": "High-resolution video generation is expensive, as its cost grows rapidly with the number of spatiotemporal tokens. A practical alternative first generates a lower-resolution video and then applies a refiner, but conventional multi-step refinement introduces a second sampling bottleneck. We present SoL-Refiner, a one-step video refiner that transforms low-resolution model outputs into 4K videos with a single denoising step. Our three-stage recipe combines high-resolution continual training, reinforcement learning (RL) post-training, and a final one-step distillation. We introduce Refiner-Bench, a video refinement benchmark constructed from the outputs of different video generators, and use a shared-input protocol to compare refiners at approximately 2K output resolution. At 2K, the one-step SoL-Refiner outperforms all external refiners on the VBench and UniPercept averages, while at 3840!times!2176 it improves both metrics over the three-step LTX-2.3 Refiner. With the complete acceleration stack, SoL-Refiner achieves an 8.91times speedup in refinement latency over the same baseline in our 2K latency setting.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2609.37969"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "SoL-Refiner accélère la génération vidéo haute résolution (jusqu'à 8.91x) en réduisant l'inférence à une seule étape via RL et distillation, avec des gains mesurés sur VBench et UniPercept. Pertinent pour l'optimisation des modèles de vision et l'inférence rapide.",
+   "score": 8.2
+  },
+  {
+   "id": "5694d203116dc00e",
+   "title": "Follow the Entities: A Corpus Map for Agentic Search",
+   "url": "https://huggingface.co/papers/2609.37226",
+   "summary": "Answering questions and completing tasks over large document collections often requires connecting evidence spread across multiple documents, such as a project's approval recorded in one, its requirements in another, and its latest status in a third. Recent LLM agents approach this by iteratively searching the full corpus rather than reading only a fixed set of top-ranked documents. However, when the corpus is exposed only as a flat collection of files, a relevant document gives no indication of how it relates to others, so the agent must rediscover these relationships for every query, often missing complementary evidence while simultaneously consuming substantial additional tokens. To address this, we introduce CorpusMap, a navigation layer that organizes the corpus around its recurring entities, which are identifiable from the documents themselves and can link a single document to many others across sources. Specifically, CorpusMap represents each recurring entity as an Entity Page that aggregates information about it and links to every document that refers to it, forming a graph between entities and documents that the agent can traverse to gather otherwise disconnected evidence. Moreover, since CorpusMap is constructed offline by resolving mentions of the same entity across documents, its links are shared across queries rather than rediscovered repeatedly at inference time. Using 7 different models with 3 benchmark datasets, we show that CorpusMap improves both evidence discovery and answer quality over raw-corpus agentic search while using fewer tokens on average, and further outperforms 4 alternative navigation layers, suggesting that entities serve as effective anchors for navigating large document collections.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 35,
+    "arxiv_id": "2609.37226"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "rag"
+   ],
+   "tldr": "Propose *CorpusMap*, une couche de navigation pour agents LLM basée sur les entités récurrentes dans un corpus documentaire, permettant de lier dynamiquement des documents dispersés et d'améliorer la recherche d'évidence multi-sources.",
+   "score": 8.2
+  },
+  {
+   "id": "bdb3e74bb0952e56",
+   "title": "LongHarness Bench: Stress-Testing Language Model Harnesses for Long-Context Reasoning",
+   "url": "https://arxiv.org/abs/2609.38137v1",
+   "summary": "Language-model (LM) harnesses enable LMs to operate effectively over long contexts using additional compute. However, existing long-context evaluations are insufficient for distinguishing modern harnesses, reflected by saturated accuracy across harnesses and largely similar evaluation costs. In this paper, we introduce a benchmark for evaluating both the effectiveness and efficiency of long-context harnesses. Our tasks require diverse retrieval strategies, including lexical search and semantic matching, together with strategic and adaptive reasoning over global and local context. Much of the context is semantically relevant but only a small subset is useful at each step, creating both a challenging search problem and different accuracy--cost tradeoffs across processing strategies. For example, one task requires identifying every person satisfying several conditions using evidence scattered across documents; strategically checking the most selective condition first can narrow the search before verifying the remaining conditions. We evaluate multiple families of frontier language models with four state-of-the-art harnesses. Our benchmarks remain challenging even for strong model--harness combinations: the best reaches 68\\% macro-average accuracy across four evaluation suites. More importantly, we find that the same underlying model can exhibit markedly different efficiency under different harnesses. Our results establish efficiency as an important axis for long-context evaluation and provide a testbed for developing harnesses that process context strategically rather than exhaustively.",
+   "published": "2026-09-29T17:55:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Quang Hieu Pham, Thuy Duong Nguyen, Jocelyn Qiaochu Chen, Xi Ye"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Benchmark LongHarness pour évaluer l'efficacité et l'efficience des 'harnesses' (cadres d'exécution) en contexte long, mettant en lumière des trade-offs précision-coût et des stratégies de recherche adaptatives, avec des résultats sur des modèles frontier.",
+   "score": 8.0
+  },
+  {
+   "id": "86cc433f536c33ae",
+   "title": "From Routing Signals to Selective Review: Visual regrounding in MoE VLMs",
+   "url": "https://arxiv.org/abs/2609.38111v1",
+   "summary": "Vision-language models (VLMs) may accept false visual premises, answering questions about a target object's color, count, location, or state even when it is absent. We call this reliability-critical behavior a target-absence grounding failure. Existing visual-grounding detectors primarily rely on generated responses, hidden states, or uncertainty measures. We present the first framework to leverage internal routing decisions in Mixture-of-Experts (MoE) VLMs to detect target absence before generation and guide selective correction. We extract target-token routing probabilities from Qwen3-VL-30B-A3B-Instruct and Gemma-4-26B-A4B-it, train a separate L2-regularized linear detector for each model, and use its predictions to selectively invoke a target-aware review prompt. Using routing alone, the Qwen and Gemma detectors achieve ROC-AUCs of 0.9988 and 0.9956 on GQA-Inpaint and retain 0.8095 and 0.7781 on the external OBER dataset, respectively. The resulting routing-gated policy improves end-to-end accuracy on GQA-Inpaint and OBER by +22.25% and +12.17% for Qwen, and by +13.42% and +1.39% for Gemma, without modifying model weights. Further analysis shows that the signal is localized to the target-object token, emerges in early MoE layers, and is distributed across partially substitutable experts. Although cross-dataset threshold shifts require recalibration, false-positive review causes limited harm overall, suggesting that intervention risk can be controlled through joint selection of the detector threshold and review prompt. Overall, we show that routing probabilities alone preserve actionable information about visual perception, allowing computation already produced by an MoE VLM to support low-cost detection and selective visual regrounding.",
+   "published": "2026-09-29T17:49:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hongzhu Guo, Mohsen Fayyaz, Nanyun Peng"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Ce travail propose une méthode innovante pour détecter les échecs de grounding dans les VLMs (ex. absence d'un objet cible) en exploitant les signaux de routage internes des MoE (Qwen3-VL-30B, Gemma-4-26B). Une détection basée sur les probabilités de routage permet d'améliorer significativement la précision (+12 à +22%) sans modifier les poids du modèle, en guidant une correction ciblée.",
+   "score": 8.0
+  },
+  {
+   "id": "5593ac07e7bc94ed",
+   "title": "Correct Answers, Invalid Traces: What Verifiable Grade-School Math Reveals About Chain-of-Thought Traces",
+   "url": "https://arxiv.org/abs/2609.38107v1",
+   "summary": "Chain-of-thought traces are widely read as records of how models reach their answers, informing debugging, agent auditing, and claims about reasoning. Testing this interpretation is difficult because natural-language thinking traces are rarely mechanically verifiable. We revisit it in iGSM, a synthetic grade-school mathematics benchmark designed to study thinking traces and used to support claims of learned reasoning and planning. Crucially, iGSM exposes the exact quantities and dependencies that a correct solution should use, allowing generated traces to be checked programmatically step by step and enabling us to test whether correct answers are reliably accompanied by valid traces. We first evaluate models trained exclusively on valid, minimal traces. Answer correctness and trace validity nearly coincide in distribution but decouple out of distribution: on the hardest instances, 31.6% of correct answers have invalid traces, over half of which pass all syntactic and arithmetic checks but fail semantic dependency checks. We then intervene on trace supervision. Non-minimal training traces induce non-minimal outputs, while re-asking the same problem with a different query reveals computations inherited from the original query, weakening minimality as evidence of selective planning. Shuffling tokens in 10% of training trace sentences preserves near-clean accuracy even out of distribution despite no trace passing verification. Swapped training traces likewise retain high in-distribution accuracy. We discuss the implications of these findings for chain-of-thought monitoring and interpretation in the context of AI safety.",
+   "published": "2026-09-29T17:46:55+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ratish Puduppully, Pranabendu Misra, Paarth Iyer, Durgesh Kalwar, Vardhan Palod, Subbarao Kambhampati"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Évaluation critique des traces de Chain-of-Thought (CoT) sur un benchmark synthétique (iGSM) : 31.6% des réponses correctes ont des traces invalides (dépendances sémantiques incorrectes), révélant des limites dans l'interprétation des CoT comme preuve de raisonnement. Les interventions sur la supervision des traces (ex. non-minimalité) exacerbent ces écarts.",
+   "score": 8.0
+  },
+  {
+   "id": "d2b2574486c8db3a",
+   "title": "Character Training for Risk-Averse Agents",
+   "url": "https://arxiv.org/abs/2609.38093v1",
+   "summary": "Risk aversion in resources could prevent misaligned AI agents from causing catastrophic harm. Misaligned but risk-averse agents would tend to favor safer strategies like making deals with humans over riskier strategies like rebelling. We train agents to be risk averse through character training, finding that persona traits provide a robust mechanism for instilling risk preferences. To do this, we construct a model constitution describing constant absolute risk aversion (CARA) over an agent's resources and instill it through on-policy distillation. Despite never seeing the benchmark's decision format during training, character-trained models are competitive with baselines trained directly on it, and generalise better than them out of distribution on two of our four models. We also modulate different aspects of the constitution, finding that token budget and model choice are the most influential aspect of character training to instill risk aversion. We conclude from these results that character training is a promising and scalable way to instil broad dispositions, which we can use to our advantage in mitigating risk from misaligned AI agents.",
+   "published": "2026-09-29T17:42:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Arav Dhoot, Punya Syon Pandey, Jamie Johnson, Daniel Tan, Elliott Thornley, David Demitri Africa"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Approche de 'character training' pour instiller une aversion au risque dans les agents IA via distillation, visant à réduire les risques de comportements dangereux. Pertinent pour l'alignement des agents et la mitigation des risques, avec des résultats prometteurs sur des benchmarks.",
+   "score": 8.0
+  },
+  {
+   "id": "09935d0f456aad2f",
+   "title": "Mira: Memory-Efficient MoE Inference Using Adaptive Caching and Predictive Expert Staging",
+   "url": "https://arxiv.org/abs/2609.38090v1",
+   "summary": "Mixture-of-Experts (MoE) models are a compelling architecture for scaling model capacity, making them especially attractive for deployment on resource-constrained, single-GPU systems. However, this benefit is difficult to realize because expert parameters dominate memory, and token-level routing is dynamic, unpredictable, and skewed. Prior work using offloading and caching remains fundamentally reactive, as systems wait for router outputs before moving experts, leading to inefficient cache utilization and an inability to overlap transfers with compute under tight VRAM budgets. To address these challenges, we propose Mira, an algorithm-system co-design that enables high-capacity MoE inference on a single GPU. Mira shifts from a reactive to a proactive stance by coupling predictive expert management with a tailored quantization format. It introduces lightweight per-layer predictors that anticipate expert usage two layers ahead, enabling proactive prefetching. These predictions feed a two-tier HOT+STAGE GPU cache managed by token-level routing telemetry to retain frequently used experts while staging predicted ones. To minimize transfer overhead, Mira implements a custom compression for expert parameters, which reduces metadata and improves packing efficiency, while minimally degrading accuracy. Mira is implemented as a fully integrated runtime that coordinates predictors, caching policies, and quantized transfers to maximize overlap between communication and compute. Our experiments show that Mira reduces expert-induced stalls. Compared against state-of-the-art baselines, Mira achieves a 5.71x speedup in average throughput on a memory-constrained GPU. It accelerates Time-to-First-Token by 11.71x and achieves a 3.84$x average speedup in beam search inference, demonstrating its effectiveness across diverse inference scenarios.",
+   "published": "2026-09-29T17:41:28+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sanjali Yadav, Bahar Asgari"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Système Mira pour l'inférence efficace de modèles MoE sur GPU unique via prédiction proactive des experts et caching adaptatif. Solution concrète pour l'optimisation des LLM en production, avec gains significatifs en mémoire et vitesse.",
+   "score": 8.0
+  }
+ ]
+}
