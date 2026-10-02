@@ -1,0 +1,729 @@
+{
+ "date": "2026-10-02",
+ "digest": {
+  "headline": "GPT-6 Astra et PyRUA-Lean optimisent les agents robotiques LLM avec 65% de tokens en moins et 14% de succès en plus",
+  "overview": "La veille du 2026-10-02 met en lumière des avancées majeures en efficacité des agents LLM et robotiques, avec des méthodes réduisant les coûts computationnels tout en améliorant les performances. Les benchmarks spécialisés (egocentrique, entreprise, cybersécurité) et les outils d'interprétabilité révèlent des défis persistants en généralisation et robustesse.",
+  "highlights": [
+   {
+    "title": "Optimisation des agents LLM et robotiques",
+    "text": "PyRUA-Lean améliore les agents robotiques basés sur GPT-6 Astra en réduisant de 65% les tokens utilisés et en augmentant de 14% leur taux de succès, via une composition ciblée de primitives et une observation sélective. JevSpawn propose une politique compositionnelle pour les agents LLM, réduisant les calculs redondants grâce à des préfixes partagés, validée sur 8 benchmarks. Ces travaux montrent que l'efficacité computationnelle peut être améliorée sans sacrifier les performances."
+   },
+   {
+    "title": "Benchmarks spécialisés pour agents et robotique",
+    "text": "Argo-Bench évalue les agents de données sur des workflows d'entreprise à grande échelle (235 tables, 7,5 milliards de lignes), comblant un vide dans l'évaluation des tâches complexes combinant SQL et analyses statistiques. HumanoidToolBench et KaliBench ciblent respectivement l'utilisation d'outils par des humanoïdes et la génération de commandes CLI pour la cybersécurité, offrant des évaluations déterministes et reproductibles. Ces benchmarks permettent de mesurer les progrès dans des contextes réalistes et exigeants."
+   },
+   {
+    "title": "Amélioration des méthodes de fine-tuning et d'optimisation",
+    "text": "TACO réduit la mémoire nécessaire pour le fine-tuning des LLM en utilisant un optimiseur ternaire, conservant l'efficacité des gradients de premier ordre. Preference Distillation Scaling montre que des modèles plus petits (7B) génèrent des rejets plus informatifs pour distiller des modèles plus grands (7B-72B), réduisant les coûts d'inférence. Ces méthodes visent à rendre l'entraînement et l'inférence des LLM plus accessibles et moins coûteux."
+   },
+   {
+    "title": "Interprétabilité et sécurité des LLM",
+    "text": "SAKIKO formalise un cadre d'audit pour évaluer les interventions internes dans les LLM agents utilisant des outils, révélant des risques de corruption des décisions malgré des améliorations agrégées. NEEDLE propose une méthode sans entraînement pour supprimer les backdoors dans les LLM via une orthogonalisation des poids, réduisant drastiquement le taux de succès des attaques. Ces travaux soulignent l'importance de l'interprétabilité et de la sécurité dans le déploiement des modèles."
+   },
+   {
+    "title": "Raisonnement mathématique et coordination robotique",
+    "text": "Une analyse systématique des capacités de raisonnement mathématique des LLM révèle que les échecs proviennent souvent de lacunes en 'découverte' plutôt qu'en exécution. Une méthode de self-distillation guidée par des primitives mathématiques (ABS) permet de réparer ces faiblesses. Par ailleurs, 'Watch, Infer, Coordinate' permet à un robot d'inférer les contraintes physiques d'un partenaire à partir de démonstrations, améliorant la généralisation en coordination."
+   }
+  ],
+  "trend": "Les avancées récentes convergent vers une optimisation conjointe de l'efficacité computationnelle et des performances des agents LLM et robotiques, tout en renforçant les outils d'évaluation et d'interprétabilité pour des applications critiques."
+ },
+ "items": [
+  {
+   "id": "94580c0cfb126532",
+   "title": "Fewer Tokens, Better Action: GPT-6 Astra Robot Agents with 14% Higher Success Rate but 65% Fewer Tokens",
+   "url": "https://huggingface.co/papers/2610.01939",
+   "summary": "Vision language model (VLM) agents can control robots through visual feedback and action primitives, but repeated model invocations and redundant observations incur substantial token overhead. We introduce PyRUA-Lean, an interactive code-execution framework that couples feedback-driven primitive composition with selective observation: the agent composes classical robot primitives and learned vision-language-action (VLA) policies into Python cells that perform conditional checks and local retries, returning only explicitly requested images and state feedback for replanning. Across 700 simulated task instances from LIBERO-PRO, RoboTwin 2.0, and RoboCasa365, we compare PyRUA-Lean with a tool-calling baseline using the same GPT-6 Astra planner and underlying robot primitives. Under equal LLM-call budgets, PyRUA-Lean increases overall success from 63.1% to 71.7%. On instances solved by both agents, it uses 49% fewer LLM calls and 65% fewer input tokens.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.01939"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "PyRUA-Lean optimise l'efficacité des agents robotiques basés sur des LLM (GPT-6 Astra) en réduisant de 65% les tokens utilisés et en augmentant de 14% le taux de succès via une composition ciblée de primitives et une observation sélective, sans compromis sur les performances.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents robotiques basés sur des modèles de langage visuel (VLM) souffrent d'une surconsommation de tokens due à des invocations répétées du modèle et à des observations redondantes. Cela entraîne des coûts computationnels élevés et une latence accrue, limitant leur efficacité dans des tâches complexes nécessitant des retours visuels et des actions primitives en temps réel.",
+    "methode": "PyRUA-Lean est un framework interactif d'exécution de code qui combine la composition de primitives robotiques classiques et de politiques VLA (Vision-Language-Action) au sein de cellules Python. Il utilise des vérifications conditionnelles et des tentatives locales pour réduire les appels inutiles au modèle. Le système sélectionne activement les observations (images et états) à renvoyer pour la replanification, évitant ainsi la transmission de données redondantes. L'agent repose sur GPT-6 Astra comme planificateur central, mais optimise son utilisation via une exécution structurée et des retours minimaux.",
+    "resultats": "Sur 700 instances de tâches simulées (LIBERO-PRO, RoboTwin 2.0, RoboCasa365), PyRUA-Lean améliore le taux de succès global de 63,1 % à 71,7 % par rapport à une baseline utilisant les mêmes primitives et le même planificateur. Pour les instances résolues par les deux méthodes, il réduit de 49 % les appels au LLM et de 65 % le nombre de tokens en entrée, tout en respectant un budget d'appels identique.",
+    "limites": "Les détails sur la généralisation à des environnements réels ou à des tâches non simulées manquent. La dépendance à GPT-6 Astra, un modèle fermé et potentiellement coûteux, pourrait limiter l'adoption. Enfin, l'efficacité du framework repose sur une conception manuelle des primitives et des cellules Python, ce qui pourrait poser des défis en scalabilité ou en adaptabilité à de nouveaux domaines.",
+    "verdict": "Cette approche mérite une attention particulière pour son optimisation tangible des coûts et de la performance, mais son applicabilité en dehors des simulations et sa robustesse face à des tâches imprévues restent à démontrer."
+   }
+  },
+  {
+   "id": "20e4802c8daeed3a",
+   "title": "EgoTools: Towards Tool-Centric Reasoning in Real-World Egocentric Videos",
+   "url": "https://huggingface.co/papers/2609.39378",
+   "summary": "Real-world embodied tasks, from everyday activities to professional procedures, require agents to act under physical constraints while tracking evolving object and task states. Tool use sits at the heart of such tasks, as many everyday and professional activities are tool-mediated. Understanding them requires reasoning about affordances, hand-tool-object geometry, procedural progress, and causal effects on target objects. Yet despite strong performance on perception-oriented video tasks such as captioning and general video QA, current multimodal video models remain limited in this form of tool-centric embodied reasoning. Progress in this direction has been limited by the lack of real-world egocentric data and diagnostic benchmarks. To address this gap, we introduce EgoTools, the first comprehensive suite for egocentric tool-use understanding. It consists of two complementary components: EgoTools-Data, a large-scale corpus of 100 hours of tool-centric egocentric recordings with synchronized audio, dense captions, reasoning-heavy narrations, and supplementary 3D information; and EgoTools-Bench, a diagnostic benchmark of 1,000 QA pairs across four tracks that cover tool-use understanding from perception and geometry to procedure and causal reasoning. Experimental results show that current models still struggle to ground tool use in visual evidence: Gemini-3.1-Pro achieves 66.9% overall accuracy but only 51.7% on Perception & Grounding. Beyond evaluation, we validate EgoTools-Data as a training resource. On the full 1,000-question benchmark, full supervised fine-tuning improves Qwen3-VL-8B-Instruct from 50.0% to 60.9%, under strict source-video separation. Together, these results establish EgoTools as a unified resource for both training and diagnostic evaluation of real-world egocentric tool-use understanding.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2609.39378"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "vision",
+    "robotique"
+   ],
+   "tldr": "EgoTools introduit un jeu de données (100h) et un benchmark (1000 QA) dédiés à la compréhension des outils dans les vidéos égocentriques, combinant données multimodales (audio, 3D) et évaluation diagnostique pour des tâches d'embodiment.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème adressé par EgoTools est le manque de capacités des modèles multimodaux actuels à effectuer un raisonnement centré sur l'utilisation d'outils dans des vidéos égocentriques du monde réel. Ces tâches nécessitent une compréhension fine des affordances, de la géométrie main-outil-objet, de la progression procédurale et des effets causaux, ce que les modèles existants, optimisés pour des tâches perceptuelles comme la description ou la réponse à des questions générales, ne parviennent pas à réaliser efficacement.",
+    "methode": "EgoTools propose une suite complète en deux parties : EgoTools-Data, un corpus de 100 heures de vidéos égocentriques centrées sur l'utilisation d'outils, enrichi de données synchronisées (audio, légendes denses, narrations axées sur le raisonnement, et informations 3D complémentaires). La seconde partie, EgoTools-Bench, est un benchmark diagnostique de 1 000 paires de questions-réponses réparties en quatre axes : perception et ancrage visuel, géométrie, procédure, et raisonnement causal. Pour valider l'approche, les auteurs ont évalué des modèles existants (comme Gemini-3.1-Pro et Qwen3-VL-8B-Instruct) et testé l'impact d'un fine-tuning supervisé sur EgoTools-Data, en respectant une séparation stricte entre les vidéos sources et les questions du benchmark.",
+    "resultats": "Les résultats montrent que les modèles actuels peinent à ancrer l'utilisation d'outils dans des preuves visuelles : Gemini-3.1-Pro atteint 66,9 % de précision globale, mais seulement 51,7 % sur le sous-ensemble Perception & Grounding. Le fine-tuning supervisé de Qwen3-VL-8B-Instruct sur EgoTools-Data améliore ses performances de 50,0 % à 60,9 % sur l'ensemble du benchmark, confirmant l'utilité du corpus pour l'entraînement.",
+    "limites": "Les données disponibles ne permettent pas d'évaluer la généralisation des modèles à des contextes ou outils non représentés dans EgoTools-Data. De plus, la dépendance aux narrations et annotations manuelles pourrait introduire des biais ou des lacunes dans la couverture des scénarios. Enfin, l'absence de détails sur la méthodologie de collecte des données 3D ou sur la diversité des participants limite la transparence.",
+    "verdict": "EgoTools mérite une attention particulière pour son approche systématique et son potentiel à combler un vide critique dans l'évaluation et l'entraînement des modèles pour le raisonnement égocentrique centré sur les outils, malgré des limites inhérentes aux données et à la portée du benchmark."
+   }
+  },
+  {
+   "id": "4a79ff5dcc71ae6a",
+   "title": "JevSpawn: Adaptive Agentic Inference through Compositional Action Spaces",
+   "url": "https://huggingface.co/papers/2610.00437",
+   "summary": "LLM agents generate intermediate reasoning and actions token by token, making extended interactions slow and computationally expensive. Jev-style models offer fast probabilistic predictions over finite fields, but require those fields to be specified in advance. This requirement limits autonomous task solving, where the available actions must be derived from natural language instructions and adapted through interaction. We introduce JevSpawn, a compositional policy that connects natural language task specifications to finite probabilistic exploration. Parallel action spawning is coupled with feedback driven branch selection, representation revision, and recovery from retained alternatives. Shared action structure and model prefixes reduce repeated generation and context computation without additional training. Evaluations on eight benchmark tasks against seven agent baselines and a TypeSafe Jev variant establish JevSpawn as a promising approach to structured agentic inference, with improved task performance and faster navigation.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.00437"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "JevSpawn introduit une approche de politique compositionnelle pour les agents LLM, combinant des espaces d'actions finis et une exploration probabiliste adaptative. Il améliore l'efficacité et la performance des agents en réduisant les calculs redondants via des préfixes partagés, tout en validant ses gains sur 8 benchmarks contre 7 baselines.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents basés sur des modèles de langage (LLM) génèrent des raisonnements et des actions de manière séquentielle, token par token, ce qui rend les interactions longues lentes et coûteuses en calcul. Par ailleurs, les modèles de type Jev, bien que rapides pour des prédictions probabilistes, nécessitent que les champs d'action soient prédéfinis, limitant leur autonomie pour résoudre des tâches où les actions doivent être dérivées dynamiquement à partir d'instructions en langage naturel.",
+    "methode": "JevSpawn propose une politique compositionnelle qui relie les spécifications de tâches en langage naturel à une exploration probabiliste sur des champs d'action finis. La méthode repose sur un *spawning* parallèle d'actions, couplé à une sélection de branches guidée par le feedback, une révision des représentations et une récupération à partir d'alternatives conservées. La structure partagée des actions et des préfixes de modèle permet de réduire la génération répétée et le calcul de contexte, sans nécessiter d'entraînement supplémentaire. Le système adapte dynamiquement les espaces d'action en fonction des interactions, tout en maintenant une efficacité computationnelle.",
+    "resultats": "Les évaluations menées sur huit tâches de référence, comparant JevSpawn à sept agents baselines et à une variante TypeSafe de Jev, montrent une amélioration des performances et une navigation plus rapide. Les détails quantitatifs précis (comme les scores ou les gains de temps) ne sont pas fournis dans le résumé disponible, mais l'approche est présentée comme prometteuse pour l'inférence agentique structurée.",
+    "limites": "Le résumé ne précise pas les contraintes liées à la scalabilité de JevSpawn pour des tâches complexes ou des espaces d'action très larges. De plus, la dépendance à des champs d'action finis pourrait limiter son applicabilité à des environnements ouverts ou non structurés. Enfin, l'absence de détails sur les benchmarks ou les métriques exactes rend difficile une évaluation critique approfondie.",
+    "verdict": "JevSpawn mérite l'attention pour son approche innovante combinant efficacité computationnelle et adaptabilité dynamique, mais son potentiel réel dépendra de validations plus poussées sur des cas d'usage variés et des données quantitatives détaillées."
+   }
+  },
+  {
+   "id": "539424e32c649e55",
+   "title": "Benchmarking and Enhancing Skill-Level Memory for Partially Observable Robotic Manipulation",
+   "url": "https://huggingface.co/papers/2609.38886",
+   "summary": "Recent advances in robot learning have enabled manipulation policies to perform increasingly diverse tasks and generalize across environments. However, reliable execution often depends on hidden task states that cannot be determined from current observations alone, making interaction history essential. We introduce HIDE, a benchmark for evaluating manipulation memory under partial observability. HIDE comprises 15 tasks covering repetition counting, historical-state recall, and execution-progress tracking, with randomized initial configurations and decision points where similar observations require different actions depending on prior events. We further propose SEEK, a framework combining three complementary memory mechanisms to retain historical evidence and track execution state. Evaluations reveal substantial limitations in existing policies on HIDE, while memory augmentation improves task success in both simulation and real-world experiments. Individual mechanisms benefit some tasks but can degrade others; their combination achieves the highest average success rate on HIDE among the evaluated configurations. These findings highlight the importance of maintaining internal representations of hidden task states and matching memory design to task-specific information requirements.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2609.38886"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark",
+    "architecture"
+   ],
+   "tldr": "HIDE évalue la mémoire partielle des politiques de manipulation robotique via 15 tâches (comptage, rappel d'état, suivi de progression). SEEK combine 3 mécanismes de mémoire pour améliorer la robustesse en environnements partiellement observables, avec validation en simulation et réel.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi de la manipulation robotique en contexte de partial observability, où les politiques de contrôle ne peuvent pas se fier uniquement aux observations immédiates pour déterminer l'action appropriée. Le problème central est la nécessité de maintenir une mémoire des états cachés ou des interactions passées pour exécuter des tâches complexes et généralisables, comme le comptage de répétitions ou le suivi de l'état d'exécution.",
+    "methode": {
+     "benchmark_HIDE": "Les auteurs introduisent HIDE, un benchmark composé de 15 tâches variées conçues pour évaluer la capacité des politiques robotiques à gérer la mémoire sous partial observability. Ces tâches incluent des scénarios comme le rappel d'états historiques, le suivi de la progression d'une tâche, et des points de décision où des observations similaires nécessitent des actions différentes en fonction de l'historique. Les configurations initiales sont randomisées pour tester la robustesse.",
+     "framework_SEEK": "SEEK est un cadre proposé combinant trois mécanismes de mémoire complémentaires : (1) une mémoire à court terme pour capturer les événements récents, (2) une mémoire à long terme pour stocker des preuves historiques, et (3) un mécanisme de suivi de l'état d'exécution. Ces mécanismes sont conçus pour retenir des informations critiques et adapter les décisions en fonction du contexte passé. Les détails techniques sur l'implémentation (ex. architectures neuronales, méthodes d'intégration) ne sont pas explicitement fournis dans le résumé.",
+     "evaluation": "Les évaluations sont menées en simulation et en conditions réelles, comparant les performances des politiques existantes avec et sans augmentation mémoire via SEEK. Les mécanismes individuels sont testés pour identifier leurs forces et faiblesses relatives."
+    },
+    "resultats": {
+     "limitations_politiques_existantes": "Les politiques robotiques actuelles montrent des limitations significatives sur le benchmark HIDE, avec des taux de succès faibles pour les tâches nécessitant une mémoire explicite.",
+     "amelioration_avec_SEEK": "L'augmentation mémoire via SEEK améliore les performances, avec une combinaison des trois mécanismes atteignant le taux de succès moyen le plus élevé sur HIDE parmi les configurations évaluées. Les résultats en simulation et en conditions réelles confirment cette tendance.",
+     "effets_contradictoires": "Certains mécanismes de mémoire améliorent certaines tâches mais dégradent les performances sur d'autres, soulignant la nécessité d'une conception adaptée aux besoins spécifiques de chaque tâche."
+    },
+    "limites": {
+     "details_techniques_manquants": "Le résumé ne fournit pas d'informations précises sur les architectures neuronales utilisées, les méthodes d'entraînement, ou les hyperparamètres, ce qui limite l'évaluation technique approfondie de SEEK.",
+     "generalisation": "Bien que les résultats soient prometteurs, la généralisation à des tâches ou environnements non couverts par HIDE reste une question ouverte. Le benchmark lui-même pourrait ne pas capturer toute la complexité des scénarios réels.",
+     "biais_benchmark": "HIDE est conçu par les auteurs de SEEK, ce qui pourrait introduire un biais dans la sélection des tâches ou des métriques favorisant leur approche."
+    },
+    "verdict": "Cette publication mérite l'attention des chercheurs en robotique et en IA pour son approche systématique de la mémoire dans les politiques de manipulation sous partial observability, mais une lecture critique du papier complet est nécessaire pour évaluer sa robustesse technique et sa généralisabilité."
+   }
+  },
+  {
+   "id": "1d214724f9436e5e",
+   "title": "Smaller Models, Better Rejects: Preference Distillation Scaling",
+   "url": "https://huggingface.co/papers/2609.38987",
+   "summary": "Preference distillation typically treats a teacher response as preferred and the student's own response as rejected. This assumes that self-generated failures are the most informative negatives and that rejects must come from a model at least as large as the student, making generation costly at scale. We find neither assumption holds: across students from 7B to 72B, smaller frozen models generate rejects with less inference compute yet train stronger students than self-generated rejects, before and after sequence-level knowledge distillation, on code generation and mathematical reasoning. To explain this result, we derive a finite-horizon utility bound for Direct Preference Optimization in a linearized feature model. The bound characterizes favorable reject distributions and motivates three interventions. First, mixing rejects from smaller and student-scale models improves performance as the smaller model's share increases. Second, reassigning rejects to other prompts and shuffling their code tokens still outperform length-matched gibberish, showing that task structure contributes to reject utility. Third, selecting candidates with lower likelihood under the reference policy improves net transfer when higher-likelihood candidates provide less useful contrast. Lower-likelihood selections outperform higher-likelihood ones for every source. These results suggest that effective rejects preserve task structure while limiting coupling to the reference policy, and that smaller frozen models can provide them at low cost.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.38987"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Preference Distillation Scaling montre que des modèles plus petits (7B) génèrent des rejets plus informatifs que les auto-rejets pour distiller des modèles plus grands (7B-72B), réduisant les coûts d'inférence. Propose des interventions pour optimiser la distribution des rejets.",
+   "score": 8.8
+  },
+  {
+   "id": "986ad7a206077228",
+   "title": "Argo-Bench: Evaluating Data Agents on Enterprise-Scale Workflows",
+   "url": "https://huggingface.co/papers/2610.02122",
+   "summary": "Real-world enterprise data science and analytics workflows require reasoning across dozens of tables, performing statistical analyses, and acting on the results. Established text-to-SQL benchmarks evaluate query generation alone, and audits have found their answer keys frequently wrong. Because real enterprise warehouses are too sensitive to release, these benchmarks are built on public datasets where a business event fits in a single table. We introduce Argo-Bench, an evaluation framework comprising 210 data science and analytics tasks. Drawing on public data, peer-reviewed industry literature, and regulatory filings, we simulate a food delivery platform in New York City at true scale, with 81 million orders in 2024, grounded economics, fraud patterns, and marketplace incentives. We export this world to an ERP warehouse of 235 tables and 7.5 billion rows, modeled on the Oracle E-Business Suite schema. The simulator's ground-truth state is withheld from the warehouse the agent sees, so tasks require reconstructing facts by navigating the warehouse before acting on them. Argo-Bench goes beyond text-to-SQL: the agent files actions such as banning fraudulent accounts, allocating courier incentive budgets, or issuing back pay, and the grader scores each by its consequences in the simulator. Every task has an executable reference solution that demonstrates solvability using only the warehouse. The strongest of 14 frontier and open-weight models scores 95 or higher on only 34.8% of tasks and averages 59.5 points. We hope Argo-Bench drives progress toward agents that understand, navigate, and act within real data environments.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.02122"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Argo-Bench évalue les agents de données sur des workflows d'entreprise à grande échelle (235 tables, 7.5 milliards de lignes) avec des tâches complexes combinant SQL, analyses statistiques et actions concrètes, comblant un vide des benchmarks existants.",
+   "score": 8.8
+  },
+  {
+   "id": "0f9170dc0ded47fb",
+   "title": "Finetuning with Sampling: SFT Learns Better Than You Think",
+   "url": "https://arxiv.org/abs/2610.02140v1",
+   "summary": "Introducing new capabilities to frontier models has long been the goal of posttraining, which predominantly employs supervised finetuning (SFT) and reinforcement learning (RL) to this end. Conventional wisdom dictates that RL enables strong generalization on new tasks without losing existing capabilities, while SFT is prone to weak generalization and catastrophic forgetting. At the same time, SFT can learn from off-policy expert data, whereas RL must rely on a model's ability to find successful trajectories with repeated sampling. In our work, we seek to leverage the strength of on-policy learning while utilizing the privileged information contained in off-policy data. However, rather than modifying the learning objective to accommodate this data, we instead tailor the data distribution to better suit the learner. We introduce a Markov chain Monte Carlo (MCMC) sampling algorithm that progressively transforms off-policy traces to be more on-policy given a reference model for finetuning. Across tasks like scientific skill acquisition, mathematical reasoning, and open-ended expertise, our sampling algorithm enables SFT to rival prevailing posttraining techniques, often generalizing better and forgetting less than strong on-policy baselines. In addition, the resulting finetuned models exhibit strong distributional performance and are capable of learning beyond sharpening the base model distribution. At a higher level, our approach presents sampling as a model-native operator that shapes data for learnability, offering broader utility as a general-purpose primitive throughout the posttraining stack.",
+   "published": "2026-10-01T17:45:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Aayush Karan, Sitan Chen, Yilun Du"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Le papier propose une méthode de *fine-tuning* par échantillonnage MCMC qui transforme des traces hors-politique en données plus adaptées à l'apprentissage supervisé (SFT), permettant à SFT de rivaliser avec les techniques post-entraînement comme le RL, tout en évitant leur dépendance à des trajectoires générées par le modèle lui-même.",
+   "score": 8.6
+  },
+  {
+   "id": "2a3ab09b8032cf86",
+   "title": "When Does Correction Become Repair? Mechanistic Auditing of Internal Interventions in Tool-Using LLMs",
+   "url": "https://huggingface.co/papers/2609.36138",
+   "summary": "Before invoking external tools, an agentic LLM must select among a K-way action space: executing a call, seeking clarification, answering directly, or declining. While internal activation steering can alter these pre-execution decisions, conventional aggregate metrics obscure where altered states land and what collateral damage they inflict. We present SAKIKO, an auditing framework that formalizes representation repair via directional error discovery, router-conditioned intervention, destination-resolved verification, and prospectively frozen statistical licensing. Across seven LLMs on When2Call and MetaTool, channel-keyed interventions induce direction-specific net gains in five models; across three sealed evaluations, none of 59 budget-matched random directions matches calibrated target gain. Crucially, destination auditing shows that behavioral movement does not equal repair: an intervention achieving +55 net gain corrupts over half of the baseline-correct decisions it touches, and promising point estimates on Qwen3-4B and Gemma-2-9B are formally declined due to finite-sample uncertainty. SAKIKO establishes the necessity of outcome-resolved adjudication before claiming internal repair. Code: https://github.com/ruizheliUOA/mechanistic-tool-use-llm.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.36138"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "agents"
+   ],
+   "tldr": "SAKIKO formalise un cadre d'audit pour évaluer les interventions internes (activation steering) dans les LLM agents utilisant des outils, révélant que les gains comportementaux ne correspondent pas toujours à des réparations effectives. Les résultats montrent des risques de corruption des décisions correctes malgré des améliorations agrégées.",
+   "score": 8.5
+  },
+  {
+   "id": "ee9f741feea5c9a5",
+   "title": "Removing the NEEDLE in the Haystack: Backdoor Removal in LLMs via Weight Orthogonalisation",
+   "url": "https://huggingface.co/papers/2610.00348",
+   "summary": "Backdoor attacks can be implanted in Large Language Models (LLMs) during training, causing unwanted behaviour when a trigger appears in the input. Existing backdoor defences for LLMs attempt to remove the backdoor but inadvertently shift the model's output distribution to benign prompts, which can result in degraded model performance and safety. We propose NEEDLE, a training-free method for targeted backdoor removal. Once a trigger has been identified, our method estimates a backdoor direction and a refusal subspace through activation vectors, then applies sequential weight orthogonalisation to suppress the backdoor while preventing changes in refusal-related representations. NEEDLE requires neither a clean reference model nor the original poisoned training data. Evaluation is conducted across multiple model families and attack types. NEEDLE achieves the lowest mean Attack Success Rate (ASR) among the evaluated defences, including 0% on challenging code injection attacks, while resulting in the lowest KL divergence and minimal changes in capability and safety.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.00348"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "regulation"
+   ],
+   "tldr": "NEEDLE propose une méthode sans entraînement pour supprimer les backdoors dans les LLM via une orthogonalisation des poids, ciblant spécifiquement les directions de backdoor tout en préservant les capacités et la sécurité du modèle. Les résultats montrent une réduction drastique du taux de succès des attaques (ASR) avec un impact minimal sur les performances.",
+   "score": 8.5
+  },
+  {
+   "id": "f361e0cd028d1698",
+   "title": "KaliBench: A Fine-Grained Benchmark for Cybersecurity Tool Use on Kali Linux with Runtime-Free Verifiable Rewards",
+   "url": "https://arxiv.org/abs/2610.02206v1",
+   "summary": "LLMs are increasingly applied to cybersecurity workflows, where they are expected to translate analysts' intent into tool invocations. However, existing evaluations focus on knowledge-based assessments or end-to-end agentic tasks, and do not directly measure LLMs' ability to generate executable commands for real-world cybersecurity tools. This gap is critical because cybersecurity operations rely on strict command-line interfaces (CLIs), where minor syntax errors, incorrect flag--value bindings, or argument misordering can invalidate execution. We introduce KaliBench, a fine-grained benchmark and dataset for natural-language--to--CLI translation on Kali Linux, comprising 8,504 query--command pairs spanning 1,642 tools across 23 capability dimensions and 5 security phases. KaliBench is constructed via a manuscript-grounded pipeline with deterministic canonicalization and alias-aware evaluation, enabling precise and reproducible assessment of tool selection and argument construction. To ensure both semantic correctness and practical executability, we develop a multi-stage verification pipeline that combines LLM-based validation, sandboxed terminal execution, and human-in-the-loop refinement. Building on these fine-grained, deterministic signals, KaliBench further enables runtime-free verifiable rewards for training. Across three evaluation modes and 24 configurations of general-purpose and security-focused open-weight models, no open-weight model exceeds 42% exact-command accuracy in the unrestricted setting, highlighting the difficulty of accurate CLI-based cybersecurity tool use without explicit tool hints. We further show that supervised fine-tuning and reinforcement learning with verifiable rewards derived from KaliBench significantly improve an 8B model and achieve performance comparable to a 685B MoE model.",
+   "published": "2026-10-01T17:59:55+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Pengfei Li, Naufal Suryanto, Sicheng Zhang, Muzammal Naseer"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark KaliBench évalue la capacité des LLM à générer des commandes CLI exécutables pour Kali Linux, avec 8 504 paires requête-commande et une évaluation déterministe pour mesurer la précision syntaxique et sémantique.",
+   "score": 8.3
+  },
+  {
+   "id": "1230c4b4a1837268",
+   "title": "TACO: Ternary Absolute-max Column-wise One-sparse Optimizer for LLM Fine-Tuning",
+   "url": "https://arxiv.org/abs/2610.02199v1",
+   "summary": "Full-parameter fine-tuning of large language models (LLMs) incurs substantial optimizer state memory overhead, limiting the model sizes that fit on modern GPUs. Existing approaches either compress optimizer state, abandon first-order gradients, or change the update geometry while retaining dense state. The recently introduced Muon optimizer reduces optimizer memory through matrix-valued updates. Still, its geometry differs from AdamW and can lead to performance degradation when fine-tuning AdamW-pretrained models. To reduce optimizer memory without sacrificing accuracy or computational efficiency in LLM fine-tuning, we propose Ternary Absolute-max Column-wise One-sparse optimizer, or TACO, which follows Muon's operator-norm steepest-descent view but takes the geometric route further. TACO computes the exact steepest-descent direction under a dimension-normalized $1\\to1$ operator norm by selecting the sign of the largest magnitude entry in each column of two-dimensional weight matrices. This retains first-order gradients while making optimizer state memory nearly negligible. Our practical TACO optimizer maintains only a small set of low precision gradient components per column, reducing persistent optimizer state by $174\\times$ relative to AdamW8bit (from 27.7 GB to 0.16 GB) and peak training memory by $2.9\\times$ (from 80.6 GB to 27.5 GB) on OPT-13B, while achieving comparable accuracy and runtime. TACO further enables full-parameter fine-tuning of 30-32B-parameter models on a single 80 GB H100 GPU across multiple model families and tasks.",
+   "published": "2026-10-01T17:59:42+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jichao Jiang, Cristian McGee, El Houcine Bergou, Hanqin Cai, Aritra Dutta"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Optimiseur TACO pour le fine-tuning des LLM, réduisant la mémoire de l'état de l'optimiseur à presque négligeable tout en conservant la précision et l'efficacité des gradients de premier ordre.",
+   "score": 8.3
+  },
+  {
+   "id": "f9b7867d1a775084",
+   "title": "Hierarchical Continuous Diffusion Language Models",
+   "url": "https://arxiv.org/abs/2610.02193v1",
+   "summary": "Discrete diffusion language models offer a compelling alternative to autoregressive generation for tasks demanding bidirectional reasoning and global constraint satisfaction. Yet they share a structural bottleneck: when decoding in parallel, each token is sampled independently from its marginal, severing the statistical dependencies among the tokens decoded together. Continuous diffusion language models avoid this by denoising a shared continuous state, but their denoiser sees only that state, so nothing ties it to a valid token configuration until it is finally decoded. To address this, we propose Hierarchical Continuous Diffusion Language Models (HC-DLM), which couple discrete token generation with a continuous latent trajectory in a single, principled denoising process, whose training objective is derived from a variational bound on the token likelihood. In contrast to recent methods that attach continuous context to a self-contained discrete chain, HC-DLM makes the latent the only persistent generative state: tokens are read out from it at every step and feed back as a scaffold for the next latent update. On structured reasoning (Sudoku), mathematical planning (Countdown) and language modeling (LM1B), HC-DLM improves over discrete and continuous diffusion baselines at matched model size, in puzzle accuracy on Sudoku and Countdown and in generative perplexity on LM1B. Project page: https://hc-dlm.github.io/.",
+   "published": "2026-10-01T17:59:39+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hui Ren, Zihan Li, Chang Liu, Huidong Liu, Alexander Schwing"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "HC-DLM introduit une approche hybride combinant diffusion continue et génération discrète de tokens via un état latent partagé, améliorant la cohérence globale et les dépendances statistiques lors du décodage parallèle. Cette méthode cible des tâches nécessitant un raisonnement bidirectionnel et des contraintes globales, comme les problèmes de Sudoku ou de planification mathématique.",
+   "score": 8.3
+  },
+  {
+   "id": "7171fbb06c0dc3ce",
+   "title": "The Missing Primitive: Diagnosing and Repairing Mathematical Reasoning in Large Language Models",
+   "url": "https://arxiv.org/abs/2610.02191v1",
+   "summary": "While Large Language Models (LLMs) have demonstrated striking capabilities on frontier mathematical problems, it remains unclear whether they possess the structural mathematical understanding underlying their solutions. In this paper, we take a first step toward systematically studying mathematical understanding in LLMs, from diagnosing its distinct capabilities to leveraging these findings to improve post-training. First, we introduce the notion of Mathematical Primitive to probe structural mathematical understanding and propose \\hlei{}, a novel benchmark that evaluates mathematical reasoning along four distinct dimensions: Discovery, Generation, Digestion, and Execution. Second, our systematic diagnosis shows that solution accuracy masks distinct capability profiles, primitives unlock substantial latent execution capacity, and Discovery is the dominant bottleneck in mathematical reasoning. Our post-training analysis further shows that discovery-limited failures are particularly amenable to repair. Finally, building on these findings, we introduce \\abs{}, a primitive-privileged self-distillation framework that selectively transfers primitive-guided reasoning into the student model. Extensive experiments demonstrate that \\abs{} consistently improves mathematical reasoning over baselines across model scales and challenging benchmarks.",
+   "published": "2026-10-01T17:59:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shuo Xing, Zilin Dai, Chengyuan Qian, Fangzhou Lin, Wenjing Chen, Ping He"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Ce travail propose une analyse systématique des capacités de raisonnement mathématique des LLMs via des 'primitives mathématiques', révélant que les échecs proviennent souvent de lacunes en 'découverte' plutôt qu'en exécution. Une méthode de self-distillation guidée par ces primitives (ABS) permet de réparer ces faiblesses.",
+   "score": 8.3
+  },
+  {
+   "id": "1677de880955853e",
+   "title": "Watch, Infer, Coordinate: Inferring Robot Partner Constraints for Zero-Shot Coordination",
+   "url": "https://arxiv.org/abs/2610.02170v1",
+   "summary": "Robots operating in the physical world will increasingly need to coordinate with other robots, particularly in manipulation tasks where an object may be too large or heavy for a single robot to carry alone. Physical limitations caused by hardware degradation or actuator faults can restrict the actions a robot can reliably execute, yet these limitations may be unknown to its partner. We study whether a helper can infer a robot partner's physical constraints from observing it coordinate with another robot, then use the inferred capability to coordinate with the same partner on a new task. This is difficult because a demonstration shows what the constrained robot did, but not what it could have done. In physically coupled tasks, the other robot may also compensate for its limitations, making those limitations difficult to identify from the constrained robot's behavior alone. Our key insight is that these constraints shape the joint behavior of the team, making the actions of both robots informative about the constrained partner's capability. We introduce Watch, Infer, Coordinate, a benchmark spanning three physically coupled manipulation settings, together with an inference approach that scores candidate constraints using observed joint behavior. Across all three settings, our method substantially improves constraint inference and zero-shot coordination, approaching an oracle with access to the true constraints.",
+   "published": "2026-10-01T17:56:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Suyu Ye, Zheyuan Zhang, Vaishnav Tadiparthi, Hossein Nourkhiz Mahjoub, Ehsan Moradi Pari, Tianmin Shu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "Méthode 'Watch, Infer, Coordinate' permettant à un robot d'inférer les contraintes physiques d'un partenaire à partir de démonstrations de coordination, validée sur un benchmark de 3 tâches de manipulation couplée avec des gains significatifs en généralisation.",
+   "score": 8.3
+  },
+  {
+   "id": "4b3c148d05d1b64d",
+   "title": "Argo-Bench: Evaluating Data Agents on Enterprise-Scale Workflows",
+   "url": "https://arxiv.org/abs/2610.02122v1",
+   "summary": "Real-world enterprise data science and analytics workflows require reasoning across dozens of tables, performing statistical analyses, and acting on the results. Established text-to-SQL benchmarks evaluate query generation alone, and audits have found their answer keys frequently wrong. Because real enterprise warehouses are too sensitive to release, these benchmarks are built on public datasets where a business event fits in a single table. We introduce Argo-Bench, an evaluation framework comprising 210 data science and analytics tasks. Drawing on public data, peer-reviewed industry literature, and regulatory filings, we simulate a food delivery platform in New York City at true scale, with 81 million orders in 2024, grounded economics, fraud patterns, and marketplace incentives. We export this world to an ERP warehouse of 235 tables and 7.5 billion rows, modeled on the Oracle E-Business Suite schema. The simulator's ground-truth state is withheld from the warehouse the agent sees, so tasks require reconstructing facts by navigating the warehouse before acting on them. Argo-Bench goes beyond text-to-SQL: the agent files actions such as banning fraudulent accounts, allocating courier incentive budgets, or issuing back pay, and the grader scores each by its consequences in the simulator. Every task has an executable reference solution that demonstrates solvability using only the warehouse. The strongest of 14 frontier and open-weight models scores 95 or higher on only 34.8% of tasks and averages 59.5 points. We hope Argo-Bench drives progress toward agents that understand, navigate, and act within real data environments.",
+   "published": "2026-10-01T17:35:44+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Gabriel Tomitsuka, Arman Raayatsanati, Emma Xing, Duke Gand, Joseph J Ma"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Argo-Bench est un benchmark simulant des workflows d'analyse de données à l'échelle entreprise (81M commandes, 235 tables, 7.5Md lignes) pour évaluer les *data agents* sur des tâches complexes (fraude, allocation de ressources) au-delà du simple *text-to-SQL*.",
+   "score": 8.3
+  },
+  {
+   "id": "d2b26687d930e39b",
+   "title": "HumanoidToolBench: Benchmarking Humanoid Tool Use from Selection to Mobile Execution",
+   "url": "https://arxiv.org/abs/2610.02089v1",
+   "summary": "As robotic hardware and learning methods advance, humanoids need tools to perform tasks beyond their inherent physical limits. Successful tool use requires selecting a suitable tool and coordinating manipulation and, when needed, locomotion to complete the task. Existing benchmarks do not jointly evaluate these capabilities on a humanoid. We introduce HumanoidToolBench, an 18-task benchmark spanning three scenarios, three execution levels, and two tool-set modes, together with ToolBook, a dataset of 3.1k demonstrations collected in simulation and on a real Unitree G1. Evaluation of seven policies in simulation and three on the real robot reveals substantial gaps between selecting a suitable tool and completing the task. Focused GR00T N1.7 probes show reduced selection accuracy on unseen tools and continued task execution under unrelated instructions. Code and data are available at https://snu-pi.github.io/HumanoidToolBench/.",
+   "published": "2026-10-01T17:21:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kyochul Jang, Seohyeon Park, Ohchul Kwon, Sangjun Park, Junhyeok Choi, Seungyeop Yi"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "HumanoidToolBench évalue les capacités d'utilisation d'outils par des humanoïdes, couvrant la sélection, la manipulation et la locomotion. Benchmark solide pour la robotique avancée, avec des données simulées et réelles, et des écarts identifiés entre sélection et exécution.",
+   "score": 8.3
+  },
+  {
+   "id": "39b48eca0b32849a",
+   "title": "Mimir: Physics-Grounded LLM Agents for Long-Horizon Irrigation Control",
+   "url": "https://arxiv.org/abs/2610.02038v1",
+   "summary": "Large language model (LLM) agents increasingly combine reasoning, tool use, and action, but most evidence comes from episodic tasks with relatively immediate feedback and reset failures. Long-running physical control operates in a different regime: actions alter future states, errors compound across decisions, and an agent must improve from experience without being allowed to rewrite the physical rules that make execution safe. We study this regime through irrigation, where daily decisions interact with soil-water dynamics over entire growing seasons. We present Mimir, a physics-grounded LLM agent organized around two repair timescales. At the fast timescale, a structured physical interface and deterministic simulator turn an LLM output into a proposal that we numerically check, revise, and subject to bounded deterministic action selection before execution. At the slow timescale, recurrent failure patterns are consolidated into persistent contextual principles that condition future proposals, while the physical model, evaluator, and execution constraints remain immutable. Under a common retrospective evaluator across multiple sites, crops, and years, Mimir attains the lowest reported aggregate control cost among the evaluated references and uses about 51% less irrigation than the historical schedule replay. The ablation study show higher control cost when forward simulation, verified revision, or persistent context is removed; model-scale and model-family studies show no monotonic gain from increasing LLM size. The resulting lesson show that persistent physical agents can combine semantic reasoning with bounded, evidence-driven self-improvement while reserving physical truth and actuator authority for explicit numerical mechanisms.",
+   "published": "2026-10-01T16:50:52+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yimeng Liu, Mi Zhang, Younsuk Dong, Zhichao Cao"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Propose Mimir, un agent LLM pour le contrôle d'irrigation à long terme, combinant une interface physique structurée, un simulateur déterministe et des principes contextuels pour éviter les erreurs cumulatives dans des environnements physiques.",
+   "score": 8.3
+  },
+  {
+   "id": "91352b48a00ee619",
+   "title": "CorrGRPO: Correlation-Normalized GRPO for Multi-Reward Learning",
+   "url": "https://huggingface.co/papers/2609.36820",
+   "summary": "Group Relative Policy Optimization (GRPO) is widely used to train reasoning language models, where it computes advantages by centering and normalizing rewards across rollouts of the same prompt. For multiple rewards, GRPO sums the reward components and normalizes the total reward by its within-group standard deviation. The corresponding variance equals the sum of all pairwise reward covariances. For a fixed centered reward, larger aggregate covariance produces smaller advantages, and vice versa, allowing update magnitudes to adapt to reward dependence. However, correlated rewards with large scales can dominate this normalization and suppress signals from smaller-scale rewards. We propose Correlation-Normalized GRPO (CorrGRPO), which normalizes pairwise covariances into Pearson correlation coefficients. CorrGRPO keeps the centered total reward unchanged while balancing the influence of differently scaled rewards on the correlation-based normalization. This allows advantage magnitudes to adapt to reward correlations without the normalization being dominated by large-scale reward components. We compare CorrGRPO with GRPO and other variants on code generation, tool calling, and agent security, using models ranging from 0.5B to 8B parameters. These tasks all involve multiple rewards that can improve together or present tradeoffs. Results show improvements across three domains, including code generation, tool calling, and agent security. Our code is available at https://github.com/HKUST-KnowComp/CorrGRPO.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2609.36820"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "CorrGRPO améliore GRPO en normalisant les covariances de récompenses via des coefficients de corrélation de Pearson, équilibrant ainsi l'influence des récompenses de différentes échelles dans l'apprentissage multi-récompenses. Les résultats montrent des gains en code generation, tool calling et agentic tasks.",
+   "score": 8.2
+  },
+  {
+   "id": "8f020abdf3666aa6",
+   "title": "OneStreamer: Unifying Perception, Memory, and Proactive Response in Streaming Video Interaction",
+   "url": "https://huggingface.co/papers/2610.01762",
+   "summary": "Streaming video LLMs must retain evidence before its relevance to future tasks is known and respond when sufficient evidence becomes available. The challenge is to form reusable factual memory without compromising real-time perception. We introduce OneStreamer, which jointly learns query-independent evidence recording and task response through a shared proactive generation process. Its Proactive Hierarchical Caption Memory (PHCM) produces time-grounded local-detail captions and summaries of completed events. Streaming caption targets supervise the interpretation of observed video prefixes during training. At inference, model-generated records complement a recent visual window, providing reusable factual context without revisiting historical visual features. Proactive State Transition Learning (PSTL) reduces the dominance of repeated waiting states by preserving supervision at all output anchors and selecting representative state-change and state-persistence tokens. We further develop a streaming data synthesis pipeline that aligns output content and timing with available evidence. Combining the resulting streaming captions and QA with cleaned open-source data yields OneStreamer-1M, a broad-coverage streaming video interaction dataset with over one million records spanning diverse tasks. Our 4B model achieves the best results among the compared methods across all eight evaluated streaming video understanding benchmarks. Ablations show that retaining generated captions improves historical QA without degrading real-time perception. PSTL also outperforms dense state supervision while supervising only 27.5% of annotated state tokens. Together, these results support proactive generation as a shared learning interface connecting perception, memory formation, and timely response in streaming video interaction.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 75,
+    "arxiv_id": "2610.01762"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "vision"
+   ],
+   "tldr": "OneStreamer améliore les LLM pour vidéos en streaming en unifiant mémoire, perception et réponse proactive via un cadre génératif hiérarchique (PHCM) et une transition d'état optimisée (PSTL), réduisant les répétitions et améliorant la réactivité.",
+   "score": 8.2
+  },
+  {
+   "id": "0b7d05e3a41cf149",
+   "title": "AgSpec: Pushing the Limits of Retrieval-Based Speculative Decoding in Coding Agent Pipelines",
+   "url": "https://huggingface.co/papers/2610.01108",
+   "summary": "Retrieval-based speculative decoding (SD) drafts tokens by copying continuations from existing text, which suits coding agents that repeatedly reproduce code, logs, and earlier attempts. Yet existing methods fall short in agent pipelines: much of the reusable text is missing from their corpora or stored in a form that differs from what the agent emits, and their draft lengths ignore that accept length varies across agents and drifts over turns. We present AgSpec, a framework that supplies the corpus and draft-length policies that existing retrieval engines lack in coding-agent pipelines. AgSpec retrieves from session, workspace, and global corpora, retaining the ongoing session trajectory and indexing opened files in the agent's emission format. It bounds each agent's draft length with an offline-profiled cap and adapts the length online from verification feedback. On two repository-level multi-agent coding benchmarks, AgSpec outperforms five retrieval-based drafters and EAGLE-3 in most evaluated settings, raising generation throughput over autoregressive decoding up to 4.37times at batch size 1 and 4.76times at batch size 16. AgSpec also remains effective on benchmarks without a repository or a multi-agent pipeline, showing that its gains generalize to coding agents broadly.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.01108"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "AgSpec optimise l'inférence des agents de codage via une approche de *speculative decoding* basée sur la récupération (RAG), adaptant dynamiquement la longueur des drafts et les sources (session, workspace, global) pour maximiser le débit jusqu'à 4.76x.",
+   "score": 8.2
+  },
+  {
+   "id": "ff126e09ae622f34",
+   "title": "Devils in Question Relay: Source-Conditioned Relay Steering to Mitigate Hallucinations in Audio-visual Large Language Models",
+   "url": "https://huggingface.co/papers/2609.37568",
+   "summary": "Audio-visual large language models (AVLLMs) have made remarkable progress in multimodal understanding and reasoning through interactions among visual, auditory, and linguistic information. However, recent studies show that AVLLMs face a critical challenge: source-confused grounding hallucination, where cues from the unused modality induce responses that the required modality does not support, undermining reliability in real-world applications. Existing methods have made progress in mitigating this failure, yet how it arises from internal cross-modal interactions remains insufficiently understood. To address this gap, we conduct path-intervention and representation analyses, revealing a question-relay mechanism: question states carry interfering cues alongside required-source evidence, undermining grounding in required-modality evidence. Cutting pathways from interfering modality to question states yields greater correct-answer logit recovery than cutting those to the generation position. Motivated by these findings, we propose SECRET (SourcE-Conditioned RElay sTeering), a training-free method that mitigates cross-modal interference at the question relay. Using contrasting question representations elicited through different modality-pathway interventions, SECRET steers the original question states toward required-source evidence. Experiments on two widely adopted benchmarks CMM and AVHBench across three AVLLMs show that SECRET consistently outperforms prior training-free methods, substantially mitigating source-confused grounding hallucinations (e.g., up to +18.0 and +7.1 percentage points over base models). Modality-specific captioning further demonstrates its generalizability to open-ended generation.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.37568"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "audio"
+   ],
+   "tldr": "SECRET (SourcE-Conditioned RElay sTeering) atténue les hallucinations dans les AVLLM en ciblant le mécanisme de *question-relay* (interférences modales) via une méthode d'intervention sans entraînement, améliorant la fiabilité des réponses.",
+   "score": 8.2
+  },
+  {
+   "id": "308f5f53e87cc44c",
+   "title": "AutoCompact: Learning When to Compact Context in Long-Horizon Coding Agents",
+   "url": "https://arxiv.org/abs/2610.02163v1",
+   "summary": "Coding agents solve repository-level software engineering tasks through long trajectories of code inspection, search, editing, and testing. As a task progresses, earlier exploration becomes stale, so managing context is more than avoiding overflow: an agent must decide when to compact, what working state to preserve, and how to continue from it. We introduce AutoCompact, which trains a coding agent to make these decisions as part of its policy. To collect training data, we run the base agent on coding tasks and use a judge to review its compaction decisions, summaries, and actions after compaction. Flawed outputs are replaced with corrected ones before being executed in the environment, so each trajectory continues from the corrected decisions. We use these trajectories for supervised fine-tuning, then jointly optimize coding and compaction through reinforcement learning with task-success rewards. Experiments on SWE-bench Verified and SWE-PolyBench Verified show that AutoCompact improves pass rates over the base model by an absolute 9.2\\% and 5.0\\%, respectively. The improvements hold across all evaluated inference budgets, with a 256K context window that never overflows and with a 16K window whose overflow triggers fallback compaction.",
+   "published": "2026-10-01T17:54:34+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xuan Zhang, Longtao Zheng, Cunxiao Du, Bo An, Xin Dong"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "AutoCompact, un cadre pour entraîner des agents de codage à gérer dynamiquement la compaction du contexte en fonction de la pertinence, améliorant les taux de réussite de 9.2% et 5.0% sur SWE-bench Verified et SWE-PolyBench Verified avec un contexte de 256K.",
+   "score": 8.0
+  },
+  {
+   "id": "599b22aa94777f54",
+   "title": "DuoMind: Enabling Distributed Multi-Robot Coordination with Semantic Communication",
+   "url": "https://arxiv.org/abs/2610.02161v1",
+   "summary": "Vision-language models (VLMs) and vision-language-action models (VLAs) have recently driven rapid progress in general-purpose robots, yet most progress has focused on single-robot settings. Extending these capabilities to multi-robot systems remains challenging because robots must coordinate long-horizon behaviors while maintaining reliable, fine-grained execution. We introduce DuoMind, a distributed hierarchical framework for multi-robot coordination through semantic communication. Each robot uses a VLA-based action model for low-level execution and a VLM-based orchestrator for high-level reasoning and inter-agent coordination. At each planning step, the orchestrator at each robot reasons over the task instruction, local observations, and messages received from other robots. It then generates low-level instructions for the action model and semantic messages for peer robots. This architecture exploits the complementary strengths of pretrained models by combining the semantic reasoning capabilities of VLMs with the precise action-generation capabilities of VLAs. To address the scarcity of benchmarks for multi-robot coordination, we further develop RoboPoly, a benchmark comprising long-horizon manipulation tasks that require coordinated, closed-loop execution under distributed control. Experiments on RoboPoly and RoboTwin demonstrate that DuoMind improves multi-robot task performance, while ablation studies confirm the contributions of hierarchical orchestration and semantic communication. More details are available on our project page.",
+   "published": "2026-10-01T17:53:09+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hanchu Zhou, Dechen Gao, Hang Wang, Brendan Lynch, Boqi Zhao, Qiyao Ma"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "DuoMind, un framework hiérarchique distribué pour la coordination multi-robots via communication sémantique, combinant VLMs pour le raisonnement et VLAs pour l'exécution, évalué sur le benchmark RoboPoly.",
+   "score": 8.0
+  },
+  {
+   "id": "7c17e5ba83c2deec",
+   "title": "Wasserstein Gradient Flows and Forward-Only Diffusion Are Not Enough for Multimodal Sampling",
+   "url": "https://arxiv.org/abs/2610.02081v1",
+   "summary": "There has been a proliferation of sampling algorithms based on Wasserstein gradient flows (WGF) and forward-only diffusion processes (FODP), often accompanied by theoretical guarantees of exponentially fast convergence to the target distribution. These guarantees are frequently interpreted as evidence that such methods can efficiently sample complex multimodal distributions, often supported by empirical results. In this work, we argue that this interpretation is fundamentally misleading. By invoking the Jordan-Kinderlehrer-Otto (JKO) scheme and Otto calculus, we establish that the canonical WGF sampling dynamics and overdamped forward diffusion share the same density evolution and therefore inherit the same metastability and slow-mixing phenomena long understood in nonequilibrium statistical physics. We analyze this family of samplers using two complementary tools -- spectral analysis and mean first-passage time (MFPT) analysis -- and show that well-separated multimodality can induce exponentially long mixing times associated with small spectral gaps and rare inter-mode transitions. For the commonly adopted log-linear annealing schedule studied here, we find that introducing intermediate distributions does not remove the exponential scaling of the total transport time. The limitation is structural rather than implementation-specific: purely local, gradient-driven transport mechanisms can require exponentially long times to transport probability mass across well-separated modes. We argue that this represents a fundamental limitation of WGF- and FODP-based sampling in their standard forms, and motivates future development of fundamentally nonlocal mechanisms for efficient multimodal sampling.",
+   "published": "2026-10-01T17:16:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Daniel McBride, Pratik Khandagale, Cristina Garcia-Cardona, Yen Ting Lin"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude démontre que les garanties théoriques des méthodes basées sur les flots de Wasserstein ou la diffusion forward-only ne suffisent pas pour échantillonner efficacement des distributions multimodales, avec des temps de mélange exponentiels en cas de séparation forte des modes.",
+   "score": 8.0
+  },
+  {
+   "id": "e9177278a42dabde",
+   "title": "Learn the Directions, Normalize the Gains: Post-Training Normalization for LoRA",
+   "url": "https://arxiv.org/abs/2610.02067v1",
+   "summary": "While Low-Rank Adaptation (LoRA) enables efficient task specialization, its learned updates can compromise capabilities beyond the target task. We identify \\textbf{adaptation imbalance}: a few singular directions dominate the trained update, leaving its performance sensitive to how gains are allocated. We argue that \\textbf{learning where to adapt does not ensure that adaptation gains are well balanced}. This motivates \\textbf{LoRA-Norm}, a post-training normalization method that retains learned directions while rebalancing their gains. LoRA-Norm combines spectral rebalancing, a fixed nonlinear transformation of singular values, with nuclear-norm restoration, which preserves the original total spectral mass. It requires no calibration data or additional training and introduces no inference overhead. Across two backbones and three adaptation tasks, LoRA-Norm improves average specialization and capability retention, outperforming the evaluated post-hoc spectral pruning and gradient-guided editing configurations on both measures. Stronger functional equalization brings no consistent additional gains, revealing that balancing adapter gains and equalizing their responses are distinct objectives.",
+   "published": "2026-10-01T17:07:21+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zailong Tian, Yanzhe Chen, Zhuoheng Han, Houfeng Wang, Lizi Liao"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Propose une méthode de normalisation post-entraînement (LoRA-Norm) pour corriger le déséquilibre des gains dans les adaptations LoRA, améliorant la spécialisation et la rétention des capacités sans surcoût d'inférence ni besoin de données de calibration.",
+   "score": 8.0
+  },
+  {
+   "id": "091d3d7e9e802ac6",
+   "title": "AnotiaWang/awesome-decision-models",
+   "url": "https://github.com/AnotiaWang/awesome-decision-models",
+   "summary": "A curated list of decision models (System One / typed decision models): hosted APIs, open-weight models, runtimes, SDKs, applications, benchmarks, and papers.",
+   "published": "2026-09-17T12:30:31Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 599,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Liste curated de modèles de décision (System One) incluant APIs, modèles open-weight, benchmarks et papiers. Ressource précieuse pour les chercheurs en agents autonomes, avec une forte fiabilité grâce à la sélection rigoureuse.",
+   "score": 8.0
+  },
+  {
+   "id": "4d786ec4e490befb",
+   "title": "Explore Broadly, Reason Sharply: Push Small Models toward the Frontier via Sampling",
+   "url": "https://huggingface.co/papers/2609.38104",
+   "summary": "Power-sharpened sampling is an inference-time alternative to reinforcement-learning (RL) post-training for enhancing reasoning in large language models (LLMs). High-probability sequences are amplified under the base model without parameter updates or external rewards, avoiding the costly optimization and jagged generalization of RL. However, this approach faces a fundamental exploration--exploitation trade-off, as % strong sharpening restricts exploration, trapping samplers in plausible but incorrect reasoning trajectories, whereas weak sharpening leaves the answer distribution diffuse. To resolve this trade-off, we introduce Parallel Power Tempering (PPT), instantiating power-sharpened LLM sampling via parallel tempering. Running multiple interacting replicas in parallel at different sharpening levels allows lower-power replicas to explore diverse reasoning trajectories and higher-power chains to further exploit higher-likelihood responses favored by the sharpened target. Specifically, we tailor to inference-time sampling by mitigating a truncation bias, identified in prior power samplers, and investigate effective swap strategies under finite memory and compute budgets. Extensive experimentation shows that substantially improves single-chain power-sharpened sampling and outperforms RL-post-trained models, producing higher-quality reasoning traces and even achieving performance comparable to frontier models.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2609.38104"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "PPT (Parallel Power Tempering) optimise l'échantillonnage des LLM en combinant exploration (réplicas à faible sharpening) et exploitation (réplicas à fort sharpening) via un processus de tempering parallèle. Alternative efficace à l'RL pour améliorer le raisonnement sans fine-tuning.",
+   "score": 7.9
+  },
+  {
+   "id": "d323a332e421acce",
+   "title": "FlexRouter: Learning Complementary Model Sets for Flexible LLM Routing",
+   "url": "https://huggingface.co/papers/2609.38585",
+   "summary": "Existing Large Language Model (LLM) routing methods score LLMs independently to select top-k models. However, this ignores model correlations and enforces a rigid computational budget. Consequently, routers often select redundant models that share failure modes, limiting the overall probability of success. To address this, we propose FlexRouter, a routing framework that explicitly models model complementarity. FlexRouter optimizes for answer coverage, maximizing the probability that at least one selected model yields a correct response. This objective aligns with practical inference pipelines where multiple candidate outputs are generated and a downstream verifier or user selects the final one. We formulate routing as a coverage-oriented subset selection problem and model the routing policy using Determinantal Point Processes (DPPs), which naturally capture both model competence and redundancy. To directly optimize coverage without requiring a ground-truth target subset, we introduce a training objective based on marginalizing over failure sets. During inference, we employ a greedy strategy based on marginal log-determinant gains, enabling the router to adaptively determine subset sizes without a predefined budget. Extensive experiments on the large-scale RouterEval benchmark demonstrate that our proposed FlexRouter achieves higher coverage with lower redundancy across both in-domain and out-of-domain tasks than strong baselines while maintaining flexible inference cost.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.38585"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "FlexRouter améliore le routage des LLM en modélisant la complémentarité des modèles via des DPPs pour maximiser la couverture des réponses correctes, s'adaptant à des budgets computationnels flexibles.",
+   "score": 7.9
+  },
+  {
+   "id": "4ad575d9fc42d52b",
+   "title": "Decoding Looped Transformers Better for (Almost) Free",
+   "url": "https://arxiv.org/abs/2610.02185v1",
+   "summary": "Looped Transformers achieve parameter efficiency by repeatedly executing a shared block across recurrent loops. Each loop yields an intermediate representation decodable for the same next token, yet standard decoding discards earlier states. Because earlier loops embody less computation, recurrence inherently supplies aligned weak-and-strong prediction pairs without auxiliary models or external training. We introduce LoopCD, a training-free contrastive decoding framework that guides token selection by contrasting the final prediction with an earlier recurrent pass, operating either in logit space with one extra output pass (LoopCD-Logits) or in hidden-state space with zero output overhead (LoopCD-Hidden). Across four looped Transformer families, LoopCD delivers substantial, consistent gains at full recurrent depth: LoopCD-Logits raises Ouro-2.6B-Thinking's AIME 2024 pass@1 from 61.88% to 73.33%, while LoopCD-Hidden lifts Huginn's HumanEval pass@1 from 22.56% to 31.71%. Crucially, these performance gains enable halving the number of recurrent loops while still matching or exceeding full-depth unguided baselines, reducing forward FLOPs by 22.5% to 48.2%. By transforming intermediate recurrent states into effective guidance signals, LoopCD achieves superior decoding quality while substantially reducing inference compute.",
+   "published": "2026-10-01T17:58:38+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Weihao Liu, Huangjie Zheng, Tianrong Chen, Rohit Dilip, Richard He Bai, Yizhu Jiao"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "LoopCD exploite les états intermédiaires des Looped Transformers pour un décodage contrastif sans entraînement supplémentaire, améliorant les performances (ex: +11.45% sur AIME 2024) et réduisant les FLOPs de 22.5% à 48.2% en divisant par deux la profondeur de récurrence.",
+   "score": 7.7
+  },
+  {
+   "id": "033711e920b074a8",
+   "title": "Local Support Learning",
+   "url": "https://arxiv.org/abs/2610.02126v1",
+   "summary": "We explore catastrophic forgetting in the context of large pre-trained models. By considering forgetting as a geometric problem in the input space of each weight matrix, we uncover a natural retention objective under which updates produced by gradient-based optimizers are suboptimal. Following this observation, we propose Local Support Learning (LSL), a general-purpose framework that augments gradient-based training for retention of prior capabilities without access to prior data. During a new learning phase, LSL pairs two components with distinct roles: a standard weight adapter, trained as usual to minimize the loss, and a gating function that enables the adapter only on input activations from its own training distribution, making the update local to that distribution. The key challenge is that this gate must route data from all learning phases while training only on data from the current one. We address this with a gate based on a Gaussian Mixture Model (GMM), whose likelihood decays rapidly away from its training data, giving it a natural tendency to stay closed on data from prior phases. We show that this post-training approach can resolve forgetting in LLMs of up to 7 billion parameters, retaining both pretrained and finetuned capabilities across multiple training phases, while being efficient in memory and compute, robust to hyperparameter choice, and showing scaling potential.",
+   "published": "2026-10-01T17:39:03+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Assaf Ben-Kish, Akarsh Kumar, James Glass, Raja Giryes"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "LSL (Local Support Learning) est un framework post-entraînement pour limiter le *catastrophic forgetting* dans les LLMs sans accès aux données originales, en utilisant un *gating function* basé sur un GMM pour adapter localement les poids et préserver les capacités antérieures.",
+   "score": 7.7
+  }
+ ]
+}
