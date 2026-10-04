@@ -1,0 +1,377 @@
+{
+ "date": "2026-10-04",
+ "digest": {
+  "headline": "KaliBench établit un nouveau standard pour l'évaluation des agents LLM en cybersécurité avec un benchmark granulaire et reproductible",
+  "overview": "La veille du 2026-10-04 met en avant des avancées significatives dans l'évaluation et l'optimisation des systèmes d'IA, notamment pour les agents et les modèles de décision. Les benchmarks et alternatives aux LLM pour des cas d'usage spécifiques dominent les contributions techniques, tandis que les outils open-source explorent des optimisations matérielles et logicielles.",
+  "highlights": [
+   {
+    "title": "KaliBench : benchmark robuste pour les agents en cybersécurité",
+    "text": "KaliBench propose un benchmark de 8 504 paires requête-commande pour évaluer la traduction du langage naturel vers des commandes CLI sur Kali Linux. Son approche combine validation par LLM, exécution sandboxée et vérification humaine pour mesurer l'exactitude sémantique et l'exécutabilité. Ce travail comble un manque dans l'évaluation des agents en environnement réaliste, avec une méthodologie reproductible et granulaire."
+   },
+   {
+    "title": "Jev et alternatives aux LLM pour l'orchestration edge",
+    "text": "Le papier sur Jev propose une API dédiée pour remplacer les LLM dans des tâches d'orchestration de services edge, réduisant la latence médiane de 22,7 à 64,5% tout en maintenant une précision élevée. Parallèlement, le runtime MLX de laya-mlx optimise l'inférence de modèles de décision typés sur GPU Apple M3 Max (7-14 ms), évitant les dépendances cloud. Ces solutions illustrent un shift vers des architectures spécialisées pour des cas d'usage contraints."
+   },
+   {
+    "title": "OpenTumorBoard : benchmark médical pour les discussions multidisciplinaires",
+    "text": "OpenTumorBoard introduit un benchmark de 611 cas cliniques et 19 157 échanges entre spécialistes, évaluant la capacité des LLM à répondre à des questions médicales ou simuler des discussions. Les résultats révèlent des limites majeures en précision et alignement avec les experts humains, soulignant le besoin de benchmarks réalistes pour des domaines critiques comme la santé."
+   },
+   {
+    "title": "DMM : amélioration des solutions multi-agents par affinage itératif",
+    "text": "Decentralized Master-Mind (DMM) affine les intentions d'action dans les systèmes multi-agents via des rounds de communication décentralisée. Cette approche surpasse les méthodes par échantillonnage indépendant en taux de succès et coût des solutions, offrant une alternative scalable pour la résolution de problèmes complexes comme le pathfinding multi-agents."
+   },
+   {
+    "title": "Outils open-source pour l'automatisation et l'optimisation",
+    "text": "openJev-verdict-2.0 propose un moteur de décision non-autoregressif de 151M paramètres avec calibration avancée, tandis que typesafe-computer-use automatise des tâches macOS via OCR et LLM à faible coût. Ces projets illustrent l'émergence d'outils légers pour des workflows spécifiques, bien que leur validation reste limitée à des benchmarks locaux ou des cas d'usage restreints."
+   }
+  ],
+  "trend": "Les contributions techniques convergent vers des solutions spécialisées et des benchmarks réalistes, remplaçant progressivement les approches génériques par des architectures optimisées pour des cas d'usage précis. L'évaluation reproductible et granulaire devient un enjeu central pour les agents et les modèles de décision."
+ },
+ "items": [
+  {
+   "id": "5ffdd05532793922",
+   "title": "KaliBench: A Fine-Grained Benchmark for Cybersecurity Tool Use on Kali Linux with Runtime-Free Verifiable Rewards",
+   "url": "https://huggingface.co/papers/2610.02206",
+   "summary": "LLMs are increasingly applied to cybersecurity workflows, where they are expected to translate analysts' intent into tool invocations. However, existing evaluations focus on knowledge-based assessments or end-to-end agentic tasks, and do not directly measure LLMs' ability to generate executable commands for real-world cybersecurity tools. This gap is critical because cybersecurity operations rely on strict command-line interfaces (CLIs), where minor syntax errors, incorrect flag--value bindings, or argument misordering can invalidate execution. We introduce KaliBench, a fine-grained benchmark and dataset for natural-language--to--CLI translation on Kali Linux, comprising 8,504 query--command pairs spanning 1,642 tools across 23 capability dimensions and 5 security phases. KaliBench is constructed via a manuscript-grounded pipeline with deterministic canonicalization and alias-aware evaluation, enabling precise and reproducible assessment of tool selection and argument construction. To ensure both semantic correctness and practical executability, we develop a multi-stage verification pipeline that combines LLM-based validation, sandboxed terminal execution, and human-in-the-loop refinement. Building on these fine-grained, deterministic signals, KaliBench further enables runtime-free verifiable rewards for training. Across three evaluation modes and 24 configurations of general-purpose and security-focused open-weight models, no open-weight model exceeds 42% exact-command accuracy in the unrestricted setting, highlighting the difficulty of accurate CLI-based cybersecurity tool use without explicit tool hints. We further show that supervised fine-tuning and reinforcement learning with verifiable rewards derived from KaliBench significantly improve an 8B model and achieve performance comparable to a 685B MoE model.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.02206"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "KaliBench propose un benchmark granulaire de 8 504 paires requête-commande pour évaluer la traduction NL vers CLI sur Kali Linux, avec une évaluation reproductible combinant validation LLM, exécution sandboxée et vérification humaine pour mesurer l'exactitude sémantique et l'exécutabilité.",
+   "score": 8.5,
+   "deep_analysis": {
+    "probleme": "Le benchmark KaliBench vise à combler une lacune critique dans l'évaluation des modèles de langage (LLMs) appliqués à la cybersécurité. Actuellement, les évaluations se concentrent soit sur des connaissances théoriques, soit sur des tâches agentiques de bout en bout, sans mesurer précisément la capacité des LLMs à générer des commandes exécutables pour des outils réels en ligne de commande (CLI). Or, dans les opérations de cybersécurité, des erreurs mineures (syntaxe, flags, ordre des arguments) peuvent rendre une commande inutilisable, ce qui limite l'automatisation fiable des workflows.",
+    "methode": "KaliBench propose un benchmark fin et un jeu de données de 8 504 paires requête-commande, couvrant 1 642 outils Kali Linux répartis sur 23 dimensions de capacités et 5 phases de sécurité. La construction du benchmark repose sur un pipeline ancré dans des manuscrits techniques, avec une canonicalisation déterministe et une évaluation sensible aux alias pour garantir une mesure précise et reproductible. Un pipeline de vérification multi-étapes est utilisé pour valider à la fois la correction sémantique et l'exécutabilité pratique : validation par LLM, exécution en sandbox, et raffinement humain. Enfin, KaliBench permet de générer des récompenses vérifiables *sans exécution en temps réel* pour l'entraînement, via des signaux déterministes et granulaires.",
+    "resultats": "Les évaluations menées sur 24 configurations de modèles (généralistes ou spécialisés en cybersécurité) révèlent qu'aucun modèle open-weight ne dépasse 42 % de précision sur les commandes exactes en mode non restreint, soulignant la difficulté de la tâche. Cependant, un fine-tuning supervisé ou un apprentissage par renforcement utilisant les récompenses vérifiables de KaliBench améliore significativement les performances d'un modèle de 8 milliards de paramètres, atteignant un niveau comparable à un modèle MoE de 685 milliards de paramètres.",
+    "limites": "Le benchmark se limite aux outils de Kali Linux, ce qui peut ne pas couvrir l'ensemble des cas d'usage en cybersécurité (outils propriétaires, environnements hybrides). De plus, la validation humaine, bien que présente, pourrait introduire des biais ou des incohérences. Enfin, l'absence de prise en compte des interactions dynamiques (ex : feedback en temps réel des outils) limite la représentativité des scénarios réels.",
+    "verdict": "KaliBench représente une avancée majeure pour évaluer et améliorer les LLMs dans un domaine technique exigeant, mais son adoption dépendra de son extension à d'autres écosystèmes et de sa capacité à simuler des environnements dynamiques."
+   }
+  },
+  {
+   "id": "0df6e80f50589dd0",
+   "title": "Replacing Large Language Models with Jev Decision Models for Low-Latency Edge Service Orchestration",
+   "url": "https://huggingface.co/papers/2609.22753",
+   "summary": "Natural-language service requests can require a language-model decision before execution starts, consuming part of the request's latency budget. We integrate Jev's decision-oriented application programming interface (API) into edge service orchestration to reduce this overhead while retaining service completion. The integration extracts four to eight bounded intent fields and applies a shared validator, admission policy, and scheduler, accounting for decision waiting throughout the request timeline. We compare Jev, two self-hosted decision models, and three hosted large language models (LLMs) on 8,280 verified requests and on a live admission path with modeled execution and a real optical character recognition service. Across 33 test conditions, Jev reduces median decision latency by 22.7-64.5% relative to the fastest LLM. This latency barely moves with input size, contract width, or catalog size. On four-field contracts, Jev's API fees per correct decision are 59.7-80.9% lower at a cost of a few exact-match points, while wide contracts mark the limit of the substitution. Receiving the service catalog with each request, Jev names unseen services as accurately as known ones. On the live admission path, Jev keeps 0.91-0.95 of requests exact and on time at loads where the LLMs fall below 0.1. Since caching repeated descriptions gives the interpreters nearly the same latency, Jev's gain lies in fresh decisions. These results support decision-model substitution for latency-bound admission on bounded contracts.",
+   "published": "2026-09-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2609.22753"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Ce papier propose une alternative aux LLM pour des décisions à faible latence en orchestration de services edge via une API dédiée (Jev), réduisant la latence médiane de 22,7 à 64,5% par rapport aux LLM tout en maintenant une précision élevée, avec des gains économiques significatifs sur des contrats à champs limités.",
+   "score": 8.2,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le problème de la latence induite par l'utilisation de grands modèles de langage (LLM) pour la prise de décision dans l'orchestration de services en périphérie (edge). Les requêtes en langage naturel nécessitent souvent une interprétation par un LLM avant leur exécution, ce qui consomme une partie critique du budget de latence alloué à la requête, limitant ainsi les performances des systèmes temps réel ou sensibles à la latence.",
+    "methode": "Les auteurs proposent d'intégrer l'API de décision de Jev, un modèle orienté vers la prise de décision plutôt que la génération de langage, dans l'orchestration de services edge. Leur approche consiste à extraire entre quatre et huit champs d'intention bornés à partir des requêtes, puis à appliquer un validateur partagé, une politique d'admission et un ordonnanceur. Ce pipeline prend en compte le temps d'attente lié à la décision tout au long de la timeline de la requête. La comparaison inclut Jev, deux modèles de décision auto-hébergés et trois LLM hébergés, évalués sur 8 280 requêtes vérifiées ainsi que sur un chemin d'admission en temps réel avec un service de reconnaissance optique de caractères (OCR) modélisé.",
+    "resultats": "Sur 33 conditions de test, Jev réduit la latence médiane de décision de 22,7 % à 64,5 % par rapport au LLM le plus rapide. Cette latence reste stable face à l'augmentation de la taille de l'entrée, de la largeur du contrat ou de la taille du catalogue de services. Pour des contrats à quatre champs, les frais d'API de Jev par décision correcte sont inférieurs de 59,7 % à 80,9 %, au prix d'une légère baisse de précision sur les correspondances exactes. Sur un chemin d'admission en temps réel, Jev maintient 91 % à 95 % des requêtes exactes et à l'heure, là où les LLM chutent en dessous de 10 %. Les gains de Jev sont particulièrement marqués pour les décisions non mises en cache (requêtes fraîches).",
+    "limites": "La substitution par Jev montre ses limites sur les contrats larges, où la précision peut se dégrader. De plus, bien que Jev gère bien les services inconnus en les nommant avec précision, cette capacité repose sur la réception du catalogue de services avec chaque requête, ce qui peut introduire une surcharge ou des contraintes opérationnelles. Enfin, l'étude ne détaille pas suffisamment les mécanismes internes de Jev pour évaluer sa généralisabilité à d'autres cas d'usage ou architectures.",
+    "verdict": "Cette approche mérite une attention particulière pour les systèmes edge où la latence est critique, mais son adoption doit être évaluée au cas par cas en fonction de la complexité des contrats et des exigences de précision."
+   }
+  },
+  {
+   "id": "c6b01396ffca970e",
+   "title": "OpenTumorBoard: A Real-World Benchmark of Multidisciplinary Tumor Board Discussion Trajectories",
+   "url": "https://huggingface.co/papers/2609.32810",
+   "summary": "Multidisciplinary tumor boards integrate multimodal clinical observations and longitudinal patient histories through specialist discussions, yet benchmarks rarely capture these real-world trajectories. We introduce OpenTumorBoard, a benchmark with 611 patient cases and 19,157 discussion turns across ten specialist roles, transcribed from 12,534 minutes of publicly available tumor board recordings on YouTube. The benchmark evaluates two settings: SPECIALIST TURN, in which an LLM responds to a clinically significant question posed during a real discussion, and BOARD SIMULATION, in which it generates an entire back-and-forth discussion and reaches a consensus on therapy recommendations, surgical plans, next actions and clinical trial matching. Evaluation of 14 general-purpose frontier and medical LLMs reveals substantial limitations: the best models score 3.43 out of 5 in clinical equivalence to specialist answers and 2.78 out of 5 in alignment with recorded board conclusions. Supervised finetuning and reinforcement learning improve performance on a held-out test set, suggesting that real-world discussion trajectories can support model adaptation. Three M.D. experts review a subset of the benchmark, finding high information coverage and factuality of patient cases and strong fidelity of extracted consensus conclusions. We will release OpenTumorBoard and its automated curation pipeline to support the development and evaluation of LLMs for multidisciplinary, personalized cancer decision-making.",
+   "published": "2026-09-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2609.32810"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "OpenTumorBoard introduit un benchmark médical réaliste de 611 cas cliniques et 19 157 échanges entre spécialistes, évaluant la capacité des LLM à répondre à des questions médicales ou simuler des discussions multidisciplinaires, révélant des limites majeures en précision et alignement avec des experts humains.",
+   "score": 7.9,
+   "deep_analysis": {
+    "probleme": "Le benchmark OpenTumorBoard vise à combler une lacune dans l'évaluation des modèles de langage (LLM) pour la prise de décision clinique en oncologie. Actuellement, les outils d'IA manquent de références reproduisant les trajectoires réelles des discussions multidisciplinaires (réunions de concertation pluridisciplinaire, RCP), pourtant cruciales pour personnaliser les traitements. Ces discussions intègrent des données multimodales et longitudinales, mais leur complexité est rarement capturée dans les benchmarks existants.",
+    "methode": {
+     "approche_generale": "OpenTumorBoard propose un benchmark basé sur des données réelles, transcrites à partir de 12 534 minutes d'enregistrements publics de RCP (disponibles sur YouTube). Il couvre 611 cas patients et 19 157 tours de discussion impliquant dix rôles spécialisés (oncologues, chirurgiens, radiologues, etc.).",
+     "details_techniques": {
+      "jeux_devaluation": [
+       {
+        "nom": "SPECIALIST TURN",
+        "description": "Le LLM doit répondre à une question clinique précise posée lors d'une discussion réelle, évaluée sur sa pertinence et son équivalence avec la réponse d'un spécialiste."
+       },
+       {
+        "nom": "BOARD SIMULATION",
+        "description": "Le LLM génère une discussion complète (échanges et consensus) pour proposer des recommandations thérapeutiques, des plans chirurgicaux, des actions futures ou des essais cliniques adaptés."
+       }
+      ],
+      "evaluation": "14 LLM (frontières généralistes et médicaux) ont été testés, avec une notation sur 5 pour la similarité clinique des réponses (SPECIALIST TURN) et l'alignement avec les conclusions réelles des RCP (BOARD SIMULATION). Une validation manuelle par trois experts médicaux a confirmé la couverture informationnelle et la fidélité des conclusions extraites.",
+      "amelioration": "Des techniques de fine-tuning supervisé et d'apprentissage par renforcement ont été appliquées pour améliorer les performances sur un jeu de test réservé, démontrant que ces trajectoires réelles peuvent servir à adapter les modèles."
+     }
+    },
+    "resultats": {
+     "performances": "Les meilleurs modèles atteignent un score de 3,43/5 pour l'équivalence clinique des réponses (SPECIALIST TURN) et seulement 2,78/5 pour l'alignement avec les conclusions des RCP (BOARD SIMULATION), révélant des limitations majeures.",
+     "ameliorations": "Le fine-tuning et l'apprentissage par renforcement ont permis des gains sur le jeu de test, suggérant un potentiel d'adaptation des LLM à ces tâches complexes.",
+     "validation_experts": "Les experts ont jugé les cas patients et les conclusions extraites comme étant de haute qualité en termes de couverture informationnelle et de factualité."
+    },
+    "limites": {
+     "donnees": "Les enregistrements proviennent uniquement de YouTube, ce qui peut introduire des biais (qualité audio, représentativité des cas, contexte culturel des discussions).",
+     "evaluation": "Les scores subjectifs (notation sur 5) et la validation par seulement trois experts limitent la robustesse statistique des résultats.",
+     "generalisation": "Les performances restent médiocres pour la simulation complète des RCP (BOARD SIMULATION), soulignant que les LLM actuels ne maîtrisent pas encore la dynamique collaborative et nuancée des discussions multidisciplinaires."
+    },
+    "verdict": "Ce benchmark est une avancée notable pour évaluer les LLM dans un contexte clinique réaliste, mais ses résultats mitigés et ses limites méthodologiques incitent à un optimisme prudent plutôt qu'à une adoption immédiate."
+   }
+  },
+  {
+   "id": "364430fa259e82bf",
+   "title": "Decentralized Master-Mind: Joint Action Refinement through Iterative Intent Denoising in Multi-Agent Pathfinding",
+   "url": "https://huggingface.co/papers/2609.32019",
+   "summary": "Decentralized multi-agent path finding (MAPF) with communication requires agents to reach individual goals without collisions under partial observability. Learnable policies trained on expert data provide an effective approach to this problem. However, when several coordinated joint actions are valid in the same context, independently sampling from per-agent distributions can recombine locally valid choices into incompatible joint actions. This failure can arise from the final sampling mechanism even when the per-agent action distributions are learned correctly. DMM (Decentralized Master-Mind) addresses this by replacing one-shot action sampling with discrete, iterative refinement of action intents across communication rounds, inspired by denoising in diffusion models. Agents initialize random action intents and refine them through local communication, coupling their choices before commitment. DMM is pretrained with imitation learning on expert MAPF solutions and further optimized with MICPO, a critic-free group-relative reinforcement-learning method designed for multi-agent, multi-round action refinement. DMM generally achieves higher success rates and lower solution costs than the evaluated learnable baselines. On 1,600 MovingAI tasks, DMM fine-tuned with MICPO solves 1,598, the highest coverage among the evaluated methods, while achieving solution costs close to those of the strongest baselines. DMM also scales to over one million simultaneously acting agents in obstacle-rich environments. These results show that round-level intent refinement can improve joint-action coordination while preserving decentralized execution.",
+   "published": "2026-09-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 41,
+    "arxiv_id": "2609.32019"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "DMM (Decentralized Master-Mind) améliore la résolution décentralisée de problèmes multi-agents en affinant itérativement les intentions d'action via des rounds de communication, surpassant les approches par échantillonnage indépendant avec des gains en taux de succès et coût des solutions.",
+   "score": 7.6,
+   "deep_analysis": {
+    "probleme": "Le problème abordé est celui de la planification décentralisée de chemins pour plusieurs agents (MAPF) en environnement partiellement observable, où les agents doivent atteindre leurs objectifs individuels sans entrer en collision. Un défi majeur réside dans la coordination des actions conjointes : même avec des politiques apprises correctement, des combinaisons d'actions localement valides peuvent mener à des conflits globaux lors de l'échantillonnage indépendant des actions par chaque agent.",
+    "methode": "La méthode DMM (Decentralized Master-Mind) propose une approche inspirée des modèles de diffusion, remplaçant l'échantillonnage unique des actions par un raffinement itératif des *intents* (intentions d'action) via des rounds de communication locale. Les agents initialisent des intents aléatoires et les affinent progressivement en échangeant des informations, ce qui permet de coupler leurs choix avant validation finale. DMM est pré-entraîné par imitation sur des solutions expertes de MAPF, puis optimisé avec MICPO, une méthode d'apprentissage par renforcement sans critique, conçue pour le raffinement multi-agent et multi-round. Cette approche évite les incohérences entre actions locales et globales en structurant la coordination de manière décentralisée.",
+    "resultats": "Sur 1 600 tâches issues de la base MovingAI, DMM optimisé avec MICPO résout 1 598 d'entre elles, soit le meilleur taux de couverture parmi les méthodes évaluées, tout en maintenant des coûts de solution proches des meilleures références. La méthode démontre également une scalabilité remarquable, gérant plus d'un million d'agents simultanés dans des environnements riches en obstacles. Ces résultats suggèrent que le raffinement itératif des intents améliore significativement la coordination des actions conjointes sans sacrifier l'exécution décentralisée.",
+    "limites": "Le contenu disponible ne précise pas les hypothèses sous-jacentes (ex : latence de communication, complexité computationnelle par agent) ni les scénarios où la méthode pourrait échouer (ex : dynamiques environnementales imprévisibles). De plus, l'absence de détails sur l'architecture des politiques apprises ou les métriques de robustesse (ex : tolérance aux pannes de communication) limite l'évaluation de sa généralisabilité. Enfin, la dépendance à des données expertes pour l'imitation pourrait restreindre son applicabilité à des contextes sans solutions préexistantes.",
+    "verdict": "Cette publication mérite une attention particulière pour son innovation dans la coordination décentralisée via le raffinement itératif d'intents, mais son évaluation approfondie nécessiterait des détails techniques supplémentaires et des benchmarks plus variés."
+   }
+  },
+  {
+   "id": "72c605ffebc36801",
+   "title": "mizorewww/laya-mlx",
+   "url": "https://github.com/mizorewww/laya-mlx",
+   "summary": "Native MLX runtime for Laya typed decision models — 7–14 ms short decisions on M3 Max. No text generation, PyTorch, or cloud API.",
+   "published": "2026-09-19T13:50:26Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 6749,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Runtime natif MLX pour des modèles de décision typés (non génératifs) sur GPU Apple M3 Max, offrant des inférences ultra-rapides (7-14 ms) sans dépendance cloud, pertinent pour l'optimisation matérielle et logicielle.",
+   "score": 7.4
+  },
+  {
+   "id": "0f3073e1f783b277",
+   "title": "Architect-Ant: Editable Automatic Furnishing of Architectural Floor Plans",
+   "url": "https://huggingface.co/papers/2606.10953",
+   "summary": "Furnished floor plans support real-estate visualization, interior design, and architectural workflows, yet automatic furnishing remains challenged by limited real-world data and the need to satisfy interacting geometric and functional constraints. We ask whether professional furnishing knowledge can be learned from real floor plans using a pretrained model, enabling direct constraint-aware layout generation without relying on costly iterative agentic inference. We introduce AntPlan, a curated dataset of 505 real professional architectural floor plans with dense furniture annotations spanning 92 object classes and ten residential room categories, and Architect-Ant, a framework for generating furniture layouts. Architect-Ant represents layouts with an editable coordinate-based DSL and first learns professional furnishing patterns through supervised fine-tuning. It is then optimized with GRPO using a Layout Rule Score (LRS) that aggregates geometric and functional constraints derived from professional plans, providing outcome-level supervision without prescribed reasoning traces. Experiments against diverse state-of-the-art baselines show that Architect-Ant combines low geometric violation rates with high functional completeness, while qualitative results more closely reflect real-world residential furnishing patterns. The resulting layouts remain object-level editable and can be converted into 3D scenes.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2606.10953"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Architect-Ant utilise un modèle pré-entraîné pour générer des plans d'ameublement de logements en respectant des contraintes géométriques et fonctionnelles, combinant fine-tuning supervisé et optimisation par GRPO pour des résultats comparables aux méthodes itératives coûteuses.",
+   "score": 7.0
+  },
+  {
+   "id": "b7f44d9fa3151526",
+   "title": "DataMagic: Authoring Data Videos through Declarative Multi-Agent Orchestration",
+   "url": "https://huggingface.co/papers/2609.33403",
+   "summary": "Data videos communicate data insights through dynamic charts, voice narration, and synchronized animations, and have become a widely adopted form of data storytelling. However, producing them requires expertise in data analysis, narrative design, and video editing. Static visualization tools lack narrative and animation capabilities; authoring tools rely on pre-prepared charts rather than raw data; and pixel-level models generate videos end-to-end but cannot guarantee data accuracy or provenance. End-to-end automatic generation faces two core challenges: how to uniformly represent charts, narration, and animations together with their temporal relationships, and how to efficiently search a vast design space for narrative-coherent compositions. We present DataMagic, which authors data videos from raw tabular data through declarative multi-agent orchestration. First, the declarative specification DVSpec unifies charts, narration, and animations with data-bound references and declarative synchronization, ensuring data provenance and automatic audio-visual alignment. Second, a \"Generate-then-Orchestrate\" multi-agent strategy generates candidate scenes in parallel and then optimizes narrative coherence through global orchestration. DVSpec provides a shared state for three complementary interaction modes, bridging full automation with fine-grained human control. Evaluations on 109 real-world samples show that even the most advanced LLM (e.g., GPT-5) achieves only 2.13/5 with execution success rates between 48.62% and 86.24%; DataMagic improves quality to 3.89 (+83%) with success rates above 95%, with the most significant gains in animation and narrative dimensions. A user study shows that, compared to a conversational LLM workflow, DataMagic improves creation efficiency (79.7% reduction in task time) and reduces perceived cognitive load. Project page: https://github.com/HKUSTDial/DataMagic.",
+   "published": "2026-09-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2609.33403"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "vision",
+    "outils"
+   ],
+   "tldr": "DataMagic automatise la création de vidéos de données via une orchestration multi-agents déclarative (DVSpec), unifiant graphiques, narration et animations avec des références liées aux données, optimisant la cohérence narrative et la précision des visuels.",
+   "score": 7.0
+  },
+  {
+   "id": "47fe4f85942bf264",
+   "title": "Heman10x-NGU/openJev-verdict-2.0",
+   "url": "https://github.com/Heman10x-NGU/openJev-verdict-2.0",
+   "summary": "Calibrated 151M Non-Autoregressive Decision Engine beating TypeSafe Jev & Laya on LocalLLaMA/typed-decisions (77.10% acc, 0.0636 Brier, 0.0144 ECE)",
+   "published": "2026-09-19T12:14:46Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 293,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "optimisation",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Moteur de décision non-autoregressif de 151M paramètres surpassant des benchmarks locaux (LocalLLaMA), avec calibration avancée (Brier, ECE), mais limité à des tâches de décision structurées sans généralisation.",
+   "score": 6.5
+  },
+  {
+   "id": "e93a36750b025eee",
+   "title": "awlevin/typesafe-computer-use",
+   "url": "https://github.com/awlevin/typesafe-computer-use",
+   "summary": "Computer use for about $0.0002 a step: OCR the screen, classify the next action with TypeSafe, click. macOS.",
+   "published": "2026-09-16T17:48:45Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1163,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "Outil open-source pour automatiser des tâches macOS via OCR et classification d'actions avec un LLM, optimisé pour un coût minimal (~0.0002$/étape). Intéressant pour l'automatisation de workflows, mais dépendant de la qualité du modèle sous-jacent et de la robustesse des prompts.",
+   "score": 5.6
+  },
+  {
+   "id": "4dccba3801cab938",
+   "title": "feder-cr/dots",
+   "url": "https://github.com/feder-cr/dots",
+   "summary": "Open-source dots for the web: an AI agent with its own browser, one that does not get blocked.",
+   "published": "2026-09-29T23:06:00Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2588,
+    "language": "Python"
+   },
+   "relevance": 5,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Agent IA autonome avec navigateur intégré conçu pour éviter les blocages, illustrant une approche d'autonomie des agents web mais sans validation rigoureuse ou benchmarking public.",
+   "score": 5.0
+  },
+  {
+   "id": "e62fb9a43c77cd35",
+   "title": "ethanplusai/codex-on-crack",
+   "url": "https://github.com/ethanplusai/codex-on-crack",
+   "summary": "Coordinate your models from Codex. Plan, delegate, use host tools, and review work across workspaces. Formerly Astra Flash Orchestrator.",
+   "published": "2026-09-17T05:42:31Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 731,
+    "language": "JavaScript"
+   },
+   "relevance": 5,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "Orchestrateur open-source pour coordonner des modèles IA (planification, délégation, outils externes) via une interface unifiée. Anciennement Astra Flash Orchestrator, utile pour des systèmes multi-agents basiques, mais manque de benchmarks ou de validation approfondie.",
+   "score": 5.0
+  },
+  {
+   "id": "9a14422b82b9b3e3",
+   "title": "Aleph Alpha Kolibri: How the sovereign German LLM works",
+   "url": "https://tej.as/blog/aleph-alpha-kolibri",
+   "summary": "",
+   "published": "2026-10-03T10:43:51Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 413,
+    "comments": 12
+   },
+   "relevance": 5,
+   "reliability": 3,
+   "tags": [
+    "llm",
+    "produit",
+    "autre"
+   ],
+   "tldr": "Article HN sur Kolibri, le LLM souverain allemand d'Aleph Alpha, sans analyse technique approfondie ni données comparatives, se limitant à une description superficielle des fonctionnalités, typique d'un contenu marketing ou promotionnel.",
+   "score": 4.4
+  },
+  {
+   "id": "83913d49e914036c",
+   "title": "OpenAI safety leader quits, warning AI company's culture is 'broken'",
+   "url": "https://www.theguardian.com/technology/2026/oct/03/openai-safety-leader-quits-warning-ai-companys-culture-is-broken",
+   "summary": "",
+   "published": "2026-10-03T22:18:13Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 264,
+    "comments": 3
+   },
+   "relevance": 5,
+   "reliability": 2,
+   "tags": [
+    "regulation",
+    "produit"
+   ],
+   "tldr": "Départ d'un responsable sécurité chez OpenAI alertant sur une culture d'entreprise 'dysfonctionnelle', sans détail technique ni preuve concrète, relevant davantage du commentaire interne que de l'analyse rigoureuse.",
+   "score": 4.1
+  }
+ ]
+}
