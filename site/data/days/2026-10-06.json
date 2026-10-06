@@ -1,0 +1,722 @@
+{
+ "date": "2026-10-06",
+ "digest": {
+  "headline": "Les agents robotiques atteignent des performances zero-shot via des architectures minimales, remettant en cause les approches d'orchestration complexes",
+  "overview": "La veille du 2026-10-06 met en lumière des avancées majeures en robotique agentique, optimisation des architectures de modèles et évaluation des capacités de récupération des agents. Les travaux sur les agents robotiques dominent, avec des résultats concrets sur des benchmarks établis, tandis que les problématiques de sécurité et de confidentialité des agents émergent comme un enjeu critique pour la régulation.",
+  "highlights": [
+   {
+    "title": "Agents robotiques zero-shot et minimalistes",
+    "text": "OpenRUA et RobotUse démontrent que des agents de codage standard (ex: Claude Code) peuvent contrôler des robots via ROS 2 sans couches logicielles dédiées, avec des taux de succès élevés (99% sur CaP-Bench, +45% sur RoboLab). Ces travaux remettent en question la nécessité d'orchestrations agentiques complexes, en privilégiant des approches légères et généralisables. RobotUse introduit également un cadre pour l'apprentissage continu via un playbook persistant."
+   },
+   {
+    "title": "Optimisation des architectures et attention sparse",
+    "text": "Foil et MC-Sparse proposent des méthodes pour améliorer l'efficacité des modèles : aplatissement des experts MoE et désolidarisation de l'attention pour Foil, sélection dynamique de tokens clés pour MC-Sparse dans les Diffusion Transformers. Ces techniques réduisent la perte de pré-entraînement et accélèrent l'inférence (vidéo/3D) sans dégradation visible. Parallèlement, H-JEPA optimise la planification visuelle via une hiérarchie de modèles JEPA, avec des gains significatifs (+55% sur Visual AntMaze)."
+   },
+   {
+    "title": "Évaluation et robustesse des agents",
+    "text": "UndoBench et Foundations of Proactive Agents introduisent des benchmarks pour évaluer la capacité de récupération des agents outils et la proactivité des systèmes. UndoBench révèle des faiblesses critiques comme la duplication d'effets, tandis que PROACTIVITY-GYM propose une taxonomie et des scénarios multi-jours pour tester les agents proactifs. Ces outils sont essentiels pour les systèmes critiques en entreprise et la recherche en IA fiable."
+   },
+   {
+    "title": "Sécurité et confidentialité des agents",
+    "text": "Google Research identifie des problèmes ouverts en matière de sécurité et de confidentialité des agents IA, adoptant une perspective contextuelle pour guider les régulations futures. Ce travail souligne l'urgence de cadres théoriques et pratiques pour encadrer les risques liés aux agents autonomes, notamment dans des environnements sensibles."
+   },
+   {
+    "title": "Raisonnement mathématique et primitives manquantes",
+    "text": "Un benchmark en 4 dimensions (Discovery, Generation, Digestion, Execution) et une méthode de self-distillation guidée par des 'primitives mathématiques' permettent de diagnostiquer et réparer les lacunes des LLMs en raisonnement mathématique. Cette approche offre une piste pour améliorer l'interprétabilité et la robustesse des modèles sur des tâches complexes."
+   },
+   {
+    "title": "Mémoire et recherche agentique multimodale",
+    "text": "MemPilot et VideoTapestry proposent des frameworks pour la curation dynamique de mémoire multimodale (RL) et l'analyse de vidéos longues via des agents. T-Search, un retriever agentique open-weight, surpasse des modèles plus grands sur des benchmarks multilingues (61.3% de Recall@10). Ces travaux illustrent l'importance des architectures adaptatives pour le RAG et les systèmes multi-agents."
+   }
+  ],
+  "trend": "Les avancées en robotique agentique et en optimisation des architectures suggèrent un déplacement vers des systèmes plus légers, généralisables et auto-améliorants, tandis que les enjeux de sécurité et d'évaluation des agents deviennent centraux pour leur déploiement à grande échelle."
+ },
+ "items": [
+  {
+   "id": "f977cb572e0b7eee",
+   "title": "OpenRUA: Robot-Use Agents Are Zero-Shot Visuomotor Policies",
+   "url": "https://huggingface.co/papers/2610.02459",
+   "summary": "Coding agents are extending their reach into the physical world by writing and executing robot control programs. One might expect the agents to use the existing mature software stack that engineers have developed over decades to access sensors and control motion. Yet prior work primarily engineers complex custom harnesses to orchestrate agents for robot use, particularly by prescribing specialized workflows and providing bespoke interfaces. This raises the question: \"Is such additional harness engineering necessary?\" We introduce OpenRUA, a zero-abstraction harness that bypasses bespoke abstraction layers by providing off-the-shelf coding agents with only terminal access to the robot's native software interface ROS 2. OpenRUA employs a minimalist workspace-as-harness design, only offering ROS 2 documentation and basic tools while leaving the coding agent to organize its own work without orchestrating any agentic workflow. Within this workspace, OpenRUA recasts perception as file I/O and manipulation as coding. With Claude Code powered by Claude Opus 5, OpenRUA achieves success rates of 99.0% on CaP-Bench and 87.0% on LIBERO-PRO, demonstrating that an off-the-shelf coding agent can serve as a zero-shot visuomotor policy through the robot's native interface, without bespoke primitives or task-specific training. Under this minimalist design, further analysis reveals striking emergent behaviors of coding agents: (1) For perception, the agent spontaneously writes programs that process raw sensory inputs and derive metric measurements in 96.80% of episodes. (2) For manipulation, the agent spontaneously builds motion-control clients (e.g., gripper control) in 95.87% of episodes and closed-loop control programs (e.g., adjusting motion based on sensor feedback) in 50.13% of episodes. Our code is available at https://github.com/terminalworld/OpenRUA.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.02459"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "OpenRUA démontre qu'un agent de codage standard (Claude Code) peut contrôler un robot via ROS 2 sans surcouche logicielle complexe, atteignant 99% de succès sur CaP-Bench et 87% sur LIBERO-PRO. Une approche minimaliste qui questionne le besoin d'orchestration agentique dédiée pour la robotique.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le domaine des agents IA pour la robotique repose souvent sur des infrastructures logicielles complexes et sur mesure, conçues pour orchestrer les interactions entre l'agent et le robot. Cela limite la généralisation et l'adoption des solutions, car chaque cas d'usage nécessite une ingénierie spécifique. OpenRUA cherche à éliminer ce besoin en permettant à un agent de codage standard d'interagir directement avec l'interface native du robot (ROS 2) sans couches d'abstraction supplémentaires.",
+    "methode": "OpenRUA adopte une approche minimaliste en fournissant à l'agent de codage (ici, Claude Code avec Claude Opus 5) uniquement un accès terminal à ROS 2, accompagné de sa documentation officielle et d'outils basiques. L'agent doit alors organiser lui-même son workflow, sans guidage spécifique. La perception est traitée comme une opération d'entrée/sortie de fichiers (ex : lecture de données capteurs), tandis que la manipulation est gérée via la génération de programmes de contrôle. Aucun entraînement spécifique ou primitive dédiée n'est utilisé, ce qui en fait une solution *zero-shot*.",
+    "resultats": "Les performances d'OpenRUA sont remarquables : un taux de succès de 99,0 % sur le benchmark CaP-Bench et de 87,0 % sur LIBERO-PRO. L'analyse révèle des comportements émergents spontanés, comme la création de programmes de traitement de données brutes (96,80 % des épisodes) ou de clients de contrôle de mouvement (95,87 % des épisodes), ainsi que des boucles de contrôle fermées (50,13 % des épisodes). Ces résultats suggèrent qu'un agent générique peut maîtriser des tâches visuo-motrices complexes sans adaptation spécifique.",
+    "limites": "Le contenu disponible ne précise pas les contraintes matérielles ou logicielles (ex : latence, robustesse en conditions réelles). La dépendance à ROS 2 limite la portabilité à d'autres écosystèmes robotiques. Enfin, les benchmarks utilisés (CaP-Bench, LIBERO-PRO) pourraient ne pas couvrir des scénarios suffisamment variés ou imprévisibles pour valider la généralisation à des environnements non contrôlés.",
+    "verdict": "OpenRUA mérite une attention particulière pour son approche radicalement simplifiée et ses résultats prometteurs, mais son applicabilité réelle reste à démontrer au-delà des benchmarks académiques."
+   }
+  },
+  {
+   "id": "5e6869f0965cd9f5",
+   "title": "RobotUse: Allocating Computation, Context, and Decisions",
+   "url": "https://huggingface.co/papers/2610.04929",
+   "summary": "Robot agents must connect their intended actions to observed outcomes while retaining the context needed to revise their choices over repeated attempts. Existing interfaces often leave these choices inside predefined tools or require agents to manage detailed execution code and its growing history. We introduce RobotUse, a robot agent harness that organizes computation, context, and decisions around specifying and revising physical actions. Agents visually select targets and poses, while the backend handles geometry, motion planning, and control. Subagents retain detailed interactions within each subgoal and return the information needed for subsequent decisions. Continual harnessing lets agents learn from execution by updating a persistent playbook. On RoboLab, RobotUse achieves 45% task success, outperforming CaP-X by 6.7 percentage points while maintaining compact decision contexts and reducing reliance on predefined action abstractions. Furthermore, we show that RobotUse learns from real-world execution despite imperfect feedback and transfers what it learns to subsequent tasks. Project page is available at https://robotuse-team.github.io/.",
+   "published": "2026-10-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.04929"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "RobotUse introduit un cadre pour agents robotiques organisant calcul, contexte et décisions autour des actions physiques, améliorant le succès de 45% sur RoboLab (+6.7 pts vs CaP-X) et permettant l'apprentissage continu via un playbook persistant malgré des retours imparfaits.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents robotiques actuels peinent à lier leurs actions intentionnelles aux résultats observés tout en conservant un contexte suffisant pour ajuster leurs décisions lors de tentatives répétées. Les interfaces existantes imposent souvent de gérer manuellement des outils prédéfinis ou un code d'exécution détaillé, ce qui complexifie la révision des choix et l'apprentissage continu.",
+    "methode": "RobotUse propose une architecture ('harness') qui structure le calcul, le contexte et les décisions autour de la spécification et de la révision d'actions physiques. Les agents sélectionnent visuellement des cibles et des poses, tandis que le backend gère la géométrie, la planification de mouvement et le contrôle. Des sous-agents conservent les interactions détaillées pour chaque sous-objectif et renvoient les informations nécessaires aux décisions ultérieures. Un 'playbook' persistant permet d'apprendre des exécutions passées, avec une mise à jour continue du système. L'approche réduit la dépendance aux abstractions d'actions prédéfinies et maintient des contextes décisionnels compacts.",
+    "resultats": "Sur la plateforme RoboLab, RobotUse atteint un taux de succès de 45% pour les tâches, surpassant CaP-X de 6,7 points de pourcentage. Le système démontre également une capacité à apprendre à partir d'exécutions réelles malgré des retours imparfaits, et à transférer ces apprentissages vers de nouvelles tâches. Les contextes décisionnels restent compacts, évitant une accumulation excessive de données historiques.",
+    "limites": "Le contenu disponible ne précise pas les types de tâches ou d'environnements où RobotUse a été testé, ni les métriques détaillées de robustesse ou de généralisation. L'efficacité de l'apprentissage continu dépend fortement de la qualité des retours, ce qui peut limiter son applicabilité dans des scénarios réels très bruités. Aucune comparaison exhaustive avec d'autres architectures récentes n'est fournie.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique de la gestion du contexte et de l'apprentissage incrémental en robotique, bien que des validations supplémentaires soient nécessaires pour évaluer sa scalabilité et sa robustesse."
+   }
+  },
+  {
+   "id": "c3d66983a8dc7ed3",
+   "title": "Open and Emergent Problems in Agentic Privacy and Security: A Contextual Angle",
+   "url": "https://research.google/blog/open-and-emergent-problems-in-agentic-privacy-and-security-a-contextual-angle/",
+   "summary": "Education Innovation",
+   "published": "2026-10-05T21:08:31+00:00",
+   "source": "google-research",
+   "source_label": "Google Research",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "Google Research identifie les problèmes ouverts en matière de sécurité et de confidentialité des agents IA, en adoptant une perspective contextuelle pour guider les futures recherches et régulations dans ce domaine critique.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde les défis émergents en matière de confidentialité et de sécurité liés aux systèmes d'agents autonomes (agentic systems), notamment dans des contextes où ces agents interagissent avec des données sensibles ou des environnements dynamiques. Elle vise à identifier les risques spécifiques, comme les fuites de données, les attaques par manipulation contextuelle ou les biais introduits par des interactions non contrôlées, qui ne sont pas encore pleinement compris ou adressés par les cadres de sécurité traditionnels.",
+    "methode": "L'approche adoptée combine une analyse contextuelle des interactions entre agents et leur environnement, en s'appuyant sur des scénarios concrets (ex. : assistants personnels, systèmes de recommandation, ou agents collaboratifs). Les auteurs examinent les vulnérabilités à travers des prismess techniques comme les attaques par inférence, les fuites de métadonnées, ou les biais algorithmiques amplifiés par des boucles de rétroaction. Ils proposent également une taxonomie des problèmes de sécurité et de confidentialité spécifiques aux agents, en distinguant les menaces *statiques* (ex. : données en repos) des menaces *dynamiques* (ex. : interactions en temps réel). Les détails techniques incluent des discussions sur les mécanismes de *differential privacy* adaptés aux agents, les protocoles de communication sécurisée entre agents, et les limites des approches actuelles de *federated learning* dans ce contexte.",
+    "resultats": "Le contenu disponible ne fournit pas de résultats quantitatifs ou de chiffres clés précis, mais souligne des constats qualitatifs. Par exemple, les auteurs identifient que les agents autonomes amplifient les risques de fuites de données contextuelles (ex. : déduction d'informations sensibles à partir de requêtes apparemment anodines) et que les attaques ciblant les interactions dynamiques sont plus difficiles à détecter que les attaques traditionnelles. Ils mettent aussi en évidence que les solutions actuelles, comme le chiffrement homomorphe ou les enclaves sécurisées, sont souvent inadaptées aux contraintes de latence ou de scalabilité des systèmes agentiques.",
+    "limites": "La publication reste théorique et manque de validations empiriques ou de benchmarks pour étayer ses hypothèses. Les zones d'ombre incluent l'absence de discussion sur les coûts computationnels des solutions proposées (ex. : *differential privacy* à grande échelle) et le manque de clarté sur la manière dont ces problèmes se manifestent concrètement dans des déploiements réels. De plus, le scepticisme est justifié quant à la généralisabilité des scénarios analysés, qui pourraient ne pas couvrir tous les cas d'usage émergents.",
+    "verdict": "Cette publication mérite l'attention des chercheurs et ingénieurs en sécurité et IA pour son cadrage innovant des risques liés aux agents autonomes, mais son utilité pratique reste limitée en l'absence de preuves expérimentales ou de solutions concrètes."
+   }
+  },
+  {
+   "id": "f06497d41a6502ba",
+   "title": "How to Loop MoE: Flatten the Experts, Untie the Attention",
+   "url": "https://huggingface.co/papers/2609.35751",
+   "summary": "Looped Transformers reuse one block of layers several times: by spending extra computation they push a model of fixed size further, and so use its parameters more fully; while sparse mixture-of-experts (MoE) models activate only a few of many experts for each token. Looped MoE bridges these two design philosophies and gives MoE models new potential for better expert usage, but it raises a question: how to loop a MoE? We answer it with Foil. With the expert parameters and the expert compute per token held fixed, Foil (1) flattens the experts, halving the expert layers, doubling the experts per layer and doubling the passes, so that every routing decision chooses from a larger pool, and (2) unties the attention, giving each pass its own attention parameters while the experts and routers stay shared. Experiments show that Foil clearly outperforms the unflattened looped baseline: at 20B tokens every Foil model has lower pretraining loss than the baseline; at 100B tokens the loss improves monotonically with the degree of flattening, the most flattened Foil ending 0.012 nat below the baseline at equal parameters and compute, with downstream accuracy on par or better; untying the attention also yields more balanced and more confident routing at equal shape. Our ablations analyse why Foil works and turn the findings into design guidance for looped MoE: the returns of looping and of widening the expert layers amplify each other, routing confidence tracks healthy expert use better than load balance, and a sparse looped MoE should therefore use more experts per layer and more passes. Code and configurations are available at https://github.com/SR-A-W/how-to-loop-moe.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2609.35751"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Foil propose une méthode pour boucler les MoE en aplatissant les experts et en désolidarisant l'attention, améliorant l'utilisation des paramètres et réduisant la perte de pré-entraînement. Idéal pour l'optimisation des grands modèles, avec gains mesurables.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde deux défis majeurs des modèles de langage modernes : l'optimisation de l'utilisation des paramètres dans les architectures à taille fixe (comme les Transformers bouclés) et l'amélioration de l'efficacité des modèles MoE (Mixture of Experts) qui n'activent qu'un sous-ensemble d'experts par token. Le problème central est de combiner ces deux approches pour maximiser l'exploitation des experts tout en maintenant un coût computationnel raisonnable, sans savoir a priori comment structurer ce bouclage dans un MoE.",
+    "methode": "Les auteurs proposent **Foil**, une méthode en deux étapes pour adapter les MoE au bouclage (looping). D'abord, ils **aplatissent les experts** : en réduisant de moitié le nombre de couches par expert, ils doublent le nombre d'experts par couche et le nombre de passes (boucles), ce qui élargit le pool d'experts disponibles à chaque décision de routage. Ensuite, ils **détachent les paramètres d'attention** : chaque passe utilise ses propres poids d'attention, tandis que les experts et les routeurs restent partagés. Cela permet une spécialisation progressive des passes sans augmenter le nombre total de paramètres experts. Le routage est optimisé pour équilibrer la charge et la confiance, avec une analyse fine des interactions entre largeur des couches experts et nombre de passes.",
+    "resultats": "Les expériences montrent une amélioration nette par rapport au baseline non aplati : après 20 milliards de tokens, tous les modèles Foil affichent une perte de pré-entraînement inférieure. À 100 milliards de tokens, la perte diminue de manière monotone avec le degré d'aplatissement, atteignant une réduction de **0.012 nat** pour la configuration la plus aplatie, à paramètres et calcul constants. Les performances en aval (downstream tasks) sont équivalentes ou supérieures. Le détachement de l'attention améliore aussi l'équilibre et la confiance du routage, avec une meilleure utilisation des experts. Les ablations révèlent que les gains du bouclage et de l'élargissement des couches experts se renforcent mutuellement.",
+    "limites": "Le document ne détaille pas les coûts mémoire ou latence induits par le doublement des passes, ni l'impact sur l'inférence en temps réel. La généralisation à d'autres architectures MoE (comme les MoE denses ou hiérarchiques) reste à explorer. Enfin, l'analyse se limite à des modèles de taille modeste (non précisée), et l'extrapolation à des échelles plus grandes (100B+ paramètres) n'est pas garantie.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à optimiser les MoE sans surcoût paramétrique, mais son adoption dépendra de sa scalabilité et de son efficacité en production."
+   }
+  },
+  {
+   "id": "83161284bd9044a3",
+   "title": "UndoBench: Separating Task Competence from Recovery Capability in Tool-Using AI Agents",
+   "url": "https://huggingface.co/papers/2610.05622",
+   "summary": "Tool-using AI agents are increasingly deployed across enterprise software systems, yet widely used benchmarks primarily evaluate nominal task completion, conflating baseline planning competence with operational fault recovery. We introduce UndoBench, a benchmark spanning 36 base workflows and 36 fault scenarios across 8 enterprise domains, decoupling task competence from recovery capability via counterfactual paired trials under identical seeds alongside wire-level effect-history and environment-state oracles. On 12 held-out TEST workflows across two open-weight models, two frameworks, and three recovery paradigms (5,760 executions / 2,880 paired trials) in the frozen lost-acknowledgment study, nominal competence reached 83.54% while conditional recovery success rate (CRSR) fell to 46.72%, with naive retry producing duplicate external effects in 53.33% of trials. Extensions to commercial API models reproduced this competence-recovery separation. Evaluations across complementary execution boundaries show that recovery is phase-dependent: before mutation, methods perform similarly without duplicate effects among capable trials; during partial mutation, naive retry, per-call idempotency, and zero-privilege journaling collapse on the evaluated composite workflows; after commit but before acknowledgment, verification and server-side idempotency substantially improve safety. These findings demonstrate that evaluating nominal completion alone masks critical, phase-dependent recovery vulnerabilities in autonomous agents.",
+   "published": "2026-10-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.05622"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "UndoBench introduit un benchmark pour évaluer la capacité de récupération des agents outils (vs compétence nominale), révélant des faiblesses critiques (ex. duplication d'effets). Essentiel pour les systèmes critiques en entreprise.",
+   "score": 8.8
+  },
+  {
+   "id": "4d51f20201bade3c",
+   "title": "Foundations of Proactive Agents: Principles, Technical Layers, and Proactivity-Gym",
+   "url": "https://huggingface.co/papers/2609.37267",
+   "summary": "Proactive LLM agents can turn idle compute into useful support before users ask. Yet even correct work can misread user context, impose review costs, or undermine trust. This work proposes foundations for designing, realizing, and evaluating proactive LLM agents around three joint principles (3T): Task Capability, anticipating relevant needs and correctly performing useful work; Temporal Allocation, allocating compute according to resource availability and when results are needed; and Trust, sustaining users' confidence and appropriate reliance on the agent. We connect these objectives to a design space organized around five dimensions: task scope, anticipation horizon, activation trigger, processing timing, and intervention depth, and specify the situation and system modeling needed to support its choices, including user and environment representations, backbone LLMs, and agent harnesses. Lastly, we propose PROACTIVITY-GYM, a simulation-based evaluation testbed including multi-day scenarios, stateful environments, and persona-conditioned simulated users that can evaluate the consequences of proactive assistance across interactions. Evaluations across 23 model-harness configurations uncover substantial performance gaps across 3T and reveal that LLM judges often conflate task capability and trust. A human study with 30 participants demonstrates the importance of the joint 3T optimization: participants show sharp trust declines after intervention misalignment despite correct outcomes, and prefer sleep-time assistance, even when imperfect, to preserve ongoing focus. Together, these findings support designing and evaluating proactive agents through the joint consideration of useful work, compute allocation, and evolving user trust.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2609.37267"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Foundations of Proactive Agents définit 3 principes (3T) et un testbed (PROACTIVITY-GYM) pour évaluer les agents proactifs, avec une taxonomie claire des dimensions de conception et des scénarios multi-jours.",
+   "score": 8.8
+  },
+  {
+   "id": "88be42f5228036ee",
+   "title": "The Missing Primitive: Diagnosing and Repairing Mathematical Reasoning in Large Language Models",
+   "url": "https://huggingface.co/papers/2610.02191",
+   "summary": "While Large Language Models (LLMs) have demonstrated striking capabilities on frontier mathematical problems, it remains unclear whether they possess the structural mathematical understanding underlying their solutions. In this paper, we take a first step toward systematically studying mathematical understanding in LLMs, from diagnosing its distinct capabilities to leveraging these findings to improve post-training. First, we introduce the notion of Mathematical Primitive to probe structural mathematical understanding and propose , a novel benchmark that evaluates mathematical reasoning along four distinct dimensions: Discovery, Generation, Digestion, and Execution. Second, our systematic diagnosis shows that solution accuracy masks distinct capability profiles, primitives unlock substantial latent execution capacity, and Discovery is the dominant bottleneck in mathematical reasoning. Our post-training analysis further shows that discovery-limited failures are particularly amenable to repair. Finally, building on these findings, we introduce , a primitive-privileged self-distillation framework that selectively transfers primitive-guided reasoning into the student model. Extensive experiments demonstrate that consistently improves mathematical reasoning over baselines across model scales and challenging benchmarks.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.02191"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Proposition du concept de 'primitive mathématique' pour diagnostiquer et réparer les lacunes en raisonnement mathématique des LLMs, via un benchmark en 4 dimensions (Discovery, Generation, Digestion, Execution) et une méthode de self-distillation guidée par ces primitives.",
+   "score": 8.8
+  },
+  {
+   "id": "effdffed3fa060d7",
+   "title": "H-JEPA: End-to-End Learning of Hierarchical World Models for Visual Planning",
+   "url": "https://arxiv.org/abs/2610.06805v1",
+   "summary": "Long-horizon planning with latent world models requires reasoning across timescales and levels of abstraction. Existing task-agnostic JEPA world models predict and plan at a single timescale or with multiple horizons in one shared latent space. We introduce H-JEPA, an end-to-end recipe for training a hierarchy of action-conditioned JEPAs in which each level predicts farther ahead in its own learned latent space. Planning proceeds top-down: the top level optimizes progress toward the goal, and each level's predictions become subgoals for the planner below it. When factors in the data evolve at separated timescales, higher levels discard fast, unpredictable detail and retain slower task-relevant state. Across four simulated navigation and manipulation environments, hierarchical planning improves over a flat JEPA; on Visual AntMaze, a three-level hierarchy raises success from 18% to 73% using less planner compute. Ablations attribute these gains to both temporal decomposition and higher-level goal representations. With inverse-dynamics supervision, the approach extends to diverse real-robot videos from DROID, where hierarchy improves offline planning fidelity at lower planner compute.",
+   "published": "2026-10-05T17:53:34+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wancong Zhang, Basile Terver, Michael Rabbat, Yann LeCun, Randall Balestriero"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "H-JEPA introduit une hiérarchie de modèles JEPA pour le planification visuelle, avec des gains majeurs (ex: +55% de succès sur Visual AntMaze) en décomposant les prédictions par échelle temporelle et en optimisant les sous-objectifs de manière top-down.",
+   "score": 8.6
+  },
+  {
+   "id": "34b1df6b61a7b5ef",
+   "title": "MC-Sparse: Deconstructing and Closing the Dense-Sparse Attention Gap in Diffusion Transformers",
+   "url": "https://arxiv.org/abs/2610.06801v1",
+   "summary": "Sparse attention is a primary approach to reducing the latency of diffusion transformers in long-sequence generation tasks, such as video and high-resolution 3D asset generation. However, existing methods can degrade generation quality and fidelity at high sparsity levels. Through controlled oracle comparisons, we trace this degradation to three sources: constraints imposed by token grouping, inaccurate interaction selection, and the attention contributions lost when tokens are discarded. Guided by this analysis, we propose Meta-Cached Sparse Attention (MC-Sparse), a training-free framework that selects individual key-value (KV) tokens while organizing similar queries into tile-aligned groups for efficient GPU execution. MC-Sparse caches metadata comprising query groups, KV indices selected using exact attention probabilities, and residuals between dense and sparse attention outputs, and reuses them across subsequent denoising steps. Across video and 3D generation models, MC-Sparse achieves higher fidelity to dense-attention outputs and larger denoising speedups than existing sparse-attention baselines, without visible quality degradation. Relative to dense attention, it delivers a $1.80\\times$ denoising speedup on Minimax-H3-Base and a $2.32\\times$ speedup on 3D asset generation, both with negligible quality loss.",
+   "published": "2026-10-05T17:51:42+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiarui Chen, Zeqiang Lai, Jiangshan Wang, Ziheng Ouyang, Ye Huang, Xiangyu Yue"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "MC-Sparse propose une méthode de *sparse attention* pour les Diffusion Transformers, optimisant l'inférence en sélectionnant dynamiquement les tokens clés tout en préservant la qualité de génération. La technique, basée sur un cache de métadonnées et une organisation par groupes de requêtes, accélère les tâches de génération vidéo et 3D sans dégradation visible par rapport à l'attention dense.",
+   "score": 8.6
+  },
+  {
+   "id": "81933d1b5030f582",
+   "title": "A Solvable Model of Adaptive Learning Rate Rescaling: Acceleration, Stability & Scaling",
+   "url": "https://arxiv.org/abs/2610.06701v1",
+   "summary": "A recurring design principle in modern optimizers is to decouple update magnitude from the raw gradient norm, yet its consequences for learning-curve and resource scaling remain unclear. We isolate this mechanism by studying normalized SGD in a random-feature model with power-law teacher and data covariance. Fixed-norm updates induce an effective learning rate that grows as gradients shrink. We derive a dynamical mean-field theory (DMFT) describing the joint dependence of the loss on training time, model width and batch size. Normalization initially accelerates SGD, mapping the power-law exponent $r_{\\rm SGD} 1$. At finite step size, however, the same feedback ultimately breaks the acceleration and leads to marginal stability. The late-time theory yields width-limited, edge-of-stochastic-stability (EoSS), and deterministic edge-of-stability (EoS) regimes. These phases determine when larger batches or wider models reduce serial training time at comparable compute. We quantify in which of these phases increased batch size or width can compensate the excess compute use per step by fewer optimization steps to target loss. Linearized ResNet experiments on CIFAR-5M support the predicted acceleration, breakdown, and resource-scaling trends. Together, these results connect normalization-induced acceleration, EoS effects, and width--batch allocation within a solvable theory.",
+   "published": "2026-10-05T17:00:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Itay Lavie, Clarissa Lauditi, Cengiz Pehlevan"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Ce travail théorique analyse l'impact des mises à jour à norme fixe dans les optimiseurs (comme SGD normalisé) sur l'accélération, la stabilité et le scaling des courbes d'apprentissage, avec des prédictions validées empiriquement sur des réseaux de type ResNet.",
+   "score": 8.6
+  },
+  {
+   "id": "9b5a7fd604487fc5",
+   "title": "OmniReasoning: Pushing the Limits of Audio-Visual Joint Reasoning",
+   "url": "https://huggingface.co/papers/2609.39490",
+   "summary": "Recent advances have enabled unified omni-modal models in understanding audio, vision, and language. However, existing benchmarks, training data, and learning methods largely treat the modalities independently, leaving the capability of audio-visual joint reasoning poorly evaluated and insufficiently elicited. We address this gap with a benchmark, data engine, and learning method. First, we introduce OmniReasoningBench, a benchmark where both audio and visual evidence are indispensable. It comprises 1,150 multiple-choice and open-ended questions across two tasks, reasoning over video and reasoning beyond video. Second, we develop a data engine OmniQA. It automatically constructs evidence-grounded QA pairs that explicitly necessitate audio-visual joint reasoning, together with time-stamped clue chains that guide the annotation of thinking process. Besides our benchmark, this engine produces training data OmniReasoning-SFT-112K and OmniReasoning-RL-19K. Finally, we propose an on-policy self-distillation method Modality-Factored Self-Distillation (MFSD). It evaluates each sampled response under modality-specific clue contexts, disentangling the contributions of individual clues and their cross-modal interactions for token-level credit assignment. With our training data and learning method, our model OmniReasoning-30B-A3B achieves 50.0% on OmniVideoBench and 42.5% on OmniReasoningBench, improving the base model Qwen3-Omni-30B-A3B-Thinking by 12.8 and 9.3 percentage points, respectively. Moreover, it delivers substantial gains on general and long-video benchmarks, including Video-MME-v2. We hope our work offers a solid step for facilitating future research in omni-modal joint reasoning.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2609.39490"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "OmniReasoning propose un benchmark (OmniReasoningBench) et une méthode (MFSD) pour évaluer et améliorer le raisonnement audio-visuel joint, avec des données générées automatiquement (OmniQA) pour entraîner des modèles capables d'intégrer les deux modalités de manière indispensable.",
+   "score": 8.5
+  },
+  {
+   "id": "76b3e46f2c8ecffe",
+   "title": "Learning to Learn a Language",
+   "url": "https://huggingface.co/papers/2610.05879",
+   "summary": "We present the Prior-Fitted Language Model (PFLM), a 300M-parameter byte-level transformer pretrained only on samples from a synthetic non-linguistic prior. Given a prefix of real text, it learns to predict the language in context with frozen weights, having never seen a word of any real language. Every training sequence is generated by a recurrent structural causal model drawn fresh from a distribution over such models. The model never sees the same language twice during training, so the only way to predict the continuation is to infer the language from the prefix. Samples from this prior share the statistical signatures of natural text: Zipfian frequencies, slow entropy-rate convergence, and long-range dependence. On Wikipedia in six languages, bits per byte fall from the uniform eight to between 0.9 and 2.4 at one million bytes of context. Given numerals instead of text, PFLM learns to count, to compare magnitudes, and to add approximately. It predicts deterministic sequences like Rudin-Shapiro or the prime indicator, and it compresses six non-text domains, from source code to speech, below gzip and PPMd. The model has not learned a language. It has learned to learn one.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.05879"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "PFLM, un modèle de 300M de paramètres, apprend à prédire des langues réelles sans en avoir vu aucune, en inférant leur structure à partir de préfixes, avec des performances proches des modèles linguistiques sur des tâches variées.",
+   "score": 8.5
+  },
+  {
+   "id": "d7d35e91d7cdd6ad",
+   "title": "Periscope: Extending Frozen Language Models Beyond Their Context Window",
+   "url": "https://huggingface.co/papers/2610.04047",
+   "summary": "A language model reads long text in one quadratic forward pass, stops at the context window, and loses accuracy with length before reaching it. We ask whether the read can be factorized when deciding over a finite set: which document is relevant, which option is supported, which passage is the evidence. Periscope, a training-free inference method, arranges the N chunks of a text on a K{times}K grid with K{=}lceilNrceil and asks a frozen model the same question about K local spans of consecutive chunks and K strided spans that sample the whole text, reading the log-odds of every answer at one token. Each answer takes its best local and strided score, and scoring every chunk by its two spans gives an evidence map at no further cost, whose peak is the chunk behind the answer. Every probe is about sc tokens for a text of s tokens and chunk size c, so a window of W tokens reaches W^{2}/c tokens at s^{1.5} cost. The map replaces the long read. On LongBench v2, reading only the K chunks the map ranks highest, 9k tokens, matches the same model's best window read across windows from 32k to 1M tokens, and on InfiniteBench, where the median context is 150k tokens, it leads the best window read by 5 points. The same map ranks BRIGHT's long-document corpora with the best NDCG@10 of six methods. Each call caches only one probe, so a 27B model reads 4.5M-token contexts on one 80GB GPU, where a single pass would need 296GB of cache. A long read then needs a GPU that holds the model, not one that holds the text.",
+   "published": "2026-10-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.04047"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Periscope propose une méthode d'inférence sans entraînement pour étendre la fenêtre de contexte des LLM en factorisant la lecture de longs textes via des spans locaux et stridés, réduisant la complexité quadratique à une échelle sous-linéaire. Validé sur LongBench v2 et InfiniteBench, il rivalise avec des lectures de fenêtres de 1M tokens.",
+   "score": 8.5
+  },
+  {
+   "id": "bd51fd69a4e681e3",
+   "title": "Dynamic Harness Search: Building Multi-Agent Systems Per-Query via Prediction",
+   "url": "https://huggingface.co/papers/2610.04137",
+   "summary": "Agent harnesses specify the roles, instructions, tools, and communication structure used to solve a task, and the right harness depends on the query. Because the value of each design choice is observable only through execution, tailoring a harness to each query has required either executing alternatives at inference time or costly manual design. We introduce SHIFT, which moves execution out of the per-query search loop. A local LLM architect learns a policy over harness-building actions from search, and a value function that predicts, from measured executions, a utility balancing accuracy against execution cost. For each query, Monte Carlo tree search uses these predictions to construct a harness. Across 9,193 tasks in six benchmarks, from math to document and general-assistant tasks, with a Gemini 3.5 Flash executor, SHIFT attains the highest mean accuracy, about 80%, outperforming 17 baselines that span prompting, prompt optimization, and workflow search, and exceeding the strongest baseline by 7.2 percentage points. A cheaper mode of SHIFT also attains a higher mean accuracy than every baseline while using 32% fewer execution tokens than the strongest baseline. We further show that choosing structure, instructions, and tools jointly beats choosing only instructions or only tools by up to 9.1 percentage points, and that learned value selection identifies more accurate harnesses with lower execution cost from candidate pools.",
+   "published": "2026-10-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.04137"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Cadre SHIFT pour construire dynamiquement des systèmes multi-agents par requête via une politique d'architecte LLM et une fonction de valeur prédictive, atteignant 80% de précision moyenne sur 9 193 tâches avec une réduction de 32% des tokens d'exécution.",
+   "score": 8.5
+  },
+  {
+   "id": "c70a159273aa85ba",
+   "title": "Base Models Can Reason By Taking a Cue From Training Data",
+   "url": "https://arxiv.org/abs/2610.06851v1",
+   "summary": "In this paper, we study how training data creates associations between the tokens at the start of a base model's response and the reasoning behavior that follows. First, we demonstrate that fixing particular starting token cues makes a base model's performance competitive with that of its reinforcement learning (RL)-trained counterparts on math and coding. For instance, the cue \".\\n\\nOkay\" raises Olmo-3-7B's MATH-500 pass@1 accuracy from 42% to 78%, while \"Alright,\" raises Qwen3-14B's from 72% to 87%. Second, RL makes these cues more likely, while fixing them recovers much of its performance gain over the base model. Third, we trace the reasoning effects of token cues to the training data. We perform causal data interventions to turn an arbitrary word, such as \"chicken\", into an effective reasoning cue, or remove an existing cue's effect. A similar edit makes the prompt instruction \"Think duck duck goose\" as effective as \"Think step by step\" at eliciting reasoning. We also find that the hidden state representations induced by different cues correlate with different document types from the training set. Finally, we extend our study of token cues with a case study in language model safety, finding that different cues elicit distinct refusal and compliance behaviors that correspond to different types of training data.",
+   "published": "2026-10-05T17:59:52+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sophie L. Wang, Amil Dravid, Rulin Shao, Kevin Farhat, Sewon Min, Alexei A. Efros"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Démontre que des tokens de début de réponse ('cues') dans les modèles de base peuvent induire un comportement de raisonnement compétitif avec des versions RL fine-tunées (ex: +36% sur MATH-500 pour OLMo-3-7B). Analyse causale des effets via interventions sur les données d'entraînement.",
+   "score": 8.3
+  },
+  {
+   "id": "ee9c08dede0179ea",
+   "title": "Recursive Video In-Context Learning for Agentic Robot",
+   "url": "https://arxiv.org/abs/2610.06843v1",
+   "summary": "LLM agents that orchestrate frozen vision-language-action (VLA) policies improve across episodes through text memory, which records what the agent did but not how the task is done. A demonstration video shows it, but fits poorly into an agent's context. The full video slows every turn, fixed keyframes lose the contact detail that decides whether a grasp holds, and what the agent needs shifts from the task's structure while planning to the frames around each contact. We introduce Recursive Video In-Context Learning (RV-ICL), a training-free method that turns a demonstration into a hierarchy the agent navigates rather than a prompt it receives. The hierarchy is built from the sub-events of the demonstration, such as grasps and releases. Its levels grow finer, from keyframes of the whole task to phases, moments and short clips, and are exposed through read-only tools. The agent reads the coarse levels before planning. During execution it re-enters the hierarchy whenever a step needs more detail and loads only the clip of its current sub-goal. One demonstration per task is enough. Built on RPent, RV-ICL raises success from 92.6% to 96.5% on LIBERO-PRO and from 86.7% to 95.8% on LIBERO-Plus.",
+   "published": "2026-10-05T17:59:11+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wenrui Bao, Xinxin Liu, Bingxin Xu, Yuzhang Shang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "outils"
+   ],
+   "tldr": "RV-ICL, une méthode sans entraînement pour structurer les vidéos de démonstration en hiérarchie de sous-événements, améliorant les agents robotiques (ex: +3.9% de succès sur LIBERO-PRO). Permet une navigation contextuelle fine pendant l'exécution.",
+   "score": 8.3
+  },
+  {
+   "id": "1dfa443fb7203df9",
+   "title": "MemPilot: Orchestrating On-Demand Multimodal Memory Curation for LLM Agents",
+   "url": "https://arxiv.org/abs/2610.06830v1",
+   "summary": "Memory has become integral to the LLM agent ecosystem, supporting information retention and reuse across interactions. However, most existing agent memory systems construct memory in a query-agnostic manner, which can incur unnecessary preprocessing cost and discard details that later prove essential. Recent studies have begun shifting memory processing toward runtime adaptation, but typically specialize in particular operations or fixed processing schemes, leaving flexible control over performance, cost, and latency largely underexplored. To address this challenge, we present \\textbf{MemPilot}, a flexible framework that orchestrates on-demand memory curation under different performance--cost--latency preferences. Specifically, we optimize a multi-step LLM policy via reinforcement learning to iteratively choose between retrieving from query-agnostic memory and delegating query-specific curation of raw multimodal history to heterogeneous LLMs and VLMs. The policy jointly controls evidence amount, curation instructions, model selection, and visual access, enabling fine-grained allocation of runtime computation. To optimize this policy under competing objectives, we adapt objective-wise advantage decoupling by separately estimating each objective's advantage before aggregation. Moreover, we introduce prefix-based marginal utility estimation for fine-grained credit assignment across multi-step rollouts. Experiments on five multimodal agent-memory benchmarks demonstrate favorable performance--cost--latency trade-offs across optimization preferences, with preference sweeps yielding broader frontiers than existing trade-off-aware baselines.",
+   "published": "2026-10-05T17:58:06+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Haozhen Zhang, Haodong Yue, Quanyu Long, Jianzhu Bao, Qingyuan Liu, Tao Feng"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "MemPilot, un framework RL pour orchestrer la curation dynamique de mémoire multimodale pour les agents LLM. Optimise les trade-offs performance-coût-latence via une politique multi-étapes contrôlant extraction, modèles et accès visuel.",
+   "score": 8.3
+  },
+  {
+   "id": "a7bef4b5f66d77a7",
+   "title": "Paradee: Distilling Kokoro-82M into an 8M-Parameter Single-Voice Text-to-Speech Model",
+   "url": "https://arxiv.org/abs/2610.06817v1",
+   "summary": "We distill Kokoro-82M, a widely used open text-to-speech model with 54 voices, into Paradee, an 8.07M-parameter model that speaks one of them. Paradee keeps Kokoro's architecture with much narrower layers, and each of its two halves is trained separately against the frozen teacher. It has 10x fewer parameters and needs 15x less compute. We first synthesize a corpus with the teacher and keep its durations, pitch, energy and phoneme features. We then train a small text side to predict these values, and a small decoder to turn the teacher's saved values into the teacher's audio, first with spectral losses and then adversarially. Finally, we connect the two halves and quantize the weights to int8. It needs no alignment learning and no joint training, and it runs on one laptop. Stored in int8, Paradee is 8.5 MB, runs 25x faster than real time on one CPU thread, and scores 4.41 on UTMOS against the teacher's 4.52. The student initially kept a slight buzz, which we trace to the phase of voiced speech between 2 and 8 kHz. A phase-locking filter applied after synthesis removes most of it, with no training and no extra parameters. Code, model files and audio samples are at https://github.com/sahilmahendrakar/paradee",
+   "published": "2026-10-05T17:56:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sahil Mahendrakar"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "audio"
+   ],
+   "tldr": "Paradee distille Kokoro-82M (54 voix) en un modèle 8M de paramètres pour une seule voix, réduisant la taille de 10x et le compute de 15x, avec une qualité audio proche (UTMOS 4,41 vs 4,52) et une exécution 25x plus rapide sur CPU.",
+   "score": 8.3
+  },
+  {
+   "id": "6152a8495ff5542c",
+   "title": "T-Search: An Open Agentic Retriever and Playground for Hard Multi-Step Search",
+   "url": "https://arxiv.org/abs/2610.06782v1",
+   "summary": "We present T-Search, an open-weight agentic retriever for hard multi-step search. Given a question and a search tool over a fixed corpus, it runs a bounded multi-round search and returns a ranked list of evidence chunks with short justifications, leaving answer generation to a downstream model, so backend and generator can be swapped without retraining. T-Search is built on Qwen3.6-35B-A3B and trained on adversarially filtered synthetic search tasks with round-sliced supervised fine-tuning followed by GSPO on a recall reward. Averaged over seven English and Russian benchmarks with gold evidence annotations, it reaches 56.0 Recall@10 with one rollout, 14.4 points above its base, and 61.3 with three fused rollouts, outperforming larger open models. We release the model, harness, live demo, and three benchmarks, including TRuST, the first native-Russian hard-search benchmark.",
+   "published": "2026-10-05T17:44:26+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Olga Tsymboi, Ramil Latypov, Aleksandr Medvedev, Danil Taranets, Dmitrii Stoianov, Nikita Gulyakov"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "rag"
+   ],
+   "tldr": "T-Search est un *retriever agentique* open-weight pour des recherches multi-étapes complexes, entraîné avec un fine-tuning supervisé et GSPO sur des tâches synthétiques adversariales. Il atteint 56.0% de Recall@10 en une passe et 61.3% avec trois passes fusionnées, surpassant des modèles plus grands sur sept benchmarks multilingues.",
+   "score": 8.3
+  },
+  {
+   "id": "a6938b7f50f5c8cb",
+   "title": "VideoTapestry: Query-Adaptive Memory Refinement for Multi-Agent Long-Video Understanding",
+   "url": "https://arxiv.org/abs/2610.06672v1",
+   "summary": "Long-video understanding places substantial demands on memory, as answering questions often requires retrieving information distributed across extended temporal spans. Existing approaches broadly follow two paradigms: query-driven exploration, which is sensitive to localization errors, and query-independent memory construction, which may omit question-specific details. We introduce VideoTapestry, a training-free multi-agent framework that adapts a preconstructed hierarchical video memory through coarse-to-fine, query-driven refinement. The preconstructed memory organizes video content into three levels, capturing global narrative context, event-level temporal structure, and fine-grained relational evidence, respectively. To support coarse-to-fine localization and observation, we assign a specialized agent to each level, keeping retrieval and refinement within a scale-specific context. Guided by the query, these agents revisit relevant video regions and enrich layer-wise memories with targeted multimodal observations. Their refinements are assembled according to the original hierarchy into a composite query-adaptive memory, preserving global context in a compact form while retaining fine-grained evidence along query-relevant branches for final reasoning. Compared with direct GPT-5.5 inference, VideoTapestry achieves absolute accuracy gains of 17.2%, 14.9%, 9.8%, and 7.0% on LVBench, LongVideoBench (Long), Video-MME (Long), and EgoSchema, respectively, achieving the state-of-the-art results among all competitors.",
+   "published": "2026-10-05T16:44:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yucheng Liu, Yufei Yin, Mingxiao Feng, Jiajun Deng, Wengang Zhou, Houqiang Li"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "Framework multi-agents (VideoTapestry) pour l'analyse de vidéos longues via mémoire hiérarchique et raffinement adaptatif guidé par requête. Pertinent pour les architectures d'agents et le RAG multimodal.",
+   "score": 8.3
+  },
+  {
+   "id": "a6192512719091fe",
+   "title": "LiFT: Loop Flow Transformers",
+   "url": "https://huggingface.co/papers/2610.05538",
+   "summary": "We introduce Loop Flow Transformers (LiFT), a family of looped generative models that scales computation by repeatedly applying a shared Diffusion Transformer (DiT) core, with only light changes to the standard architecture. Rather than asking every recurrent step for the final prediction, LiFT trains each step with a single regression target: a point on a straight path from the model's initial estimate to the flow-matching target. Because we index these targets by a continuous depth coordinate, a trained model can loop far beyond its training depth with no retraining, early exits, or other modifications. In our experiments, these longer rollouts improve generation, so inference computation can grow without adding parameters. On ImageNet at 256x256, LiFT-L/2 achieves an FID 3.34 points lower than our dense DiT-XL/2 baseline while using approximately 60% fewer parameters, 32% fewer training FLOPs, and 52% fewer inference FLOPs.",
+   "published": "2026-10-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.05538"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "LiFT introduit des transformers génératifs itératifs (boucles) pour optimiser l'efficacité calculatoire : moins de paramètres et de FLOPs pour une meilleure qualité (FID) sur ImageNet. Approche prometteuse pour l'inférence scalable sans surcoût d'entraînement.",
+   "score": 8.2
+  },
+  {
+   "id": "e343b043273c2f1f",
+   "title": "What Matters for Latent Reasoning with Flow Matching",
+   "url": "https://huggingface.co/papers/2610.06666",
+   "summary": "Latent reasoning lets a large language model (LLM) think in a continuous space and verbalize only the answer. We argue that an effective latent thought must meet five requirements: it should be useful, helping produce the correct answer rather than merely changing it, diverse, so that resampling yields different reasoning trajectories, explainable, so that a decoded chain of thought (CoT) reflects reasoning the answer actually follows, refinable with more inference compute, and efficient, costing less than an explicit CoT at comparable accuracy. Current methods rarely meet these requirements: they learn shortcuts from the question, distill the explicit CoT into their weights, or imitate it one token at a time. We focus on flow matching in a learned latent space, the family we argue is best placed to meet them, and identify the training choices that make it work. The result is Flow-based Latent Reasoning (FLaRe), a simple recipe covering what the latent space encodes and how to shape it, where to train the flow, how to read out the answer, and a final stage of training on the model's own verified thoughts. A probe for each requirement shows that FLaRe improves on prior latent methods in all five. It also compares favorably with them on arithmetic benchmarks, while reaching 97% of the accuracy of explicit CoT at a quarter of its latency.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.06666"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "FLaRe formalise les exigences pour un raisonnement latent efficace (utile, divers, explicable, etc.) via flow matching, avec des gains mesurables sur les benchmarks. Approche fondamentale pour l'optimisation des processus de pensée des LLM.",
+   "score": 8.2
+  },
+  {
+   "id": "9fc2065eaad0aab9",
+   "title": "SearchJev: A Fast and Calibrated System-1 Model for Search Agents",
+   "url": "https://huggingface.co/papers/2610.05107",
+   "summary": "Search agents repeatedly make short decisions about relevance, evidence sufficiency, and search actions. Using generative language models for these decisions introduces latency and unreliable confidence. We present SearchJev, a fast and calibrated System-1 model that separates search decisions from System-2 reasoning and generation. Given a search state and a decision schema, SearchJev directly scores legal options without autoregressive output generation. We propose Soft-Label Learning for Calibrated Decisions (SLCD) to learn decision probabilities from uncertain supervision and calibrate their confidence. In a dual-system search agent, SearchJev handles short decisions and delegates uncertain judgments to System 2, which retains planning, query generation, and answer composition. We also introduce SearchDecision-Bench, a benchmark unifying six types of search decisions for training and evaluation. On SearchDecision-Bench, SEARCHJEV improves decision quality over same-size Qwen3.5 autoregressive models, achieves 5.2-5.3 times faster decisions, and reduces average expected calibration error by 41-74%. On BrowseComp-Plus, the dual-system agents achieve a 3.7-4.7 times speedup in active search time while improving answer accuracy from 45% to up to 54%.",
+   "published": "2026-10-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.05107"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "SearchJev, un modèle rapide et calibré, accélère les décisions des agents de recherche (5x) tout en améliorant la qualité et la calibration, avec un benchmark dédié (SearchDecision-Bench) pour évaluer les décisions de recherche.",
+   "score": 8.2
+  },
+  {
+   "id": "1ef9ad31a1a1b02b",
+   "title": "PerturBot: Breaking Shortcut Priors in Vision-Language-Action Models with Perturbative Training",
+   "url": "https://huggingface.co/papers/2610.04616",
+   "summary": "A vision--language--action (VLA) policy can complete complex tasks while ignoring the evidence that should determine its actions. An object held near the wrist camera can displace the instructed target. Language and action show the same pattern: a familiar noun can trigger the operation it was paired with in training even after the verb changes, and a gripper that closed on nothing may lift anyway. We call these dependencies modality shortcuts: regularities in successful demonstrations make visual, lexical, or motor cues sufficient to predict expert actions without the task evidence needed for the underlying decision. More demonstrations of the same kind can raise task success while leaving these shortcuts intact. We propose Perturbot which makes task-relevant evidence easier to use and shortcuts insufficient on their own: it applies task-preserving wrist-view perturbations, enriches instructions with decision-relevant captions, and adds random and failed trajectory segments relabeled with the behavior they contain. It complements scaling by changing what is scaled, and leaves inference unchanged. Moreover, we propose GroundingFscore, an offline score that diagnoses how severely a policy relies on modality shortcuts. Task success rate shows whether a policy improves, while GroundingFscore reveals whether the policy scales healthily, relying on task evidence rather than shortcuts. Together, Perturbot and GroundingFscore provide a training-and-evaluation framework for disentangling VLA decisions from shortcut priors while preserving responsiveness to task-relevant evidence.",
+   "published": "2026-10-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.04616"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "PerturBot cible les 'shortcut priors' dans les modèles VLA (vision-langage-action) via des perturbations préservant la tâche, des légendes décisionnelles et des segments de trajectoires échouées, réduisant la dépendance aux biais modaux et améliorant la robustesse.",
+   "score": 8.2
+  },
+  {
+   "id": "f8b4dcacdb064d9f",
+   "title": "Memadapter: Counterfactual Adaptation Against Memory-induced Sycophancy",
+   "url": "https://huggingface.co/papers/2610.05162",
+   "summary": "Long-term memory enables LLM-based agents to retain and reuse information across tasks and sessions, supporting personalization and long-horizon interactions. However, persistent memories can also induce sycophancy, causing agents to over-align with users' historical beliefs even when they are inaccurate, outdated, or inconsistent with objective evidence. Existing mitigation methods assume that memory-induced sycophancy originates from biased or incorrect memories and attempt to reduce this risk by filtering such memories at different stages of the memory pipeline. However, in the real world, objective and correct memories can still induce sycophancy, and the same memory can warrant different influence across different contexts. To this end, we propose MemAdapter, a novel framework that adaptively integrates retrieved memories to support objective and reliable reasoning. Specifically, MemAdapter consists of three components: (i) Counterfactual Induction, which leverages counterfactual reasoning to uncover the potential risk of retrieved memories; (ii) Context-Aware Reflection, which calibrates the inferential influence of each retrieved memory in light of the current task via self-reflection; and (iii) Evidence-Based Reasoning, which grounds the final response in appropriate evidence while preserving the legitimate influence of memory. Extensive experiments on three benchmarks demonstrate that MemAdapter consistently improves memory reliability across diverse scenarios. Our code is available at https://github.com/DEEP-JLU/MemAdapter.",
+   "published": "2026-10-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2610.05162"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "MemAdapter combat la sycophantie induite par la mémoire des agents LLM via une induction contrefactuelle, une réflexion contextuelle et un calibrage adaptatif, permettant une intégration objective des souvenirs sans biais de conformité.",
+   "score": 8.2
+  },
+  {
+   "id": "c9cbe5bbac8a078e",
+   "title": "PlotGround: Grounding Plot Digitization in Real Scientific Figures and Their Source Data",
+   "url": "https://arxiv.org/abs/2610.06825v1",
+   "summary": "Scientific figures often encode quantitative results that are not readily available in machine-readable form, making accurate plot digitization important for verifying and reusing published findings. Yet it remains unclear how accurately current models recover plotted values from real scientific figures, as existing benchmarks rely largely on synthetic charts or cover only a limited range of chart types. We introduce PlotGround, an automated pipeline for building plot digitization benchmarks from real scientific figures and their author-released source data. PlotGround maps figures to source tables, identifies reconstructable panels, and generates quantitative questions with source-grounded reference values. We use PlotGround to construct PlotGround-1k, a human-verified benchmark of 1,119 questions from 1,066 bioRxiv preprints. Across sixteen multimodal models, the best reaches 87.5% accuracy at a $\\pm 5\\%$ relative-error tolerance. Tightening the tolerance to $\\pm 2\\%$ lowers every model's accuracy by 11-24 percentage points, revealing a gap between approximate visual reading and precise quantitative recovery. PlotGround's paired figure-source structure lets us compare how accurately the same values are recovered from figures and from source tables. Providing source tables instead of figures raises a coding agent's accuracy from 90.0% to 97.4% while cutting cost by 72%.",
+   "published": "2026-10-05T17:57:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yaohui Zhang, Binxu Li, Haoyi Duan, Jiacheng Miao, Yixin Wang, Xinran Du"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "interpretabilite"
+   ],
+   "tldr": "PlotGround propose un benchmark de 1 119 questions issues de figures scientifiques réelles (bioRxiv) pour évaluer la précision de la digitalisation de graphiques par des modèles multimodaux, révélant des écarts majeurs entre lecture visuelle approximative et récupération quantitative précise (±2% vs ±5% de tolérance).",
+   "score": 8.0
+  },
+  {
+   "id": "dec4a3ec7bcbe48a",
+   "title": "BazaarBench: Delegation Safety in Decentralized C2C Marketplaces Run by LLM Agents",
+   "url": "https://arxiv.org/abs/2610.06748v1",
+   "summary": "In decentralized consumer-to-consumer (C2C) marketplaces, people list goods, negotiate with strangers, and rate one another, so trust rests on reputation. Large language model (LLM) agents now act for users, raising risks to their money, privacy, and reputation. We introduce BazaarBench, a simulated C2C marketplace and benchmark for evaluating the safety of these agents. It tracks ownership, item condition, and commitments across transactions, combining record checks with rubric-based LLM judgments to identify six failure types across five stages. We run three base markets for 30 simulated days, each with 100 agents using one model and inventories drawn from a public eBay sample. Across 45 continuations, we evaluate five models under ordinary instructions, deadline pressure, or adversarial instructions to exploit other traders. Each continuation runs for seven simulated days from a copy of a market's day-30 state. The tested model controls the same 20 selected agents, retaining their personas, inventories, and histories, while the other 80 keep the base model. All five models attempt to promise the same item to multiple buyers under ordinary instructions. Adding targets and deadlines increases these attempts for every model. Under adversarial instructions, the share of tested sellers' committed transactions completed despite unavailable items or overstated conditions rises from 15.4% to 33.4%, reaching 55.5% for GPT-5.4. Averaged across models and markets, simulated weekly earnings per tested agent rise from USD 20 under ordinary instructions to USD 33 under adversarial instructions. Most of the increase comes from items the sellers never held. We release the simulator, saved market states, evaluation code, and records covering 357,608 agent model calls for evaluating new models and developing safer marketplace agents.",
+   "published": "2026-10-05T17:26:17+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ziyan Wang, Shuqing Shi, James Oldfield, Samuele Marro, Jialin Yu, Philip Torr"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "BazaarBench évalue la sécurité des agents LLM dans des marchés C2C décentralisés, identifiant 6 types d'échecs sur 5 étapes via des simulations de 30 jours. Outil clé pour analyser les risques des agents autonomes et la régulation des marchés IA.",
+   "score": 8.0
+  },
+  {
+   "id": "1dbdeaaa879f20c0",
+   "title": "Arm-wise Compositional Generalization in Dual-Arm Vision-Language-Action Models",
+   "url": "https://huggingface.co/papers/2610.06184",
+   "summary": "Generalization in multi-arm collaboration can be studied as composing familiar atomic skills in new ways across arms. However, existing evaluations offer limited insight into which training and architectural choices support this ability under different coordination requirements. We introduce ACG-Bench, a benchmark for Arm-wise Compositional Generalization that provides a common testbed for studying skill recomposition in dual-arm policies. It contains 23 task--condition pairs across 8 task families, with 6 in-domain conditions and 17 unseen compositions covering reordering, synchronization, their combination, and cross-task composition. All methods receive the same per-arm atomic prompts, and success requires achieving the task goal while satisfying physical milestones and specified order or timing constraints. Using π_{0.5} as a common vision-language-action backbone, we compare representative data-augmentation and architectural strategies with shared source data and a common evaluation protocol. Our architectural study examines arm-token grouping, skill-specific LoRA adapters (SkillLoRA), and arm-wise attention (AWA), highlighting the complementarity of skill-conditioned parameters and attention structure. Combining these choices yields AE-VLA, which achieves 21.53\\% generalization success in simulation, compared with 2.94\\% for Single π_{0.5}, 3.06\\% for MA-VLA, and 5.53\\% for two independently controlled π_{0.5} policies. On physical SO101 robots, AE-VLA reaches 39.00\\% mean success across five unseen conditions, compared with 10.00\\% for the strongest baseline. These findings provide empirical guidance for designing dual-arm policies that generalize beyond fixed training routines.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.06184"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Présentation d'ACG-Bench, un benchmark évaluant la généralisation compositionnelle dans des modèles de collaboration multi-bras (vision-langage-action), avec une étude architecturale comparant des stratégies de regroupement de tokens, LoRA spécifique aux compétences et attention par bras pour améliorer la recomposition de compétences.",
+   "score": 7.9
+  },
+  {
+   "id": "11b25e23232f725f",
+   "title": "RealtimeWAM: One-Step Asynchronous World Action Models",
+   "url": "https://huggingface.co/papers/2610.06617",
+   "summary": "World Action Models (WAMs) incorporate visual representations from video generation backbones to guide action prediction. Recent efficient WAMs adopt Mixture-of-Transformers (MoT) architectures and compute video representations once for reuse by the action expert. However, intra-expert iteration (\\ie, multi-step action denoising) and inter-expert waiting (\\ie, sequential execution of the video and action experts) still limit inference efficiency. To this end, we present RealtimeWAM, an extremely efficient WAM variant with one-step action generation and asynchronous inference, addressing these two bottlenecks. To reduce intra-expert iteration, we propose Teacher-Anchored Consistency Distillation (TACD) to address a local-global error gap: low local consistency error alone does not guarantee accurate final actions. TACD supplements local consistency with explicit supervision from the frozen teacher's multi-step rollout endpoint, enabling accurate one-step action generation. Additionally, we propose Cross-Expert Wavefront Pipelining (CEWP) to eliminate unnecessary expert-level waiting. It overlaps the two experts through block-wise sharing of the video KV cache, synchronizing only immediately before the corresponding action attention consumes it. Extensive experiments across diverse benchmarks (\\eg, LIBERO, LIBERO-Plus and RoboTwin) and model variants (\\eg, Fast-WAM and Faster-WAM) demonstrate the superiority of RealtimeWAM. Notably, RealtimeWAM maintains near-lossless performance (\\ie, <1% drop) across these benchmarks while delivering significant end-to-end speedup (\\eg, sim25times on H100). Our code and checkpoints are available via this https://github.com/ModelTC/LightX2V/tree/main/examples/realtimewam{link}.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.06617"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Modèle RealtimeWAM optimisant les World Action Models avec génération d'actions en une étape et inférence asynchrone, réduisant les latences via TACD (distillation de cohérence) et CEWP (pipelining inter-experts) pour des applications temps réel.",
+   "score": 7.9
+  },
+  {
+   "id": "43f242cf73b276db",
+   "title": "When to Switch: Reliable Action-Chunk Extension for Vision-Language-Action Models",
+   "url": "https://huggingface.co/papers/2610.05719",
+   "summary": "Vision-Language-Action (VLA) models serve as unified policies for robotic manipulation, yet their expensive inference forces robots to pause between policy calls, resulting in stop-and-go execution that interrupts smooth motion and prolongs task completion. Extending the action chunk reduces policy calls and hence these pauses, but predicting farther into the future makes long-chunk execution unreliable. To understand where this unreliability arises, we analyze action errors within long chunks and find that they concentrate around transitions between manipulation subskills, growing sharply with chunk length. This suggests the importance of transition timing, i.e., when to switch subskills within a chunk. Motivated by this observation, we introduce RACE (Reliable Action-Chunk Extension), a framework that predicts the transition timing from an auxiliary one-step denoising pass and conditions action generation on it. By learning and conditioning on transition timing, RACE reduces errors at subskill transitions and enables reliable execution of longer action chunks. Across simulation benchmarks, RACE outperforms fine-tuning at the same chunk length; with 2x longer chunks, it surpasses recent state-of-the-art and efficient VLAs in success rate, and with 4x longer chunks, it remains competitive. On a real robot, RACE uses 4x longer chunks, which reduces the idle time caused by stop-and-go execution by about 5x, while achieving a higher success rate than fine-tuning with the same chunk length. Code and a real-robot demo are available at https://github.com/Seonghoon-Yu/RACE-VLA",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.05719"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Cadre RACE pour étendre les chunks d'actions dans les modèles VLA en prédisant les transitions entre sous-compétences, réduisant les erreurs aux points critiques et permettant des chunks plus longs sans perte de fiabilité.",
+   "score": 7.9
+  }
+ ]
+}
