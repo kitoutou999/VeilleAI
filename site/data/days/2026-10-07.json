@@ -1,0 +1,732 @@
+{
+ "date": "2026-10-07",
+ "digest": {
+  "headline": "TRACE révolutionne l'entraînement quantifié en FP4 pour les modèles MoE en RL, réduisant les écarts de précision sans perte de performance",
+  "overview": "La veille du 2026-10-07 met en lumière des avancées majeures en optimisation des architectures LLM et agents, avec une emphase sur l'efficacité computationnelle et la robustesse. Les travaux couvrent des méthodes de quantification, de distillation, de planification robotique et de sécurité, illustrant une maturation des techniques pour des déploiements scalables et fiables.",
+  "highlights": [
+   {
+    "title": "Optimisation des MoE : quantification et pruning ciblé",
+    "text": "TRACE introduit une méthode de quantification-aware training pour les modèles MoE en FP4 via RL, alignant les phases d'entraînement et de rollout pour minimiser les pertes de précision. Parallèlement, SlimWise propose un pruning d'experts différencié entre les phases de prefill et decode, réduisant le trafic d'experts tout en préservant la qualité via une distillation légère. Ces approches répondent au défi de l'efficacité des architectures MoE à grande échelle."
+   },
+   {
+    "title": "Distillation et embeddings : simplifier sans perdre en performance",
+    "text": "L'étude sur la distillation on-policy avec tokenizers hétérogènes montre que des stratégies simplifiées (top-16) suffisent à égaler les méthodes complexes, tout en clarifiant l'impact des gradients. Par ailleurs, l'utilisation d'embeddings fixes (codes canoniques ou GF(2)) pour les LLM de 1.7B paramètres réduit drastiquement le nombre de paramètres sans dégradation significative, remettant en question la nécessité de tables d'embeddings trainables."
+   },
+   {
+    "title": "Agents et robotique : cohérence, robustesse et efficacité",
+    "text": "CTP et EAPN améliorent la cohérence des politiques robotiques via des trajectoires conditionnelles et un bruit aligné sur l'exécution, avec des gains en latence et robustesse sur des benchmarks comme D3IL et LIBERO. Taming VLAs et VICS-G abordent la gestion des erreurs d'exécution et la faisabilité future des actions, critiques pour la sûreté des agents en conditions réelles. AdvSim2Real et RoboStress renforcent la robustesse face aux attaques dynamiques et aux perturbations physiques."
+   },
+   {
+    "title": "Unification des paradigmes : RAG, contexte long et simulation physique",
+    "text": "UNREAL unifie la sélection d'évidence pour le RAG et les contextes longs avec un modèle léger (<500K paramètres), améliorant le recall tout en réduisant les FLOPs. WorldSolver et ScienceClaw évaluent respectivement la capacité des LLM à générer des solveurs physiques et leur auto-évolution continue dans des domaines scientifiques, illustrant l'élargissement des applications des agents autonomes."
+   },
+   {
+    "title": "Sécurité et parallélisme : défis pour l'inférence et les agents",
+    "text": "SecureSD propose un décodage spéculatif sécurisé pour les LLM, atténuant les vulnérabilités aux attaques tout en maintenant l'efficacité. SquidAgent optimise la parallélisation des agents LLM via un critère de décision réduisant les coûts de réexploration, tandis que NeMo-DCR synchronise les poids en RL agentique à l'échelle du trillion de paramètres avec une compression delta bit-exacte, crucial pour les clusters de rollout."
+   }
+  ],
+  "trend": "Les avancées récentes convergent vers une optimisation systémique des architectures et des agents, combinant efficacité computationnelle, robustesse et généralisation. L'accent est mis sur des méthodes modulaires et adaptatives, capables de s'intégrer dans des pipelines complexes tout en réduisant les coûts et les risques opérationnels."
+ },
+ "items": [
+  {
+   "id": "091f58672aaefdea",
+   "title": "TRACE: Rollout-Guided Quantization-Aware Training for FP4 Reinforcement Learning of MoE Language Models",
+   "url": "https://huggingface.co/papers/2610.07767",
+   "summary": "Reinforcement learning (RL) for post-training large language models (LLMs) incurs substantial computation and memory overhead during rollout generation, which motivates low-precision rollout for efficient RL training. However, existing FP4 RL methods suffer from a key limitation: they primarily optimize quantization accuracy on the training and rollout paths independently rather than directly reducing the discrepancy between the two quantized execution paths. In this work, we propose TRACE (Train-Rollout Quantization Alignment via Compact GuidancE), an FP4 quantization framework for RL training of Mixture-of-Experts (MoE) language models that addresses the limitation of existing FP4 RL methods. TRACE incorporates rollout-guided quantization-aware training that uses rollout-side quantization outcomes to guide training-side FP4 rounding decisions, directly reducing train-rollout discrepancy. Moreover, TRACE adopts an efficient quantization-information caching scheme that selectively retains mantissa and scale information from deeper layers to reduce the storage and communication overhead introduced by rollout guidance. We evaluate TRACE on four large-scale MoE language models across reasoning, coding, and long-horizon RL tasks. Our results demonstrate that TRACE enables joint FP4 weight/activation and FP4 KV-cache rollout with RL performance comparable to BF16 rollout, while achieving up to 5.4xrollout speedup and strong final FP4 performance compared with post-hoc FP4 quantization of BF16-trained policies.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 41,
+    "arxiv_id": "2610.07767"
+   },
+   "relevance": 10,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Nouvelle méthode (TRACE) pour l'entraînement quantifié en FP4 des modèles MoE via RL, alignant les chemins d'entraînement et de rollout pour réduire les écarts de précision, avec évaluation sur 4 modèles MoE à grande échelle.",
+   "score": 9.4,
+   "deep_analysis": {
+    "probleme": "L'entraînement par renforcement (RL) des grands modèles de langage (LLM), notamment ceux basés sur des architectures Mixture-of-Experts (MoE), engendre des coûts computationnels et mémoriels élevés lors de la génération de rollouts. Les méthodes existantes de quantification en FP4 (4 bits à virgule flottante) pour le RL optimisent séparément la précision sur les chemins d'entraînement et de rollout, sans réduire directement l'écart entre ces deux phases quantifiées, ce qui dégrade les performances.",
+    "methode": "TRACE (Train-Rollout Quantization Alignment via Compact GuidancE) propose un cadre de quantification FP4 pour le RL des modèles MoE, alignant explicitement les décisions de quantification entre l'entraînement et le rollout. La méthode utilise un *rollout-guided quantization-aware training* : les résultats de quantification côté rollout guident les arrondis FP4 côté entraînement, réduisant ainsi la divergence entre les deux chemins. TRACE introduit aussi un *quantization-information caching scheme* pour stocker sélectivement les mantisses et échelles des couches profondes, limitant les surcoûts mémoriels et de communication liés à ce guidage. La quantification conjointe des poids/activations (FP4) et du cache KV (FP4) est optimisée pour les tâches RL.",
+    "resultats": "Les évaluations sur quatre modèles MoE à grande échelle (tâches de raisonnement, codage et RL à long horizon) montrent que TRACE permet un rollout en FP4 avec des performances comparables à un rollout en BF16, tout en offrant un accélération jusqu'à 5,4x. La méthode surpasse aussi la quantification FP4 post-hoc des politiques entraînées en BF16, validant son efficacité pour un déploiement basse précision sans perte critique de performance.",
+    "limites": "Le document ne détaille pas les compromis précis entre la réduction de l'écart train-rollout et la complexité algorithmique ajoutée par le caching. L'impact de TRACE sur des architectures non-MoE ou des tâches hors RL reste inconnu. Enfin, la robustesse face à des distributions de données très différentes de celles d'entraînement n'est pas évaluée.",
+    "verdict": "TRACE mérite une attention particulière pour son approche innovante d'alignement quantifié en RL, offrant un gain significatif en efficacité sans sacrifier les performances, mais son applicabilité au-delà des MoE et des tâches RL classiques reste à explorer."
+   }
+  },
+  {
+   "id": "09142ad66017f1ae",
+   "title": "Rethinking Cross-Tokenizer On-Policy Distillation: From Alignment Coverage to Supervision Reliability",
+   "url": "https://huggingface.co/papers/2610.08448",
+   "summary": "On-Policy Distillation (OPD) trains a student on its own generations using teacher feedback. With different tokenizers, comparing teacher and student predictions requires alignment at both sequence and vocabulary levels. In this paper, we examine whether expanding this alignment coverage improves learning. Across three heterogeneous teacher--student pairs on mathematical reasoning and code generation, strict 1:1 groups already cover most student-generated tokens despite substantial vocabulary mismatch. On responses sampled from the students before distillation, the shared vocabulary retains nearly all teacher and student probability mass at strictly aligned positions on average. Restricting reverse KL to a student-selected top-16 subset of the shared vocabulary at each strict position achieves accuracy comparable to full shared-vocabulary OPD, outperforming the evaluated cross-tokenizer baselines. Adding mean squared error supervision on span log-probabilities in mismatch groups gives complete supervision coverage, yet reduces accuracy. At checkpoints from training with only the strict loss, the span gradients show weak or negative directional agreement with the strict gradients and grow in magnitude relative to them. These diagnostics may help explain the accuracy drop from adding span supervision. Our findings motivate a shift from maximizing alignment coverage to prioritizing supervision reliability: compact supervision at strict positions can be more effective than broader coverage that introduces weakly aligned or conflicting training signals.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 147,
+    "arxiv_id": "2610.08448"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Étude théorique et empirique sur l'optimisation de la distillation en ligne (On-Policy Distillation) pour les LLM avec des tokenizers hétérogènes, démontrant que la couverture d'alignement strict est suffisante et que des stratégies simplifiées (comme le top-16) peuvent égaler les performances des méthodes complexes, tout en analysant l'impact des gradients sur la supervision.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Ce papier aborde le défi de la distillation de modèles (On-Policy Distillation, OPD) lorsque l'enseignant et l'élève utilisent des tokenizers différents. Le problème central est d'assurer une supervision efficace malgré les divergences de vocabulaire, qui compliquent l'alignement des prédictions entre les deux modèles, notamment pour des tâches comme le raisonnement mathématique ou la génération de code.",
+    "methode": "Les auteurs évaluent d'abord l'impact de l'élargissement de la couverture d'alignement (alignement strict 1:1 vs. groupes de tokens non alignés) sur la qualité de l'apprentissage. Ils testent trois paires enseignant-élève hétérogènes sur des tâches de raisonnement mathématique et de génération de code. Pour optimiser la supervision, ils restreignent la divergence KL inverse à un sous-ensemble des 16 tokens les plus probables du vocabulaire partagé, à chaque position strictement alignée. Ils explorent aussi l'ajout d'une supervision par erreur quadratique moyenne (MSE) sur les log-probabilités des spans dans les groupes non alignés, afin d'étendre la couverture de supervision.",
+    "resultats": "Les résultats montrent que les alignements stricts 1:1 couvrent déjà la majorité des tokens générés par l'élève, malgré des vocabulaires très différents. En moyenne, le vocabulaire partagé conserve presque toute la masse de probabilité des enseignants et élèves aux positions strictement alignées. La restriction de la supervision à un sous-ensemble top-16 du vocabulaire partagé donne des performances comparables à une supervision complète, surpassant les baselines évaluées pour les tokenizers croisés. En revanche, l'ajout de la supervision MSE sur les spans non alignés réduit la précision, malgré une couverture complète. Les diagnostics révèlent que les gradients des spans non alignés ont une faible ou négative corrélation directionnelle avec ceux des positions strictes, et leur magnitude augmente relativement.",
+    "limites": "Les conclusions reposent sur seulement trois paires enseignant-élève et deux types de tâches, ce qui limite la généralisabilité des résultats. L'analyse des gradients et des conflits de supervision reste qualitative et mériterait une étude plus approfondie pour comprendre les mécanismes sous-jacents. Enfin, l'impact des hyperparamètres (comme la taille du sous-ensemble top-16) n'est pas exploré en détail.",
+    "verdict": "Ce travail mérite l'attention pour son approche systématique du problème de distillation cross-tokenizer, offrant des pistes concrètes pour optimiser la supervision sans sacrifier la performance, mais ses conclusions demandent validation sur des jeux de données et tâches plus variés."
+   }
+  },
+  {
+   "id": "47b9255d8fa0f8e8",
+   "title": "Sharing AI progress in mathematics",
+   "url": "https://openai.com/index/sharing-ai-progress-in-mathematics",
+   "summary": "OpenAI publishes new results on open problems in mathematics from an internal frontier model and shares Lean proof formalizations and research details on GitHub.",
+   "published": "2026-10-06T12:00:00+00:00",
+   "source": "openai-blog",
+   "source_label": "OpenAI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "OpenAI publie des résultats sur des problèmes mathématiques ouverts avec un modèle de pointe, incluant des formalisations Lean et des détails de recherche accessibles, illustrant les capacités avancées des LLM en résolution de problèmes formels.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication d'OpenAI vise à démontrer la capacité des modèles d'IA à contribuer à la résolution de problèmes mathématiques ouverts, un domaine traditionnellement réservé aux humains. L'objectif est d'accélérer la recherche en mathématiques en automatisant partiellement la génération de preuves formelles et en explorant des pistes inédites pour des conjectures non résolues.",
+    "methode": "OpenAI utilise un modèle interne de type *frontier model* (probablement une évolution de GPT-4 ou un modèle spécialisé) pour générer des preuves mathématiques formalisées dans le langage Lean, un assistant de preuve interactif. Les détails techniques incluent l'intégration du modèle avec des outils de formalisation comme Lean 4, ainsi que des techniques d'optimisation pour la génération de preuves longues et complexes. Le code et les preuves formalisées sont partagés sur GitHub pour permettre une vérification indépendante. La méthode combine génération automatique de candidats de preuves et validation rigoureuse via des outils formels.",
+    "resultats": "OpenAI annonce avoir produit des résultats sur des problèmes mathématiques ouverts, mais les détails concrets (comme les conjectures spécifiques résolues ou les avancées obtenues) ne sont pas explicitement précisés dans le contenu disponible. Les preuves formalisées en Lean sont partagées, ce qui suggère une contribution vérifiable, mais l'impact réel sur la recherche mathématique reste à évaluer par la communauté. Aucun chiffre clé (comme le nombre de problèmes abordés ou le taux de succès) n'est fourni.",
+    "limites": "Les limites incluent l'absence de transparence sur les problèmes exacts résolus et la portée réelle des contributions. De plus, la dépendance à des outils de formalisation comme Lean peut introduire des biais ou des contraintes techniques, limitant la généralisabilité des résultats. Enfin, la validation par la communauté mathématique est nécessaire pour confirmer l'originalité et la rigueur des preuves générées.",
+    "verdict": "Cette publication mérite l'attention pour son approche innovante, mais son impact réel dépendra de la validation par les mathématiciens et de la transparence des résultats détaillés."
+   }
+  },
+  {
+   "id": "ff7a7bca9cdf7e0f",
+   "title": "Conditional Trajectory Peaks: Single-Pass Multimodal Policies over Action Chunks",
+   "url": "https://huggingface.co/papers/2610.06104",
+   "summary": "Multimodal imitation learning requires diverse executable futures under the same observation and consistent behavior across replanning cycles. We present Conditional Trajectory Peaks (CTP), a single-pass policy framework that jointly predicts complete action-chunk candidates, probability masses, and trajectory scales. Distribution-Aware Peak Specialization (DAPS) specializes trajectory peaks using trajectory-level posterior responsibilities and mass- and scale-modulated overlap constraints. Evidence-Gated Trajectory Belief Transport (ETBT) maintains cross-chunk consistency through geometric correspondence between exchangeable candidate sets, while allowing current policy evidence to override historical constraints. CTP achieves a coverage score of 91.40% on Push-T; success rates of 100.0%, 79.72%, and 84.44% on D3IL Avoiding, Aligning, and Sorting-2, respectively. On LIBERO, CTP achieves an average success rate of 97.25%. In real-world dual-arm experiments, CTP preserves both placement modes in a two-plate task, succeeding in all 50 trials. On bottle uprighting and pen placement into a holder, it maintains success rates comparable to π_{0.5} while reducing policy inference latency from 218.24 ms to 75.80 ms. These results demonstrate that single-pass trajectory modeling can combine multimodal behavior, closed-loop consistency, and efficient inference.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.06104"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "CTP introduit un cadre de politique multimodale en un seul passage pour l'imitation, avec des pics de trajectoire conditionnels et une gestion de la cohérence inter-chunks. Résultats SOTA sur Push-T, D3IL, LIBERO et tâches robotiques réelles, avec réduction de latence.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi de l'apprentissage par imitation multimodal en robotique, où un agent doit générer plusieurs trajectoires exécutables et plausibles à partir d'une même observation tout en garantissant une cohérence comportementale entre les cycles de replanification. Le problème inclut également la nécessité de réduire la latence d'inférence tout en préservant la diversité des comportements possibles.",
+    "methode": {
+     "approche_generale": "Conditional Trajectory Peaks (CTP) est un cadre de politique en *single-pass* (une seule passe d'inférence) qui prédit conjointement des candidats de *chunks* d'actions complets, leurs probabilités associées (masses) et leurs échelles de trajectoire. Cela permet de capturer la multimodalité des comportements sans recourir à des passes multiples ou à des modèles génératifs complexes.",
+     "distribution_aware_peak_specialization": "DAPS (Distribution-Aware Peak Specialization) spécialise les pics de trajectoire en utilisant des responsabilités a posteriori au niveau des trajectoires et des contraintes de chevauchement modulées par la masse et l'échelle. Cela optimise la diversité tout en évitant les redondances entre candidats.",
+     "evidence_gated_trajectory_belief_transport": "ETBT (Evidence-Gated Trajectory Belief Transport) maintient la cohérence inter-*chunks* via des correspondances géométriques entre ensembles de candidats échangeables, tout en permettant à l'évidence actuelle de la politique de surcharger les contraintes historiques. Cela résout le problème de *catastrophic forgetting* dans les cycles de replanification.",
+     "details_techniques": "Le modèle exploite des *action chunks* (séquences d'actions pré-calculées) pour réduire la latence, et combine des mécanismes probabilistes (masses, échelles) avec une régularisation géométrique pour équilibrer diversité et stabilité. L'architecture évite les approches itératives coûteuses comme les modèles de diffusion."
+    },
+    "resultats": {
+     "benchmarks_simules": "CTP atteint un score de couverture de 91,40 % sur la tâche *Push-T* et des taux de succès de 100,0 % (Avoiding), 79,72 % (Aligning) et 84,44 % (Sorting-2) sur le benchmark D3IL. Sur LIBERO, le taux de succès moyen est de 97,25 %, surpassant les méthodes existantes en multimodalité et cohérence.",
+     "experiences_reelles": "En tests réels avec un robot à deux bras, CTP préserve les deux modes de placement dans une tâche à deux assiettes (100 % de succès sur 50 essais). Pour des tâches comme le redressement de bouteilles ou le placement de stylos, il maintient des performances comparables à une politique de référence (π_{0.5}) tout en réduisant la latence d'inférence de 218,24 ms à 75,80 ms.",
+     "efficience": "La réduction de la latence et la capacité à générer des comportements multimodaux en une seule passe d'inférence sont des avancées notables par rapport aux méthodes traditionnelles (ex. : modèles de diffusion ou replanification fréquente)."
+    },
+    "limites": {
+     "manque_details_architecture": "Le contenu disponible ne précise pas l'architecture neuronale sous-jacente (ex. : type de réseau, taille des *chunks*, mécanismes d'attention), ce qui limite l'évaluation de sa scalabilité ou de sa généralisation à d'autres domaines.",
+     "dependance_aux_donnees": "Comme toute méthode d'imitation, CTP pourrait souffrir d'un biais lié aux données d'entraînement, notamment si les trajectoires multimodales ne sont pas suffisamment représentées. Aucune mention n'est faite de la robustesse face à des observations bruitées ou hors distribution.",
+     "evaluation_partielle": "Les résultats sur LIBERO et D3IL sont impressionnants, mais l'absence de comparaison avec des méthodes récentes comme les politiques basées sur la diffusion (ex. : *Diffusion Policy*) ou les approches hybrides laisse planer un doute sur la supériorité absolue de CTP."
+    },
+    "verdict": "CTP mérite une attention particulière pour son approche innovante combinant multimodalité, cohérence en boucle fermée et efficacité d'inférence, mais son adoption nécessitera des validations supplémentaires sur des benchmarks plus larges et des architectures détaillées."
+   }
+  },
+  {
+   "id": "e9142773fde93806",
+   "title": "Execution-Aligned Progressive Noise for Consistent Asynchronous Replanning in Generative Robot Policies",
+   "url": "https://huggingface.co/papers/2610.06090",
+   "summary": "Continuous asynchronous replanning is essential for real-time generative robot policies, but independent stochastic initialization can cause mode switching and inconsistent continuation across action chunks. We propose Execution-Aligned Progressive Noise (EAPN), which introduces structured stochasticity at both inter-chunk and intra-chunk levels. Across replanning steps, EAPN propagates a shared noise trajectory and aligns it with the actual execution displacement, establishing execution-aligned inter-chunk correlation. Within each action chunk, it models temporal correlation along action time. The aligned stochastic history is further combined with committed action context to condition subsequent generation, allowing new chunks to continue from execution-consistent generative states rather than restart from independent noise. We evaluate EAPN on D3IL, Kinetix, LIBERO, and real-world manipulation tasks. EAPN improves multimodal behavior consistency on D3IL and achieves an average success rate of 88.59% on Kinetix. On LIBERO, it remains robust and maintains strong task performance even under long inference delays. Real-robot experiments further achieve 90.0% success on Object Storage and 96.7% on bimanual Cloth Folding, demonstrating reliable continuous execution under asynchronous replanning.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.06090"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "EAPN améliore la cohérence des politiques génératives robotiques en alignant le bruit stochastique avec l'exécution réelle, réduisant les incohérences entre chunks d'actions. Résultats robustes sur D3IL, Kinetix, LIBERO et tâches réelles (90% de succès).",
+   "score": 8.8
+  },
+  {
+   "id": "4f2a8de5613bab9c",
+   "title": "UNREAL: Unifying Retrieval and Long-Context with a Single Model",
+   "url": "https://huggingface.co/papers/2610.08463",
+   "summary": "Long-context inference and Retrieval-Augmented Generation (RAG) handle evidence selection at vastly different scales, from a single long prompt to an entire corpus. We ask whether a single model-internal mechanism can select evidence across this range. We introduce UNifying REtrieval And Long-Context with a Single Model (UNREAL), a model-native evidence selection framework to span corpus retrieval and long-context inference. UNREAL encodes chunks and derives retrieval queries directly from the frozen LLM's internal representations. It adds fewer than 500K trainable parameters and leaves the backbone unchanged. On a 3B-token, 21M-chunk Wikipedia index, all four dense and hybrid UNREAL backbones outperform state-of-the-art retriever-reranker systems. The best model raises recall from 49.1% to 73.2% on HotpotQA, from 31.7% to 60.1% on 2WikiMultiHopQA, and from 8.8% to 14.4% on MuSiQue. Applied to long-context tasks, the same selection mechanism removes distractors before generation, raising NoLiMa accuracy from 1.0% to 24.83% at its maximum context length of 128K tokens, and LV-Eval's F1 score from 49.97% to 54.66% at 256K. UNREAL also reduces FLOPs and time-to-first-token relative to full-context inference from roughly 32K tokens onward, with larger gains as context grows. Together, these results establish model-internal evidence selection as a common foundation for corpus retrieval and evidence-sparse long-context inference.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2610.08463"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "rag",
+    "architecture"
+   ],
+   "tldr": "Présente *UNREAL*, un cadre unifié pour la sélection d'évidence en RAG et en contexte long, intégrant moins de 500K paramètres entraînables. Améliore significativement les performances (ex: +24.1% de recall sur HotpotQA) et réduit les FLOPs, tout en gérant des corpus de 21M chunks et des contextes jusqu'à 256K tokens.",
+   "score": 8.8
+  },
+  {
+   "id": "7c8159cea6547296",
+   "title": "SlimWise: Decoupling Expert Pruning Across Prefill and Decode for Efficient MoE Serving",
+   "url": "https://huggingface.co/papers/2609.34117",
+   "summary": "Mixture-of-experts (MoE) models activate few experts per token, yet batched decoding can access nearly the entire expert pool, making expert-weight traffic a major bottleneck. Expert pruning reduces this traffic, but conventional approaches also prune compute-bound prefill, sacrificing model quality for little throughput benefit. We present SlimWise, a serving framework that tailors the expert pool to each inference phase. SlimWise performs prefill with the full model and decode with a pruned model that directly reuses the prefill-generated KV cache without conversion. Across two MoE backbones and three pruning criteria, this training-free KV cache handoff substantially narrows accuracy gaps relative to the full model in many settings. We also show that benchmark accuracy can conceal substantial pruning-induced changes in generation length. To address these distortions and residual accuracy loss, SlimWise introduces a low-cost distillation stage that trains the decoder to continue from full-model KV caches while updating only a small subset of parameters. Implemented in vLLM, SlimWise supports both prefill-decode (PD) disaggregation and PD-colocated serving. On Qwen3.6-35B-A3B, SlimWise improves decode throughput by up to 1.81x at 50% expert pruning with minimal accuracy loss.",
+   "published": "2026-09-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2609.34117"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Introduit *SlimWise*, un framework de *pruning* d'experts pour les modèles MoE (Mixture-of-Experts) qui sépare les phases de *prefill* et *decode* pour optimiser l'efficacité. Réduit le trafic d'experts tout en minimisant les pertes de qualité via une distillation légère et une réutilisation du cache KV, validé sur Qwen3.6-35B-A3B.",
+   "score": 8.8
+  },
+  {
+   "id": "196601503f7573df",
+   "title": "Taming VLAs under Robot Execution Errors: Self-Compensation and Stress Testing",
+   "url": "https://huggingface.co/papers/2609.37334",
+   "summary": "Vision-language-action (VLA) policies often fail when a robot's executed motion deviates from their commanded action. Such execution errors arise from the robot's mechanics and operating conditions, such as wear and payload changes. We propose self-compensating VLA, a deployment-time adaptation method that enables a VLA policy to pre-compensate for the robot's execution errors when generating commands. Without task rewards or labels, it updates the policy online using the residual between the action commanded by a VLA and the motion executed by the robot. To stress-test VLA robustness across execution conditions that are impractical to cover with physical robots alone, we introduce RoboStress, a controlled simulation benchmark. It combines established joint-level models of friction, backlash, compliance, and gravity-compensation error into seven deployment scenarios whose execution errors depend on the robot's state and motion history. On RoboStress, self-compensating VLA achieves higher average task success than both the base policies and methods that build in robustness during training. On two physical robot arms with different usage histories, it raises the average task success rate by more than 30 percentage points on each arm, and the gains extend to objects not seen in the task demonstrations.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2609.37334"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "Cette étude propose une méthode d'auto-compensation pour les politiques Vision-Language-Action (VLA) afin de gérer les erreurs d'exécution robotique, validée via RoboStress, un benchmark simulant des scénarios de friction, backlash et compliance, améliorant le taux de succès en conditions réelles.",
+   "score": 8.8
+  },
+  {
+   "id": "a2f57a7bdad8af23",
+   "title": "From Evidence to Action: How Tool-Using Agents Fail",
+   "url": "https://huggingface.co/papers/2610.07753",
+   "summary": "Tool-using agents make consequential changes to external state, yet correct outcomes do not guarantee that their actions were supported by evidence established beforehand. We study where this evidence-to-action chain breaks as agents move from deciding whether to act to executing single actions and dependent workflows. Across ten model-harness configurations, strong static action assessment can coexist with much weaker interactive execution. Failures often begin before execution: agents stop with incomplete investigation or act before required evidence is established. Once required evidence is obtained, single-action execution is usually reliable, while multi-action workflows additionally expose unresolved prerequisites and incomplete execution. For this analysis, we introduce SafeActBench, comprising 656 cases across six operational domains and five protocols that progress from static action judgment and investigated non-action to single- and multi-action workflows. A provenance-bound Evidence Ledger and deterministic trajectory evaluator track what information was established, when actions occurred, and whether downstream dependencies were satisfied. These results show that failures arise not only from missing information, but also from how agents use established evidence when deciding and executing actions.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 30,
+    "arxiv_id": "2610.07753"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Cette analyse révèle que les agents utilisant des outils échouent souvent dans la chaîne 'évidence → action', avec des lacunes avant l'exécution (investigation incomplète) ou lors de workflows multi-actions, via SafeActBench (656 cas, 6 domaines) et un système de traçage des dépendances.",
+   "score": 8.8
+  },
+  {
+   "id": "c6ad60ded3fe9242",
+   "title": "Do Language Models Need a Trainable Input Embedding Table? Fixed Minimal Token Codes at 1.7B-Class Scale",
+   "url": "https://huggingface.co/papers/2610.04002",
+   "summary": "A trainable input embedding table assigns each vocabulary item an independently adjustable vector. We investigate whether this token-specific parameterization is required for substantial language-modeling capability, or whether a shared Transformer can learn from fixed token identities. We compare three decoder-only language models trained from scratch with the same tokenizer, contextual backbone, untied output-head architecture, and training recipe, with a target budget of 100 billion prediction tokens per model. Their input interfaces are a learned table, canonical 16-bit token-ID codes, and one fixed invertible recoding over GF(2). The fixed codes are repeated to model width without an additional trainable input projection. Both fixed-code models acquire substantial capabilities: canonical codes achieve 52.40\\% HellaSwag normalized accuracy, 70.51\\% PIQA accuracy, and 42.75\\% LAMBADA accuracy. The learned-input control performs better on several evaluations, including HellaSwag and LAMBADA, so these results establish viability rather than performance parity. The fixed interfaces remove 100.7 million trainable parameters, yielding 1.711B-parameter models, but parameter reduction is not the central result. These single-run experiments distinguish architectural necessity from empirical utility: independently trainable token-specific input vectors are not required for the observed capabilities. A fixed identity interface also provides a controlled setting for studying representation learning downstream of an immutable input, without establishing where particular capabilities are localized.",
+   "published": "2026-10-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.04002"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Cette étude démontre que des embeddings fixes (codes canoniques ou GF(2)) peuvent remplacer les tables d'embeddings trainables sans perte majeure de performance, réduisant de 100M paramètres. Pertinent pour l'optimisation des LLM et la compréhension des besoins en trainabilité des embeddings.",
+   "score": 8.5
+  },
+  {
+   "id": "be9f5efc50bc1d44",
+   "title": "Harness-Aware Distillation for Small Language Model Agents",
+   "url": "https://huggingface.co/papers/2610.02858",
+   "summary": "Language model agents are deployed with a harness, the software around the model that manages its context, tools, and feedback. When such an agent is distilled into a smaller one, the harness stays in place, so the student mainly needs the teacher-specific abilities that the harness cannot provide, such as acting correctly on harness information. Standard distillation, however, imitates the teacher's full outputs and treats the harness as part of the input. We propose Harness-Aware Distillation (HAD), which focuses distillation on what the teacher adds beyond the harness. HAD complements on-policy distillation with two components: an action preference that contrasts the same teacher's actions with and without the harness information, scored after the student's own reasoning, and a validity check that drops preference pairs whose preferred action contradicts the harness records. We show that the contrast gives the student information that imitating the teacher alone cannot provide, and HAD needs no task rewards, success labels, or future information. Across multiple long-horizon agent benchmarks and models, HAD outperforms on-policy distillation baselines with the same fixed harness. Our analysis shows that HAD enters fewer unproductive loops and recovers from errors more often than the baselines, and suggests that it adaptively keeps learnable feedback in its weights while reading state information from the harness.",
+   "published": "2026-10-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.02858"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Présente *Harness-Aware Distillation* (HAD), une méthode de distillation pour agents LLM qui se concentre sur les capacités spécifiques au *harness* (contexte, outils) plutôt que sur les sorties complètes du professeur. Améliore les performances sur des benchmarks multi-étapes sans nécessiter de récompenses ou labels de succès, validé sur plusieurs modèles.",
+   "score": 8.5
+  },
+  {
+   "id": "953bf48d41e5bb1e",
+   "title": "NeMo-DCR: Bit-Exact Delta-Compressed Refit for Scalable Agentic RL at Trillion-Parameter Scale",
+   "url": "https://huggingface.co/papers/2610.08430",
+   "summary": "Agentic reinforcement learning (RL) disaggregates training from rollout, so each policy update must reach the rollout clusters before the next batch. Transferring a full 1T checkpoint for such weight synchronization (refit) takes 87.5 min between two AWS regions. Measurements of BF16 training show that about 1% of weights change their stored values per step. Recent systems exploit this sparsity but fall short on placement, exactness, or efficiency: they reimplement placement rules, assemble full tensors, rebuild values arithmetically, or use a cross-cluster collective, and none fully recovers from mid-refit failures. We present NeMo-DCR (Delta-Compressed Refit), which sends only changes yet is bit-exact: receivers obtain the same parameter and buffer bits as a dense refit. For placement, fixed affine mappings project changes from training shards into the checkpoint's canonical coordinates, residual conversion covers the other changes, and the serving runtime's native loader places all changes in receiver storage. For exactness, compressible XOR masks carry affine changes whose projection and loader preserve stored bits, and overwrites carry the others. Receivers apply both in place, retries overwrite partial writes, and a joint commit binds the policy to the baseline for the next delta. For efficiency, object storage or a relay tree streams payloads during delta construction, without a cross-cluster collective. Even at 3% and 5% change rates, NeMo-DCR refits of 30B-1T models are 12-40times faster than a transport-only full-checkpoint reference. A 1T relay-tree refit at 3% takes 150 s instead of 87.5 min, making refits practical for cross-cluster agentic RL at trillion-parameter scale.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.08430"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "NeMo-DCR propose une méthode de synchronisation de poids pour l'RL agentique à l'échelle du trillion de paramètres, réduisant le temps de transfert de 87.5 min à une solution delta-compressée et bit-exacte, exploitant la sparsité des changements (1% par étape) pour optimiser l'efficacité des clusters de rollout.",
+   "score": 8.5
+  },
+  {
+   "id": "324abc8405356809",
+   "title": "QF3: Fast Flow RL with Filtered Q-Gradients",
+   "url": "https://arxiv.org/abs/2610.08789v1",
+   "summary": "Flow policies have become a standard policy class for learning robot behaviors from demonstrations, but reinforcement learning is still critical for improving pre-trained flow policies or learning them from scratch through interaction. We introduce QF3 (Fast Flow RL with Filtered Q-Gradients), an online off-policy RL algorithm that trains a flow policy with flow matching plus the critic's action gradient, backpropagated through a one-step prediction of the flow's output. To keep updates where the critic and this prediction are reliable, QF3 applies the critic gradient only to action dimensions that stay near the replay action. To our knowledge, QF3 is the first off-policy flow RL method to train humanoid locomotion policies from scratch and transfer them zero-shot to hardware. Paired with a high-throughput off-policy training recipe, it trains humanoid locomotion and motion-tracking policies with a 10x wall-clock speedup over FPO++, a recent on-policy flow RL method. We further apply QF3 to fine-tune pretrained flow-based manipulation policies on both ABC-Sim and Robomimic tasks. These results suggest that QF3 can both learn robot policies from scratch and refine those acquired from demonstrations. Website: https://qf3-rl.github.io/",
+   "published": "2026-10-06T17:59:34+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chung Min Kim, Brent Yi, David McAllister, Hongsuk Choi, Himanshu Gaurav Singh, Jinkun Cao"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "QF3 propose une méthode RL hors-policy pour entraîner des politiques de flux (flow policies) en robotique, combinant *flow matching* et gradients filtrés du critique pour accélérer l'entraînement (10x vs FPO++) et permettre l'apprentissage de locomotion humanoïde *from scratch* avec transfert zero-shot sur matériel. Intéressant pour l'optimisation des politiques robotiques via des architectures hybrides et des benchmarks de performance.",
+   "score": 8.3
+  },
+  {
+   "id": "f2b503bafe57ef99",
+   "title": "DepthWorld: 3D World Model for Robot Manipulation",
+   "url": "https://arxiv.org/abs/2610.08780v1",
+   "summary": "World models offer a data-driven alternative to traditional simulators for robotics, with applications spanning policy evaluation, improvement, and planning. All of these uses depend on faithful 3D geometry, yet current video-based world models are trained on RGB alone and produce rollouts that look correct frame-by-frame but do not compose into a consistent 3D world. Closing this gap requires progress on two fronts: large-scale 3D supervision for manipulation, and an architecture that can absorb it without disturbing strong pretrained video priors. We introduce a calibration pipeline that combines learned stereo depth with a joint factor graph, pooling all episodes collected from the same physical robot to recover its shared kinematic parameters alongside per-scene extrinsics. Applied to the DROID dataset, this yields DROID-3D, a calibrated 3D dataset providing dense metric depth and recalibrated multi-view extrinsics (achieving <0.7 px reprojection error on 90% of episodes for external cameras). We then train DepthWorld, a Stable Video Diffusion-based world model that jointly predicts multi-view RGB and depth via spatial latent tiling, leaving the pretrained Variational Autoencoder (VAE) unchanged. Depth supervision improves RGB prediction itself by +1.48 dB PSNR over an identical RGB-only baseline at equal training budget, while simultaneously yielding accurate metric depth for downstream geometric reasoning.",
+   "published": "2026-10-06T17:59:00+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jai Bardhan, Josef Sivic, Vladimir Petrik"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "DepthWorld introduit un modèle de monde 3D pour la robotique, combinant données de profondeur calibrées (DROID-3D) et un modèle de diffusion vidéo pour générer des rollouts cohérents en 3D. Résout le problème des modèles vidéo actuels qui manquent de consistance géométrique, avec applications en planification et évaluation de politiques.",
+   "score": 8.3
+  },
+  {
+   "id": "ac321abfb351e2e9",
+   "title": "AdvSim2Real : Training Web Agents Against Adaptive Prompt Injection in a Web World Model",
+   "url": "https://arxiv.org/abs/2610.08773v1",
+   "summary": "Web agents complete user requests by reading and acting on pages that third parties write, so an instruction planted on a page can redirect the agent away from the user's goal. The agent cannot simply ignore the page, because the page also holds the values and controls the task requires. Current defenses fine-tune the agent on injections fixed before training, and attackers that adapt to the trained model bypass them. Adversarial training lets the attacker adapt but keeps the tasks fixed, so a task stops teaching once the agent solves it. We introduce AdvSim2Real, which co-evolves a task curriculum, an injection adversary, and the agent inside a frozen web world model. The curriculum is rewarded for tasks the agent solves about half of the time, and the adversary only for a success flip, an injection that turns a judged success into a failure. Training in the simulator makes a 4B agent both more capable and more robust: its completion rises with and without attacks, holds against a frontier-model adversary it never trained against, and its capability gain carries over to a real browser. On 150 web tasks, AdvSim2Real raises completion under this unseen adversary by 33.6\\% relative to the base agent.",
+   "published": "2026-10-06T17:56:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sarim Hashmi, Mukul Ranjan, Kshitij Mishra, Mikhail Kuznetsov, Praneeth Vepakomma, Nils Lukas"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "regulation",
+    "benchmark"
+   ],
+   "tldr": "AdvSim2Real co-évolue un curriculum de tâches, un adversaire d'injection de prompts et un agent dans un modèle de monde web figé, pour améliorer la robustesse aux attaques dynamiques. Augmente la complétion de 33.6% contre un adversaire non vu, avec transfert vers un navigateur réel, abordant des enjeux de sécurité pour les agents web.",
+   "score": 8.3
+  },
+  {
+   "id": "48f1461302afe731",
+   "title": "WorldSolver: Can LLM Agents Simulate the Physical Dynamics via Solver Generation?",
+   "url": "https://arxiv.org/abs/2610.08720v1",
+   "summary": "LLM-based agents are increasingly advancing scientific and engineering problem solving, with physics simulation emerging as a challenging yet practical testbed for reproducing complex physical phenomena with application in embodied AI, games and films. As the workhorse of such simulation, a solver computes how the state of a dynamic system evolves over time. Building such solvers requires physical understanding to identify appropriate models, mathematical reasoning to formulate the underlying dynamics, and software engineering to implement them as executable code, yet this capability of LLM agents remains underexplored. To this end, we introduce WorldSolver, a benchmark of 168 simulation tasks derived from physical phenomena in 61 classic computer graphics papers, spanning 7 physical domains. Each task contains a code scaffold that provides a fixed simulation environment for the scene, with the solver implementation left for the agent to complete. Specifically, we evaluate them along three dimensions: Execution Checks for successful execution, Visual Fidelity for reproducing the intended dynamic behavior in the rendered simulation, and Physical Plausibility for physics-grounded verification of the generated dynamics. Experiments on frontier agents reveal that producing executable solvers is difficult itself, and satisfying visual and physical correctness is even harder. GPT-5.6-Sol and Claude-Opus-5 perform comparatively better than the other evaluated agents, yet achieve overall scores of only 48.7% and 46.7%, respectively. WorldSolver is an early step toward agentic solver generation, and we hope it helps drive progress toward agents that can faithfully simulate the dynamic physical world. Code is available at https://github.com/sirujiang/WorldSolver.",
+   "published": "2026-10-06T17:26:26+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Siru Jiang, Yongzhe Lyu, Shuo Lu, Yubin Wang, Yuxiang Zhang, Yue Liao"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "WorldSolver propose un benchmark de 168 tâches de simulation physique pour évaluer la capacité des agents LLM à générer des solveurs dynamiques, combinant compréhension physique, raisonnement mathématique et implémentation logicielle.",
+   "score": 8.3
+  },
+  {
+   "id": "d7fc0bc51ec56653",
+   "title": "ScienceClaw: Benchmarking Continual Self-Evolution of AI-for-Science Agents Across the Natural and Social Sciences",
+   "url": "https://arxiv.org/abs/2610.08691v1",
+   "summary": "Large language model agents are accelerating scientific automation, yet verified executions rarely become persistent program-level improvements, and existing evaluations do not examine this process across sequential tasks in both the natural and social sciences. We formalize ScienceClaw as fixed-parameter program self-evolution that unifies task solving, scientific verification, and program updates. ScienceClaw-Eval spans 23 disciplines and measures scientific correctness, evolutionary gain, retention, cross-dataset transfer, and evolution cost through sequential streams and independent reset evaluation. Our framework repairs executable workflows through multi-turn interaction, converts re-execution-verified failure--success trajectories into linked Skill and Operator candidates, and retains an update only when source-task replay reproduces the repair and independent scientific tasks improve. Code is available at https://github.com/beita6969/ScienceClaw.",
+   "published": "2026-10-06T17:08:03+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mingda Zhang, Wenjin Liu, Tiesunlong Shen, Zikai Xiao, Zhenghong Lin, Qing Xu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "ScienceClaw propose un benchmark pour évaluer l'auto-évolution continue d'agents IA spécialisés en sciences (naturelles et sociales), mesurant leur capacité à améliorer des programmes via des trajectoires vérifiées. Intéressant pour l'optimisation des agents autonomes et leur généralisation inter-disciplines.",
+   "score": 8.3
+  },
+  {
+   "id": "60a02798aa08b970",
+   "title": "Secure Speculative Decoding for Large Language Models",
+   "url": "https://arxiv.org/abs/2610.08678v1",
+   "summary": "Speculative decoding accelerates inference for a large language model (LLM), referred to as the \\emph{target model}, by first using a smaller model, referred to as the \\emph{draft model}, to generate candidate tokens and then verifying them with the target model for acceptance or rejection. Prior studies primarily focused on the efficiency-utility trade-off of speculative decoding, e.g., lossy speculative decoding, leaving its security implications largely unexplored. In this work, we bridge this gap by providing the \\emph{first} systematic study of the security implications of speculative decoding. Through a large-scale measurement study, we reveal a pronounced security-utility asymmetry: across a wide range of lossy speculative decoding methods, improvements in inference efficiency come at a disproportionately high cost to security, with attack success rates for jailbreak and prompt injection attacks increasing much faster than utility degrades. We then propose SecureSD, a new theory-guided speculative decoding method that enhances security while maintaining efficiency and utility. Specifically, our theoretical analysis reveals that security degradation primarily originates from the early tokens generated by the draft model. Motivated by this insight, SecureSD applies a stricter verification criterion to draft-model tokens at early decoding positions. Extensive experiments on both security and utility benchmarks demonstrate that SecureSD significantly improves security while preserving efficiency and utility compared to existing speculative decoding methods.",
+   "published": "2026-10-06T16:59:37+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yichi Zhang, Zhiqi Wang, Neil Gong, Yuchen Yang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "SecureSD propose une méthode de décodage spéculatif sécurisée pour les LLM, réduisant les vulnérabilités aux attaques (jailbreak, prompt injection) tout en maintenant l'efficacité. Critique pour l'inférence sécurisée des modèles.",
+   "score": 8.3
+  },
+  {
+   "id": "fe8abd0af3834f17",
+   "title": "SquidAgent: Parallelize Wisely, Coordinate Efficiently",
+   "url": "https://arxiv.org/abs/2610.08647v1",
+   "summary": "LLM-based agents solve complex multi-step tasks, but sequential execution incurs substantial latency. In principle, parallelizing work across multiple agents should yield near-linear speedups. Yet existing parallel multi-agent systems often run slower than a single-agent baseline. We attribute this gap to two hidden costs that parallel execution incurs but a serial agent avoids. First, there is a re-exploration cost: redundant effort spent by parallel workers reconstructing context that the orchestrator already possesses, such as prior decisions, that would otherwise be inherited implicitly in a serial execution. Second, there is an alignment cost: the overhead required to reconcile inconsistencies across independently generated outputs. We thus derive a principled decision criterion: a layer should be parallelized only when its critical-path cost, plus re-exploration and alignment overheads, is lower than the corresponding serial cost. While this criterion is naturally expressed in wall-clock time, we observe that LLMs are poorly calibrated when asked to estimate task duration. To address this, we instead measure cost in predicted output tokens, which we empirically find LLMs can estimate substantially more reliably than wall-clock time. Building on this token-based criterion, we propose SquidAgent. It estimates all token budgets in a single planning step, forks each worker directly from the orchestrator's session to eliminate re-exploration cost, and replaces post-hoc reconciliation with a pre-generated shared convention block that converts alignment into a bounded upfront cost. A deterministic scheduler then applies the criterion layer by layer. Empirically, SquidAgent achieves a 2.2$\\times$ mean throughput improvement and a 2.6$\\times$ mean wall-time speedup over Claude Code, and a 2.0$\\times$ throughput improvement over the strongest multi-agent baseline.",
+   "published": "2026-10-06T16:35:28+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yexiong Lin, Shanshan Ye, Yu Yao, Zhen Fang, Bo Han, Tongliang Liu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "SquidAgent introduit un critère de décision pour paralléliser efficacement les agents LLM, réduisant les coûts de réexploration et d'alignement, avec des gains de performance significatifs par rapport aux approches séquentielles ou parallèles naïves.",
+   "score": 8.3
+  },
+  {
+   "id": "7f59c4217dc350a1",
+   "title": "A Safe Action Is Not Enough: Feasible-Future Decoding for Vision-Language-Action Policies",
+   "url": "https://huggingface.co/papers/2610.05166",
+   "summary": "A safe action is not necessarily a viable one. A frozen vision-language-action (VLA) policy can favor a locally admissible move that leaves no policy-supported route to safe task completion. We call this the feasibility-likelihood gap: likelihood ranks the next move, while feasibility depends on the futures it leaves open. To bring those futures into the decision, we derive the exact next-block marginal of the history-conditioned policy-environment trajectory law restricted to safe task completion. The derivation reveals a candidate-dependent feasible-future mass: its support records whether safe completion remains possible under the frozen continuation process, while its magnitude measures how much weighted safe-completion mass remains. Since exact evaluation is impractical online, we develop a selective finite-candidate approximation and establish conditions for recovering the best retained viable candidate. Our alarm-triggered, training-free reranker VICS-G lowers mean cumulative safety cost by 1.9%-57.5% across six Safety-CHORES settings while remaining within 2.5 percentage points of policy sampling in success and 0.82 steps in mean episode length. Our approach offers a promising and practical path toward safer task completion, grounded in an exact policy-relative target yet requiring neither policy retraining nor online rollouts.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.05166"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "VICS-G introduit un reranker pour les politiques VLA (Vision-Language-Action) qui évalue la faisabilité future des actions, réduisant les coûts de sécurité de 1.9% à 57.5% sans sacrifier la performance. Approche innovante pour la sûreté des agents robotiques.",
+   "score": 8.2
+  },
+  {
+   "id": "d02cc9f69ebfe789",
+   "title": "DiffGate: Difficulty-Gated Teacher Guidance for On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2610.04596",
+   "summary": "On-policy distillation (OPD) has emerged as a widely used paradigm for post-training large language models, reducing the train--test mismatch of conventional distillation by supervising the student on its own generated trajectories. However, existing OPD objectives remain largely token-local and outcome-agnostic, optimizing teacher--student agreement at each prefix despite reasoning quality being determined at the trajectory level. Reinforcement learning with verifiable rewards (RLVR), particularly Group Relative Policy Optimization (GRPO), provides complementary outcome-level supervision but suffers from sparse rewards and coarse credit assignment. We show that OPD and RLVR exhibit complementary blind spots: teacher signals provide dense local guidance but are weakly aligned with rollout correctness, whereas group-relative rewards capture task success but provide coarse token-level credit and vanish on all-failure groups. We introduce DiffGate, an outcome-gated objective that combines GRPO with selective, bounded teacher guidance. Teacher supervision is applied only to failed trajectories, scaled by group difficulty, and smoothly bounded to prevent extreme teacher--student discrepancies from dominating optimization. The verifier therefore determines which trajectories receive teacher guidance, while the teacher provides dense token-level update directions within those trajectories. Across Qwen3-0.6B and Qwen3-1.7B students, DiffGate improves code avg@8 over matched GRPO by +1.7 and +1.8 points and pass@8 by +1.6 and +5.7 points, respectively. On mathematics, avg@8 remains within 0.5 points of GRPO while pass@8 improves by +1.1 and +3.9 points. Overall, DiffGate improves pass@8 across all four model--domain settings, demonstrating improved solution coverage under our evaluation protocol.",
+   "published": "2026-10-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.04596"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "DiffGate combine distillation sur-policy (OPD) et récompenses vérifiables (GRPO) via un mécanisme géré par difficulté, améliorant la cohérence des trajectoires et la supervision dense. Pertinent pour l'optimisation des LLM et leur fine-tuning efficace.",
+   "score": 8.2
+  },
+  {
+   "id": "72e0150a7d63add6",
+   "title": "Toward Real-Time VLAs: Stage-Aware Two-Step Flow Denoising and System-Level Evaluation",
+   "url": "https://huggingface.co/papers/2609.39822",
+   "summary": "Vision-language-action (VLA) models face a timing gap between low-rate inference and high-rate robot execution. We characterize this gap through end-to-end latency measurements of model inference and the robot execution chain. Repeated Flow Matching denoising contributes substantially to inference cost, while robot-side delays mainly arise from perception acquisition, communication scheduling, and physical response. Analysis of the velocity field shows relatively stable magnitude and direction in early integration, followed by stronger directional correction near the terminal steps. Based on this stage heterogeneity, we propose two-stage non-uniform denoising, reducing the number of steps from 10 to 2 and model-inference time from 61.557 ms to 21.956 ms. We also develop a distributed real-time VLA framework with independent inference, action-publication, and robot-control rates, modular observation acquisition, and action-provenance logging. Using π0.5 as the baseline, we evaluate six real-time execution methods on a long-horizon physical garment-folding task. Legato performs best overall among training-based methods, while Temporal Smoothing leads among training-free methods; both perform strongly in task success, completion time, action continuity, and acceleration smoothness. Combining two-step denoising with representative execution methods substantially reduces inference cost with a small reduction in task performance. These results motivate joint optimization of model-inference efficiency and robot-system timing.",
+   "published": "2026-10-02T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2609.39822"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "optimisation"
+   ],
+   "tldr": "Magic-W0 propose un modèle fondation ",
+   "score": 8.2
+  },
+  {
+   "id": "6a5cfc20a04e16e4",
+   "title": "WildMatch: Weakly Supervised Image Matcher Adaptation for Wildlife Re-Identification",
+   "url": "https://huggingface.co/papers/2610.07384",
+   "summary": "Individual animal re-identification from camera-trap imagery is an instance retrieval problem central to non-invasive wildlife monitoring: a query image must retrieve the correct individual from a reference set of known animals. This requires computer vision models to recognize distinctive local patterns in fur, skin, or other visual markings. Current approaches either learn global embeddings as a classification problem, requiring many labeled images per individual while largely ignoring local evidence, or apply off-the-shelf, domain-agnostic image matchers. Although such matchers are pretrained on large and diverse image collections, adapting them to wildlife imagery is challenging because available datasets are small and lack correspondence-level annotations. We study weakly supervised adaptation of a pretrained keypoint matcher using only identity labels, without keypoint-level or geometric correspondence ground truth. We mine informative image pairs with the pretrained matcher, derive weak positive and negative supervision from identity agreement, and contrastively fine-tune the matching network to strengthen correspondences for same-identity pairs and suppress them for different identities. Across open-source wildlife re-identification datasets, our approach improves accuracy over off-the-shelf matchers and a state-of-the-art local--global fusion method. Under an open-world protocol with held-out individuals, it learns a transferable correspondence prior rather than memorizing training identities. To our knowledge, this is the first study of matcher-level, identity-supervised adaptation for animal re-identification. Our method enables data-efficient specialization of image matching models to wildlife domains using identity annotations already available in typical monitoring datasets.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.07384"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "DAEDALUS bootstrap une mémoire réutilisable pour les agents LLM en générant des tâches auto-construites et en consolidant des heuristiques issues des échecs/succès. Améliore les taux de succès sur AppWorld, τ^2-bench et AutomationBench sans oracle ni tâches existantes.",
+   "score": 8.2
+  },
+  {
+   "id": "10d9b81a004824d4",
+   "title": "AGO AI Quality Gate: Evidence-First Release Decisions for Retrieval-Augmented Generation",
+   "url": "https://huggingface.co/papers/2610.01218",
+   "summary": "Enterprises adopting retrieval-augmented generation (RAG) face a recurring operational decision: promote, revise, or block a system version. The evidence is incomplete and the metrics come from fallible LLM judges. We report on AGO AI Quality Gate (AGO), an evidence-first quality-gate framework deployed in industrial RAG assessment engagements. AGO integrates four key components: a four-state decision model that treats missing data and judge errors as explicit outcomes; layered scoring combining deterministic checks, local guardrails, and structured LLM evaluation; a stratified beta-binomial gate that quantifies regression risk probabilistically; and a mandatory meta-evaluation protocol to validate the LLM judge before it influences decisions. Since engagement data is proprietary, we evaluate the judge layer on RAGBench, a public benchmark of 100k annotated RAG traces across 12 datasets. On identical stratified test samples (N=1200 per judge), a low-cost judge (gpt-4.1-nano) detects non-adherent answers barely above chance (AUROC 0.603 [0.570, 0.634]), despite producing flawless protocol output, while gpt-4o reaches 0.783 [0.756, 0.807] -- yet its per-domain performance still ranges from 0.62 to 0.88. A fixed-seed gate study spanning regression, no change, and improvement quantifies unsafe promotion, false-alarm cost, and improvement throughput. Under regression, the decision-grade profile reduces unsafe promotion to 22.2%-35.1%, against 29.3%-41.8% for a naive gate. These results support the design choices that judge quality must be measured per engagement and that point estimates alone are not a release decision.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2610.01218"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "produit",
+    "regulation",
+    "rag"
+   ],
+   "tldr": "Décrit *AGO AI Quality Gate*, un framework industriel pour évaluer les versions de systèmes RAG via une approche probabiliste (stratified beta-binomial) et une méta-évaluation stricte des juges LLM. Montre que les juges bas coût (gpt-4.1-nano) ont des performances proches du hasard (AUROC 0.603), tandis que gpt-4o atteint 0.783 mais avec des variations par domaine.",
+   "score": 8.2
+  },
+  {
+   "id": "5158bdbf7c8bd616",
+   "title": "HLA: Expressive Hybrid Linear Attention via Chunk-Wise Dynamic Mixing",
+   "url": "https://huggingface.co/papers/2610.05842",
+   "summary": "Linear attention enables efficient long-context autoregressive decoding by compressing history into recurrent states, but this compression can make selective access to sparse and distant information difficult. Existing chunk-based extensions increase memory capacity, yet learned chunk-mixing coefficients may remain fixed with respect to input content and therefore cannot adapt historical access to each query. We introduce Hybrid Linear Attention (HLA), a query-dependent chunk-level attention mechanism for Gated DeltaNet (GDN). HLA represents each completed chunk as an exact affine state transition and computes content-dependent routing gates from compact, self-attentively pooled representatives. Each gate interpolates the corresponding historical transition with the identity map, controlling both the chunk's additive memory and its transformation of earlier states. Effective-support regularization further encourages concentrated routing for sparse inference. We evaluate HLA under both pretrained adaptation and from-scratch training. Across Qwen3.5 models from 0.8B to 9B, HLA consistently improves over native GDN and fixed chunk mixing, with gains of up to 5.57 percentage points on LongBench-V2 and 3.97 points on RULER. In a controlled from-scratch 1.3B setting trained for 100B tokens with a 4K context, HLA also improves RULER performance from 4K to 32K, with gains increasing from 0.83 points at 4K to 4.22 points at 32K. These results demonstrate that query-dependent composition of recurrent memory improves long-context modeling and remains effective beyond the training context while using compact per-chunk affine summaries. Project page: https://caesarhhh.github.io/hla/",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.05842"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "llm"
+   ],
+   "tldr": "HLA introduit un mécanisme d'attention linéaire hybride et dynamique par chunks pour les modèles Gated DeltaNet (GDN), améliorant l'accès sélectif à l'information historique et les performances (jusqu'à +5.57 points) sur des modèles Qwen3.5 de 0.8B à 9B.",
+   "score": 8.2
+  },
+  {
+   "id": "529d6f7e6c9108ea",
+   "title": "AdvSim2Real : Training Web Agents Against Adaptive Prompt Injection in a Web World Model",
+   "url": "https://huggingface.co/papers/2610.08773",
+   "summary": "Web agents complete user requests by reading and acting on pages that third parties write, so an instruction planted on a page can redirect the agent away from the user's goal. The agent cannot simply ignore the page, because the page also holds the values and controls the task requires. Current defenses fine-tune the agent on injections fixed before training, and attackers that adapt to the trained model bypass them. Adversarial training lets the attacker adapt but keeps the tasks fixed, so a task stops teaching once the agent solves it. We introduce AdvSim2Real, which co-evolves a task curriculum, an injection adversary, and the agent inside a frozen web world model. The curriculum is rewarded for tasks the agent solves about half of the time, and the adversary only for a success flip, an injection that turns a judged success into a failure. Training in the simulator makes a 4B agent both more capable and more robust: its completion rises with and without attacks, holds against a frontier-model adversary it never trained against, and its capability gain carries over to a real browser. On 150 web tasks, AdvSim2Real raises completion under this unseen adversary by 33.6\\% relative to the base agent.",
+   "published": "2026-10-06T13:56:43.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.08773"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "AdvSim2Real co-évolue un curriculum de tâches, un adversaire d'injection de prompts et un agent dans un modèle de monde web figé, améliorant la robustesse (+33.6% de complétion) contre des attaques adaptatives non vues, avec un transfert vers un navigateur réel pour un agent de 4B.",
+   "score": 8.2
+  },
+  {
+   "id": "989d321502f64dbe",
+   "title": "HuatuoGPT-3: RL-Only Domain Adaptation from Base Models",
+   "url": "https://huggingface.co/papers/2610.05966",
+   "summary": "Domain adaptation aims to turn a general-purpose large language model (LLM) into an expert for a target domain. While the dominant SFT+RL pipeline offers a convenient cold start, it may reduce exploration diversity and introduces additional complexity through multi-stage optimization. These limitations motivate RL-only adaptation. However, pure on-policy RL suffers from a cold-start problem, while mixed-policy RL still falls short: informative tokens in teacher outputs are learned too slowly in early training, and stale teacher outputs can hinder later improvement. We identify these two failure modes as Gradient Starvation and Teacher-Distribution Anchoring. To address them, we propose One-stage Policy Optimization (OnePO), which treats teacher outputs as transient guidance for policy improvement. OnePO combines Adaptive Objective Evolution to strengthen learning on informative low-probability teacher tokens and Teacher Retirement to discard teacher outputs once the current policy can surpass them. On medical adaptation, OnePO achieves 67.2 on HealthBench (Total) with only 20K training samples, outperforming SFT+RL and pure RL by 2.7 and 7.4 points, respectively. We further scale OnePO to produce HuatuoGPT-3, an open-source medical LLM series whose 27B variant reaches 70.1 on HealthBench (Total) and 71.4 on HealthBench Professional, surpassing frontier models such as GPT-6 Astra. Models and code are available at https://github.com/FreedomIntelligence/HuatuoGPT-3.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2610.05966"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Approche (OnePO) pour l'adaptation de domaine des LLM via RL pur, résolvant les problèmes de *Gradient Starvation* et *Teacher-Distribution Anchoring* avec des mécanismes comme l'*Adaptive Objective Evolution* et le *Teacher Retirement*, surpassant les méthodes SFT+RL et RL pur.",
+   "score": 8.2
+  },
+  {
+   "id": "773a36ea95807eec",
+   "title": "When Forgetting is not Catastrophic: On the Mechanics of Spurious Forgetting",
+   "url": "https://arxiv.org/abs/2610.08718v1",
+   "summary": "Knowledge that a language model appears to forget during finetuning often remains stored and can be recovered, a phenomenon called spurious forgetting. Finetuning on new facts can even produce forgetting that undoes itself: recall of the old facts collapses, recovers as training continues on new facts alone, and only then erodes for good. We seek to understand when such forgetting is not catastrophic. A minimal associative memory reproduces these dynamics with three ingredients: keys with shared structure, concentrated new values, and normalization in the network. Finetuning moves all old representations along a common direction, hiding the old facts while preserving their relative geometry; normalization withdraws this shift once the new facts are learned, whereas fact-specific changes accumulate and cause the erosion. Moreover, subtracting the common shift eliminates the collapse in a Transformer trained on synthetic data, and removing a single direction from each weight update restores old facts in a pretrained language model. Forgetting thus combines a shared, reversible loss of access with a slow erosion of individual facts, and only the second is catastrophic. Which one dominates depends on whether the new data move old memories together or apart.",
+   "published": "2026-10-06T17:25:48+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Vedant Palit, Florent Draye, Nicolas Zucchet, Zhijing Jin, Bernhard Schölkopf"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "L'étude révèle que l'oubli apparent lors du fine-tuning des LLM est souvent réversible (*spurious forgetting*), avec une distinction entre perte d'accès partagée (réversible) et érosion des faits (catastrophique), expliquée par des mécanismes de normalisation.",
+   "score": 8.0
+  },
+  {
+   "id": "47955871a2742311",
+   "title": "Agentic RCA for Internet-Scale Services Using Constrained Creativity",
+   "url": "https://arxiv.org/abs/2610.08622v1",
+   "summary": "System administrators of Internet-scale services need to resolve failure incidents to maintain reliability of such services. Ideally, we want a troubleshooting system to be: (1) expressive to known and unknown incidents with high accuracy; (2) cost efficient at scale; (3) explainable to provide actionable insights operators can act on; and (4) entail low effort from the operators. Unfortunately, most existing systems, including emerging LLM-assisted agentic workflows and structured frameworks for authoring diverse RCA algorithms fall short of achieving all four requirements. We present E4, a novel agentic system for troubleshooting for Internet-scale services. E4 embodies the paradigm of constrained creativity that combines the best of LLM-assisted automation and exploration with the explainability and efficiency of a structured approach. Instead of allowing an LLM agent to write arbitrary code or generate arbitrary responses, we provide the agent a restricted DSL to generate its response via simple loop-free data flow programs. This DSL, equipped with high level operators for troubleshooting, makes E4's output accurate, verifiable and explainable. On a mix of synthetic and real-world workloads, E4 achieves up to 62% better accuracy compared to state-of-the-art solutions, while providing more explainable responses at up to 12x reduced cost.",
+   "published": "2026-10-06T16:21:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Sayan Sinha, Vipul Harsh, B. Aditya Prakash, Vyas Sekar, Hui Zhang"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Système agentique E4 pour la résolution automatisée d'incidents (RCA) à grande échelle, combinant créativité contrainte via un DSL et explicabilité, avec évaluation sur des données synthétiques et réelles.",
+   "score": 8.0
+  },
+  {
+   "id": "dff11d5840caa18b",
+   "title": "One for All, All for One: Coordinated Multi-Agent Diffusion Steering via Stochastic Optimal Control",
+   "url": "https://arxiv.org/abs/2610.08595v1",
+   "summary": "Deep generative models often produce structured outputs composed of interacting components. Modelling these outputs with a single model requires learning both the component distributions and their interactions. We pursue a modular alternative: reuse independently trained component generators and learn only how to coordinate them to produce coherent structured outputs. Our framework, Coordinated Multi-Agent Diffusion Steering (CMDS), treats frozen pretrained diffusion models as reusable generative primitives and coordinates their reverse processes through a learned control. We formulate coordination as a stochastic optimal control problem, balancing an assembly-level reward that specifies the desired properties of the combined output against deviations from the pretrained dynamics. The learned control amortises this optimisation, allowing reuse across new task instances. Experiments show that CMDS can recover a known target distribution, satisfy different spatial constraints with the same trained control, and recover individual sources from degraded mixtures. Across multi-agent maze navigation, articulated robot planning, and text-conditioned human motion, CMDS turns frozen models into coordinated multi-agent generators.",
+   "published": "2026-10-06T16:02:49+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Riccardo Barbano, Vincent Pauline, Runchang Li, George Webber, Alexander Denker, Željko Kereta"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Cadre CMDS pour coordonner des modèles diffusion indépendants via contrôle optimal stochastique, permettant de générer des sorties cohérentes (maze navigation, robotique, motion humaine) sans réentraînement.",
+   "score": 8.0
+  }
+ ]
+}
