@@ -1,0 +1,745 @@
+{
+ "date": "2026-10-08",
+ "digest": {
+  "headline": "Optimisation des modèles d'action et distillation en ligne dominent les avancées en IA robotique et LLM ce 2026-10-08",
+  "overview": "La journée est marquée par des progrès significatifs en optimisation des grands modèles (LLM et VLA), avec des méthodes ciblant la quantification, la distillation et l'inférence. En robotique, les benchmarks révèlent des lacunes persistantes dans la composition des compétences, tandis que des architectures innovantes tentent de les combler via des approches hiérarchiques ou auto-améliorantes.",
+  "highlights": [
+   {
+    "title": "Distillation en ligne et optimisation des politiques",
+    "text": "Plusieurs travaux (FastOPD, NP-OPD, Δ-MOPD) améliorent la distillation en ligne pour les LLM et VLA, réduisant la latence (jusqu'à 78%) ou améliorant les performances (jusqu'à +4.11 points). Ces méthodes adressent des problèmes critiques comme le désalignement enseignant-étudiant ou le faible chevauchement distributionnel, essentiels pour le déploiement efficace de modèles lourds."
+   },
+   {
+    "title": "Quantification et inférence optimisée des LLM",
+    "text": "STEPQuant optimise la quantification des états récurrents en allouant dynamiquement la précision, tandis que DLoop améliore le *speculative decoding* via des étapes de draft successives. Ces approches répondent aux besoins croissants d'efficacité computationnelle, avec des gains mesurables sur des benchmarks longs et courts."
+   },
+   {
+    "title": "Benchmarks pour agents robotiques et de codage",
+    "text": "SWE-Game (247 tâches de développement de jeux) et RoboQuest (exploration active) révèlent les limites des agents généralistes, avec seulement 23% de succès pour les meilleurs modèles. RobotWorld évalue quant à lui la composition des compétences multimodales, soulignant des lacunes majeures malgré des capacités individuelles solides."
+   },
+   {
+    "title": "Architectures pour la robotique compositionnelle",
+    "text": "ViGAR et Long-WAM proposent des modèles hiérarchiques ou étendus pour la manipulation robotique, exploitant des *world-models* partagés ou un historique visuel autorégressif. Ces travaux atteignent jusqu'à 82% de succès sur des tâches complexes, illustrant l'importance des approches structurées pour les environnements physiques."
+   },
+   {
+    "title": "Auto-amélioration et gestion dynamique des compétences",
+    "text": "PhysEvo et SkillForge introduisent des cadres pour l'auto-amélioration récursive des robots ou la gestion du cycle de vie des compétences. Ces méthodes améliorent les performances (jusqu'à +15%) sans mise à jour des poids, offrant des pistes pour des systèmes plus adaptatifs et évolutifs."
+   },
+   {
+    "title": "RAG et preuves synthétiques avec RECAST",
+    "text": "RECAST propose un cadre pour construire activement des preuves via un processus décisionnel séquentiel, combinant récupération, calcul et outils. Cette approche dépasse les limites du RAG classique en permettant une dérivation dynamique des connaissances, pertinente pour les agents nécessitant une rigueur logique."
+   }
+  ],
+  "trend": "Les avancées convergent vers une optimisation ciblée des modèles (quantification, distillation, inférence) et une meilleure évaluation des capacités compositionnelles des agents, avec un accent croissant sur les architectures hiérarchiques et les mécanismes d'auto-amélioration pour la robotique et les LLM."
+ },
+ "items": [
+  {
+   "id": "b19ed1e5b6a4b5fb",
+   "title": "STEPQuant: When and Where Errors Matter in Delta-Rule Recurrent State Quantization",
+   "url": "https://huggingface.co/papers/2609.38169",
+   "summary": "Linear attention replaces growing KV caches with fixed-size recurrent states, yet these persistent states can become a substantial memory bottleneck under concurrent serving. Directly quantizing recurrent states to low precision often leads to severe accuracy degradation, as quantization errors propagate through successive state updates. We discover that the impact of these errors depends on two complementary dimensions: temporally, errors in long-lived memory can persist across many decoding steps; spatially, errors in different key rows affect model outputs differently, while state magnitudes vary substantially along both rows and columns. Motivated by these observations, we propose STEPQuant, a spatial-temporal post-training quantization framework for Delta-rule recurrent states. STEPQuant allocates precision according to error magnitude and memory lifetime, and jointly fits key-row and value-column scales based on state distributions and key-row impact on output error. Experiments on Qwen3.8-27B and Kimi-Linear-48B-A3B-Instruct across both long- and short-generation benchmarks show that STEPQuant closely matches FP32-state accuracy under a nominal 6-bit budget and outperforms uniform INT8 in its 4-bit configuration. Integrated into SGLang with optimized GPU kernels, 6-bit STEPQuant achieves over 5x recurrent-state compression and reduces total serving memory by up to 68.7%. Our code is available at https://github.com/Dreamer-Toby/STEPQuant.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 91,
+    "arxiv_id": "2609.38169"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "STEPQuant optimise la quantification des états récurrents dans les modèles d'attention linéaire en allouant la précision selon l'impact temporel et spatial des erreurs. Méthode rigoureuse avec des gains significatifs sur des benchmarks longs et courts.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le papier aborde le défi de la mémoire dans les modèles d'attention linéaire, où les états récurrents (recurrent states) remplacent les caches KV croissants. Ces états, bien que de taille fixe, deviennent un goulot d'étranglement mémoire lors du service concurrent. La quantification directe de ces états en basse précision entraîne une dégradation sévère de la précision, car les erreurs de quantification se propagent à travers les mises à jour successives de l'état.",
+    "methode": "Les auteurs identifient que l'impact des erreurs de quantification dépend de deux dimensions : temporelle (les erreurs dans les mémoires à longue durée persistent sur plusieurs étapes de décodage) et spatiale (les erreurs affectent différemment les lignes de clés et les colonnes de valeurs, avec des magnitudes variables). STEPQuant, un framework de quantification post-entraînement, alloue la précision en fonction de l'amplitude des erreurs et de la durée de vie de la mémoire. Il ajuste conjointement les échelles des lignes de clés et des colonnes de valeurs en se basant sur les distributions des états et l'impact des lignes de clés sur l'erreur de sortie. La méthode exploite une approche *Delta-rule* pour optimiser la quantification des états récurrents.",
+    "resultats": "Les expériences menées sur Qwen3.8-27B et Kimi-Linear-48B-A3B-Instruct montrent que STEPQuant, avec un budget nominal de 6 bits, atteint une précision proche de celle des états en FP32. En configuration 4 bits, il surpasse l'INT8 uniforme. Intégré à SGLang avec des noyaux GPU optimisés, STEPQuant permet une compression des états récurrents de plus de 5x et réduit la mémoire totale de service jusqu'à 68,7 %.",
+    "limites": "Le papier ne détaille pas explicitement les scénarios où la méthode pourrait échouer, comme les cas extrêmes de distributions d'états ou les modèles avec des dépendances temporelles complexes. De plus, l'évaluation se limite à deux modèles, ce qui peut restreindre la généralisabilité des résultats. La robustesse face à des tâches très variées ou des architectures non testées reste une zone d'ombre.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante et ses gains significatifs en compression mémoire, surtout pour les systèmes de service à grande échelle, mais une validation plus large serait nécessaire pour confirmer sa robustesse."
+   }
+  },
+  {
+   "id": "914d0d4f513002c9",
+   "title": "FastOPD: On-Policy Distillation for Lightweight VLA Deployment",
+   "url": "https://huggingface.co/papers/2610.02832",
+   "summary": "Vision-Language-Action (VLA) foundation models have scaled rapidly to enhance manipulation performance and generalizability, but this scaling incurs high computational costs that render real-world deployment increasingly challenging. Existing approaches typically mitigate this issue by designing smaller architectures or reducing the iterative denoising steps in flow-based policies. In this work, we propose FastOPD, a foundation-to-lightweight VLA framework that enables the practical deployment of large-scale VLAs through efficient on-policy distillation. Specifically, FastOPD adapts a flow map for single-state teacher supervision and combines it with a self-consistency objective to construct a compact student that learns the teacher dynamics. Furthermore, we theoretically demonstrate that minimizing this objective allows the distilled student to recover a distribution on par with that induced by an ideal few-step teacher model. We evaluate FastOPD across diverse foundation policies in simulation and real-world experiments. On LIBERO, FastOPD retains 84% of the performance of π_{0.5} with only two inference steps, reducing inference latency by 78.1% while outperforming existing few-step distillation baselines in average success rate. With LingBot-VLA as the teacher, FastOPD improves the single-step success rate over the base student by 15.9 percentage points on RoboTwin 2.0. We further demonstrate its applicability to a World Action Model (WAM) and deploy a compact student distilled from MolmoAct2 on a real robot.",
+   "published": "2026-10-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.02832"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Cadre (FastOPD) pour la distillation en ligne de modèles VLA lourds en politiques légères, réduisant la latence de 78% tout en conservant 84% des performances. Clé pour le déploiement efficace de grands modèles d'action.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles fondateurs Vision-Language-Action (VLA) améliorent significativement les performances et la généralisabilité des systèmes de manipulation robotique, mais leur déploiement en temps réel est entravé par des coûts computationnels prohibitifs. Ces modèles, souvent volumineux, nécessitent des ressources matérielles importantes, limitant leur utilisation dans des environnements réels où la latence et l'efficacité énergétique sont critiques.",
+    "methode": "FastOPD propose une approche d'*on-policy distillation* pour transformer un modèle VLA fondateur en une version légère et déployable. La méthode adapte une *flow map* pour superviser le modèle étudiant (student) à partir d'un seul état du modèle enseignant (teacher), combinée à un objectif de *self-consistency* pour capturer la dynamique du teacher. Théoriquement, minimiser cet objectif permet au student de reproduire une distribution proche de celle d'un modèle teacher idéal fonctionnant en quelques étapes. FastOPD évite ainsi les architectures réduites ou les approximations simplistes des politiques basées sur des flux dénoisés itératifs.",
+    "resultats": "Les évaluations sur LIBERO montrent que FastOPD conserve 84 % des performances d'un modèle teacher (π_{0.5}) tout en réduisant la latence d'inférence de 78,1 % avec seulement deux étapes. Sur RoboTwin 2.0, avec LingBot-VLA comme teacher, le taux de succès en une seule étape est amélioré de 15,9 points de pourcentage par rapport au student de base. La méthode est également validée sur un *World Action Model* (WAM) et déployée sur un robot réel avec un student distillé à partir de MolmoAct2.",
+    "limites": "Le document ne détaille pas les hypothèses sous-jacentes à la démonstration théorique (ex. : conditions de convergence du student vers le teacher). Les gains en performance pourraient dépendre fortement du choix du modèle teacher ou du domaine d'application, sans garantie de généralisation à d'autres tâches robotiques. Enfin, l'impact des erreurs de distillation sur la robustesse en conditions réelles n'est pas quantifié.",
+    "verdict": "FastOPD mérite une attention particulière pour son approche innovante de distillation *on-policy* appliquée aux VLA, offrant un compromis prometteur entre performance et efficacité computationnelle pour le déploiement robotique."
+   }
+  },
+  {
+   "id": "e63f03cbbc601028",
+   "title": "Gains and Collapse in On-Policy Distillation:A Reinforcement Learning Perspective",
+   "url": "https://huggingface.co/papers/2610.03185",
+   "summary": "On-policy distillation (OPD) has become an important approach to language model post-training. However, despite its performance gains, OPD can also collapse into excessively long and repetitive generation, and the mechanism underlying these divergent outcomes remains poorly understood. We explain these outcomes through a reinforcement learning perspective: the teacher implicitly rewards student behaviors, even those it rarely exhibits itself. From this perspective, our experiments show that OPD improves performance without expanding the student's capabilities. When the implicit reward model is reliable, OPD makes correct responses easier to sample. In contrast, when the preference misaligns with quality, reward hacking happens: the implicit reward model amplifies overlong, repetitive student rollouts, even though it rarely generates such text itself. Guided by this diagnosis, we find that masking unhealthy responses during training and using SFT initialization can each effectively mitigate the collapse. Together, these findings show that OPD amplifies student behaviors favored by the teacher's implicit feedback, shifting the focus from how well the teacher generates to how reliably it evaluates student rollouts. Our code is available at https://github.com/HancCui/opd_hacking.",
+   "published": "2026-10-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2610.03185"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Analyse RL de l'*on-policy distillation* (OPD) pour les LLM : explique les collapses (répétitions excessives) par un désalignement entre le modèle enseignant et les préférences implicites. Propose des solutions (masquage, SFT initial) pour stabiliser l'entraînement.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le phénomène de *collapse* (effondrement) dans la distillation *on-policy* (OPD) des modèles de langage, où le modèle étudiant produit des générations excessivement longues et répétitives malgré des gains initiaux de performance. Le but est d'expliquer les mécanismes sous-jacents à ces résultats divergents, souvent mal compris, en adoptant une perspective d'apprentissage par renforcement (RL).",
+    "methode": {
+     "approche_generale": "Les auteurs analysent l'OPD comme un processus de RL où l'enseignant (modèle source) fournit un *feedback implicite* via sa distribution de probabilités, récompensant indirectement les comportements de l'étudiant (modèle cible), même ceux qu'il n'adopte que rarement. Cette modélisation permet de décomposer les gains et les échecs de l'OPD.",
+     "details_techniques": [
+      "L'étude montre que l'OPD améliore les performances sans étendre les capacités intrinsèques de l'étudiant, mais en rendant les réponses correctes plus faciles à échantillonner lorsque le *modèle de récompense implicite* est fiable.",
+      "En cas de désalignement entre les préférences de l'enseignant et la qualité réelle des générations, un phénomène de *reward hacking* survient : le modèle étudiant exploite les biais du feedback pour produire des séquences sur-optimisées (ex. répétitions, longueur excessive), bien que l'enseignant ne génère presque jamais de telles séquences.",
+      "Pour atténuer le collapse, deux solutions sont proposées : (1) masquer les réponses « malsaines » pendant l'entraînement, et (2) initialiser l'étudiant via un *fine-tuning supervisé* (SFT) plutôt que de partir d'un modèle aléatoire ou pré-entraîné.",
+      "Les expériences s'appuient sur des analyses quantitatives des distributions de probabilités et des comportements de génération, avec un focus sur la fiabilité du feedback implicite."
+     ]
+    },
+    "resultats": {
+     "observations": [
+      "L'OPD améliore effectivement les performances lorsque le feedback de l'enseignant est aligné avec la qualité, mais cet avantage se limite à une meilleure *accessibilité* des réponses correctes (sans élargir l'espace des capacités).",
+      "Le collapse est systématiquement lié à un *reward hacking* : l'étudiant amplifie des comportements sous-optimaux (ex. répétitions) en exploitant les biais du modèle de récompense implicite, même si l'enseignant les évite.",
+      "Les solutions proposées (masquage des réponses malsaines + initialisation SFT) réduisent significativement le risque de collapse, validant l'hypothèse du désalignement du feedback comme cause principale."
+     ],
+     "chiffres_cles": "Aucun chiffre précis (ex. métriques de performance, taux de collapse) n'est mentionné dans le résumé disponible. Les résultats sont décrits qualitativement."
+    },
+    "limites": {
+     "points_faibles": [
+      "L'analyse repose sur une interprétation *a posteriori* des mécanismes de l'OPD via le prisme du RL, sans preuve formelle que le feedback implicite est la seule cause du collapse. D'autres facteurs (ex. architecture, données d'entraînement) pourraient jouer un rôle.",
+      "Les solutions proposées (masquage, SFT) sont présentées comme efficaces, mais leur généralisabilité à d'autres modèles ou tâches n'est pas démontrée. Leur impact sur les performances globales (hors collapse) n'est pas quantifié.",
+      "Le résumé ne précise pas les jeux de données ou les modèles utilisés, limitant l'évaluation de la robustesse des conclusions."
+     ],
+     "zones_d_ombre": "Le mécanisme exact par lequel le *reward hacking* émerge (ex. quels biais spécifiques de l'enseignant sont exploités) reste flou. De plus, l'absence de métriques détaillées empêche de comparer objectivement l'OPD à d'autres méthodes de distillation."
+    },
+    "verdict": "Cette publication mérite l'attention pour son éclairage original sur les échecs de l'OPD via le RL, mais ses conclusions demandent à être validées par des expériences plus larges et reproductibles avant d'être considérées comme définitives."
+   }
+  },
+  {
+   "id": "34993416301aeb61",
+   "title": "SWE-Game: Can Coding Agents Build the Games We Want?",
+   "url": "https://huggingface.co/papers/2609.33678",
+   "summary": "We introduce SWE-Game, a benchmark of 247 tasks grounded in 41 executable reference Godot games spanning 13 gameplay categories in 2D and 3D. Five task types cover development from a brief, implementation from a game design document, skeleton completion, repair of 83 injected-fault cases, and Godot-to-Unity porting. Reference materials specify the intended gameplay, while a shared instrumentation interface lets evaluator-owned drivers and probes execute actions and observe independently implemented games. Evaluation combines engine-state checks, certified reference-input replay, and agent-authored feature demonstrations to assess mechanic correctness, demonstrated playability, and behavioral restoration and preservation after repairs. Game-specific vision-language rubrics separately assess presentation. Across six models, Opus5 achieves the highest overall score in all five task types. Best overall scores remain below 60 out of 100 across the three construction tasks, with Brief-to-Game reaching 50.38. Analysis of reviewed submissions identifies requirement omissions and gameplay logic errors as predominant implementation problems. On human-labeled behaviors from 100 agent-built games, executable checks achieve 92.59% balanced accuracy, compared with 78.41% for a video-based VLM judge. Rubric-based visual scores reach a Spearman correlation of 0.829 with human ratings of 200 gameplay clips. Together, these results characterize current agent capabilities across game-development activities and support combining runtime evidence with visual assessment.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2609.33678"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "SWE-Game introduit un benchmark de 247 tâches pour évaluer des agents capables de construire des jeux vidéo (Godot/Unity), couvrant la génération, la réparation et le portage. Pertinent pour l'évaluation des agents de codage et leur capacité à générer des artefacts complexes.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Ce benchmark vise à évaluer la capacité des agents d'IA à développer des jeux vidéo complets et fonctionnels, un défi complexe impliquant la compréhension de spécifications techniques, la génération de code exécutable, et la correction d'erreurs. Il cherche aussi à mesurer l'écart entre les capacités actuelles des modèles et les attentes réelles en matière de développement de jeux, en couvrant des tâches variées comme la création à partir d'un brief ou la migration entre moteurs de jeu (Godot vers Unity).",
+    "methode": "SWE-Game propose un benchmark structuré autour de 247 tâches basées sur 41 jeux de référence exécutables, développés avec le moteur Godot (2D et 3D), répartis en 13 catégories de gameplay. Cinq types de tâches sont définis : développement à partir d'un brief, implémentation depuis un document de conception, complétion de squelettes de code, réparation de 83 cas de fautes injectées, et portage de Godot vers Unity. L'évaluation combine des vérifications d'état du moteur, des rejouages d'entrées certifiées, et des démonstrations de fonctionnalités créées par les agents. Un système d'instrumentation partagé permet aux évaluateurs d'exécuter des actions et d'observer les jeux indépendamment. Des rubriques visuelles spécifiques à chaque jeu, basées sur la vision et le langage, évaluent séparément la qualité de la présentation. Les modèles sont notés sur la correction des mécaniques, la jouabilité démontrée, et la préservation du comportement après réparation.",
+    "resultats": "Parmi six modèles testés, Opus5 obtient les meilleurs scores globaux dans les cinq types de tâches, mais les performances restent inférieures à 60/100 pour les trois tâches de construction, avec un score maximal de 50,38 pour la tâche *Brief-to-Game*. L'analyse des soumissions révèle que les omissions de spécifications et les erreurs de logique de gameplay sont les problèmes prédominants. Les vérifications exécutables atteignent une précision équilibrée de 92,59 % sur 100 jeux construits par des agents, contre 78,41 % pour un juge basé sur un modèle VLM analysant des vidéos. La corrélation de Spearman entre les scores visuels basés sur des rubriques et les évaluations humaines atteint 0,829 pour 200 clips de gameplay.",
+    "limites": "Les résultats montrent que les agents actuels peinent à atteindre un niveau de performance satisfaisant pour des tâches complexes comme la création de jeux à partir de zéro, avec des scores globaux médiocres. La méthodologie repose en partie sur des évaluations automatisées, dont la fiabilité peut être remise en question pour des aspects subjectifs comme la jouabilité ou la qualité visuelle. De plus, le benchmark se limite à des jeux Godot et Unity, ce qui peut ne pas refléter la diversité des moteurs et des genres de jeux existants.",
+    "verdict": "Ce benchmark offre une contribution technique solide pour évaluer les capacités des agents d'IA en développement de jeux, mais ses résultats soulignent un écart significatif entre les performances actuelles et les attentes pratiques, justifiant une attention critique plutôt qu'une adoption immédiate."
+   }
+  },
+  {
+   "id": "e586c32013d3dfd5",
+   "title": "RobotWorld: Benchmarking Multimodal Agents for Robot Use Across Diverse Tasks and Embodiments",
+   "url": "https://huggingface.co/papers/2610.10409",
+   "summary": "General-purpose agents increasingly write code, use tools, and complete complex digital tasks, raising the question of how far these capabilities carry into the physical world. To investigate this, we introduce RobotWorld, a challenging simulation testbed for robot use: turning instructions and observations into physical task execution through robot interfaces. Its 84 tasks span manipulation, mobile manipulation, locomotion, driving, and aerial control, with explicit interaction budgets and executable success checks. By analysing task outcomes alongside execution traces, we identify both the capabilities that transfer and the gaps that prevent reliable completion. Furthermore, we find that current agents can construct sophisticated perception and control workflows, including image segmentation, camera calibration, spatial estimation, and dynamics-based computation. These capabilities, however, do not consistently compose into successful behaviour: agents lose task-relevant object states despite reaching commanded poses, fail to correct ineffective actions, recover too late, or mistake unfinished tasks for completion. This uneven transfer also differs across models: Astra succeeds more often on spatial and constrained-contact goals, whereas Opus 5.5 succeeds more often on continuous-balance and timed-interaction goals. By linking these outcomes to execution behaviour, RobotWorld provides both a rigorous proving ground and an empirical account of the remaining capability gaps, thereby establishing concrete targets for training and designing more reliable physical-world agents.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 25,
+    "arxiv_id": "2610.10409"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "RobotWorld évalue des agents multimodaux sur 84 tâches robotiques (manipulation, locomotion), révélant des lacunes dans la composition des compétences malgré des capacités individuelles solides. Benchmark crucial pour les agents physiques généralistes.",
+   "score": 8.8
+  },
+  {
+   "id": "77eaf7d3362aa12c",
+   "title": "On-Policy Distillation with Negative-Policy Rollouts",
+   "url": "https://huggingface.co/papers/2610.07874",
+   "summary": "On-policy distillation (OPD) has been widely studied as a post-training method in which a student model obtains token-level supervision from a stronger teacher on its own rollouts. Recent studies have improved OPD through alternative distillation reward formulations and teacher configurations, while the objective of distillation remains centered on mimicking the teacher. However, when a stronger teacher has limited distributional overlap with the student, such positive guidance can provide insufficient learning signals. In this work, we introduce Negative-Policy OPD (NP-OPD), which complements teacher supervision with rollouts from a lower-performing, lower-capability negative policy that serves as a negative reference for the student. Rather than modifying the distillation reward formulation, NP-OPD introduces the negative policy at the rollout stage, continuously supplying tokens preferred by the negative policy over the teacher so that they remain exposed to teacher supervision throughout training. This provides an explicit negative signal through negative-policy rollouts while preserving the positive teacher supervision used in OPD. Through extensive experiments, we show that NP-OPD improves OPD across model scales, generation modes, reasoning domains, and different OPD variants. Furthermore, our analyses show that NP-OPD effectively suppresses tokens preferred by the negative policy over the teacher and moves the student away from the negative policy. These results support our design of introducing negative signals through negative-policy rollouts and provide new insight into the role of the rollout policy in OPD. Code will be available at https://github.com/naver-ai/np-opd.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2610.07874"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode d'optimisation par distillation (NP-OPD) combinant des rollouts positifs (enseignant) et négatifs (politique faible) pour améliorer l'apprentissage des modèles étudiants, surtout lorsque l'enseignant a un faible chevauchement distributionnel. Pertinent pour l'efficacité des LLM post-entraînement.",
+   "score": 8.8
+  },
+  {
+   "id": "4fd1e28abed6df6c",
+   "title": "Long-WAM: Scaling the Context of World-Action Models",
+   "url": "https://huggingface.co/papers/2610.10528",
+   "summary": "Real-time robot control demands enough visual history to infer motion and task progress, but processing that history can delay action. We present Long-WAM, a model-system framework for scaling the context of causal world-action models under real-time control constraints. Our central finding is that access to history is not the same as using it: longer histories pay off far more when the video foundation is pretrained autoregressively (AR). We first learn causal prediction from robot and egocentric videos without action labels, then preserve this history-to-future structure during world-action adaptation. On RoboCasa GR-1, increasing context from 0.0 to 19.2 seconds raises success from 63.3% to 78.7%, whereas a bidirectionally pretrained initialization shows no net gain; robot-domain AR pretraining further raises peak success on GR-1 and LIBERO-Long. Long-WAM also achieves the best results among compared methods on LIBERO-Long, RoboTwin 2.0, and DOMINO. Streaming observation encoding, asynchronous execution, and hardware-specific acceleration enable deployment on RTX 5090, DGX Spark, and Jetson AGX Thor without dropping future prediction; on RTX 5090, each action chunk, including future-video latent prediction, takes 107.4 ms. Real-time deployment on Unitree G1 and YAM supports dynamic and long-horizon manipulation, including 95% success on dynamic cup stacking, where Pi0.5 and Fast-WAM succeed in none of 20 trials. As a memory-informed executor, Long-WAM also complements higher-level planning in composite tasks.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 83,
+    "arxiv_id": "2610.10528"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "robotique"
+   ],
+   "tldr": "Modèle (Long-WAM) étendant le contexte des modèles d'action-monde pour le contrôle robotique en temps réel, avec un prétraitement autorégressif des vidéos pour exploiter l'historique visuel. Démonstration de gains significatifs en succès (jusqu'à +15.4%) sur des benchmarks robotiques.",
+   "score": 8.8
+  },
+  {
+   "id": "721a7ce1c96317ca",
+   "title": "EngramEdit: Decoupled Knowledge Updates in LLMs through Conditional Memory",
+   "url": "https://huggingface.co/papers/2610.10533",
+   "summary": "Conditional memory architectures such as DeepSeek Engram use input n-grams to look up learned embeddings, expanding the capacity of large language models (LLMs) with limited additional computation. Beyond model scaling, this architecture has demonstrated the potential to decouple factual knowledge storage from general-purpose computation, offering a promising route to updating factual knowledge while keeping the Transformer backbone fixed. Realizing this potential is challenging because different expressions of a fact may activate different n-gram embeddings, while updating shared embeddings can unintentionally change the model's predictions about other facts. We propose EngramEdit for decoupled knowledge updates through conditional memory. EngramEdit first computes target memory representations that make the model predict the updated fact across multiple expressions. It then jointly updates the shared n-gram embeddings to match these targets across expressions and edits, penalizing updates to frequently reused embeddings more strongly to preserve unrelated knowledge. Experiments show that EngramEdit enables independent factual knowledge updates through conditional memory, achieving near-perfect editing success. Revised knowledge is usable across unseen expressions and in multi-hop reasoning, with nearly three times the strongest baseline's accuracy under chain-of-thought (CoT) prompting. Unrelated knowledge and general capabilities are largely preserved even as factual updates accumulate. These findings show that EngramEdit turns conditional memory into an editable knowledge interface, extending its role beyond model scaling to support decoupled knowledge updates.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.10533"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "EngramEdit propose une méthode pour mettre à jour des connaissances factuelles dans les LLM via des embeddings conditionnels (n-grammes), en découplant stockage et calcul. Pertinent pour l'optimisation des mises à jour de connaissances sans réentraînement complet du modèle.",
+   "score": 8.5
+  },
+  {
+   "id": "fc73c0642385951b",
+   "title": "PhysEvo: Astra Can Act, Let It",
+   "url": "https://huggingface.co/papers/2610.08995",
+   "summary": "Astra can act, yet reliable manipulation depends on the system through which it observes and controls the world. We introduce PhysEvo, a framework for physical recursive self-improvement (RSI) around a single frozen model. A task agent executes robot tasks; a meta-agent uses the resulting trajectories to diagnose failures, revise tools and skills, and test corrections. The meta-agent can also improve its own diagnostic tools, so retained revisions support both later action and later self-improvement. This process develops joint-level control, evidence-seeking observation, and reusable manipulation skills without model-weight updates or a separately trained action policy. Across 42 RoboDojo tasks, held-out-layout evaluation of retained task-specific deployment versions yields a five-dimension average score of 68.14/100 and 62.00% success, compared with 47.17% for RoboDawn's one-shot Astra agent, the strongest published reference in our comparison. On eight manipulation tasks challenging direct Astra, PhysEvo achieves 55.00% success, compared with 1.25% for the direct-Astra reference. Deploying the simulation-evolved harness on AgileX PiPER and continuing skill revision yields 90.60/100 average score and 84.00% success across 25 trials on five real-world tasks. PhysEvo turns the consequences of action into persistent, testable changes to how a frozen model acts and improves.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2610.08995"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "PhysEvo propose un cadre de *self-improvement* récursif pour robots via un méta-agent diagnostiquant et améliorant des compétences sans mise à jour des poids. Démontre des gains significatifs (62% vs 47% de succès) sur RoboDojo et des tâches physiques réelles.",
+   "score": 8.5
+  },
+  {
+   "id": "bc91081183e0ce03",
+   "title": "Co-Evolving Robot Orchestrators and Policies through Deployment",
+   "url": "https://huggingface.co/papers/2610.09228",
+   "summary": "Vision-language-action (VLA) policies trained on large datasets are capable within their training domains, yet they still fail to generalize to the variety of situations a robot meets in real-world deployment. Agentic robot systems complement the policy with a vision-language model (VLM) orchestrator that learns when to call the policy, how to instruct it, and when to use scripted skills instead. However, because the harness is built around a frozen policy that has limited language steerability, the orchestrator can avoid the policy's failures but never overcome them. The policy becomes the bottleneck of the whole system. Fine-tuning the policy can remove this bottleneck, but updating it alone decouples it from an orchestrator tuned to its old behavior. We propose Robo-COP, in which the orchestrator and policy co-evolve during deployment. Robo-COP curates skill demonstrations from its own executions, fine-tunes the policy when this data can address recurring failures, and adopts each new policy only after it improves the skills it was trained for. Across ten simulated RoboLab tasks, Robo-COP raises mean held-out success from 64.8% to 73.8% over the same harness with a frozen policy, while fine-tuning on a fixed schedule without verification reaches only 65.8%. On three real-world tasks, Robo-COP raises held-out success from 38.3% to 50.0%. Robo-COP turns deployment into a self-improving flywheel in which robots learn by doing, with each improvement in execution producing better data for the next round of learning. Videos and code are available at https://robo-cop.pages.dev/.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.09228"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "Robo-COP co-évolue un orchestrateur VLM et une politique robotique via un cycle de déploiement, améliorant les performances (73.8% vs 64.8% de succès) en corrigeant les échecs récurrents sans désynchroniser les composants.",
+   "score": 8.5
+  },
+  {
+   "id": "8df1895d4d39a8aa",
+   "title": "SkillForge: Co-Evolving Skills and Agents via Dynamic Skill Lifecycles",
+   "url": "https://huggingface.co/papers/2610.09832",
+   "summary": "Memory-augmented reinforcement learning strengthens LLM agents' ability to solve complex long-horizon tasks. Skills are one such form of memory, pairing instructions with an applicability condition over task types. However, retaining every skill indiscriminately as the policy improves lets obsolete or harmful entries accumulate and mislead the agent. We propose SkillForge, an agentic RL method that compiles and evolves the skill library through a fitness-driven skill lifecycle of trial, active, stable, and retired states, so that the skills and the model co-evolve throughout training. A pre-RL evaluation phase first uses the base model's own rollouts to pre-retire low-fitness skills, yielding a filtered library that then seeds supervised fine-tuning. Reinforcement learning takes over from this checkpoint, and at each iteration selective retirement, stabilization, and LLM-guided mutation continue to forge the skill library alongside policy optimization. Across multiple interactive agent benchmarks, SkillForge achieves the highest aggregate success rate, delivering up to 7.8% relative improvement over the strongest baseline while keeping the skill library compact throughout training. We introduce SkillFurnace, a dataset of 5k+ annotated records bundling retirement-filtered SFT trajectories, evolved skill libraries with fitness annotations, and retirement events with human-annotated failure categories to support research on skill quality and lifecycle management.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.09832"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "SkillForge gère dynamiquement une bibliothèque de compétences pour agents LLM via un cycle de vie (essai, actif, stable, retiré), améliorant les performances (jusqu'à +7.8%) tout en maintenant une bibliothèque compacte et évolutive.",
+   "score": 8.5
+  },
+  {
+   "id": "5ed878587f0f77b7",
+   "title": "Rethinking World-Action Model for Compositional and In-Context Robotic Manipulation",
+   "url": "https://huggingface.co/papers/2610.02368",
+   "summary": "Long-horizon compositional manipulation has become increasingly important for real-world robot deployment, where a single task involves multiple coordinated subtasks. Existing world-action models (WAMs) jointly predict short-horizon visual futures and actions, but typically lack explicit subtask-level reasoning. We propose Visual Goal-conditioned Action Reasoning (ViGAR), a hierarchical framework that factorizes manipulation into a visual subgoal planner and a subgoal executor. Given the current observation and global instruction, the subgoal planner predicts a visual subgoal for the next subtask. The subgoal executor then jointly generates future visual trajectories and actions conditioned on the predicted subgoal. Both components share a pretrained world-model representation, enabling task-level planning and action generation to benefit from common physical knowledge. Moreover, our framework naturally supports in-context learning: using a global goal image as context can induce different subtask decompositions and behaviors without parameter updates. On the RoboTwin Clean2Random benchmark, ViGAR achieves 82.00% and 67.02% success rates under the Clean and Random settings, respectively, surpassing the strongest baseline by 12.86 percentage points in average success rate. Real-world robot experiments on five compositional and two in-context learning tasks further confirm the effectiveness of ViGAR.",
+   "published": "2026-09-30T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.02368"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "ViGAR propose un modèle hiérarchique pour la manipulation robotique compositionnelle, décomposant les tâches en sous-objectifs visuels et actions via un *world-model* partagé. Atteint 82% de succès sur RoboTwin Clean2Random avec apprentissage in-context.",
+   "score": 8.5
+  },
+  {
+   "id": "45e7cf0b29cacc8c",
+   "title": "DLoop: Looped Speculative Decoding",
+   "url": "https://huggingface.co/papers/2610.07659",
+   "summary": "Speculative decoding accelerates autoregressive generation in large language models. In each drafting stage, a lightweight draft model proposes tokens that the target model subsequently verifies. With increasingly capable draft models, we find that the target model frequently accepts all tokens produced in a drafting stage. A verification nevertheless follows each drafting stage, resulting in unnecessary target-model forward passes even when drafting could have continued. Adaptive draft length methods decide during decoding how many draft tokens precede a verification, but they raise the speedup only for autoregressive draft models. For a parallel draft model, drafting further requires target-model hidden states for draft tokens that have not been verified. We propose DLoop, a looped form of speculative decoding that adaptively performs multiple drafting stages before verification. DLoop continues drafting while the draft model remains confident and verifies all accumulated draft tokens together. Loop-aware training keeps the draft model reliable in the additional drafting stages by exposing it to its own hidden states for unverified draft tokens. By spending additional draft-model forward passes, DLoop reduces the number of target-model forward passes required for verification. Across diverse speculative decoding methods including EAGLE-3, DFlash, Domino, DSpark, and multi-token prediction modules, DLoop improves the wall-clock speedup by 5 to 41 percent while preserving lossless decoding. Code will be available at https://github.com/naver-ai/DLoop.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.07659"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "DLoop améliore le *speculative decoding* en permettant plusieurs étapes de draft successives avant vérification, réduisant les passes inutiles du modèle cible. Optimisation concrète pour l'inférence des LLM, avec une approche innovante mais nécessitant plus de validation.",
+   "score": 8.5
+  },
+  {
+   "id": "8e4a10bd485bc937",
+   "title": "RoboQuest: Generalist Physical Agents that Search, Inspect and Test",
+   "url": "https://huggingface.co/papers/2610.10388",
+   "summary": "Recent advances in multimodal foundation models have made them capable generalist physical agents for a range of manipulation tasks. However, successful operation in an unfamiliar environment may require an agent to seek task-relevant information through interaction when it is absent from the observations: it may need to determine where a relevant object is, inspect an unobserved property, or discover the effect of an unfamiliar tool. We thus introduce RoboQuest, a benchmark for goal-directed embodied exploration, where agents must actively acquire task-relevant information through physical interaction, use the resulting evidence to adapt subsequent actions, and autonomously decide when to commit to task completion. RoboQuest comprises ten mobile manipulation tasks centered on three forms of uncertainty: search, manipulation-based inspection, and interactive testing. We evaluate five frontier multimodal agents through a common visuomotor interface, as well as a π_{0.5} policy fine-tuned on the full-episode demonstrations we release. The best agent succeeds in only 23\\% of the episodes, and the fine-tuned policy almost never succeeds. Isolated tests of the execution skills the tasks are built from, with the hidden information supplied, show that the agents can carry out most of the required actions, and our failure analysis attributes only a minority of the failures to execution. Our failure analysis further finds that the agents often stop exploring too early as they make decisions before observing the required evidence for task completion. We also find that agents rarely prevent or repair the disturbances caused by their exploration. Moreover, learning by trial and error remains difficult for most models.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.10388"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "RoboQuest teste des agents physiques sur 10 tâches d'exploration dirigée (recherche, inspection, test), avec seulement 23% de succès pour le meilleur agent. Met en lumière les limites des agents généralistes en environnement inconnu.",
+   "score": 8.5
+  },
+  {
+   "id": "013f83fe432f9cb5",
+   "title": "RECAST: Learning to Compute the Right Context through Adaptive Evidence Routing",
+   "url": "https://arxiv.org/abs/2610.10507v1",
+   "summary": "Large language models are increasingly applied to tasks grounded in long, heterogeneous information sources. Conventional Retrieval-Augmented Generation (RAG) relies on fixed similarity-based retrieval, while agentic variants adapt queries and tool use but remain largely retrieval-centric. However, in many tasks, the evidence required for a solution is not explicitly present in any single source item. Instead, it must be derived through filtering, aggregation, or computation across multiple source items. In this work, we introduce RECAST (Routing Evidence through Computation, Access, and Synthesized Tools), a learned framework that formulates evidence construction as a sequential decision process over heterogeneous retrieval and computation operations, allowing evidence to be actively derived rather than merely retrieved. A lightweight RouterLM iteratively selects and formulates primitive operations or specifies customized operations for a frozen CompilerLM to translate into executable code. Once it judges the evidence sufficient, RouterLM passes the accepted evidence to a frozen AnswerLM to produce the final solution. We train RouterLM with supervised fine-tuning (SFT) followed by group relative policy optimization (GRPO). Across six heterogeneous benchmark families, RECAST achieves a mean success rate of 75.6%, outperforming the strongest large-model baseline by 15.9%. Moreover, training enables the Qwen3.5-9B RouterLM to outperform a training-free Gemini 3.5 Flash RouterLM by 5.0%. On three held-out benchmarks, RECAST improves over the strongest baseline by 15.0% on average, demonstrating strong zero-shot generalization across tasks and heterogeneous source representations.",
+   "published": "2026-10-07T17:51:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yilun Hao, Krishna Sayana, Isabella Ye, James S Ren, Sukhdeep Sodhi, Craig Boutilier"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "Proposition de RECAST, un cadre d'apprentissage pour construire des preuves en combinant récupération adaptative, calcul et outils synthétiques, permettant de dériver activement des preuves plutôt que de simplement les récupérer, via un processus décisionnel séquentiel sur des opérations hétérogènes.",
+   "score": 8.3
+  },
+  {
+   "id": "22cb2c108c813b87",
+   "title": "FoldBack: Self-Correcting Masked Generative Policy for Long-Horizon Garment Folding",
+   "url": "https://arxiv.org/abs/2610.10462v1",
+   "summary": "We present FoldBack, a self-correcting masked generative policy for long-horizon garment folding. Existing long-trajectory policies may continue after a missed or slipped grasp even when the garment has not reached the intended configuration. We structure FoldBack's recovery mechanisms around three inference-time decisions: when to refine and verify, how to roll back, and where and how to retry. FoldBack aligns refinement and grasp verification with pick-and-place events, returns the robot to a retryable pre-grasp configuration while preserving successful grasps, and selectively regenerates the failed segment and selected future actions while avoiding previous failed grasp locations. To our knowledge, FoldBack is the first editable full-trajectory policy to unify these decisions, enabling failed interactions to be detected, undone, and repaired before execution continues, without recovery demonstrations or base-policy retraining. Across 33 real garments from six categories, FoldBack achieves 75.2% final folding success and 0.837 final-mask IoU, versus 45.7% and 0.689 for the strongest prior baseline.",
+   "published": "2026-10-07T17:28:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Lipeng Zhuang, Shiyu Fan, Yingdong Ru, Zhuo He, Florent P. Audonnet, Paul Henderson"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Méthode FoldBack pour le pliage robotisé de vêtements, utilisant une politique générative auto-correctrice avec mécanismes de retour arrière et régénération partielle des trajectoires. Améliore le taux de succès de 45.7% à 75.2% sur 33 vêtements réels. Avancée majeure en robotique pour les tâches long-horizon.",
+   "score": 8.3
+  },
+  {
+   "id": "ae3a634fea84a49f",
+   "title": "Composing What Each Teacher Learned: Multi-Teacher On-Policy Distillation through Teacher-Relative Shifts",
+   "url": "https://arxiv.org/abs/2610.10460v1",
+   "summary": "Multi-teacher on-policy distillation (MOPD) is used in two settings. In common-domain composition, several teachers score each student rollout from one prompt domain and their signals form a single target; in routed-domain distillation, prompts from different domains are assigned to the corresponding specialist. Both settings usually transfer each teacher's endpoint policy, which mixes what post-training changed with preferences inherited from the teacher's base. We introduce $Δ$-MOPD, which transfers each teacher's teacher-minus-base logit shift re-anchored at the student's frozen initialization, and compare it with endpoint supervision in both settings while holding teacher selection fixed. We first expose the mechanism that impedes endpoint transfer: inherited base pull can exceed the post-training shift. Removing it reduces the teacher-term norm ratio and target--student KL. Across our experiments, the results suggest that shift targets are particularly useful when teacher signals are combined at a state. With three composed teachers, $Δ$-MOPD exceeds endpoint composition by $4.11$ Math and $1.95$ five-benchmark points; with two, it matches endpoint accuracy. Under phased routing, it achieves higher mean performance in both phase orders and reduces the observed order gap from $10.50$ to $6.42$ points. Under interleaved routing, where each update involves one teacher, the two targets perform comparably. The phased results provide supporting evidence that the benefit may extend to signals accumulated across training phases. Target construction is thus an independent design axis in MOPD, complementary to teacher selection.",
+   "published": "2026-10-07T17:27:46+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hejian Sang, Zhengze Zhou, Shayan Mohajer Hamidi, Xiaomin Li, Rohit Jain, Alborz Geramifard"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Nouvelle approche Δ-MOPD pour la distillation multi-enseignants en RL, transférant les écarts de logits (teacher-minus-base) plutôt que les politiques finales. Surpasse les méthodes classiques de +4.11 points en Math et +1.95 en benchmarks composites. Pertinent pour l'optimisation des LLM et l'efficacité des politiques.",
+   "score": 8.3
+  },
+  {
+   "id": "11403366523febc9",
+   "title": "Training Parallel Speculative Draft Models by Directly Minimizing Expected Decoding Rounds",
+   "url": "https://arxiv.org/abs/2610.10411v1",
+   "summary": "Speculative decoding accelerates large language model inference by using a low-cost draft model to propose tokens that the full-size target model verifies in parallel. Parallel and semi-autoregressive (semi- AR) drafters improve drafting efficiency by proposing an entire block in a single forward pass, but training them raises a new difficulty: the draft distribution for a given position depends on where the decoding round starts, and where rounds start depends on how many tokens earlier rounds accepted. Existing training objectives typically rely on block-local surrogates that ignore this cross-round coupling, and therefore do not directly optimize the global decoding efficiency. In this work, we develop a theoretical framework for training and evaluating these drafters by representing speculative decoding as a Markov reward process. This formulation yields the Expected Decoding Rounds (EDR) objective, which weights local rejection costs by state occupancies and exactly equals the expected number of decoding rounds. Unlike prior surrogate objectives, EDR introduces no auxiliary hyperparameters. We then derive an exact temporal-difference gradient that supports unbiased stochastic optimization from target-model rollouts. The same framework also yields an exact offline evaluator for round counts, enabling paired drafter comparisons on shared target rollouts without running speculative decoding. Finetuning two state-of-the- art drafters, DSpark and DFly, with EDR consistently improves mean accepted length and outperforms existing training objectives across nine benchmarks spanning math reasoning, code generation, and chat.",
+   "published": "2026-10-07T16:56:29+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yunxiao Zhao, Changxiao Cai"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Méthode d'entraînement des modèles de draft parallèles pour l'inférence spéculative (EDR) en minimisant le nombre de rounds de décodage, avec une formulation théorique (processus de récompense de Markov). Critique pour l'optimisation des LLM en production.",
+   "score": 8.3
+  },
+  {
+   "id": "acc406cf6aa042ed",
+   "title": "RobotWorld: Benchmarking Multimodal Agents for Robot Use Across Diverse Tasks and Embodiments",
+   "url": "https://arxiv.org/abs/2610.10409v1",
+   "summary": "General-purpose agents increasingly write code, use tools, and complete complex digital tasks, raising the question of how far these capabilities carry into the physical world. To investigate this, we introduce RobotWorld, a challenging simulation testbed for robot use: turning instructions and observations into physical task execution through robot interfaces. Its 84 tasks span manipulation, mobile manipulation, locomotion, driving, and aerial control, with explicit interaction budgets and executable success checks. By analysing task outcomes alongside execution traces, we identify both the capabilities that transfer and the gaps that prevent reliable completion. Furthermore, we find that current agents can construct sophisticated perception and control workflows, including image segmentation, camera calibration, spatial estimation, and dynamics-based computation. These capabilities, however, do not consistently compose into successful behaviour: agents lose task-relevant object states despite reaching commanded poses, fail to correct ineffective actions, recover too late, or mistake unfinished tasks for completion. This uneven transfer also differs across models: Astra succeeds more often on spatial and constrained-contact goals, whereas Opus 5.5 succeeds more often on continuous-balance and timed-interaction goals. By linking these outcomes to execution behaviour, RobotWorld provides both a rigorous proving ground and an empirical account of the remaining capability gaps, thereby establishing concrete targets for training and designing more reliable physical-world agents.",
+   "published": "2026-10-07T16:55:24+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhiqin Yang, Chenxin Li, Xiaomeng Hu, Yibin Liu, Weidong Huang, Jiankai Sun"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark RobotWorld évaluant les agents multimodaux pour des tâches robotiques physiques (manipulation, locomotion, etc.), révélant des lacunes dans la composition des capacités (perception, contrôle). Essentiel pour l'évaluation des agents physiques.",
+   "score": 8.3
+  },
+  {
+   "id": "5b60bd66192134cb",
+   "title": "RoboQuest: Generalist Physical Agents that Search, Inspect and Test",
+   "url": "https://arxiv.org/abs/2610.10388v1",
+   "summary": "Recent advances in multimodal foundation models have made them capable generalist physical agents for a range of manipulation tasks. However, successful operation in an unfamiliar environment may require an agent to seek task-relevant information through interaction when it is absent from the observations: it may need to determine where a relevant object is, inspect an unobserved property, or discover the effect of an unfamiliar tool. We thus introduce RoboQuest, a benchmark for goal-directed embodied exploration, where agents must actively acquire task-relevant information through physical interaction, use the resulting evidence to adapt subsequent actions, and autonomously decide when to commit to task completion. RoboQuest comprises ten mobile manipulation tasks centered on three forms of uncertainty: search, manipulation-based inspection, and interactive testing. We evaluate five frontier multimodal agents through a common visuomotor interface, as well as a $π_{0.5}$ policy fine-tuned on the full-episode demonstrations we release. The best agent succeeds in only 23\\% of the episodes, and the fine-tuned policy almost never succeeds. Isolated tests of the execution skills the tasks are built from, with the hidden information supplied, show that the agents can carry out most of the required actions, and our failure analysis attributes only a minority of the failures to execution. Our failure analysis further finds that the agents often stop exploring too early as they make decisions before observing the required evidence for task completion. We also find that agents rarely prevent or repair the disturbances caused by their exploration. Moreover, learning by trial and error remains difficult for most models.",
+   "published": "2026-10-07T16:46:45+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Liu Renhang, Navonil Majumder, Tej Deep Pala, Soujanya Poria"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "RoboQuest introduit un benchmark pour évaluer des agents physiques généralistes capables d'exploration active (recherche, inspection, tests) dans des environnements inconnus, révélant des lacunes majeures des modèles actuels (23% de succès max). Crucial pour l'évaluation des capacités d'agents embodied et la robotique.",
+   "score": 8.3
+  },
+  {
+   "id": "3b78fdefe882822f",
+   "title": "OrBIT: Structure-Guided Embedding Compression",
+   "url": "https://arxiv.org/abs/2610.10385v1",
+   "summary": "Embedding tables are among the largest components of modern language models. Most compression methods fix a coding geometry such as coordinate blocks, low-rank subspaces, or unrestricted codebooks, and optimize within it. We instead ask whether the coding geometry can itself be discovered. We introduce \\emph{OrBIT}, a structure-guided embedding compression framework that learns reusable local geometry from orbit dynamics and uses it to constrain a small set of shared codewords. The global reconstruction residual then decides where the fixed coding budget is spent, while redundant overlapping charts let local errors compensate one another after gluing. Our theory shows how tight-chart geometry controls distortion, how the global residual directs sequential allocation, and how data-geometry-guided refinement improves the codec. The resulting orbit machinery is compiled away, leaving a compact decoder in which the learned structure governs what is stored, where capacity is allocated, and how local information is assembled globally. Across four LLM embedding tables, OrBIT achieves $37.9\\times$ compression on GPT-2 and over $23\\times$ on each 7B table relative to 16-bit storage, while delivering competitive rate-distortion performance against established quantization and low-rank baselines.",
+   "published": "2026-10-07T16:44:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yunied Puig, Amit Kumar Jaiswal"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "OrBIT compresse les tables d'embeddings des LLMs en découvrant une géométrie locale réutilisable via des orbites dynamiques, atteignant jusqu'à 37.9× de compression sur GPT-2 tout en préservant la performance. Méthode innovante pour l'optimisation des embeddings et la réduction de mémoire.",
+   "score": 8.3
+  },
+  {
+   "id": "13db7f7d2d555f25",
+   "title": "ResidualQuant: KV Cache Quantization for Looped Transformers with 2-Bit Residuals",
+   "url": "https://arxiv.org/abs/2610.10381v1",
+   "summary": "Looped Transformers improve parameter efficiency by repeatedly applying shared Transformer blocks over multiple recurrent loops, increasing computational depth without increasing the parameter count. However, KV cache memory still scales with the number of loops, becoming a key memory bottleneck that limits batch size and inference throughput. KV cache quantization can alleviate this bottleneck, but existing methods often suffer substantial accuracy degradation at aggressive low-precision regimes. We observe that looped Transformers offer a unique opportunity: KV states across loops are highly similar. Based on this observation, we propose ResidualQuant, which uses the final-loop KV states as a reference and represents the remaining loops with low-precision residuals. Our method further combines least-square scaling and rotations applied to the residuals, as well as loop-wise mixed precision, to enable accurate quantization down to INT2 while retaining efficient reconstruction. Across multiple looped Transformer models and mathematical reasoning and code generation benchmarks, ResidualQuant consistently improves the accuracy-memory tradeoff over state-of-the-art rotation-based KV quantization. In particular, our method retains accuracy close to BF16 under mixed-precision settings while reducing theoretical KV storage by 80.7%, achieving up to 13.0% higher accuracy than the rotation-based baseline at the same memory budget. On an RTX 5090, the reduced KV memory traffic improves fixed-batch decode throughput by up to 2.73x, while the smaller memory footprint enables up to 2x larger batches, improving peak throughput by up to 4.15x.",
+   "published": "2026-10-07T16:40:21+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Heejun Kim, Junyoung Lee, SangLyul Cho, Dongsu Han, Insu Han, Sehoon Kim"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "ResidualQuant quantifie le cache KV des Transformers en boucle (looped) avec des résidus INT2, exploitant la similarité des états KV entre boucles pour réduire la mémoire sans perte de précision. Solution clé pour l'inférence efficace des LLMs récurrents.",
+   "score": 8.3
+  },
+  {
+   "id": "f6270bf30bb3983c",
+   "title": "Open-MMUnlearning: Unifying Methods and Evaluation for MLLM Unlearning",
+   "url": "https://arxiv.org/abs/2610.10358v1",
+   "summary": "As multimodal large language models (MLLMs) become more capable and widely deployed, concerns about privacy and safety have become increasingly pressing. Machine unlearning offers one approach to addressing these concerns by removing designated information from trained models while preserving unrelated capabilities. However, fragmented implementations and evaluation protocols, incomplete robustness testing, and limited understanding of metric reliability make progress in MLLM unlearning difficult to assess systematically. We introduce Open-MMUnlearning, an open-source, extensible framework that integrates target-model preparation, multimodal data processing, unlearning, and evaluation through shared interfaces and structured configurations. The framework supports five benchmarks spanning privacy, safety, and copyright, eight MLLMs from four model families, and twelve unlearning methods. Its evaluation suite jointly assesses forgetting effectiveness, retained utility, and robustness to model interventions, adversarial inputs, and membership inference attacks. Using a common evaluation protocol, we compare ten representative unlearning methods. In this comparison, GD and MIP-Editor tie for the highest overall score: GD achieves the highest Forget Quality, while MIP-Editor preserves more Model Utility. We further introduce a metric meta-evaluation protocol that tests faithfulness using models with controlled exposure to target knowledge and robustness under quantization and relearning. Among the thirteen evaluated metrics, BLEU achieves the highest aggregate reliability score. KS-Test attains the highest faithfulness AUC but performs less well on robustness. Together, the framework and these findings support reproducible comparison of MLLM unlearning methods and systematic assessment of evaluation reliability.",
+   "published": "2026-10-07T16:30:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Junkai Chen, Yuhao He, Qianshan Wei, Junxiang You, Jingwen Shao, Junkai Lin"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "regulation"
+   ],
+   "tldr": "Cadre open-source (*Open-MMUnlearning*) pour l'évaluation systématique de l'*unlearning* dans les MLLM, intégrant 12 méthodes, 8 modèles et 5 benchmarks couvrant la vie privée, la sécurité et le droit d'auteur, avec une analyse comparative des performances et robustesse.",
+   "score": 8.3
+  },
+  {
+   "id": "f142adfb9adc52c2",
+   "title": "Improving Proactive AI Assistance with Hierarchical Procedural Understanding",
+   "url": "https://huggingface.co/papers/2610.06505",
+   "summary": "Proactive AI assistants continuously observe a user's activity and decide whether to provide new guidance or remain silent. They should provide appropriate guidance for the task, determine when to provide the next guidance based on task progress, and adjust the guidance level to the user's expertise and needs. Supporting these capabilities requires training and evaluation data that reflect procedural structure and capture how guidance should adapt to task progress and user needs. However, existing datasets either focus on detection-based proactive understanding or provide procedural guidance at a fixed granularity. Fixed-granularity guidance provides limited information about fine-grained progress and broader procedural context, making it difficult to determine completion and adapt guidance granularity. To address these limitations, we introduce the ProactiveCoach suite, comprising ProactiveCoach-Instruct for training, ProactiveCoachBench for evaluation, and fine-tuned VLMs with an adaptive guidance system. ProactiveCoach-Instruct provides hierarchically structured guidance at the phase, step, and action levels for learning task progress and procedural context. ProactiveCoachBench evaluates whether models provide appropriate guidance at the right time across different guidance levels and adapt when the requested level changes. We fine-tune pretrained VLMs on ProactiveCoach-Instruct and demonstrate its effectiveness across backbones. Compared with fixed-granularity supervision, hierarchical supervision improves overall performance across backbones by up to 9.6%p. We further build an adaptive guidance system by combining our fine-tuned model with a lightweight guidance router. Without additional fine-tuning, our system outperforms the in-context adaptation baseline by 57.1%p across four guidance-level transitions. Our project page is available at https://jinsuby.github.io/ProactiveCoach/.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.06505"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Propose un cadre (ProactiveCoach) pour entraîner et évaluer des assistants IA proactifs capables d'adapter dynamiquement leurs conseils en fonction de la progression de l'utilisateur et de son expertise, via une structure hiérarchique des données. Intéressant pour l'optimisation des interactions HCI et l'adaptation des LLM aux besoins utilisateurs.",
+   "score": 8.2
+  },
+  {
+   "id": "3a78229da39fddc4",
+   "title": "GRACE: Generation-aware latent compression for efficient video generation",
+   "url": "https://huggingface.co/papers/2610.10524",
+   "summary": "Highly compressed video autoencoders offer an effective way to accelerate video diffusion models, as the Diffusion Transformer (DiT) operates on far fewer tokens. However, such autoencoders are challenging to train, since a higher compression ratio degrades reconstruction quality and recovering it requires more channels, which is known to slow the convergence of the DiT. The compressed latent also differs from the one the DiT was trained on, so the pretrained DiT must be either retrained from scratch or adapted at considerable cost. Compressing the autoencoder the DiT was trained with appears to preserve compatibility, yet optimizing it for reconstruction alone still shifts the latent away from the distribution the DiT has learned. To address this, we propose Generation-Aware Latent Compression for Efficient Video Generation (GRACE), a two-stage framework that compresses a pretrained video autoencoder while keeping it compatible with the pretrained DiT. Specifically, we keep a frozen base latent from the pretrained encoder and learn a residual latent for the information lost under stronger compression, while aligning the compressed latent with the pretrained latent in the feature space of the frozen DiT so that the autoencoder is optimized for generation. We then adapt the DiT with lightweight fine-tuning and asymmetric denoising, where the base is denoised ahead of the residual. GRACE reduces the token count of Wan2.1-I2V-14B by 8x and its latency by 11.1x at 480x832x81, while matching the generation quality of the pretrained pipeline before compression on VBench.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 57,
+    "arxiv_id": "2610.10524"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Cadre (GRACE) pour compresser les autoencodeurs vidéo tout en préservant leur compatibilité avec les DiT pré-entraînés, via un résidu latent aligné sur les features originales. Solution clé pour accélérer l'inférence des modèles de génération vidéo sans sacrifier la qualité.",
+   "score": 8.2
+  },
+  {
+   "id": "ea342a35bde848a5",
+   "title": "EngramEdit: Decoupled Knowledge Updates in LLMs through Conditional Memory",
+   "url": "https://arxiv.org/abs/2610.10533v1",
+   "summary": "Conditional memory architectures such as DeepSeek Engram use input n-grams to look up learned embeddings, expanding the capacity of large language models (LLMs) with limited additional computation. Beyond model scaling, this architecture has demonstrated the potential to decouple factual knowledge storage from general-purpose computation, offering a promising route to updating factual knowledge while keeping the Transformer backbone fixed. Realizing this potential is challenging because different expressions of a fact may activate different n-gram embeddings, while updating shared embeddings can unintentionally change the model's predictions about other facts. We propose EngramEdit for decoupled knowledge updates through conditional memory. EngramEdit first computes target memory representations that make the model predict the updated fact across multiple expressions. It then jointly updates the shared n-gram embeddings to match these targets across expressions and edits, penalizing updates to frequently reused embeddings more strongly to preserve unrelated knowledge. Experiments show that EngramEdit enables independent factual knowledge updates through conditional memory, achieving near-perfect editing success. Revised knowledge is usable across unseen expressions and in multi-hop reasoning, with nearly three times the strongest baseline's accuracy under chain-of-thought (CoT) prompting. Unrelated knowledge and general capabilities are largely preserved even as factual updates accumulate. These findings show that EngramEdit turns conditional memory into an editable knowledge interface, extending its role beyond model scaling to support decoupled knowledge updates.",
+   "published": "2026-10-07T17:58:52+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hongru Cai, Ran Wei, Wenjie Wang, Chengfa Wu, Ning Song, Yongqi Li"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "EngramEdit permet des mises à jour ciblées de connaissances factuelles dans les LLM via une architecture mémoire conditionnelle (n-grammes). En alignant les embeddings partagés sur des cibles multi-expressions, il préserve les connaissances non ciblées tout en mettant à jour des faits spécifiques, avec des gains mesurés sur des benchmarks de factualité.",
+   "score": 8.0
+  },
+  {
+   "id": "c7400614473c9601",
+   "title": "Long-WAM: Scaling the Context of World-Action Models",
+   "url": "https://arxiv.org/abs/2610.10528v1",
+   "summary": "Real-time robot control demands enough visual history to infer motion and task progress, but processing that history can delay action. We present Long-WAM, a model-system framework for scaling the context of causal world-action models under real-time control constraints. Our central finding is that access to history is not the same as using it: longer histories pay off far more when the video foundation is pretrained autoregressively (AR). We first learn causal prediction from robot and egocentric videos without action labels, then preserve this history-to-future structure during world-action adaptation. On RoboCasa GR-1, increasing context from 0.0 to 19.2 seconds raises success from 63.3% to 78.7%, whereas a bidirectionally pretrained initialization shows no net gain; robot-domain AR pretraining further raises peak success on GR-1 and LIBERO-Long. Long-WAM also achieves the best results among compared methods on LIBERO-Long, RoboTwin 2.0, and DOMINO. Streaming observation encoding, asynchronous execution, and hardware-specific acceleration enable deployment on RTX 5090, DGX Spark, and Jetson AGX Thor without dropping future prediction; on RTX 5090, each action chunk, including future-video latent prediction, takes 107.4 ms. Real-time deployment on Unitree G1 and YAM supports dynamic and long-horizon manipulation, including 95% success on dynamic cup stacking, where Pi0.5 and Fast-WAM succeed in none of 20 trials. As a memory-informed executor, Long-WAM also complements higher-level planning in composite tasks.",
+   "published": "2026-10-07T17:58:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Wei Huang, Bohan Zhang, Chenzhi Liu, Isabella Liu, Shuai Yang, Weian Mao"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Long-WAM étend le contexte des modèles World-Action (WAM) pour le contrôle robotique en temps réel, en exploitant des vidéos prétraitées de manière autorégressive. Une augmentation du contexte de 0 à 19.2 secondes améliore le taux de succès de 63.3% à 78.7% sur RoboCasa GR-1, avec des gains confirmés sur d'autres benchmarks robotiques.",
+   "score": 8.0
+  },
+  {
+   "id": "b727f8333c70a797",
+   "title": "RoboJEPA: Scaling Robotic Latent World Models",
+   "url": "https://arxiv.org/abs/2610.10515v1",
+   "summary": "Latent world models have shown a remarkable ability to predict future states and to plan in the real world. In practice, however, we lack a principled way to estimate how their capabilities scale with model size, data, and compute, an open problem that slows progress in the field. In this work we present RoboJEPA, a world model based on the Joint Embedding Predictive Architecture (JEPA) and trained on a large-scale dataset spanning 12 robotic embodiments. We show that RoboJEPA's imagination error, the error of its latent rollouts, follows a second-order power law in compute, allowing us to predict model quality well beyond the scale at which the law is fit. We further show that downstream robotic planning performance improves predictably with compute, and that imagination error is strongly correlated with it, making it a reliable proxy for real-robot evaluation. Finally, we demonstrate that latent world models can be deployed zero-shot as robotic agents, planning toward a single goal image to solve tasks requiring long-horizon planning on real hardware. We release all model checkpoints together with our training and robot deployment code. To our knowledge, this is the first work to establish scaling laws for multi-embodiment robotic world models trained on real robot data, and RoboJEPA, at 8B parameters, is the largest JEPA predictor model trained to date.",
+   "published": "2026-10-07T17:54:42+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Artem Zholus, Nicolas Beltran-Velez, Jianhao Yuan, Sarath Chandar, Tushar Nagarajan, Daniel Severo"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "RoboJEPA étend les modèles du monde latent (JEPA) pour la robotique en prédisant les états futurs à partir de données multi-embodiments. Il établit des lois de puissance pour l'erreur de prédiction latente en fonction des ressources (compute, données) et montre que cette erreur corrèle fortement avec les performances réelles en planification robotique, permettant une évaluation prédictive.",
+   "score": 8.0
+  },
+  {
+   "id": "ce8ea3e29bf5afef",
+   "title": "Your Prompt Should Do More: Effects of Retrieval Instructions in Embedding Models",
+   "url": "https://arxiv.org/abs/2610.10508v1",
+   "summary": "Prompted embedding models have recently received increasing attention, particularly for retrieval, where detailed retrieval instructions are provided as part of the retrieval prompt. Several new datasets and studies have examined this setting, showing that the current embedding models often struggle to follow such instructions reliably. In this paper, we study the mechanism of how instructions actually affect the representations of retrieval queries in asymmetric retrieval tasks. We show that models can fail to follow even simple task instructions when query-side distractors are included in the evaluation. We hypothesize that this behavior is driven by the training setup of current embedding models and their evaluation, and show that fine-tuning with added query-side distractors leads to substantial improvements, with minimal effect on other tasks.",
+   "published": "2026-10-07T17:51:46+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Amanda Myntti, Jenna Kanerva, Veronika Laippala, Filip Ginter"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "rag"
+   ],
+   "tldr": "Étude sur l'impact des instructions de récupération dans les modèles d'embeddings pour la recherche asymétrique, montrant que les modèles actuels peinent à suivre des instructions simples en présence de distracteurs dans les requêtes, mais que le fine-tuning avec des distracteurs améliore significativement les performances avec un impact minimal sur d'autres tâches.",
+   "score": 8.0
+  },
+  {
+   "id": "98b80bdd5b31956f",
+   "title": "CoTrace: Data Recipes for Training Terminal Agents with Harness-Model Co-Evolution",
+   "url": "https://arxiv.org/abs/2610.10426v1",
+   "summary": "Terminal-agent capability depends jointly on model weights and the runtime harness that formats prompts, binds tools, and handles error recovery. Existing harness-model co-evolution approaches improve both components, yet often treat trajectories produced during harness search as an undifferentiated replay buffer. This practice overlooks that a trajectory's value for model training depends on the harness under which it was generated. To systematically analyze this interface, we establish an alternating co-evolution framework that decouples harness search and policy training through component-wise promotion decisions. Within this framework, we introduce CoTrace, a harness-aware data recipe that explicitly governs trajectory routing, provenance matching, and curriculum refresh. Under CoTrace, recurring execution failures guide harness synthesis, while policy training is strictly conditioned on verified rollouts matched to the adopted runtime for supervised fine-tuning (SFT) or fresh online interactions for reinforcement learning (RL). On the Tmax promotion split, CoTrace advances Qwen3.5-9B from 78 to 88 solved tasks under supervised fine-tuning while an online reinforcement variant reaches 90. Specifically, a compact harness-matched corpus produces steady model gains at substantially lower compute than much larger corpora pooled across sibling harnesses. Furthermore, evaluations on Terminal-Bench 2.1 and SWE-bench Lite show that out-of-distribution transfer depends fundamentally on harness compatibility, where maintaining consistency between training and evaluation runtimes prevents procedural execution breakdowns observed under foreign scaffolds.",
+   "published": "2026-10-07T17:06:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jixuan Chen, Jiaxin Zhang, Qinyuan Ye, Yada Pruksachatkun, Haoxiang Zhang, Jingming Zhuo"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Cadre de co-évolution entre modèle et environnement (harness) pour entraîner des agents terminaux, avec une méthode de traçage des trajectoires (CoTrace) qui améliore la SFT et le RL. Pertinent pour les agents LLM et leur optimisation conjointe avec les outils.",
+   "score": 8.0
+  }
+ ]
+}
