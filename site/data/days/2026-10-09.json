@@ -1,0 +1,764 @@
+{
+ "date": "2026-10-09",
+ "digest": {
+  "headline": "Les optimisations sparse et les benchmarks d'agents LLM dominent l'actualité IA avec des avancées majeures en efficacité et évaluation des capacités.",
+  "overview": "Ce 9 octobre 2026, la veille met en lumière des progrès significatifs dans l'optimisation des architectures de transformers et des moteurs d'inférence, ainsi que des benchmarks évaluant les capacités des agents LLM en optimisation, apprentissage et interaction multimodale. Les travaux sur la quantification, la robotique et l'interprétabilité complètent un panorama technique dense.",
+  "highlights": [
+   {
+    "title": "Optimisation sparse et inférence longue séquence",
+    "text": "MC-Sparse et SparseEngine proposent des solutions complémentaires pour réduire l'écart entre attention dense et éparse dans les Diffusion Transformers et les LLM. MC-Sparse sélectionne dynamiquement des tokens KV tout en optimisant l'efficacité GPU, tandis que SparseEngine introduit un moteur d'inférence sparse-first avec des gains de débit (10x+) et de vitesse de décodage (2.5x+). Ces approches sont cruciales pour l'inférence longue séquence et les agents nécessitant une gestion efficace du KV-cache."
+   },
+   {
+    "title": "Benchmarks pour agents LLM : optimisation et apprentissage",
+    "text": "AgenticBBO-Bench et Learn2Play Bench évaluent respectivement les capacités des agents LLM en optimisation boîte noire et en apprentissage par l'expérience. Le premier montre leur supériorité face aux optimiseurs numériques classiques, tandis que le second révèle leurs difficultés à généraliser dans des environnements nouveaux. Ces benchmarks fournissent des cadres essentiels pour mesurer les progrès et les limites des agents dans des tâches complexes."
+   },
+   {
+    "title": "Auto-amélioration et mémoire externe pour agents",
+    "text": "Memento 3 et MiMo-V2.6 explorent des mécanismes d'auto-amélioration pour les agents LLM. Memento 3 introduit une mémoire externe avec un carnet de règles en langage naturel, permettant une révision dynamique des modèles du monde. MiMo-V2.6 étend le RL à grande échelle pour les modèles omni-modaux, avec des mécanismes de stabilité et de sécurité. Ces travaux ouvrent la voie à des agents capables d'apprentissage continu et d'adaptation."
+   },
+   {
+    "title": "Évaluation et interprétabilité des LLM",
+    "text": "U-Space et l'étude sur l'humilité épistémique (ISE) abordent l'interprétabilité et la fiabilité des LLM. U-Space identifie un sous-espace de faible dimension pour quantifier l'incertitude de manière interprétable, tandis que le cadre ISE évalue la capacité des agents à reconnaître et communiquer l'incertitude face à des conflits de connaissances. Ces avancées sont critiques pour améliorer la transparence et la robustesse des modèles."
+   },
+   {
+    "title": "Robotique et modèles de monde",
+    "text": "DreamTrue et ME-World proposent des modèles de monde pour la robotique, avec des prédictions physiquement plausibles et une mémoire environnementale partagée. DreamTrue utilise un entraînement post-hoc par contre-factuel pour améliorer le suivi des actions, tandis que ME-World génère des flux d'observations en première personne avec cohérence inter-agents. Ces travaux sont essentiels pour la simulation collaborative et le contrôle robotique."
+   }
+  ],
+  "trend": "Les avancées en optimisation sparse et en benchmarks pour agents LLM suggèrent une maturation des architectures et des méthodes d'évaluation, avec un focus croissant sur l'efficacité computationnelle, l'auto-amélioration et la fiabilité des systèmes autonomes."
+ },
+ "items": [
+  {
+   "id": "e73b511d1e7d857e",
+   "title": "MC-Sparse: Deconstructing and Closing the Dense-Sparse Attention Gap in Diffusion Transformers",
+   "url": "https://huggingface.co/papers/2610.06801",
+   "summary": "Sparse attention is a primary approach to reducing the latency of diffusion transformers in long-sequence generation tasks, such as video and high-resolution 3D asset generation. However, existing methods can degrade generation quality and fidelity at high sparsity levels. Through controlled oracle comparisons, we trace this degradation to three sources: constraints imposed by token grouping, inaccurate interaction selection, and the attention contributions lost when tokens are discarded. Guided by this analysis, we propose Meta-Cached Sparse Attention (MC-Sparse), a training-free framework that selects individual key-value (KV) tokens while organizing similar queries into tile-aligned groups for efficient GPU execution. MC-Sparse caches metadata comprising query groups, KV indices selected using exact attention probabilities, and residuals between dense and sparse attention outputs, and reuses them across subsequent denoising steps. Across video and 3D generation models, MC-Sparse achieves higher fidelity to dense-attention outputs and larger denoising speedups than existing sparse-attention baselines, without visible quality degradation. Relative to dense attention, it delivers a 1.80times denoising speedup on Minimax-H3-Base and a 2.32times speedup on 3D asset generation, both with negligible quality loss.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 26,
+    "arxiv_id": "2610.06801"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "MC-Sparse réduit l'écart entre attention dense et éparse dans les *Diffusion Transformers* en sélectionnant dynamiquement des tokens KV tout en organisant les requêtes pour l'efficacité GPU, améliorant la fidélité et la vitesse sans dégradation visible. Solution clé pour l'inférence longue séquence.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé par MC-Sparse concerne l'efficacité des transformeurs de diffusion (diffusion transformers) dans des tâches de génération de séquences longues, comme la vidéo ou les assets 3D haute résolution. L'attention dense, bien que performante en qualité, devient coûteuse en calcul et en mémoire, tandis que les méthodes d'attention sparse existantes, bien que plus rapides, dégradent souvent la fidélité et la qualité de la génération à des niveaux élevés de sparsité.",
+    "methode": "MC-Sparse propose une approche sans entraînement supplémentaire (training-free) pour optimiser l'attention sparse. Elle décompose les sources de dégradation en trois éléments : les contraintes liées au regroupement de tokens, la sélection imprécise des interactions, et la perte de contributions attentionnelles lors de l'élimination de tokens. La méthode organise les requêtes (queries) similaires en groupes alignés sur des tuiles pour une exécution GPU efficace, tout en sélectionnant individuellement les paires clé-valeur (KV) via des probabilités d'attention exactes. Un cache de métadonnées (groupes de requêtes, indices KV, et résidus entre sorties denses et sparses) est réutilisé sur plusieurs étapes de débruitage pour améliorer la cohérence et l'efficacité.",
+    "resultats": "MC-Sparse surpasse les méthodes d'attention sparse existantes en termes de fidélité aux sorties d'attention dense et d'accélération du débruitage, sans dégradation visible de la qualité. Sur le modèle Minimax-H3-Base, il offre une accélération de 1,80× par rapport à l'attention dense, et de 2,32× pour la génération d'assets 3D, avec une perte de qualité négligeable. Ces résultats sont validés sur des tâches de génération vidéo et 3D.",
+    "limites": "Les détails sur la robustesse de MC-Sparse face à des scénarios extrêmes (très longues séquences ou architectures de transformeurs variées) restent flous. De plus, la dépendance à un cache de métadonnées pourrait introduire des contraintes mémoire ou des overheads non quantifiés dans certains cas d'usage. Enfin, l'absence de comparaison avec des méthodes hybrides (dense-sparse) ou des optimisations matérielles spécifiques limite l'évaluation complète de son potentiel.",
+    "verdict": "MC-Sparse mérite une attention particulière pour son approche innovante et ses gains significatifs en efficacité, mais son adoption nécessitera des validations supplémentaires sur des cas d'usage plus diversifiés et des architectures variées."
+   }
+  },
+  {
+   "id": "b03a5190e5e1ad42",
+   "title": "A Closer Look at Agentic BBO: Benchmarking LLM Agents for Black-Box Optimization",
+   "url": "https://huggingface.co/papers/2610.12183",
+   "summary": "Black-box optimization (BBO) arises in many scientific and engineering problems where objective evaluations are expensive and limited. Recent large language model (LLM) agents offer a new way to approach BBO by combining task semantics, computation, optimization tools, and feedback-driven decision making, showing great potential due to the integration with mathematically rigorous tools. However, existing agentic BBO studies use different task domains and system configurations, making their results difficult to compare and the effects of individual design choices hard to isolate. We therefore introduce AgenticBBO-Bench, a cross-domain benchmark for agentic BBO spanning synthetic functions, hyperparameter optimization, database tuning, chip design, and molecular design under a unified finite-budget evaluation protocol. In our experiments, agentic BBO achieves higher family-averaged scores than direct LLM-based methods in all five domains and outperforms the best numerical optimizers in four. We further study three factors shaping agent performance: optimization tools, task information and prior knowledge, and the role of the LLM during search. Our results show that additional numerical tools do not consistently improve performance, task semantics are broadly useful while more specific priors are less reliable, and numerical optimizers can effectively absorb gains from search trajectories established by the agent. Finally, we introduce a five-task frontier challenge within AgenticBBO-Bench and evaluate seven LLMs under the Codex agent harness, where GPT-6 Astra and DeepSeek-V4.1-Flash lie on the Pareto frontier of performance and cost among the evaluated models. Our code is available at https://github.com/lamda-bbo/agentic-bbo.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.12183"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "AgenticBBO-Bench évalue les agents LLM pour l'optimisation boîte noire (BBO) sur 5 domaines (synthétique, hyperparamètres, etc.) et montre leur supériorité face aux optimiseurs numériques classiques. Un benchmark clé pour comprendre les capacités des agents dans des tâches d'optimisation complexes.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "L'optimisation en boîte noire (BBO) concerne des problèmes scientifiques et techniques où les évaluations d'objectifs sont coûteuses et limitées. Les méthodes traditionnelles peinent à intégrer des connaissances sémantiques et des outils computationnels variés, ce que les agents basés sur les grands modèles de langage (LLM) pourraient combler en combinant raisonnement, outils d'optimisation et prise de décision itérative.",
+    "methode": {
+     "approche_generale": "Les auteurs introduisent *AgenticBBO-Bench*, un benchmark unifié pour évaluer les agents LLM dans des tâches de BBO variées (fonctions synthétiques, optimisation d'hyperparamètres, réglage de bases de données, conception de puces et de molécules). Le protocole impose un budget d'évaluations fini pour standardiser les comparaisons.",
+     "details_techniques": {
+      "architecture": "Les agents LLM intègrent des outils numériques (ex: optimiseurs bayésiens), des connaissances sémantiques sur la tâche, et des mécanismes de feedback pour guider la recherche. Le benchmark teste trois facteurs clés: (1) l'impact des outils d'optimisation supplémentaires, (2) l'utilité des informations sur la tâche et des connaissances *a priori*, (3) le rôle du LLM dans l'exploration vs. l'exploitation des trajectoires de recherche.",
+      "evaluation": "Les performances sont mesurées via des scores moyennés par famille de tâches, comparant les agents LLM à des méthodes directes (sans agent) et à des optimiseurs numériques classiques. Un *frontier challenge* évalue aussi 7 LLM (dont GPT-6 Astra et DeepSeek-V4.1-Flash) sur un compromis performance/coût."
+     }
+    },
+    "resultats": {
+     "performances": "Les agents LLM surpassent les méthodes directes basées sur les LLM dans les 5 domaines testés, et dépassent les meilleurs optimiseurs numériques dans 4 domaines sur 5. Par exemple, les gains sont notables en conception de puces et en optimisation d'hyperparamètres.",
+     "facteurs_cles": {
+      "outils": "L'ajout d'outils numériques n'améliore pas systématiquement les performances, suggérant que leur utilité dépend du contexte.",
+      "connaissances": "Les informations sémantiques sur la tâche sont globalement utiles, mais les connaissances *a priori* spécifiques sont moins fiables, voire contre-productives.",
+      "role_du_llm": "Les optimiseurs numériques peuvent exploiter efficacement les trajectoires de recherche établies par l'agent, réduisant le besoin d'un LLM actif en continu."
+     },
+     "frontier_challenge": "GPT-6 Astra et DeepSeek-V4.1-Flash se situent sur la frontière de Pareto performance/coût, indiquant un meilleur équilibre que les autres modèles testés."
+    },
+    "limites": {
+     "generalisation": "Les résultats dépendent fortement des configurations du benchmark (ex: budget d'évaluations, choix des outils). Leur validité hors de ces cadres reste à prouver.",
+     "biais_methodologiques": "Le benchmark privilégie des tâches où les LLM excellent (ex: intégration de connaissances sémantiques), ce qui pourrait surestimer leur utilité en BBO général.",
+     "couts": "L'évaluation des coûts se limite aux modèles testés (ex: API payantes), sans analyse approfondie des ressources computationnelles ou énergétiques."
+    },
+    "verdict": "Ce travail mérite l'attention pour son benchmark rigoureux et ses insights sur l'intégration des LLM en BBO, mais ses conclusions doivent être nuancées par les limites de généralisation et les biais potentiels."
+   }
+  },
+  {
+   "id": "f3e93a5915428bb5",
+   "title": "Memento 3: Model-Based Recursive Self-Improvement through Reflective Rulebooks",
+   "url": "https://huggingface.co/papers/2610.11794",
+   "summary": "Learning to act in unfamiliar environments requires agents to infer how the world works and revise that understanding as new evidence arrives. Yet limited observations can support multiple world models that explain past interactions but predict different outcomes in unseen states. We introduce Memento 3, building on the Memento series to enable frozen LLM agents to continually learn explicit world models through external memory. The agent maintains a natural-language rulebook as persistent semantic memory, recording revisable hypotheses about environment dynamics while leaving unknown aspects underspecified. It compiles this rulebook into executable code for prediction and planning. Through a continual loop of observation, reflection, rule revision, compilation, and verification, the agent uses prediction errors to refine both the rulebook and its code. Updated code is accepted only when the LLM judges it faithful to the rulebook and cell-exact replay reproduces the observed transitions. We investigate this process as a model-based route to recursive self-improvement (RSI): the agent autonomously explores the environment, revises its world model, and uses verified updates to guide subsequent interaction and learning, while the underlying LLM remains fixed. A population extension maintains multiple world models in parallel, sharing interaction evidence and using their predictions to guide exploration. On ARC-AGI-3, the single-model agent clears every level of all 25 public games, achieves a mean Relative Human Action Efficiency (RHAE) of 100.0, and uses 44% of the human action count. In an Atari Pong case study, a learned feedback controller wins 21:0 in each of three evaluated episodes with different openings, without further LLM calls.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2610.11794"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Memento 3 introduit un mécanisme de mémoire externe pour des agents LLM récursifs, leur permettant d'apprendre et de réviser des modèles du monde en temps réel via un carnet de règles en langage naturel compilé en code exécutable. Approche prometteuse pour l'auto-amélioration continue des agents.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème abordé par Memento 3 est celui de l'apprentissage autonome d'agents dans des environnements inconnus, où les observations limitées peuvent conduire à des modèles du monde ambigus ou incomplets. Ces agents doivent inférer et réviser dynamiquement leur compréhension des règles et dynamiques de l'environnement pour planifier et agir efficacement, tout en évitant les erreurs de prédiction dans des états non observés précédemment.",
+    "methode": {
+     "approche_generale": "Memento 3 propose une approche de *recursive self-improvement* (RSI) basée sur un modèle, où un agent LLM figé (sans modification de ses poids) apprend et affine continuellement un modèle explicite du monde via une mémoire externe. Ce modèle prend la forme d'un *rulebook* en langage naturel, stocké comme mémoire sémantique persistante, décrivant des hypothèses révisables sur les dynamiques de l'environnement.",
+     "boucle_continuelle": "L'agent suit une boucle itérative : observation de l'environnement, réflexion pour identifier des incohérences, révision des règles du *rulebook*, compilation de ces règles en code exécutable pour la prédiction et la planification, et vérification des mises à jour. Les erreurs de prédiction servent à affiner à la fois le *rulebook* et le code dérivé.",
+     "verification": "Les mises à jour du code ne sont acceptées que si le LLM juge la fidélité au *rulebook* et si une relecture exacte (*cell-exact replay*) reproduit les transitions observées. Cela garantit la cohérence entre le modèle et les interactions réelles.",
+     "extension_population": "Une variante maintient plusieurs modèles du monde en parallèle, partageant les preuves d'interaction et utilisant leurs prédictions pour guider l'exploration. Cela permet de gérer l'incertitude et d'améliorer la robustesse.",
+     "applications": "Le système est testé sur des tâches complexes comme ARC-AGI-3 (résolution de puzzles abstraits) et Atari Pong (contrôle en temps réel), démontrant sa capacité à généraliser et à optimiser les actions sans appels supplémentaires au LLM."
+    },
+    "resultats": {
+     "arc_agi_3": "Sur ARC-AGI-3, l'agent à modèle unique résout tous les niveaux des 25 jeux publics, atteignant un score moyen de *Relative Human Action Efficiency* (RHAE) de 100,0. Il utilise seulement 44 % du nombre d'actions nécessaires à un humain pour accomplir les mêmes tâches.",
+     "atari_pong": "Dans une étude de cas sur Atari Pong, un contrôleur à rétroaction appris par l'agent remporte 21 parties à 0 sur trois épisodes évalués, avec des ouvertures différentes, sans nécessiter d'appels supplémentaires au LLM après l'apprentissage initial.",
+     "efficacite": "Les résultats suggèrent une capacité remarquable à généraliser à partir de modèles explicites et à optimiser les performances tout en maintenant une cohérence stricte entre les règles et leur implémentation."
+    },
+    "limites": {
+     "generalisation": "Bien que les résultats sur ARC-AGI-3 et Atari Pong soient impressionnants, la généralisation à des environnements plus complexes ou bruités reste à démontrer. Les tâches évaluées sont relativement structurées et déterministes, ce qui pourrait masquer des limites en présence d'incertitude ou de stochasticité.",
+     "dependance_llm": "La méthode repose sur la capacité du LLM figé à juger de la fidélité du code au *rulebook* et à effectuer des révisions sémantiques. Cela introduit une dépendance à la qualité et à la robustesse du LLM sous-jacent, qui pourrait être un goulot d'étranglement.",
+     "cout_computationnel": "Le processus de vérification par *cell-exact replay* et la compilation itérative des règles en code exécutable pourraient s'avérer coûteux en ressources, surtout pour des environnements à haute dimensionalité ou nécessitant des simulations fréquentes."
+    },
+    "verdict": "Memento 3 mérite une attention particulière pour son approche innovante de l'auto-amélioration récursive basée sur des modèles explicites, offrant des résultats prometteurs sur des benchmarks exigeants, mais son applicabilité à des environnements plus réalistes et sa scalabilité restent des questions ouvertes."
+   }
+  },
+  {
+   "id": "54362028897c79a9",
+   "title": "MiMo-V2.6: Scaling Reinforcement Learning Towards Self-Improvement",
+   "url": "https://huggingface.co/papers/2610.11959",
+   "summary": "Reinforcement learning (RL) is the central training paradigm for advancing large foundation models towards self-improvement. This report introduces the MiMo-V2.6 series, an omni-modal family that pushes the frontier of model intelligence by scaling RL compute. Prior to RL, we conduct mid-training on a broad multimodal corpus to provide ample exploration space, and build a solid infrastructure on the pretrained hybrid-SWA architecture to support subsequent scale-up. We scale RL compute along three dimensions: (1) larger batches and higher throughput, with an asynchronous training that consumes 1,568 samples and 2.7-3.7B tokens per step at context lengths of up to 1M; (2) more diverse and complex environments, spanning code, general, visual, and cyber domains under a mixture of agent harnesses; and (3) more grader compute, via groupwise agentic grading that yields more accurate reward signals for long-horizon tasks and steers the model towards shorter, more token-efficient solutions. To keep training stable at scale, we freeze the MoE router and establish a multi-layer defense against reward hacking. We further build infrastructure for mixed-task agentic RL, including a unified trajectory representation, high-concurrency multi-framework rollout, decoupled control and data planes, and training-inference consistency. We open-source the training dynamics, RL environments, and RL framework to facilitate reproduction and further research on scaled RL and model self-improvement.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 52,
+    "arxiv_id": "2610.11959"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "MiMo-V2.6 étend l'échelle du RL pour l'auto-amélioration des modèles omni-modaux via des batches massifs, des environnements diversifiés et un grading agentique, avec des mécanismes anti-hacking et une stabilité accrue à grande échelle.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi central de l'amélioration autonome des grands modèles de fondation via l'apprentissage par renforcement (RL). L'objectif est de permettre aux modèles d'optimiser leurs performances de manière itérative, en particulier pour des tâches complexes et multimodales, tout en évitant les écueils comme le *reward hacking* ou l'instabilité lors du passage à l'échelle.",
+    "methode": {
+     "pretraitement": "Avant l'application du RL, les auteurs effectuent un *mid-training* sur un large corpus multimodal pour élargir l'espace d'exploration du modèle. Ils s'appuient sur une architecture hybride pré-entraînée (SWA, *Sliding Window Attention*) pour assurer une base robuste.",
+     "scaling_rl": {
+      "dimension_1": "Augmentation de la taille des lots et du débit : entraînement asynchrone avec 1 568 échantillons et 2,7 à 3,7 milliards de tokens par étape, pour des contextes allant jusqu'à 1 million de tokens.",
+      "dimension_2": "Diversité des environnements : intégration de domaines variés (code, général, visuel, cybersécurité) sous différents *harnesses* d'agents pour couvrir des scénarios complexes.",
+      "dimension_3": "Optimisation des signaux de récompense : utilisation d'un *groupwise agentic grading* pour générer des récompenses plus précises, notamment pour les tâches à long horizon, et encourager des solutions plus courtes et efficaces en tokens."
+     },
+     "stabilite": "Pour maintenir la stabilité à grande échelle, les auteurs gèlent le routeur MoE (*Mixture of Experts*) et mettent en place un système de défense multicouche contre le *reward hacking*.",
+     "infrastructure": "Développement d'une infrastructure dédiée au RL agentique multi-tâches, incluant une représentation unifiée des trajectoires, un *rollout* multi-framework à haute concurrence, une séparation des plans de contrôle et de données, et une cohérence entre entraînement et inférence."
+    },
+    "resultats": "Les détails quantitatifs des performances ne sont pas explicitement fournis dans le résumé disponible. Cependant, les auteurs soulignent avoir ouvert les dynamiques d'entraînement, les environnements RL et le framework pour faciliter la reproduction et les recherches futures. Les améliorations portent sur la capacité du modèle à traiter des tâches longues et multimodales avec une meilleure efficacité token.",
+    "limites": {
+     "manque_de_donnees": "L'absence de résultats chiffrés précis (ex. : gains de performance, métriques de stabilité) limite l'évaluation objective de l'impact réel de cette approche.",
+     "complexite": "La méthode repose sur une infrastructure technique lourde (ex. : gestion de contextes de 1M tokens, *groupwise grading*), ce qui pourrait restreindre son accessibilité ou sa reproductibilité en dehors de structures bien équipées.",
+     "risques_residuels": "Malgré les défenses contre le *reward hacking*, le risque de comportements non désirés persiste, surtout dans des environnements aussi diversifiés et complexes."
+    },
+    "verdict": "Cette publication mérite une attention particulière pour son approche systématique du *scaling* du RL dans un contexte multimodal et agentique, mais son évaluation définitive nécessitera des validations indépendantes et des résultats concrets."
+   }
+  },
+  {
+   "id": "b5be8aeabadd0175",
+   "title": "Accurate but Not Humble: Evaluating Epistemic Humility in LLM Agents under Knowledge Conflict",
+   "url": "https://huggingface.co/papers/2610.12360",
+   "summary": "When retrieved evidence contradicts an agent's prior beliefs, does it revise its answer, acknowledge uncertainty, or persist with an incorrect conclusion? Existing evaluations of agentic systems focus primarily on task success, offering limited insight into how agents handle such conflicts. We propose to evaluate agents on epistemic humility (EH): the agent's willingness to recognize, act on, and communicate uncertainty during task execution. We operationalize EH through three trajectory-level behavioral dimensions: Identify, Solve, and Escalate (ISE). Through knowledge conflict, situations where the backbone language model's parametric knowledge contradicts the evidence it encounters, or where two contextual sources disagree, we evaluate two conflict settings: (1) controlled conflict and (2) naturally occurring conflict during multi-step agentic execution, each paired with matched no-conflict controls. Evaluating four agents, we find that higher task accuracy does not necessarily correspond to greater epistemic humility: some high-accuracy configurations recognize conflicts during execution but do not communicate unresolved uncertainty in their incorrect final answers. Trajectory-level analysis further reveals that agents frequently detect conflicts in early steps of execution but fail to maintain or resolve them in later steps. Finally, we show that model-level interventions can improve EH, but often at the cost of task accuracy, suggesting that epistemic humility emerges from the interaction among the backbone model, agent harness, and evaluation environment.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.12360"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude évalue l'humilité épistémique des agents LLM face à des conflits de connaissances, introduisant un cadre ISE (Identifier, Résoudre, Escalader) pour mesurer leur capacité à reconnaître et communiquer l'incertitude. Pertinent pour analyser la fiabilité des agents en situations ambiguës.",
+   "score": 8.8
+  },
+  {
+   "id": "aa022ee1cf32c932",
+   "title": "Multi-Agent Egocentric World Model with Fine-Grained Embodied Interaction",
+   "url": "https://huggingface.co/papers/2610.12299",
+   "summary": "Egocentric world models predict first-person observations conditioned on an agent's actions, but most focus on a single agent. Real embodied settings often involve multiple agents that act and interact within a shared environment. Existing multi-agent world models rely on coarse actions like locomotion, camera control, or discrete commands, leaving fine-grained embodied interactions underexplored. We formulate multi-agent egocentric world modeling as synchronized ego-stream generation for multiple agents interacting through fine-grained actions in a shared world. This requires cross-view action consistency, shared-environment consistency, and consistent propagation of interaction-induced state updates. We propose Multi-agent Egocentric World Model (ME-World), which jointly denoises multiple ego streams in a shared token sequence, conditions each stream on all agents' target-view poses, and grounds generation with shared environment memory. We train and evaluate on real and synthetic multi-agent data and introduce shared-world consistency metrics for environment, update, and identity consistency. Experiments show ME-World improves shared-world consistency, action control, identity preservation, and video quality over existing methods.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 39,
+    "arxiv_id": "2610.12299"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents",
+    "vision"
+   ],
+   "tldr": "ME-World introduit un modèle de monde égocentrique multi-agents pour générer des flux synchronisés d'observations en première personne, avec cohérence inter-agents et mémoire environnementale partagée. Avancée pour la simulation collaborative en robotique.",
+   "score": 8.8
+  },
+  {
+   "id": "041133ebc52e0585",
+   "title": "OneSearch-VL: Unified Multimodal Deep Research Agent for Image and Video",
+   "url": "https://huggingface.co/papers/2610.12419",
+   "summary": "Single-image, multi-image, and video deep research require different visual operations but share a workflow of visual grounding, external retrieval, and fact composition. A key challenge is to preserve the dependencies linking localized visual anchors, entity relations, source-supported facts, and answer-producing operations. We introduce OneSearch-VL, a unified agent centered on the Visually Grounded Evidence Graph (VGEG), which encodes these dependencies as a shared task-level reference for data construction, process supervision, and operation-level evaluation. Our VGEG-based data engine constructs and verifies multi-image and video questions and filters expert trajectories. Using these data, we assemble OneSearch-VL-SFT-110K and OneSearch-VL-RL-10K for SFT and RL, respectively. We further derive the Evidence-aware Visual-Grounded Rubric reward (EVGR) from VGEG annotations to supervise evidence traceability and visual grounding during RL. For fine-grained evaluation, we construct OneSearch-MI-Bench and OneSearch-Video-Bench, organizing questions by the research operations encoded in their VGEGs. Experiments show that OneSearch-VL-8B improves over Qwen3-VL-8B with tool access by 20.2 and 17.6 percentage points on the two new benchmarks, respectively, while also achieving substantial gains across 7 image benchmarks and VideoDR. Project repository: https://github.com/appletea233/OneSearch-VL",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2610.12419"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "OneSearch-VL unifie la recherche multimodale (images/vidéos) via un *Evidence Graph* pour l'ancrage visuel et la composition de faits, avec récompenses basées sur la traçabilité. Améliore significativement les performances des agents en recherche profonde.",
+   "score": 8.8
+  },
+  {
+   "id": "1434ebbf0d285cd9",
+   "title": "TestPrism: Rethinking Test Evaluation Beyond a Single Reference",
+   "url": "https://huggingface.co/papers/2610.12289",
+   "summary": "Large language model (LLM) coding agents have advanced test generation across diverse programming tasks. However, the common practice of evaluating tests against a single reference solution overlooks alternative valid implementations and can overstate test quality. We introduce TestPrism, comprising 300 test tasks from 17 sources and 3000 candidate implementations, evenly split between valid and invalid solutions. Its primary metric, Joint Success Function, requires the generated tests to fail on the initial program state, accept every valid candidate, and reject every invalid candidate. Across fourteen baseline coding agent configurations, Joint Success Function reaches only 28.00%, whereas single reference success reaches 59.67%. Our analysis reveals missed behaviors, unsupported assertions, and faulty test construction. To address these weaknesses, we introduce TestHelix, which combines heterogeneous synthesis of test and repair pairs with peer cross validation and recursive self improvement (RSI). Across two models, TestHelix improves Joint Success Function by 8.67 to 9.00 percentage points over the native harness comparators in the TestHelix evaluation",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 25,
+    "arxiv_id": "2610.12289"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "TestPrism critique l'évaluation des tests générés par les agents de codage en comparant les résultats à une seule référence, et introduit une métrique (Joint Success Function) plus robuste. TestHelix améliore significativement les performances en combinant synthèse hétérogène et validation croisée. Pertinent pour l'évaluation des agents de codage et la qualité des tests.",
+   "score": 8.8
+  },
+  {
+   "id": "f43f9de66beb1f10",
+   "title": "SparseEngine: Sparse-First Inference Engine",
+   "url": "https://huggingface.co/papers/2609.39068",
+   "summary": "Long-context LLM agents accumulate interaction histories that strain KV-cache memory and attention computation. Although sparse attention reduces these costs, heterogeneous cache representations and workflows hinder integration with existing inference engines, while prior sparse-serving abstractions support only specific layouts or workflows. We present SparseEngine, a ground-up, sparse-first inference engine whose shared lifecycle contract lets each method control its KV representation and computation while coordinating state transitions with common serving infrastructure. SparseEngine supports 15 methods across four categories and enables cross-request state management through Chain Cache, which resumes KV-eviction methods from retained history, and controllable Prefix-Cache Pruning, which removes KV from selected history regions while preserving logical-prefix matching. While maintaining method quality, SparseEngine delivers over 10x higher throughput with KV eviction, over 2.5x faster decoding at matched concurrency than vLLM, and over 2x end-to-end speedup on agent benchmarks. The code is available at https://github.com/CURRENTF/SparseEngine.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2609.39068"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "SparseEngine est un moteur d'inférence sparse-first pour les LLM à long contexte, optimisant la gestion du KV-cache et l'attention via des méthodes coordonnées (Chain Cache, Prefix-Cache Pruning). Offre des gains majeurs en débit (10x+) et vitesse de décodage (2.5x+) par rapport à vLLM, avec une intégration flexible de 15 méthodes. Essentiel pour l'optimisation des agents LLM.",
+   "score": 8.8
+  },
+  {
+   "id": "85f787bced7c54fe",
+   "title": "Learn2Play Bench: How Well Do LLM Agents Learn from Experience in Unfamiliar Environments?",
+   "url": "https://huggingface.co/papers/2610.08215",
+   "summary": "Learning from experience is essential for LLM agents to adapt to unfamiliar and dynmaic environments. Evaluating this ability is therefore important for understanding how effectively agents acquire and use new knowledge. Existing benchmarks have sought to evaluate this ability, but they primarily evaluate tasks whose rules are provided in the instructions or already familiar to pretrained models, making it difficult to distinguish learning from interactions from reasoning with existing knowledge. To address this, we introduce Learn2Play Bench, a benchmark of newly designed text-based games, whose rules are novel or counterintuitive, requiring agents to acquire knowledge through interaction rather than rely solely on pretrained knowledge. These games provide reproducible feedback and automatic scoring, enabling controlled evaluation of learning across repeated attempts. We also vary game instances to test whether agents can apply what they have learned to new situations. Therefore, we evaluate how backbone models, self-evolving methods, and agent harnesses affect agents' learning ability, revealing three findings: (1) Experience retention: Retaining complete records of actions and feedback can support more effective learning than summarizing these experiences into rules or strategies. (2) Human agent gap: Top-performing human players achieve higher peak scores than the evaluated agents. Human explore more varied strategies, and repeat actions less. (3) Harness matters: With the backbone fixed, changing the harness can improve performance while reducing estimated inference cost. Together, these findings provide insights into how LLM agents learn from experience and suggest directions for future work to improve their learning ability. Project website: https://liushiliushi.github.io/learn2play-bench-website/",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 112,
+    "arxiv_id": "2610.08215"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Learn2Play Bench évalue la capacité des agents LLM à apprendre de l'expérience dans des environnements nouveaux via des jeux textuels aux règles contre-intuitives. Montre que les agents ont des difficultés à retenir et généraliser les connaissances acquises. Clé pour évaluer l'adaptabilité des agents.",
+   "score": 8.8
+  },
+  {
+   "id": "3acedd8c1f1aded3",
+   "title": "DreamTrue: Action-Faithful Robot World Model with Counterfactual Post-Training",
+   "url": "https://huggingface.co/papers/2610.12468",
+   "summary": "We present DreamTrue, a multi-view, cross-embodiment robot world model for action-faithful and physically plausible video prediction. Training such a model on existing robot datasets faces two obstacles: imprecise calibration can impair action following, while limited coverage of unsuccessful interactions can bias predictions toward successful outcomes. To improve action following across embodiments, we render action trajectories into image-space conditions and introduce offline geometric calibration to align these conditions with the target videos. To broaden interaction coverage, we introduce counterfactual post-training, modifying recorded action trajectories and generating future videos under a wider range of actions and contact configurations. To provide feedback on these predictions without paired ground-truth futures, we construct a human-annotated video dataset covering robot, object, and interaction defects and use it to train an embodied video reward model. Its scores guide reinforcement-learning post-training toward more physically plausible interaction outcomes. On AgiBot, DreamTrue attains state-of-the-art action following, while reducing the human-assessed interaction defect rate from from 48.12% to 6.25%. Notably, our model ranks first in the world model track of the AgiBot World Challenge 2026. The project page can be found at https://brave-eai.github.io/DreamTrue.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2610.12468"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "DreamTrue propose un modèle de monde robotique (multi-vues, cross-embodiment) pour prédire des vidéos physiquement plausibles, avec calibration géométrique et entraînement post-hoc par contre-factuel. Améliore le suivi des actions et réduit les défauts d'interaction. Pertinent pour la robotique et les modèles de prédiction.",
+   "score": 8.8
+  },
+  {
+   "id": "7cbb9a5f6bfb5c4d",
+   "title": "Long Text to Predictive Features: LLM-Guided Blockwise Feature Engineering via Executable Program Search",
+   "url": "https://arxiv.org/abs/2610.12390v1",
+   "summary": "Industrial risk-control systems typically rely on structured-data models for efficient prediction, yet substantial valuable information remains embedded in unstructured long text. Extracting this information through manual feature engineering is labor-intensive, while requiring a large language model (LLM) to process every real-time input may not meet practical deployment requirements. To address this challenge, we propose LLM-BlockFE, an LLM-guided offline feature construction framework that converts long text into executable feature programs, thereby avoiding LLM calls during online inference. LLM-BlockFE constructs feature programs by incrementally appending immutable code blocks and evaluates candidate features using a downstream model. To address the tendency of conventional greedy search to become trapped in suboptimal solutions, our method introduces a block-level rollback mechanism based on depth-calibrated credit allocation and advances multiple independent search trajectories in an interleaved manner, reducing redundant exploration by sharing fixed descriptions of each trajectory's exploration direction. After the search, the resulting programs are frozen and deployed to extract structured features for downstream prediction models. Across two public and two private datasets, LLM-BlockFE achieves absolute AUC improvements of 0.0069 to 0.0358 over the strongest baseline on each dataset in the full-dataset comparison. Post-launch monitoring across five deployed financial risk-control applications shows absolute KS improvements of 0.02 to 1.56 percentage points over the existing manually designed strategy.",
+   "published": "2026-10-08T17:39:11+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ziming Dai, Dabiao Ma, Ziheng Guo, Jack Dong, Zimu Zhou"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Propose LLM-BlockFE, une méthode hors ligne pour transformer du texte long en programmes de features exécutables, évitant ainsi les appels LLM en temps réel. Utilise une recherche par blocs avec mécanisme de rollback pour optimiser l'extraction de features, réduisant l'exploration redondante et améliorant l'efficacité de déploiement en production.",
+   "score": 8.6
+  },
+  {
+   "id": "164dc472a27d0bc8",
+   "title": "One Block, Multiple Depths: Recurrent Vision Transformers with Depth-Programmed Experts",
+   "url": "https://huggingface.co/papers/2610.12448",
+   "summary": "In this work, we show that a single Transformer block, applied recurrently, can match the accuracy of a full-depth vision encoder at comparable inference FLOPs without intermediate feature distillation. reViT restores depth-specific transformations by representing the FFN at each recurrent depth as a convex combination of a small shared expert bank. A continuous normalized-depth coordinate programs this mixture, defining a resampleable trajectory through FFN parameter space. We evaluate this design in two regimes: supervised ImageNet-1k training and distillation from a DINOv2 teacher. Across both regimes, controlled adaptations identify weight-space merging as the strongest tested MoE family at a matching one-FFN budget, ahead of the token-dispatch and output-mixture alternatives. Trained from scratch, reViT-B/16 attains DeiT III accuracy with about 70\\% fewer stored parameters. An 8-experts model distilled using only the teacher's output features retains nearly all of its DINOv2 teacher's linear-probe accuracy and transfers across classification, segmentation, and depth prediction. Elastic-depth training allows one checkpoint (trained model) to operate at multiple tested depths by resampling the same normalized coordinate interval. For fixed-depth deployment, the recurrent block can be materialized as a conventional dense graph, removing online routing and merging without changing the one-FFN-per-depth compute but expanding deployment storage.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.12448"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "reViT propose une architecture de Vision Transformer récurrente où un seul bloc est réappliqué avec une combinaison convexe d'experts partagés, permettant une précision comparable à un modèle profond tout en réduisant les paramètres stockés de 70% et en accélérant l'inférence. Intéressant pour l'optimisation des modèles visuels avec des contraintes de ressources.",
+   "score": 8.5
+  },
+  {
+   "id": "669e127d01fb6ee2",
+   "title": "U-Space: Uncovering When and Why Uncertainty Arises in Language Models",
+   "url": "https://huggingface.co/papers/2610.09087",
+   "summary": "Large language models are informing decisions with ever-higher stakes. As the consequences of their errors grow, a central question becomes harder to ignore: how much can we trust an individual answer? Yet recognizing when to defer remains difficult because language models can present incorrect conclusions with fluent explanations and an authoritative tone. Uncertainty quantification seeks to address this disconnect by estimating the reliability of individual predictions. However, many existing methods require repeated generations or separately trained components, and their scalar estimates do not reveal where uncertainty arises or how it evolves during reasoning. Recent work has also shown that generation length can be strongly associated with uncertainty estimates and correctness, raising the question of how much of an estimator's predictive power comes from uncertainty-specific information rather than output length alone. Mechanistic interpretability offers a way to address these limitations by connecting human-interpretable concepts to intermediate model states. Building on this capability, we introduce the U-Space, a low-dimensional subspace that makes a model's evolving uncertainty measurable and interpretable. We identify semantic anchors for doubt and certainty, map their unembedding directions back into the residual space, and combine their contrasts into an orthogonal basis. The U-Lens projects each token state onto these basis vectors, yielding an interpretable token-level uncertainty map that can be inspected directly or aggregated into a scalar uncertainty score. Our approach requires no correctness labels, repeated generations, or training. Across reasoning benchmarks, its confidence score outperforms established baselines under both standard and length-controlled evaluation and transfers more reliably than supervised estimators. Code: https://github.com/s2labres/U-Space.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2610.09087"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "llm"
+   ],
+   "tldr": "U-Space identifie un sous-espace de faible dimension pour quantifier l'incertitude des LLM de manière interprétable, en reliant des concepts humains à des états intermédiaires du modèle. Avancée majeure pour l'évaluation de la fiabilité des réponses des LLM.",
+   "score": 8.5
+  },
+  {
+   "id": "195ee915135be29b",
+   "title": "CARE: Certifying Acceleration for Vision-Language-Action Inference",
+   "url": "https://huggingface.co/papers/2610.08917",
+   "summary": "While vision-language-action (VLA) models have advanced rapidly, running them at every control step remains expensive. Prior work accelerates VLA inference using techniques like action chunking and visual-token pruning, typically evaluating based on latency and average task success. However, acceleration may discard information and break tasks the original policy would solve, a risk hidden by average metrics. Measuring these failures is challenging because action deviations compound over closed-loop trajectories, meaning task failure is only observable across full episodes. We therefore define an acceleration-induced failure via paired rollouts from identical initial conditions, tracking when the reference succeeds but the accelerated policy fails. To manage this, we introduce CARE, an approach for certified accelerator selection. CARE uses paired rollouts on a calibration set to provide finite-sample guarantees that acceleration-induced failure risk stays below a user-specified budget. It deploys the fastest certified candidate, falling back to the reference if none qualify. By relying only on terminal outcomes and measured compute, CARE applies unchanged across diverse acceleration mechanisms, while sequential testing and failure-triggered reference rollouts keep certification affordable. On four LIBERO suites with OpenVLA-OFT, CARE certifies 9.0--10.8times speedups while guaranteeing (at 95% confidence) that at least 85.8% of reference-solved episodes are preserved. Under tight budgets, selectors without guarantees exceed the budget in up to 75% of trials, whereas CARE stays within budget and its sequential form uses 78.9% fewer rollouts than exhaustive evaluation. CARE further generalizes to flow-step reduction for π_{0.5}, and to Qwen3.5-9B and Llama-3.1-8B agents in Crafter.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.08917"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "CARE propose une méthode certifiée pour accélérer l'inférence des modèles VLA (Vision-Language-Action) en garantissant un risque de défaillance contrôlé via des rollouts appariés, combinant efficacité computationnelle et fiabilité des politiques accélérées.",
+   "score": 8.5
+  },
+  {
+   "id": "752389d88eac8a51",
+   "title": "OmniCapBench: A Deep-Structured Evaluation Framework for Fine-Grained Audio-Visual Captioning",
+   "url": "https://huggingface.co/papers/2610.12458",
+   "summary": "Multimodal large language models (MLLMs) are rapidly evolving toward continuous audio--visual reasoning, creating an urgent need for evaluations that expose their capability limits. Audio--visual captioning is an ideal diagnostic task, yet current benchmarks face a coupled trade-off: whole-caption scores provide coverage without localization, local probes provide localization without coverage, and unconstrained LLM judges introduce instability. We introduce OmniCapBench (Omni-Video Caption Benchmark), a benchmark that reframes audio--visual caption evaluation as a deep-structured diagnostic framework. OmniCapBench shifts the prediction target from free-form text to sets of atomic, verifiable evaluation units across three tracks: entity references, visual shots, and audio events, enabling reliable scoring with deterministic constraint checks and localized LLM-based semantic comparisons. With 786 densely annotated videos, OmniCapBench effectively distinguishes MLLM perception errors, including temporal grounding failures, identity drift, cross-modal misalignment, and hallucinated descriptions. Evaluating frontier MLLMs reveals strong local perception but weak long-horizon audio--visual reasoning, particularly in identity drift and cross-modal misalignment, providing a fine-grained roadmap for omnimodal development.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.12458"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "OmniCapBench propose un cadre d'évaluation structuré pour le captioning audio-visuel par MLLMs, décomposant les prédictions en unités atomiques vérifiables (entités, plans visuels, événements audio) pour identifier des erreurs spécifiques comme des décalages temporels ou des hallucinations. Intéressant pour évaluer les limites des modèles multimodaux en raisonnement continu.",
+   "score": 8.5
+  },
+  {
+   "id": "ecf176110c7584f0",
+   "title": "A Balanced Data Diet: Addressing the Exploration Bottleneck in Mega-Scale RL for Robot Control",
+   "url": "https://arxiv.org/abs/2610.12465v1",
+   "summary": "General-purpose robots must perform a wide range of tasks from agile locomotion to dexterous manipulation. While sim-to-real reinforcement learning (RL) has proven to be a useful tool for this goal, current RL pipelines depend on engineering-heavy, per-task structural priors such as shaped rewards and demonstrations. Recent work has shown that diverse simulator resets, combined with massively parallel simulation, can alleviate much of this engineering burden on several manipulation problems. However, we find that naively scaling this paradigm to more precise or dynamic problems remains non-trivial. While simulator resets can help with exploration, uniformly sampling over this distribution wastes a growing fraction of learning experience on task configurations the policy has already mastered or cannot yet attempt. This makes it challenging to see the expected benefits of scaling parallel environments for RL, since much of the learning signal in a batch is wasted during learning. To mitigate this, we introduce Success Guided Sampling (SGS), a simple adaptive sampler that concentrates RL training on task configurations around the frontier of the policy's capabilities. Doing so allows large-scale simulated RL to make the most out of the experience in a batch, enabling much more effective scaling to large-scale parallel simulation. Across experiments using up to $2^{20}$ (over one million) parallel environments, SGS enables RL to solve challenging multi-terrain quadruped locomotion and contact-rich assembly tasks that prior methods fail to solve. Finally, we distill the learned manipulation policies into RGB-based policies and demonstrate zero-shot transfer to several challenging assembly tasks on real hardware. Project website: https://sgs-rl.github.io/.",
+   "published": "2026-10-08T17:59:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Octi Zhang, Mateo Guaman Castro, Patrick Yin, Ignacio Dagnino, Abhishek Gupta, Rosario Scalise"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "robotique"
+   ],
+   "tldr": "SGS (Success Guided Sampling) optimise l'exploration en RL pour le contrôle robotique en concentrant les configurations d'entraînement sur les frontières des capacités du modèle, réduisant le gaspillage de données et améliorant l'efficacité à grande échelle.",
+   "score": 8.3
+  },
+  {
+   "id": "a072bce7f8c55a09",
+   "title": "Rounding in Preconditioner Space: Redesigning 4-bit AdamW Optimizer-State Quantization",
+   "url": "https://arxiv.org/abs/2610.12444v1",
+   "summary": "Quantizing AdamW's optimizer states reduces persistent storage, but quantization errors propagate through the moment recurrences and perturb subsequent adaptive updates. We redesign 4-bit optimizer-state quantization for AdamW from the perspective of \\emph{rounding space}: the coordinate in which a quantizer chooses between adjacent reconstruction levels. For the second moment, a local analysis of the quantization cell adjacent to zero shows that small mean state error need not imply small mean preconditioner error at the next step. A one-dimensional quadratic construction further shows qualitatively different optimization dynamics under state-space and preconditioner-space rounding. These results motivate Zero-Inclusive Preconditioner-space Stochastic Rounding (\\textbf{ZIP-SR}), which retains zero in the second-moment codebook and computes stochastic-rounding probabilities in preconditioner space. As a complementary route, Zero-Excluding EDEN calibration (\\textbf{ZE-EDEN}) uses a zero-excluding second-moment codebook and rescales the quantized second-moment block to mitigate the preconditioner distortion caused by the positive quantization floor. Both configurations use 4-bit NormalFloat (NF4) for the first moment, with targeted stochastic rounding of the LM-head first moment during the final 10\\% of training. Across GPT- and Llama-style pretraining experiments ranging from \\textbf{130M} to \\textbf{2.7B} parameters, both methods reduce TorchAO 4-bit AdamW's mean validation-loss gap to 32-bit AdamW at every evaluated model size, with the largest reported gap reduction reaching \\textbf{70\\%}. In full-parameter supervised fine-tuning, both recipes achieve lower validation loss than TorchAO while remaining close to 32-bit AdamW on downstream tasks.",
+   "published": "2026-10-08T17:58:09+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hanyang Li, Shao Tang, Daniel Thomas Braithwaite, Gregory Dexter, Leonardo Neves, Aman Gupta"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "ZIP-SR et ZE-EDEN redéfinissent la quantification 4-bit des états d'AdamW en espace de préconditionnement, réduisant les erreurs propagées et améliorant la stabilité de l'optimisation sans surcoût significatif.",
+   "score": 8.3
+  },
+  {
+   "id": "2d4ef83f8c1d9e31",
+   "title": "VioLA: Learning Generalist Humanoid Control Policies from Human Data",
+   "url": "https://arxiv.org/abs/2610.12435v1",
+   "summary": "Teaching a humanoid to follow instructions with its whole body runs into two obstacles. Its action space is large and tightly coupled: legs, arms, and fingers must move together while the robot keeps its balance, which makes joint-level actions hard to learn. And humanoid demonstrations are scarce, so current humanoid generalist policies do not follow new instructions out of the box and are fine-tuned on teleoperated demonstrations of each task before deployment. Human demonstrations exist in far larger numbers, but a person's motion is not a robot command. We remove both obstacles by changing what the generalist policy predicts. We introduce VioLA, a generalist humanoid policy that predicts body and hand motion latents instead of joint commands. A pretrained body- and hand-controller execute these latents on the robot. Their corresponding motion encoders map human and robot motion into the same latent spaces. A human recording is therefore labeled in the policy's action space, and the training demonstration pool contains 140.6 million frames, 93.2% of them human. As a result, VioLA follows locomotion instructions on the real robot zero-shot, without task-specific fine-tuning, reaching 100% success where GR00T N1.7 and $Ψ_0$ reach 16.7% and 0%, respectively. It also reaches 88.6% manipulation success without task-specific fine-tuning. The same approach works across two VLA and one world-action model backbones. A generalist policy trained on human demonstrations alone performs locomotion tasks on the real robot zero-shot. Code and checkpoints will be released.",
+   "published": "2026-10-08T17:57:27+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mert Albaba, Jens Beißwenger, Anna Manasyan, Daniel Marta, Michael J. Black, Wieland Brendel"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Nouvelle architecture (VioLA) pour contrôler des humanoïdes à partir de données humaines : prédiction de latents de mouvement (corps/mains) exécutés par des contrôleurs pré-entraînés, permettant un zero-shot suivi d'instructions sans fine-tuning spécifique.",
+   "score": 8.3
+  },
+  {
+   "id": "6392ecbe9627daa9",
+   "title": "OnTrack: Real-Time Monitoring and Intervention in LLM Agent Trajectories via Streaming Structure-Aware Optimal Transport",
+   "url": "https://arxiv.org/abs/2610.12375v1",
+   "summary": "Agents are deployed in applications from trip planners and stock trading to IT incident triage. In most cases, LLM agents work autonomously with minimal rule-based safeguarding, leading to cost and safety issues from irreversible actions. Recent works resolve this either by using a safeguard agent to monitor behavior or evaluating logs post-hoc. The first adds cost and latency to every step; the second delivers its verdict after the run, when tokens are burned and damage is done. To overcome this, we propose OnTrack, a streaming monitoring mechanism that compares an agent's steps and dependencies against recorded successful runs to alert users or block the agent in about a millisecond per step. We study this problem in three regimes of decreasing access: full reference access (historical runs and tool schemas), intermediate access (only tool schemas), and no prior knowledge (only step logs as generated). Expectation of OnTrack's monitoring capabilities reduces as data access drops, ranging from plan violation detection to identifying loops, stalls, and repeated tool calls. Finally, we evaluate OnTrack using SWE-bench trajectories. Based on the first 8 steps, our method ranks failing trajectories below succeeding ones better than content similarity approaches (+0.057 AUROC). With an abort policy, we save about 18% of compute that would be burned on failing runs, where 83% of interrupted runs were actually heading to failure (5 out of 6 aborts were correct).",
+   "published": "2026-10-08T17:32:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Babak Barazandeh, Connor Swanson, Chinmay Kulkarni, Nikhil Mungel"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Développe OnTrack, un mécanisme de monitoring en temps réel pour les trajectoires d'agents LLM, comparant les étapes en cours avec des runs réussis via l'optimal transport structure-aware. Détecte les violations de plan, les boucles ou les appels d'outils répétés en ~1ms par étape, avec évaluation sur SWE-bench.",
+   "score": 8.3
+  },
+  {
+   "id": "6c14b636799315d8",
+   "title": "Accurate but Not Humble: Evaluating Epistemic Humility in LLM Agents under Knowledge Conflict",
+   "url": "https://arxiv.org/abs/2610.12360v1",
+   "summary": "When retrieved evidence contradicts an agent's prior beliefs, does it revise its answer, acknowledge uncertainty, or persist with an incorrect conclusion? Existing evaluations of agentic systems focus primarily on task success, offering limited insight into how agents handle such conflicts. We propose to evaluate agents on epistemic humility (EH): the agent's willingness to recognize, act on, and communicate uncertainty during task execution. We operationalize EH through three trajectory-level behavioral dimensions: Identify, Solve, and Escalate (ISE). Through knowledge conflict, situations where the backbone language model's parametric knowledge contradicts the evidence it encounters, or where two contextual sources disagree, we evaluate two conflict settings: (1) controlled conflict and (2) naturally occurring conflict during multi-step agentic execution, each paired with matched no-conflict controls. Evaluating four agents, we find that higher task accuracy does not necessarily correspond to greater epistemic humility: some high-accuracy configurations recognize conflicts during execution but do not communicate unresolved uncertainty in their incorrect final answers. Trajectory-level analysis further reveals that agents frequently detect conflicts in early steps of execution but fail to maintain or resolve them in later steps. Finally, we show that model-level interventions can improve EH, but often at the cost of task accuracy, suggesting that epistemic humility emerges from the interaction among the backbone model, agent harness, and evaluation environment.",
+   "published": "2026-10-08T17:25:06+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kaiser Sun, Bernal Jimenez Gutierrez, Hongjun Liu, Jingyu Zhang, Jie Gao, Mark Dredze"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Évaluation de l'humilité épistémique (capacité à reconnaître et communiquer l'incertitude) chez les agents LLM face à des conflits de connaissances, révélant que la précision ne garantit pas une meilleure gestion des contradictions.",
+   "score": 8.3
+  },
+  {
+   "id": "69e24a6c22ef302e",
+   "title": "SparseDecoding: Decoding-Aware Pruning for Accurate and Efficient LLM Inference",
+   "url": "https://arxiv.org/abs/2610.12327v1",
+   "summary": "The memory-bound nature of the decoding stage of large language model (LLM) inference incurs significant latency. Layer-wise training-free network pruning approaches guided by the Hessian have been a prominent solution to this problem, as pruning reduces the number of nonzero parameters read from memory during decoding. Nevertheless, typical methods in this line compute the Hessian using pre-collected natural sequences, whereas the model is fed self-generated tokens during decoding, creating a distribution shift between the two sequences. The Hessian calculated on the natural sequence is different from that calculated on the generated sequence. We observe that this discrepancy causes the activation distribution during generation to deviate from that used for pruning, further hurting the pruned model performance. Moreover, most existing LLM pruning methods that bring actual speedup primarily target the sparse matrix-matrix (SpMM) multiplication, providing limited support for the sparse matrix-vector (SpMV) operations, which dominate decoding. To solve these problems, we introduce SparseDecoding, a principled decoding-aware pruning framework tailored for accurate and efficient LLM decoding. Specifically, at the algorithmic axis, SparseDecoding constructs calibration matrices from layer-wise activations collected during the dense-model autoregressive generation, excluding prefill, thereby aligning the pruning objective with the decoding activations. At the system axis, we develop an optimized N:M sparse matrix-vector kernel with bitmask indexing and fixed-step traversal. Substantial empirical results on representative LLMs (Llama-3.1-8B, Llama-3.3-70B, Qwen3-14B / 32B) demonstrate that our method consistently outperforms standard fixed-text calibration on the long-form generation benchmarks while achieving up to 1.48x end-to-end wall-clock decoding speedup on A100 GPUs.",
+   "published": "2026-10-08T17:06:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Qitong Wang, Xinwei Niu, Mingluo Su, Shanwei Zhao, Shiai Zhu, Huan Wang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "SparseDecoding introduit un cadre de *pruning* adapté à l'inférence des LLM, optimisant les opérations *sparse matrix-vector* dominantes en décodage. Réduction significative de la latence tout en préservant la performance, crucial pour le déploiement efficace des LLM.",
+   "score": 8.3
+  },
+  {
+   "id": "53890a51ad9c9091",
+   "title": "REMORY: Learning Residual Memory for Context Compaction",
+   "url": "https://huggingface.co/papers/2610.11287",
+   "summary": "Long-horizon agents compact their history to continue within a finite context window, but a textual summary alone may not support every subsequent decision. We introduce REMORY, a neural memory network that supplements the summary with a bounded sequence of soft memory tokens. Given the history and summary, the network learns to generate tokens that help a frozen LLM approximate the continuation it would produce with the full history. The tokens are conditioned on the summary and appended after it, forming an analogue of a residual connection along the sequence dimension. On SummHay, REMORY improves source attribution at nearly unchanged insight coverage and approaches the full-context joint score using only 5.2% of the input positions. Across long-horizon agent benchmarks, Qwen3.8-27B and GLM-5.3-Flash show consistent gains with residual memory. Both models also exhibit substantially fewer repeated tool outputs and tool errors on BrowseComp and Terminal-Bench 2.1.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.11287"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "REMORY introduit un réseau de mémoire résiduelle pour compacter l'historique des agents à long terme, améliorant les performances des LLM avec seulement 5.2% des positions d'entrée. Réduit les erreurs d'outils et les répétitions dans les benchmarks d'agents. Solution efficace pour la gestion du contexte.",
+   "score": 8.2
+  },
+  {
+   "id": "5d0fd01fe4ac1cfb",
+   "title": "On-Policy Distillation Teaches New Skills but Not New Knowledge",
+   "url": "https://huggingface.co/papers/2610.09639",
+   "summary": "On-policy distillation (OPD) strengthens language-model reasoning, yet whether students acquire new factual knowledge or compositional skill for multi-step reasoning remains unknown. We separate these capabilities using a controlled synthetic framework that measures the student's initial capabilities and independently controls the teacher's additional facts, compositional skill, or both. Across four models from three families, reverse-KL OPD reliably transfers compositional skill across unseen reasoning structures, but transfers minimal factual knowledge. Decoupling the distillation recipe reveals the source of this asymmetry: replacing reverse KL with forward KL restores factual transfer, whereas student rollouts specifically improve the execution of multi-step reasoning. Experiments on recent factual QA and competition mathematics show a similar asymmetry under reverse-KL OPD, yielding notable reasoning gains without factual memory expansion. Together, these results demonstrate that on-policy distillation does not expand a model's parametric knowledge, but instead teaches it to organize and compose the knowledge it already possesses.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.09639"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "interpretabilite"
+   ],
+   "tldr": "L'étude démontre que la distillation on-policy (OPD) sous KL inverse améliore les compétences de raisonnement sans étendre les connaissances factuelles, tandis que la KL forward restaure le transfert de connaissances, clarifiant les limites de cette méthode.",
+   "score": 8.2
+  },
+  {
+   "id": "251efcfd6e2ea398",
+   "title": "TerraVis: Towards Evaluation of World-Grounded Visual Consistency in Text-to-Image Generation via MLLM Workflows",
+   "url": "https://huggingface.co/papers/2610.02959",
+   "summary": "Recent text-to-image models have made substantial progress in photorealism, aesthetics, and text-image alignment. Yet visually appealing images can still violate real-world plausibility, exhibiting malformed object structures, impossible anatomy, physically implausible interactions, or inconsistent spatial relationships. Such failures are not well captured by existing fidelity, aesthetics, preference, or alignment metrics. To address this gap, we introduce TerraVis, a framework for evaluating world-grounded visual consistency in generated images. TerraVis defines a structured taxonomy of world-consistency violations spanning object-, interaction-, and scene-level failures, and employs a multi-stage evaluation framework to identify and quantify them. Given an image, TerraVis first uses an MLLM to assess its eligibility for evaluation, then detects violations across 18 taxonomy-defined types and classifies them as minor or major to derive an overall world-consistency score. Across diverse open-source and proprietary text-to-image models on two widely used benchmarks, TerraVis achieves the strongest correlation with human judgments of world consistency among existing metrics. Our benchmark results further show that models that achieve strong performance on conventional metrics can still exhibit substantial world-consistency failures. These findings highlight world consistency as a complementary evaluation dimension and demonstrate that TerraVis enables systematic quantification, diagnosis, and comparison of such failures. Our code is publicly available at https://github.com/ShyFoo/TerraVis.",
+   "published": "2026-10-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.02959"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "TerraVis propose un cadre d'évaluation (MLLM-based) pour mesurer la cohérence visuelle réaliste des images générées par les modèles de text-to-image, en identifiant des violations structurelles, anatomiques ou physiques via une taxonomie de 18 types. Intéressant pour évaluer la fiabilité des modèles au-delà des métriques classiques de qualité.",
+   "score": 8.2
+  },
+  {
+   "id": "a59fea1f7d6c8df6",
+   "title": "SpaceCast-Bench: Evaluating Predictive Spatial Reasoning in Vision-Language Models",
+   "url": "https://huggingface.co/papers/2610.12402",
+   "summary": "Existing spatial reasoning benchmarks mainly test spatial perception: reading off relations already visible in the input. Yet real-world spatial intelligence demands predictive spatial reasoning: constructing a scene from observations, anticipating how an intervention changes it, and reasoning about the unseen outcome. We introduce SpaceCast-Bench, the first benchmark to directly and diagnostically evaluate this capability. Built around an observe-transform-infer framework, its 3,862 questions from 182 real-world scenes span 16 task types at three levels: static perception, local prediction, and global prediction, progressively requiring scene understanding, spatial state updating, and relational inference over unobserved outcomes. Evaluating 21 models exposes a stark gap: the strongest model reaches only 58.0% against 87.2% human performance, while spatially specialized models remain near random chance. Controlled analyses further reveal that bridge views are critical for integrating distributed observations, and that explicit 3D evidence benefits models more reliably than generated outcome images or videos. Fine-tuning on our programmatically generated data lifts Qwen3-VL-4B from 34.0% to 65.7% with macro-average gains across six out-of-domain benchmarks.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.12402"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "SpaceCast-Bench évalue la capacité des VLM à raisonner spatialement de manière prédictive (observation → transformation → inférence), révélant un écart majeur entre modèles (58%) et humains (87.2%). Met en lumière l'importance des vues intermédiaires et des preuves 3D explicites. Utile pour comprendre les limites des VLM en spatial.",
+   "score": 8.2
+  },
+  {
+   "id": "9b015423a3d5e3a4",
+   "title": "TokenRouter: Efficient Serving System for Token-Level LLM Routing",
+   "url": "https://huggingface.co/papers/2610.12242",
+   "summary": "Large language model (LLM) routing distributes inference work across different models, advancing the cost-quality Pareto frontier of LLM serving. While coarse-grained routing at the session or query level has been widely adopted in production systems, recent algorithmic work shows that fine-grained token-level routing can yield substantial efficiency and quality gains. However, efficiently serving token-level routed inference poses significant challenges to existing systems. Built on single-LLM assumptions, current systems suffer from severe step desynchronization and frequent batch admission delays under token-level routing, and they also impose high implementation complexity on developers. To address these challenges, we design TokenRouter, an efficient and developer-friendly serving system for token-level routed LLM inference. TokenRouter follows the principle of request-centric programming, model-centric execution: developers describe routing logic from the perspective of a single request, while the runtime launches a subserver for each LLM and dispatches requests asynchronously. Each subserver employs a delayed-batching scheduler, whose optimal hyperparameters are derived from a mathematical throughput model of the system. Across diverse routing algorithms, workloads, and model pairs, TokenRouter achieves 2.01-64.15x higher decoding throughput than existing systems, substantially advancing the serving efficiency of token-level LLM routing. Our code is available at https://github.com/thu-nics/TokenRouter.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 91,
+    "arxiv_id": "2610.12242"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "produit"
+   ],
+   "tldr": "TokenRouter est un système de routage efficace pour l'inférence LLM au niveau token, résolvant les problèmes de désynchronisation des étapes et de latence via une architecture request-centric. Permet des gains de qualité/efficacité significatifs pour les systèmes de routage fin. Essentiel pour le déploiement en production.",
+   "score": 8.2
+  },
+  {
+   "id": "29ae11aee9368eee",
+   "title": "RoboRSI: Stable, efficient, and reusable robot self-evolution in complex real-world environments",
+   "url": "https://arxiv.org/abs/2610.12424v1",
+   "summary": "A generalist robot should not only perform diverse tasks but also improve through experience, turning what it learns during execution into capabilities that later tasks can reuse. Robot agents that act through code can already repair programs from execution feedback, yet it remains a central challenge to organize this experience around the task structure that gives it meaning, so that each repair is attributed to the responsible capability, supported by execution evidence, and validated before it is reused. We introduce RoboRSI, a robot self-improvement system built on Top-Down Skill Refinement (TSR). TSR decomposes tasks into compound, atomic, and base skills with scoped responsibilities and explicit input--output contracts, attributes each execution outcome to the responsible branch, and confines revision to that branch. Building upon this structure, a Manager, Planner, Engineer, and Reviewer coordinate planning, execution, diagnosis, and the validated release of new skills, while people steer the process through objectives and corrections; stable skill sequences are further consolidated into reusable compound skills. On a mobile manipulator, RoboRSI develops multi-object household cleanup over 104 rounds. In simulation, it achieves the highest success rate on LIBERO, LIBERO-PRO, LIBERO-Plus, and RoboTwin, exceeding the strongest baseline by 2.7 to 11.0 percentage points.",
+   "published": "2026-10-08T17:55:12+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zimo Wen, Yijin Chen, Yuxuan Cao, Wendi Chen, Yanwen Zou, Wenye Yu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "Système RoboRSI pour l'auto-évolution des robots : décomposition top-down des tâches en compétences réutilisables, avec un pipeline de diagnostic et validation pour une amélioration stable et généralisable en environnement réel.",
+   "score": 8.0
+  },
+  {
+   "id": "b37794aebc0b0c64",
+   "title": "LeWAM: A JEPA World Action Model with Diffusion-Steering-Based MPC",
+   "url": "https://arxiv.org/abs/2610.12407v1",
+   "summary": "World action models (WAMs) predict actions and future observations, typically from a reconstruction-based representation that carries noisy, redundant information which can complicate downstream predictions. We introduce LeWAM, a bidirectional transformer for forward, backward, inverse dynamics and policy prediction, on a decoder-free JEPA latent trained end-to-end through all four modes. We see the following benefits: 1) Alignment: linear probes read robot and object state from LeWAM's latent better than from a regular Le World Model (a forward-only JEPA world model), while the latent ignores visual distractors as well as LeWM does and far better than a reconstruction-based WAM. 2) Acting: Closed-loop evaluations of LeWAM match a regular flow-matching policy trained on the same encoder at matched size, while also providing a world model. 3) Planning: Sampling raw actions when planning with WAMs lets MPC exploit dynamics-model inaccuracies; planning in the noise space of the policy head instead improves the closed-loop performance of these WAMs.",
+   "published": "2026-10-08T17:46:03+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shashank Hegde, Alexander Popov, Elie Aljalbout, Nikolai Smolyanskiy"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "LeWAM introduit un modèle d'action monde (WAM) basé sur JEPA et transformers bidirectionnels, améliorant l'alignement des latents avec les états robotiques et réduisant les distracteurs visuels, tout en permettant planification et contrôle en boucle fermée. Avancée majeure pour les architectures de robotique autonome.",
+   "score": 8.0
+  },
+  {
+   "id": "fad53521bd2762d3",
+   "title": "ViSkill: Reinforcing VLM Agents with Evolving Visual-Native Skills",
+   "url": "https://arxiv.org/abs/2610.12403v1",
+   "summary": "Skill-augmented agents improve sample efficiency by distilling successful trajectories into reusable strategies. Yet most existing approaches remain text-centric, linearizing spatial layouts and action-state correspondences into language that loses critical geometric structure. Recent efforts have begun incorporating visual evidence, but construct and update skills separately from policy optimization, leaving their mutual improvement underexplored. We propose ViSkill, a visual-native skill learning framework that encodes successful interactions as composite visual skill cards directly accessible to VLM agents. Retrieved skills guide both inference and reward shaping, while successful trajectories are distilled back into the library, forming a closed feedback loop in which skill accumulation and policy improvement reinforce each other. An optional cold-start mechanism further accelerates early-stage learning. Evaluated on Sokoban, FrozenLake, and PrimitiveSkill, ViSkill achieves an overall success rate of 0.89, rising to 0.91 with cold-start initialization, outperforming all evaluated proprietary and open-source baselines while converging faster than standard PPO. Our code is available at https://github.com/ZJU-REAL/ViSkill.",
+   "published": "2026-10-08T17:44:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hongxing Li, Dingming Li, Yixin Li, Yong Du, Wenqi Zhang, Weiming Lu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "vision"
+   ],
+   "tldr": "ViSkill propose un cadre d'apprentissage de compétences visuelles natives pour les agents VLM, intégrant un feedback entre acquisition de compétences et optimisation de politique, avec gains significatifs en efficacité et performance sur des benchmarks de contrôle visuel.",
+   "score": 8.0
+  }
+ ]
+}
