@@ -1,0 +1,730 @@
+{
+ "date": "2026-10-12",
+ "digest": {
+  "headline": "SWE-Duel et les avancées en benchmarks auto-évolutifs redéfinissent l'évaluation des agents de codage en temps réel.",
+  "overview": "La veille du 12 octobre 2026 met en lumière des progrès significatifs dans l'optimisation et l'évaluation des modèles d'IA, avec une emphase sur les agents autonomes, les architectures LLM et les méthodes de quantification. Les travaux couvrent des benchmarks dynamiques, des techniques de distillation innovantes et des améliorations d'efficacité pour l'inférence et l'entraînement.",
+  "highlights": [
+   {
+    "title": "Benchmarks auto-évolutifs pour agents de codage",
+    "text": "SWE-Duel introduit un benchmark où les tâches sont générées dynamiquement via des duels entre agents, éliminant les risques de fuite de données et mesurant l'adaptabilité en temps réel. SoftwareGym complète cette approche en synthétisant des environnements logiciels GUI diversifiés pour l'entraînement d'agents, avec des résultats probants sur OSWorld et SoftwareGym-Bench. Ces travaux répondent au besoin croissant d'évaluer les agents dans des contextes réalistes et évolutifs."
+   },
+   {
+    "title": "Optimisation des architectures LLM et MoE",
+    "text": "DRMoET améliore la robustesse des modèles Mixture-of-Experts (MoE) en réduisant la variance des pertes des experts, tandis que QuantMLA propose une quantification INT4 pour le caching MLA sans perte de performance. Ces méthodes ciblent des gains d'efficacité et de stabilité, critiques pour le déploiement de modèles à grande échelle. PreSTO accélère l'inférence via un prefetching intelligent des sous-arbres de propositions, démontrant des gains de vitesse significatifs sans compromis sur la qualité."
+   },
+   {
+    "title": "Distillation et apprentissage continu revisités",
+    "text": "L'étude sur la distillation Semi-OPD montre que les rollouts offline surpassent souvent l'on-policy distillation en précision et efficacité, surtout pour les paires Teacher-Student mal alignées. SynthSelf introduit une self-distillation synthétique pour le post-entraînement continu de petits modèles, contournant les limites des approches in-context. Ces travaux offrent des alternatives flexibles et interprétables pour l'optimisation des modèles, y compris ceux en API-only."
+   },
+   {
+    "title": "Raisonnement spatial et multimodal",
+    "text": "S-Space révèle un sous-espace linéaire dans les MLLMs encodant les coordonnées spatiales, agissant comme un 'espace de travail' interne pour le raisonnement. CASE propose un cadre pour les agents médicaux capables de rechercher activement des preuves dans des dossiers cliniques longitudinaux, combinant vision et outils d'exploration autonome. Ces avancées soulignent l'importance des mécanismes interprétables et des applications verticales."
+   },
+   {
+    "title": "Amélioration des modèles génératifs et agents robotiques",
+    "text": "DiffusionART optimise les modèles de diffusion via un apprentissage par renforcement stable et scalable, supprimant les forces de cohérence cachées. ENCORE utilise des démonstrations multi-vues pour induire des stratégies de manipulation robotique, avec des gains de performance notables sur LIBERO-PRO. Ces travaux illustrent l'évolution des méthodes pour les modèles génératifs et les agents physiques."
+   }
+  ],
+  "trend": "Les recherches convergent vers des systèmes plus autonomes, adaptatifs et efficaces, avec une emphase sur des benchmarks dynamiques, des méthodes de distillation flexibles et des architectures optimisées pour des cas d'usage spécifiques. L'interprétabilité et la robustesse deviennent des axes centraux, notamment pour les applications critiques comme la médecine ou la robotique."
+ },
+ "items": [
+  {
+   "id": "eb4efa88a5ec63d8",
+   "title": "SWE-Duel: Towards a Self-Scaling Arena for Coding Agents",
+   "url": "https://huggingface.co/papers/2610.12569",
+   "summary": "Static coding benchmarks are fixed at release. Over time their tasks leak into training data, and stronger agents eventually saturate them. We argue that a benchmark should instead aim to be self-scaling: its tasks and oracles are created at evaluation time, so no content exists in advance to leak, and its difficulty is set by the participating agents rather than fixed at release. We introduce SWE-Duel, an arena in which two coding agents evaluate each other over mirrored Red-Blue turns. In each turn, the Red agent works on a real repository across three context-isolated sessions. It proposes and implements a new feature with feature tests, then embeds a subtle bug in that feature along with sealed bug-triggering tests. The resulting pull request is admitted only if (1) it passes the feature tests and the repository's existing tests while failing exactly the bug tests, and (2) a fresh session of the same agent can repair the bug blind, which rules out unsolvable tasks. The Blue agent then reviews the pull request without being told a bug exists. It wins only if its revision passes all three test suites, and then the two agents swap roles. We run a tournament among 11 model-harness participants on 15 repositories in five languages for 1,500 turns. The leaders win in different ways. GPT-5.5 with Codex CLI ranks first as the strongest solver, repairing 98.3% of the defects it reviews. Claude Opus 4.8 with mini-swe-agent ranks second as the strongest task author, with a 27.3% Red win rate. Finally, within one model family, tasks written by the newest version defeat a fixed-reference solver far more often than those of older versions (42.9% vs. 4.0%), giving preliminary evidence that task difficulty scales with task authoring capability.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2610.12569"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "SWE-Duel propose un benchmark auto-évolutif pour évaluer les agents de codage en temps réel, où les tâches sont générées dynamiquement et testées par des duels entre agents. Idéal pour mesurer l'adaptabilité et la robustesse des agents sans fuite de données.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les benchmarks statiques en programmation, utilisés pour évaluer les agents de codage basés sur l'IA, deviennent obsolètes avec le temps. Leurs tâches finissent par fuiter dans les données d'entraînement, et les modèles les plus performants les saturent, rendant les évaluations peu fiables. Il manque un système dynamique capable de s'adapter en temps réel à l'évolution des capacités des agents.",
+    "methode": "SWE-Duel propose une arène auto-scalable où deux agents s'affrontent en tours alternés (Red et Blue). Le rôle Red consiste à travailler sur un dépôt réel en trois sessions isolées : (1) implémenter une nouvelle fonctionnalité avec des tests associés, (2) introduire un bug subtil accompagné de tests scellés déclenchant ce bug, et (3) soumettre une pull request (PR) validée uniquement si elle passe les tests de fonctionnalité, échoue exactement sur les tests de bug, et que l'agent peut corriger le bug en aveugle dans une nouvelle session. Le rôle Blue doit ensuite examiner la PR sans savoir qu'un bug existe, et gagne s'il parvient à corriger tous les tests. Les agents échangent leurs rôles après chaque tour. Le système utilise 15 dépôts en cinq langages et impose des contraintes strictes pour éviter les tâches insolubles ou triviales.",
+    "resultats": "Un tournoi impliquant 11 modèles et 1 500 tours a révélé des performances différenciées : GPT-5.5 avec Codex CLI s'est distingué comme le meilleur correcteur (98,3 % de bugs réparés en rôle Blue), tandis que Claude Opus 4.8 avec mini-swe-agent a excellé en création de tâches (taux de victoire Red de 27,3 %). Par ailleurs, les tâches générées par les versions récentes d'un même modèle ont battu un solveur de référence bien plus souvent que celles des versions anciennes (42,9 % contre 4,0 %), suggérant une corrélation entre la capacité à créer des tâches et leur difficulté.",
+    "limites": "Le système repose sur des tests unitaires pour valider les bugs et corrections, ce qui peut introduire des biais (ex. : bugs faciles à détecter via des tests mais peu réalistes). De plus, l'échantillon de 15 dépôts et 5 langages, bien que varié, reste limité pour généraliser les résultats. Enfin, la méthodologie ",
+    "verdict": "SWE-Duel représente une avancée prometteuse pour évaluer dynamiquement les agents de codage, mais son adoption dépendra de sa capacité à convaincre la communauté de son réalisme et de sa scalabilité à long terme."
+   }
+  },
+  {
+   "id": "968931c0f9f5039d",
+   "title": "Distributionally Robust Mixture-of-Experts Training",
+   "url": "https://huggingface.co/papers/2610.07207",
+   "summary": "Mixture-of-Experts (MoE) transformers scale capacity by activating only a few experts per token, but this sparsity creates a hidden reliability problem: when routing is imperfect, load-balanced models may send tokens to experts that are insufficiently trained for the assigned inputs. We propose Distributionally Robust MoE Training (DRMoET), a drop-in objective that treats layer-wise experts as endogenous robustness groups and optimizes high-loss routing outcomes rather than merely equalizing traffic. DRMoET updates a per-layer expert distribution by an entropy-regularized softmax rule on EMA-smoothed, activation-weighted expert losses, strengthening plausible non-top routing paths while preserving standard MoE computation. Under the FLAME-MoE recipe at 746M-total and 10.3B-total scales, DRMoET improves downstream averages over both standard FLAME-MoE and auxiliary-loss-free balancing. At 10.3B total parameters and 67B training tokens, DRMoET improves the seven-task average from 0.6625 to 0.6767, while the auxiliary-loss-free baseline achieves 0.6431. Mechanistic analyses show lower expert-loss variance with nearly unchanged mean loss, 4.3% lower excess loss under forced mid-k misrouting, and improved domain-expert specialization. These results position routing robustness-not only utilization balance-as a practical objective for reliable sparse MoE scaling. Project page and code are available at: https://drmoet.github.io/.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.07207"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Propose une méthode (DRMoET) pour améliorer l'entraînement des modèles Mixture-of-Experts (MoE) en optimisant la robustesse face aux erreurs de routage, réduisant ainsi la variance des pertes des experts et améliorant les performances (ex. +1.4% sur 7 tâches à 10.3B de paramètres).",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles Mixture-of-Experts (MoE) activent seulement quelques experts par token pour améliorer l'efficacité computationnelle, mais cette sparsité introduit un problème de fiabilité caché. Lorsque le routage est imparfait, les tokens peuvent être envoyés à des experts sous-entraînés pour les entrées assignées, dégradant les performances malgré un équilibrage de charge apparent.",
+    "methode": "DRMoET (Distributionally Robust MoE Training) propose une fonction objectif modifiable directement ('drop-in') qui traite les experts d'une couche comme des groupes de robustesse endogènes. Au lieu de simplement équilibrer le trafic entre experts, elle optimise les scénarios de routage à perte élevée. La méthode met à jour une distribution par couche d'experts via une règle de softmax régularisée par entropie, appliquée sur des pertes d'experts lissées par EMA (Exponential Moving Average) et pondérées par les activations. Cela renforce les chemins de routage alternatifs plausibles tout en conservant l'architecture MoE standard. La régularisation par entropie évite une spécialisation excessive tout en améliorant la robustesse.",
+    "resultats": "Sous la recette FLAME-MoE, DRMoET améliore les moyennes de performances en aval aux échelles de 746M et 10,3B paramètres totaux. À 10,3B paramètres et 67B tokens d'entraînement, la moyenne sur sept tâches passe de 0,6625 (FLAME-MoE standard) à 0,6767, tandis qu'un baseline sans perte auxiliaire atteint seulement 0,6431. Les analyses mécanistiques révèlent une variance des pertes par expert réduite, une perte moyenne quasi inchangée, et une réduction de 4,3% de la perte excédentaire en cas de routage forcé erroné. Une spécialisation accrue des experts par domaine est également observée.",
+    "limites": "Le contenu disponible ne précise pas les coûts computationnels supplémentaires induits par DRMoET, ni son impact sur la latence en inférence. La robustesse face à des distributions de données très éloignées du domaine d'entraînement reste une zone d'ombre. Enfin, l'amélioration des performances pourrait être spécifique aux architectures ou jeux de données utilisés dans l'étude.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à améliorer la fiabilité des MoE sans sacrifier l'efficacité, mais son applicabilité à grande échelle et son coût réel doivent être évalués plus en détail."
+   }
+  },
+  {
+   "id": "8045dce85e422e1b",
+   "title": "QuantMLA: Function-Aligned Dual-Path Quantization for Low-Bit MLA KV Caching",
+   "url": "https://huggingface.co/papers/2609.36760",
+   "summary": "Multi-Head Latent Attention (MLA) enables expressive multi-head attention with compact caches for its content and decoupled RoPE paths, yet cache memory still scales linearly with context length and batch size. In this work, we establish a systematic model of MLA's dual-path quantization errors, characterizing their distinct effects on attention-output distortion and explaining the pronounced amplification of RoPE-path errors. Guided by this analysis, we introduce QuantMLA, a function-aligned framework for low-bit dual-path quantization. We derive path-specific transformation spaces that preserve full-precision computation while remaining fully fusible into model parameters offline, eliminating online transformation overhead. Within these spaces, QuantMLA learns path-specific transformations with function-aligned objectives: attention-output reconstruction captures the content path's coupled matching and aggregation errors, while positional QK reconstruction preserves the RoPE-induced component of the attention logits and admits a theoretical bound on output distortion. Across four MLA model families, QuantMLA enables, to our knowledge, the first reported joint INT4 caching of the content and RoPE caches with minimal accuracy degradation. Further compressing the content cache to INT2 while retaining the RoPE key cache at INT4 maintains competitive performance on challenging reasoning and code benchmarks. We develop a native low-bit MLA attention kernel that integrates unpacking and dequantization directly into attention computation. The physical cache layout provides 3.59x compression at 128K context, while a cache-pressure serving workload achieves 5.168x higher whole-job output throughput than BF16. The code will be released upon acceptance.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2609.36760"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Propose QuantMLA, une méthode de quantification INT4 pour le caching MLA (Multi-Head Latent Attention) qui préserve la précision des chemins de contenu et de position, réduisant la mémoire sans perte de performance.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de la mémoire cache dans les modèles d'attention multi-têtes latente (MLA), où la taille de la mémoire cache des clés-valeurs (KV) augmente linéairement avec la longueur du contexte et la taille des lots. Cela limite l'efficacité des modèles pour des contextes longs et des charges de travail intensives, malgré les optimisations apportées par MLA pour réduire la taille des caches via des chemins séparés pour le contenu et les positions (RoPE).",
+    "methode": "Les auteurs proposent QuantMLA, un cadre de quantification à faible précision (low-bit) pour les deux chemins de MLA (contenu et RoPE). Ils modélisent systématiquement les erreurs de quantification spécifiques à chaque chemin, montrant que les erreurs sur le chemin RoPE sont particulièrement amplifiées. QuantMLA utilise des espaces de transformation spécifiques à chaque chemin, préservant les calculs en pleine précision tout en étant fusionnables hors ligne pour éviter des surcoûts en ligne. Pour le chemin de contenu, l'objectif est la reconstruction de la sortie de l'attention, tandis que pour le chemin RoPE, il s'agit de préserver les logits d'attention positionnels avec une borne théorique sur la distorsion. La méthode inclut également un noyau d'attention natif pour gérer la décompression et la déquantification directement dans le calcul de l'attention.",
+    "resultats": "QuantMLA permet, pour la première fois selon les auteurs, une quantification conjointe en INT4 des caches de contenu et RoPE avec une dégradation minimale de la précision. En compressant davantage le cache de contenu à INT2 tout en gardant le cache RoPE en INT4, les performances restent compétitives sur des benchmarks exigeants (raisonnement et code). Le gain en compression atteint 3,59x pour un contexte de 128K, et un workload sous pression de cache montre une augmentation de 5,168x du débit de sortie par rapport à BF16.",
+    "limites": "Le document ne détaille pas les benchmarks spécifiques utilisés pour évaluer la dégradation de la précision, ni les conditions exactes des tests de performance. De plus, l'impact de la quantification INT2 sur des tâches très sensibles aux erreurs (comme la génération de texte longue) n'est pas clairement exploré. Enfin, l'absence de code disponible au moment de la publication limite la reproductibilité et l'évaluation indépendante des résultats.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique de la quantification dual-path dans MLA, offrant des gains significatifs en compression et performance sans sacrifier excessivement la précision."
+   }
+  },
+  {
+   "id": "b4692986ca569025",
+   "title": "Universal Textual Teaching for LLMs",
+   "url": "https://huggingface.co/papers/2610.12114",
+   "summary": "Knowledge distillation (KD) transfers knowledge from stronger Teacher models to weaker Student models, but most methods require training the Student parameters, thereby binding the distilled knowledge to a specific architecture and checkpoint. This implicit representation is difficult to interpret or reuse across models and limits KD for API-only or costly-to-train models. This paper studies knowledge transfer for large language models (LLMs). We introduce Universal Textual Teaching (UTT), a parameter-update-free framework that distills observed Teacher-Student knowledge gaps into a textual, interpretable, and reusable natural-language artifact called Primer. Specifically, UTT first identifies representative gap cases through paired evaluations, and iteratively updates the Primer via multi-role interactions: the Student attempts each task, the Prompter turns evaluation feedback into a teaching instruction, the Teacher provides a targeted demonstration, and the Synthesizer consolidates validated lessons. Empirically, on the challenging math (Omni-MATH-2) and code generation (KernelBench) tasks, extensive results confirm the effectiveness of the method: UTT remarkably raises the Student's accuracy from 9.4% to 48.6% and Fast1 accuracy from 9% to 35% on KernelBench, while increasing mathematical reasoning accuracy from 27.6% to 51.7%. UTT also performs better than representative prompt engineering and parameter-based KD methods. Of note, UTT is shown to be generalizable across different Teachers and Students: a Primer synthesized for one Teacher-Student pair can generalize to other Students that do not participate in the synthesis.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.12114"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "UTT propose une méthode de distillation de connaissances (KD) sans mise à jour des paramètres du modèle étudiant, transformant les lacunes Teacher-Student en un artefact textuel réutilisable (Primer) via des interactions multi-rôles. Méthode validée sur des tâches complexes (maths, code), offrant une approche interprétable et flexible pour les modèles API-only ou coûteux à entraîner.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "La distillation de connaissances (KD) traditionnelle transfère le savoir d'un modèle enseignant (Teacher) vers un modèle étudiant (Student) en entraînant les paramètres de ce dernier, ce qui lie le savoir distillé à une architecture et un checkpoint spécifiques. Cela limite la réutilisabilité du savoir acquis et complique l'application de la KD aux modèles accessibles uniquement via API ou coûteux à entraîner, tout en rendant les représentations apprises difficiles à interpréter.",
+    "methode": "Universal Textual Teaching (UTT) propose une approche sans mise à jour des paramètres, où les écarts de performance entre le Teacher et le Student sont capturés dans un artefact textuel interprétable appelé *Primer*. Le processus repose sur des évaluations appariées pour identifier des cas représentatifs de ces écarts. Quatre rôles interagissent de manière itérative : le Student tente la tâche, le Prompter transforme les retours d'évaluation en instructions pédagogiques, le Teacher fournit une démonstration ciblée, et le Synthesizer consolide les leçons validées dans le Primer. Cette méthode exploite des interactions en langage naturel pour générer un savoir réutilisable et indépendant de l'architecture.",
+    "resultats": "Les résultats empiriques sur des tâches complexes comme les mathématiques (Omni-MATH-2) et la génération de code (KernelBench) montrent une amélioration significative des performances. Par exemple, UTT fait passer la précision du Student de 9,4 % à 48,6 % et la précision Fast1 de 9 % à 35 % sur KernelBench. En raisonnement mathématique, la précision augmente de 27,6 % à 51,7 %. UTT surpasse également les méthodes classiques de prompt engineering et de KD basée sur les paramètres. Un avantage clé est sa généralisabilité : un Primer synthétisé pour une paire Teacher-Student peut être réutilisé avec d'autres Students non impliqués dans sa création.",
+    "limites": "Le contenu disponible ne précise pas les coûts computationnels ou la complexité des interactions multi-rôles, ce qui pourrait limiter la scalabilité. De plus, la dépendance à des évaluations appariées pour identifier les écarts suppose une capacité à générer des cas représentatifs, ce qui n'est pas garanti dans tous les domaines. Enfin, l'efficacité du Primer pourrait varier selon la qualité des démonstrations fournies par le Teacher.",
+    "verdict": "UTT mérite une attention particulière pour son approche innovante et ses résultats prometteurs, notamment en offrant une alternative interprétable et réutilisable à la distillation de connaissances traditionnelle."
+   }
+  },
+  {
+   "id": "6f874b4c68d0d059",
+   "title": "When Do We Need On-Policy Distillation? Distilling on Offline Student Rollouts Is Often Better",
+   "url": "https://huggingface.co/papers/2610.11291",
+   "summary": "On-policy distillation (OPD) has become increasingly popular for transferring teacher capabilities to student models. In this work, we ask a critical research question: Is on-policy sampling always beneficial for distilling arbitrary teacher-student pairs? We show that a simple alternative, Semi-OPD, which distills from offline rollouts generated by the initial student, can often outperform OPD in both accuracy and training efficiency. Across 17 teacher-student pairs ranging from 1.5B to 235B parameters, Semi-OPD outperforms OPD in 14 cases, with up to +13.6% accuracy and 11.4x training speedup. We further find that the choice between OPD and Semi-OPD depends on the alignment between the initial teacher and student, quantified by an output-token overlap ratio: OPD is beneficial only when the two are highly aligned with high overlap ratios. Our deeper investigation suggests that effective distillation requires on-policyness w.r.t. both the student and the teacher. For misaligned pairs, student rollouts can become increasingly off-policy w.r.t. the teacher as context length grows, weakening the distillation signal. In contrast, Semi-OPD is often more stable, as it distills on shorter contexts while covering full trajectories and exposing the student to more teacher-preferred tokens. Beyond proposing Semi-OPD as an efficient alternative, our work motivates the community to rethink when to use OPD and to study stronger OPD variants with meaningful teacher-student pairs.",
+   "published": "2026-10-08T01:54:03.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.11291"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Étude systématique montrant que la distillation 'Semi-OPD' (sur rollouts offline initiaux) surpasse souvent l'on-policy distillation (OPD) en précision et efficacité (+13.6% accuracy, 11.4x speedup), surtout pour les paires Teacher-Student mal alignées. Critère clé : le ratio de chevauchement des tokens de sortie.",
+   "score": 8.8
+  },
+  {
+   "id": "173827374b5e6f49",
+   "title": "PreSTO: Predictive Subtree Prefetching for Fast LLM Power Sampling",
+   "url": "https://huggingface.co/papers/2610.13171",
+   "summary": "Power sampling improves large language model (LLM) reasoning at test time by sampling from a sharpened version of the base model's distribution. Its sampler, PowerMH, is slow because its Metropolis--Hastings (MH) updates are sequential: each accept/reject decision sets the state from which the next proposal is generated. Prior work reduces this cost by changing the sampler or the model (e.g., sequential Monte Carlo, approximate lookahead, distillation). We propose Predictive SubTree Prefetching (PreSTO), which accelerates PowerMH by prefetching future proposals and provably leaves its MH transition kernel unchanged. PreSTO views future MH outcomes as a tree of accept/reject decisions: in each model call, it generates the proposals of a prefetched subtree of this tree in one batch, then follows the realized path with the original MH acceptance rule. We also observe that MH reaches only a sparse, nearly unary part of each prefetched subtree, we further design a predictive traversal rule that chooses the subtree to maximize the predicted number of completed transitions. Across seven datasets and five base LLMs, PreSTO achieves median speedups of 1.71times, 1.91times, and 2.33times on PowerMH and its follow-ups EntropyCut and MultiTryMH, respectively; on the first two, it makes a median of 3.9times fewer model calls, each only 2.1times longer. On LCB V6 with Qwen3.5-9B, the predictive traversal rule is a further 1.25times--1.37times faster than the default breadth-first traversal.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.13171"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "PreSTO accélère l'inférence des LLM via *Power Sampling* en pré-fetchant des sous-arbres de propositions MH (Metropolis-Hastings) tout en préservant l'intégrité du noyau de transition. Sur 7 jeux de données et 5 modèles, il atteint des gains médians de 1.71x à 2.33x en vitesse sans compromis sur la qualité.",
+   "score": 8.8
+  },
+  {
+   "id": "e3deff9f3433b438",
+   "title": "SoftwareGym: Scaling Computer-Use Agent Training with Diverse Synthesized Software Environments",
+   "url": "https://huggingface.co/papers/2610.12611",
+   "summary": "Computer-use agents (CUAs) are rapidly improving, yet synthesizing diverse and reliable software environments at scale remains challenging. Native application environments require substantial construction and integration effort, which limits application coverage and increases the risk of application-specific overfitting. Browser-hosted environments provide limited interaction depth and workflow complexity. These limitations motivate SoftwareGym, an automated pipeline for synthesizing GUI software environments with diverse interfaces, executable functionality, and runtime-verified behavior. It generates structurally diverse designs, realizes them as runnable applications, and uses GUI evaluation with iterative repair to ensure functional reliability. Using SoftwareGym, we synthesize 182 applications across twelve categories and achieve a mean GUI task pass rate of 91.5%. We construct SoftwareGym-Bench, a 120-task evaluation suite spanning the same twelve categories, and use trajectories collected from these environments for CUA training. The resulting model improves Pass@3 from 41.39% to 56.97% on the strictly out-of-domain OSWorld benchmark and achieves 40.0% on SoftwareGym-Bench. These results demonstrate the potential of synthesized software environments as scalable and transferable supervision for CUA training.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 80,
+    "arxiv_id": "2610.12611"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "vision"
+   ],
+   "tldr": "SoftwareGym automatise la synthèse d'environnements logiciels GUI diversifiés et fiables pour l'entraînement d'agents, avec 182 applications générées et un taux de réussite de 91.5% sur les tâches GUI. Le modèle entraîné atteint 56.97% de Pass@3 sur OSWorld et 40% sur SoftwareGym-Bench, prouvant l'efficacité de l'approche.",
+   "score": 8.8
+  },
+  {
+   "id": "78ed969da7b41985",
+   "title": "Continually Post-training Small Models via Synthetic Self-distillation",
+   "url": "https://huggingface.co/papers/2610.13113",
+   "summary": "Continual post-training faces a dual challenge of acquisition and retention: models must learn new capabilities while preserving prior knowledge. While Self-Distillation Fine-Tuning (SDFT) mitigates this using self-supervision with in-context demonstrations, it relies on strong in-context learning and instruction-following abilities. Consequently, SDFT fails on smaller models critical for low-latency, on-device use. To enable continual learning at smaller scales, we first identify the root cause of failure. We show that poor acquisition and forgetting correlate linearly with the post-trained model's distribution shift, revealing the necessity of in-distribution learning. We thus introduce Synthetic Self-Distillation (SynthSelf), imitating SDFT's in-distribution rewrite by outsourcing the task to a minimally larger, same-family aligner. Coupled with off-policy supervision and rejection sampling, this provides the high-quality supervision small models require without breaking their original distribution. Evaluations spanning 4 acquisition datasets (including a mixture) and 14 retention benchmarks show SynthSelf consistently outperforms 6 methods (including off- and on-policy distillation) across 3 small model scales. Extensive further analyses confirm SynthSelf paves the way toward effective small-model continual learning.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 39,
+    "arxiv_id": "2610.13113"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "SynthSelf introduit une méthode de *self-distillation* synthétique pour le post-entraînement continu de petits modèles, contournant les limites des approches basées sur l'apprentissage in-context. Sur 4 jeux de données d'acquisition et 14 benchmarks de rétention, elle surpasse 6 méthodes existantes, y compris la distillation classique.",
+   "score": 8.8
+  },
+  {
+   "id": "6bc5625ac300d2b6",
+   "title": "Recurrent Harness for Agentic Continual Learning",
+   "url": "https://huggingface.co/papers/2610.12668",
+   "summary": "Language model agents increasingly operate over long interaction streams, requiring online adaptation to distribution shifts through continual learning. However, existing agent harnesses typically either evolve their states only through forward information flow or rely on additional replay or validation data for harness optimization. To address this, we propose ReHarness, a recurrent harness framework for agentic continual learning that complements forward read and write with backward revision under a strictly online streaming protocol. We ask what information could have been captured differently in the harness state to better inform the current instance in the stream. Specifically, after each instance, we leverage the resulting trajectory as feedback to revise the reflections retrieved for that instance, thereby propagating feedback backward through the textual harness state. Across three continual learning benchmarks and three language model backbones, ReHarness consistently outperforms strong raw-context baselines, memory- and reflection-based methods, and prompt optimization approaches. Further analysis shows that ReHarness produces source-grounded and meaningful revisions, corrects overgeneralized or outdated experience under distribution shifts, and improves both stability and plasticity during continual learning.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2610.12668"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "ReHarness introduit un cadre récurrent pour l'apprentissage continu des agents LLM, permettant une révision rétroactive de l'état du 'harness' via un protocole strictement en ligne. Pertinent pour les agents autonomes devant s'adapter à des flux de données évolutifs.",
+   "score": 8.8
+  },
+  {
+   "id": "2a11dfe1cb2dc693",
+   "title": "Inducing Process Supervision from Outcome-Only Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2609.36641",
+   "summary": "Process reward models (PRMs) have become a key component for LLMs, as their step-level feedback supports both post-training and test-time reasoning. However, training strong PRMs remains costly: human step annotation is difficult to scale, while Monte Carlo estimation is computationally expensive and can drift from the intrinsic correctness of steps. To get effective PRMs at low cost, we introduce TIPS (Thinking-Induced Process Supervision), an outcome-only reinforcement learning (RL) framework for training generative PRMs. In TIPS, the model generates a chain-of-thought (CoT) followed by step-level labels and an outcome label. The reward depends solely on whether the predicted outcome matches the ground truth, and the resulting group-relative advantage is used to optimize the entire generated response. Intuitively, when checking intermediate steps helps determine the outcome, more accurate checks can lead to better outcome judgments and higher rewards. Outcome-only RL can therefore reinforce step-level verification without explicit process supervision. We validate the effectiveness of TIPS across math and agent benchmarks and four backbone families. Notably, TIPS-Qwen3-4B-Thinking-2507 reaches 85.2 F1 on ProcessBench with only 3.2K outcome-labeled trajectories, surpassing all evaluated trained PRMs and strong prompt-only judges such as GPT-5.4-Instruct and Claude-4.7-Opus, while still trailing o1-mini. Code and data are available at https://github.com/RUCBM/TIPS.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2609.36641"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "TIPS induit une supervision de processus (PRM) à partir d'un RL basé uniquement sur les résultats, via la génération de chaînes de pensée (CoT) et des labels de vérification implicites. Méthode prometteuse pour entraîner des PRM sans annotation humaine coûteuse.",
+   "score": 8.8
+  },
+  {
+   "id": "d84076fa899caa6c",
+   "title": "Encore: Few-Shot Agentic Discovery of Manipulation Strategies",
+   "url": "https://huggingface.co/papers/2609.37359",
+   "summary": "Coding agents can now write, run, and debug programs with little human help. Robot tasks, however, are usually specified by a sentence that leaves out how to grasp, in what order to make contact, and what the result should look like, and an agent given only the sentence must find these details by trial and error. We introduce ENCORE, which gives the agent a few demonstrations as evidence to read rather than as training data. A deterministic builder distills each demonstration into a pack of multi-view keyframes, gripper events, frame strips, and the full trajectory. A coding agent studies the pack, writes a policy program against a fixed perception and action API, refines it iteratively over a few development rollouts, and freezes it before a sealed evaluation that never reveals the success signal. On LIBERO-PRO, the agent's first program already succeeds in half of the perturbed tasks with demonstrations and in one task without them, and the frozen programs outperform the strongest prior agentic system run with the same language model (96.3% against 89.3%). On RoboDojo tasks whose instructions leave the goal unstated, no program succeeds without demonstrations. ENCORE also runs on a real bimanual robot, learning cube handover and cup inversion from five demonstrations each.",
+   "published": "2026-09-29T08:21:27.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2609.37359"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "ENCORE utilise des démonstrations multi-vues comme 'preuves' pour un agent robotique, qui génère un programme de politique via un LLM, affiné par itérations avant évaluation scellée. Performances supérieures (+7 points) vs. systèmes existants sur LIBERO-PRO, avec généralisation limitée sans démonstrations.",
+   "score": 8.5
+  },
+  {
+   "id": "64ebad93820d66dc",
+   "title": "S-Space: Exploring Spatial Workspace in Multimodal Language Models",
+   "url": "https://huggingface.co/papers/2610.13527",
+   "summary": "Multimodal language models (MLLMs) exhibit promising spatial reasoning capabilities, yet the internal mechanisms supporting them remain poorly understood. We uncover S-Space, a linear representation subspace in which object-token representations encode continuous coordinates along horizontal, vertical, and distance axes. Although we identify these axes by differentiating spatial-answer scores with respect to object-token activations, S-Space is intrinsic rather than induced by specific data or prompts, remaining readable under non-spatial questions. We show that S-Space functions as an internal spatial workspace of MLLMs. Perception encodes object locations into it, forming spatial representations that can be directly read out to support accurate spatial judgments. Internal reasoning transforms it for changing viewpoints. Verbal responses selectively access it, evidenced by causal interventions that alter spatial judgments while largely preserving non-spatial responses. Case studies further show that S-Space assigns locations to unseen entities and the observer, and connects physical directions with abstract linguistic meanings, suggesting both the capabilities and limitations of large-scale language training. Finally, we use S-Space as a diagnostic tool for spatial reasoning failures. Direction-word readouts reveal systematic coupling between cardinal and image-relative reference frames. More importantly, a perception-computation decomposition exposes a key bottleneck: MLLMs can form capable spatial representations, yet fall short in the spatial transformations required to reason reliably across viewpoint changes.",
+   "published": "2026-10-09T08:48:41.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 197,
+    "arxiv_id": "2610.13527"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Découverte de S-Space, un sous-espace linéaire dans les MLLMs encodant les coordonnées spatiales (horizontal, vertical, distance) des objets, fonctionnant comme un 'espace de travail' interne causal pour le raisonnement spatial. Validé par interventions et études de cas, révélant des mécanismes d'abstraction spatiale.",
+   "score": 8.5
+  },
+  {
+   "id": "2a3b894398151101",
+   "title": "TouchScale: 500 Hours of Human Vision and Touch for Visual-Tactile Learning",
+   "url": "https://huggingface.co/papers/2610.10288",
+   "summary": "Large-scale egocentric human interaction data is becoming an important source of physical supervision for embodied learning, yet video alone leaves the contact and pressure that characterize physical interaction unrecorded. Recent visual-tactile datasets provide this missing supervision, but their synchronized tactile data remain far smaller in volume than human video. Moreover, the largest resources often merge recordings from different sensors or annotation procedures, which makes the effect of data scale difficult to isolate. We therefore introduce TouchScale, a 500-hour dataset of contact-rich human interaction recorded with a single unified wearable setup. Its approximately 2K predefined task descriptions span everyday activities and structured manipulation, and each recording temporally aligns egocentric RGB-D video with wrist RGB video and dense full-hand bimanual tactile measurements. Compared with prior tactile data, training on the full TouchScale raises zero-shot contact IoU on data from an unseen tactile sensor from 0.134 to 0.383. Pretraining a visual encoder on TouchScale also yields the highest action recognition accuracy on three benchmarks among the compared visual-tactile datasets. Used for visual-tactile mid-training of a robot policy, TouchScale improves the average real-world success rate across four contact-rich manipulation tasks from 22.5% to 57.5%. With the sensor and collection protocol held fixed, both zero-shot tactile prediction and robot success show an overall upward trend as more TouchScale data is used. These results suggest that human visual-tactile data collected at scale with consistent sensing benefits both perception and robot manipulation. We will publicly release TouchScale, including all synchronized visual-tactile recordings and reconstructed object models, to support future research on scalable visual-tactile learning.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2610.10288"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "TouchScale est un jeu de données de 500 heures d'interactions humaines riches en contacts, combinant vidéo egocentrique RGB-D, mesures tactiles bimanuelles et descriptions de tâches. Il améliore significativement les performances de modèles visuo-tactiles (IoU de contact passe de 0.134 à 0.383 sur un capteur inconnu) et permet un pré-entraînement efficace des encodeurs visuels pour la reconnaissance d'actions.",
+   "score": 8.5
+  },
+  {
+   "id": "2efbf581ec8a61b9",
+   "title": "DiffusionART: Efficient, Stable and Scalable Reinforcement of Diffusion Models",
+   "url": "https://huggingface.co/papers/2610.12572",
+   "summary": "Online reinforcement learning (RL) fine-tunes diffusion models with black-box rewards, but reverse-process methods such as Flow-GRPO are limited in efficiency by poor credit assignment, while forward-process methods such as DiffusionNFT are efficient yet unstable without carefully tuned exponential-moving-average (EMA) off-policy training. We show that NFT-style objectives contain a hidden forward--reverse consistency force that joint positive--negative training cancels only partially, and that EMA stabilizes training through restoration rather than off-policy rollouts. We introduce DiffusionART (Diffusion Reinforcement with Aggregation-First Reward Tilting), which aggregates each prompt's rewards into a shared reward-improving direction for reverse-process states, removing the consistency force by construction, and adds a trust-region-masked second update for drift-adaptive restoration without EMA tuning. It requires no differentiable reward model, remains effective with fewer samples per prompt, and supports pairwise reward models (DiffusionART-Pairwise). Across image and video generation, DiffusionART trains efficiently and stably without per-task tuning. In particular, on HunyuanVideo-13B with equally weighted visual and motion quality rewards, DiffusionART reaches the late-stage mean reward levels of DiffusionNFT and Flow-GRPO-Fast with 12.02 and 11.72 times fewer GPU hours, respectively, while achieving 28.8% and 53.0% higher mean training rewards.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 185,
+    "arxiv_id": "2610.12572"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "DiffusionART propose une méthode d'apprentissage par renforcement (RL) pour les modèles de diffusion, améliorant leur efficacité et stabilité en supprimant les forces de cohérence cachées via une agrégation des récompenses et une mise à jour adaptative sans besoin de réglage EMA. Intéressant pour l'optimisation des modèles génératifs avec récompenses noires.",
+   "score": 8.5
+  },
+  {
+   "id": "6ea414621d27ae44",
+   "title": "From Given to Gathered Evidence: Agentic Learning for Longitudinal Medical Reasoning",
+   "url": "https://huggingface.co/papers/2609.39566",
+   "summary": "Foundation models can serve as clinical agents through tool-use harnesses. However, conventional medical benchmarks assess reasoning over preselected evidence rather than the ability to seek it across clinical records and longitudinal imaging. We propose CASE: a series of role-specific Clinical Agents for Seeking Evidence, together with a tool-use harness and an agentic post-training framework for compact vision-language policy models. We further introduce a longitudinal multimodal benchmark built on UK Biobank, comprising 50,401 clinical questions derived from real-world ICD-10-coded diagnoses of 4,739 participants. Each question links to a patient-specific environment containing clinical context and multi-sequence MRI from baseline and follow-up visits, where agents autonomously select which visits, organs, modalities, slices, and specialist tools to inspect and compare. Supervised fine-tuning transfers evidence-seeking workflows from 14,734 frontier-model interaction trajectories, followed by agentic reinforcement learning on the learner's own environment interactions. Privileged on-policy self-distillation and rubric-based LLM feedback refine evidence-to-conclusion reasoning without prescribing tool sequences. Experiments show that CASE moves beyond question-answer imitation toward transferable investigation policies, strengthening evidence-grounded longitudinal reasoning. Under matched evaluation conditions, our Qwen3-VL-8B based agent achieves over 16% and 10% relative improvements in answer accuracy over GPT-5.4 and Claude Opus 4.8. Code will be available at https://github.com/VinyehShaw/CASE.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2609.39566"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "vision",
+    "outils"
+   ],
+   "tldr": "CASE introduit un cadre et un benchmark multimodal pour l'agent médical capable de rechercher activement des preuves dans des dossiers cliniques longitudinaux et des IRM. Clé pour l'IA clinique avec outil d'exploration autonome.",
+   "score": 8.5
+  },
+  {
+   "id": "6d4ad4642ddd9547",
+   "title": "One Model to Loop Them All: Elastic Latent Recurrence for Language Models",
+   "url": "https://huggingface.co/papers/2610.12582",
+   "summary": "A latent recurrent language model applies a shared block of layers repeatedly, so one checkpoint can trade inference compute for accuracy by changing the loop count. At one loop, however, such models typically fall well short of a non-recurrent model of the same size, a one-loop tax that makes a separate non-recurrent model the better choice whenever latency matters. We present Elastic Latent Recurrence (ELR), a recipe for training looped language models without this tax. At one loop, an ELR model costs the same to serve as a non-recurrent model of the same size and, trained on the same data, reaches similar accuracy. Each additional loop then buys more accuracy for more inference compute. Three choices make this work: a gated state update with a learned step size, loop counts mixed within each optimizer update, and conditioning each pass on its loop index and budget. The first two preserve one-loop accuracy, and the third lowers loss at every additional loop. Mixed depths can be introduced late in pretraining to limit the added training cost, and with zero-initialized conditioning added at the switch, this late schedule reaches lower loss than mixed-depth training from scratch. In MoE models, reusing first-loop expert routes on later loops cuts mixed-depth update time by 11.7% with no measurable change in accuracy. At inference, keeping only the last loop's attention KV cache holds attention KV memory at its one-loop level while retaining most of the gain from additional loops. On 4B dense and 30B-A3B MoE hybrid models, ELR at one loop is 0.52 points below and 1.04 points above its matched baseline on a ten-task average, and four loops add 7.25 and 4.75 points. Carried through post-training, the recipe yields Koi-4B, a single checkpoint that scores an estimated 18 on the Artificial Analysis Intelligence Index at one loop, matching Qwen3.5-4B, and 29 at four loops.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.12582"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Présente Elastic Latent Recurrence (ELR), une méthode pour entraîner des modèles récurrents en boucle sans pénalité de performance à un passage, permettant d'ajuster dynamiquement le compromis précision/latence via le nombre de boucles.",
+   "score": 8.2
+  },
+  {
+   "id": "e12569a7d588a12d",
+   "title": "Coding-Agent Benchmarks Should Match Their Users' Task Flows",
+   "url": "https://huggingface.co/papers/2610.09633",
+   "summary": "The evaluation of coding agents generally strives to be as realistic as possible. In our study, we collect 4,782 agent sessions of real software engineers in JetBrains IDEs, which we call Production Sessions. Since our subject is interactive agents, we study the sessions with at least three user messages (33% of the sample). These long sessions differ from issue-derived benchmark tasks in two ways: (i) user requests span a far wider mix of task types - questions about the project's code, planning, review, refactoring, execution - and (ii) users switch between types throughout a session. Long-session samples from three public interaction corpora exhibit markedly different Task Flows (the distributions of session lengths, task types, and type-to-type transitions), so no single interaction distribution is universally realistic: benchmarks should name a target use case and calibrate to measurements from it. We present SWE-TaskFlow, an approach for transforming any issue-derived benchmark: it preserves the verified tasks and tests while steering the interaction toward a target Task Flow through prompt splitting and verifiable repository QA, with a TaskFlow Alignment Score (TFAS) for selecting among generated trajectories. In a pilot on 700 SWE-Bench Pro tasks, solving the task sequentially in several steps approximately doubles agent cost without a stable change in resolve rate: the interaction protocol itself is an important dimension of evaluation.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.09633"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Démontre que les benchmarks pour agents de codage doivent refléter les flux réels d'interaction utilisateur (SWE-TaskFlow), avec des métriques (TFAS) pour aligner les évaluations sur des cas d'usage ciblés.",
+   "score": 8.2
+  },
+  {
+   "id": "f7cecb5d3530b85f",
+   "title": "Contextual Correction of Parallel Draftsfor Speculative Decoding",
+   "url": "https://huggingface.co/papers/2610.12570",
+   "summary": "Speculative decoding accelerates large language model inference by using a lightweight drafter to propose multiple tokens that are subsequently verified in parallel by the target model. Recent diffusion-based drafters make this paradigm particularly attractive: deep attention-based neural backbones provide strong predictions, while drafting multiple future positions in parallel avoids the sequential cost of autoregressive generation. This parallelism, however, comes at a cost. Tokens within a draft block are predicted without access to the realized identities of preceding draft tokens, removing intra-block dependencies that would naturally be available under autoregressive generation. We introduce DCOCO (DFlash Contextual Corrector), a lightweight mechanism that restores these dependencies while preserving parallel drafting. Rather than committing to each position's top prediction, DCOCO retains multiple candidate tokens and evaluates their contextual compatibility across adjacent draft positions in parallel, enabling contextually informed token selection at low additional cost. Across four verifier backbones and ten benchmarks, DCOCO achieves the highest average throughput in every evaluated configuration, spanning greedy and stochastic decoding with and without extended reasoning, with speedups of up to 6.6x over vanilla decoding. Its advantage persists under concurrent serving: DCOCO outperforms the strongest competing method by 6-23% across 4-32 concurrent requests, while other sequential correctors fall below uncorrected DFlash at these loads. These results demonstrate that recovering intra-block dependencies through parallel contextual scoring delivers consistent acceleration across decoding regimes and serving loads.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2610.12570"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "DCOCO améliore le *speculative decoding* en restaurant les dépendances intra-bloc via un correcteur contextuel léger (DFlash), évaluant plusieurs candidats en parallèle pour une sélection informée. Gain de débit moyen sur 10 benchmarks, avec une approche compatible avec les backbones existants.",
+   "score": 8.2
+  },
+  {
+   "id": "93bfe28d5ef4d3ec",
+   "title": "Work2Skill: Capturing Human GUI Experience for Reusable Agent Skill Induction",
+   "url": "https://huggingface.co/papers/2610.12984",
+   "summary": "Computer-use agents can perform increasingly complex GUI tasks, yet unfamiliar software and workflows requiring human domain knowledge remain challenging. Human demonstrations convey procedural knowledge through the same GUI interaction space, but reuse requires interpreting actions in context and separating workflow rules from task-specific details. We thus introduce Work2Skill, a framework that captures human GUI experience for reusable agent skill induction. WorkRecorder provides the framework's infrastructure for collecting this experience, aligning screen recordings, mouse and keyboard events, and available accessibility-tree information. Using WorkRecorder, we construct WorkDemo-350, the first synchronized multimodal dataset of human desktop GUI demonstrations for reusable agent skill induction and downstream evaluation. Its 350 demonstrations are screened for completeness and task success. We then propose an agentic skill-induction method that inspects evidence on demand to produce reusable skills capturing workflow rules, step dependencies, and completion checks. When the same four execution models are equipped with skills induced by each method under shared execution settings, Work2Skill achieves the highest scores and success rates. Mean score improvements over the corresponding No Skill baseline are 4.67--10.54 points on MyPCBench Bounded Action and 3.11--7.50 points on a 286-task subset of OSWorld-Verified. Our code and data are available at https://github.com/china-qijizhifeng/Work2Skill.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 37,
+    "arxiv_id": "2610.12984"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "rag"
+   ],
+   "tldr": "Work2Skill introduit WorkDemo-350, un jeu de données multimodal synchronisé de démonstrations GUI humaines pour induire des compétences réutilisables par des agents. La méthode proposée extrait des règles de workflow, dépendances et vérifications de complétion, améliorant les performances des agents sur des tâches complexes.",
+   "score": 8.2
+  },
+  {
+   "id": "039a627009155ebd",
+   "title": "Surfing the Activation Wave: Analyzing the Information and Geometry of LLM Hidden States for Speculative Decoding",
+   "url": "https://huggingface.co/papers/2610.12939",
+   "summary": "Decoder hidden states from different layers of large language models (LLMs) often encode complementary information. However, existing speculative decoding methods typically rely on a small set of target-model layers chosen using fixed, position-based heuristics. Selecting an optimal subset of layers is inherently a combinatorial problem, making exhaustive evaluation infeasible even for moderately deep models. In this work, we present a principled framework for multi-layer hidden-state selection for speculative decoding based on two complementary criteria: informativeness, measured through matrix-entropy analysis, and diversity, quantified using centered kernel alignment (CKA). We investigate layer-wise Shannon entropy, aggregate entropy under hidden-state concatenation, and pairwise CKA dynamics across depth, revealing distinct geometric and informational compartments within decoder representations. Motivated by these findings, we propose entropy and CKA-based layer selection algorithms that favor hidden-state sets that are both highly informative and minimally redundant. As part of this framework, we introduce token-entropy filtering, which removes hidden states associated with low predictive-entropy tokens, thereby improving the quality of layer-selection statistics. In EAGLE3-style speculative decoding, our selected sets outperform fixed baseline choices, including the default [2, N//2, N-3] rule, while providing a clearer explanation of why some defaults can remain competitive. Our results provide a practical recipe for multi-layer hidden-state selection for speculative decoding, insights into the geometry and information in LLM decoder states, and a foundation for extending similar analysis to related applications.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2610.12939"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Ce travail propose un cadre théorique pour sélectionner des couches de *hidden states* optimales en *speculative decoding*, basé sur l'entropie et la diversité géométrique (CKA). Les méthodes proposées (filtres d'entropie, sélection CKA) améliorent l'efficacité de la prédiction tout en réduisant la redondance des couches.",
+   "score": 8.2
+  },
+  {
+   "id": "a1d9e8df560ba0db",
+   "title": "VisionWeave: Weaving Elastic Visual Representations as a Native Capability of MLLMs",
+   "url": "https://huggingface.co/papers/2610.07987",
+   "summary": "Multimodal large language models have become the dominant paradigm for visual understanding, but incur substantial costs by encoding inputs into dense, fixed-size patch tokens. However, visual information is unevenly distributed: some regions require fine-grained detail, while others admit compact representations. Downsampling sacrifices this detail, while existing token pruning and adaptive approaches remain limited in content-adaptive granularity, task generalization, and integration with modern MLLMs and serving infrastructure. Overcoming these limitations calls for foundation models that learn, end to end, where-and at what granularity-to allocate visual representations, a native capability we term elastic visual representation weaving. We introduce VisionWeave, establishing this capability in frontier-level MLLMs through large-scale training. It combines two components: a gated spatial pooler constructs coarse-grained representations alongside native fine-grained representations within a shared MRoPE coordinate, while a granularity router learns their content-adaptive allocation. Through self-distillation alone, we validate this capability on Qwen3.5-4B and scale to Qwen3.8-27B with over 30K A100 GPU-hours. Based on Qwen3.8-27B, VisionWeave adaptively adjusts token savings to visual content, saving 43.0% tokens on average while retaining 98.9% native performance across eight benchmarks, versus only 88% performance preserved for token pruning baselines with a fixed 50% savings target. Extensive evaluations confirm robust efficiency-quality trade-offs across diverse tasks, resolutions and video frames. When deployed on SGLang serving engine, our method achieves a 2.3x throughput gain while reducing mean TTFT by 54.4% and mean TPOT by 60.6%. Together, we believe these results position elastic visual weaving as a promising capability for next-generation multimodal models.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 56,
+    "arxiv_id": "2610.07987"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "VisionWeave introduit une capacité native de représentation visuelle élastique dans les MLLM, combinant des tokens fins et grossiers de manière adaptative. Pertinent pour réduire les coûts de calcul tout en améliorant la précision des modèles multimodaux.",
+   "score": 8.2
+  },
+  {
+   "id": "55104fe27512a879",
+   "title": "Video-RSI: Recursive Self-Improvement of Video Understanding Agents via Harness Evolution",
+   "url": "https://huggingface.co/papers/2609.37950",
+   "summary": "Video understanding agents acquire evidence through an executable harness that controls what they observe and how they use those observations. However, execution traces contain only the evidence acquired by the current harness, leaving competing explanations for failure unresolved and limiting the basis for self-improvement. We introduce Video-RSI, a framework for recursive self-improvement in which a video understanding agent uses its own language model to revise its harness. Through active video investigation, the model revisits the original training videos to test competing failure explanations with additional observations, grounding proposed changes in evidence beyond the existing trace. Cost-aware harness evolution turns these diagnoses into reusable revisions and determines which revisions to retain by considering both answer accuracy and visual cost. Across our evaluation settings on video understanding benchmarks, the evolved agent improves accuracy while processing fewer frames and achieves competitive accuracy-efficiency trade-offs against existing video understanding agents. These results demonstrate the potential for video understanding agents to improve their own evidence acquisition and use through harness evolution. Code is available at https://github.com/bingjunluo/Video-RSI .",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2609.37950"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "vision"
+   ],
+   "tldr": "Video-RSI permet aux agents de compréhension vidéo de s'auto-améliorer en révisant leur 'harness' via un RL récursif, réduisant les coûts visuels tout en améliorant la précision. Clé pour l'autonomie des agents multimodaux.",
+   "score": 8.2
+  },
+  {
+   "id": "619b021d1e630663",
+   "title": "Dex-One2Many: Learning Dexterous Manipulation from a Single Human Demonstration",
+   "url": "https://huggingface.co/papers/2610.12470",
+   "summary": "While learning dexterous manipulation from a single human video offers a promising alternative to costly robot demonstrations, many recent methods predominantly imitate demonstrated motions. Such strict motion matching often limits generalization to initial object poses, goal poses, and grasps not shown in the video. Alternatively, discovering a policy via reinforcement learning (RL) allows for broad generalization, but without prior guidance, it struggles with high-dimensional exploration in complex, multi-stage tasks. To address these coupled generalization and exploration challenges, we present Dex-One2Many, a real-to-sim-to-real framework that learns a generalizable dexterous manipulation policy from a single human video. Our key insight is to abstract the video into sequential scene graphs that guide RL, enabling efficient exploration while preserving broad generalizability. The graphs serve as generative constraints for sampling diverse reset states and provide dense rewards for each stage. Because the graphs constrain relations rather than exact poses, these reset states cover object poses and grasps beyond the video, while initializing each stage from them with dense rewards keeps exploration short and guided. Trained entirely in simulation, Dex-One2Many transfers zero-shot to a real multi-fingered hand. Across five tool-use and manipulation tasks, Dex-One2Many exceeds baselines by 6.5% in seen configurations, while its robust generalization widens this gap to 71% in unseen scenarios.",
+   "published": "2026-10-08T13:59:58.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.12470"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "outils"
+   ],
+   "tldr": "Dex-One2Many apprend des politiques de manipulation dextres à partir d'une seule démonstration humaine (vidéo) via un cadre real-to-sim-to-real, utilisant des graphes de scène séquentiels pour guider l'exploration RL. Généralisation aux poses/prises non montrées, avec validation sur des tâches réelles.",
+   "score": 7.9
+  },
+  {
+   "id": "bafc08c9f254b959",
+   "title": "The Life Cycle of a Massive Activation: Stochastic Birth, Weight-Decay-Driven Growth, and Competitive Consolidation",
+   "url": "https://huggingface.co/papers/2610.00423",
+   "summary": "Massive activations, residual-stream coordinates with magnitudes far larger than typical activations, are associated with attention sinks in transformers, but how their scale is regulated during training remains incompletely understood. Combining training-trajectory analyses and controlled interventions, we trace their emergence, growth, and consolidation. Sink-carrying channels vary across random seeds but stabilize early within each run. Over longer training, surrounding channels erode and the sink concentrates onto a few redundant carriers. Across ablations, gradient attenuation follows the sink token's collective root-mean-square magnitude rather than any single channel, making collective scale central to understanding their effects. Our central result is that weight decay causally controls the turnover of global activation scale. In controlled continuations, removing decay near the peak allows this scale to keep rising, whereas retaining it produces decline even at constant learning rate. We develop a balance model for the rise and peak of massive-activation magnitude, in which AdamW-preconditioned growth opposes weight decay. Sweeping the decay coefficient λ shifts peak timing approximately log-linearly and yields peak magnitudes scaling approximately as λ^{-1/2}, consistent with this balance. Optimizer measurements further show that preconditioning sustains the large-channel cohort against decay even when raw maintaining forces are too small to do so. Together, these findings connect the observed life cycle to scale-regulating training dynamics and establish weight decay as a training-time lever on activation magnitude.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.00423"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Analyse le cycle de vie des activations massives (sinks attentionnels) dans les transformers, montrant que la régularisation par weight decay contrôle leur magnitude et leur stabilité, avec des implications pour l'interprétabilité et l'optimisation.",
+   "score": 7.6
+  },
+  {
+   "id": "643c7c45ce49297b",
+   "title": "DataVista: Diagnosing Multimodal LLMs on Data Video Understanding",
+   "url": "https://huggingface.co/papers/2610.11993",
+   "summary": "Data video is a media form that integrates data visualization with video narrative, widely adopted in news reporting and business analysis. Compared with general video understanding, data video understanding places greater emphasis on accurately reading data from animated charts, integrating evidence across charts and time, and understanding how narrative organization and visual design communicate information. Yet existing benchmarks target either general videos or static charts, and data video understanding has not been systematically evaluated. We present DataVista, the first benchmark for data video understanding, containing 961 real-world data videos and 6,775 evaluation questions organized under a three-level progressive capability framework (data perception, temporal reasoning, narrative understanding) with 10 fine-grained question types across five topic domains. Systematic evaluation of 19 mainstream MLLMs shows that the best-performing model, Gemini-3.1-Pro, achieves 70.0% overall accuracy, still far below human expert performance, with models performing worst on Causal Reasoning and Narrative Structure. Increasing frame counts and adding subtitles mainly benefit data perception and temporal reasoning, with limited gains in narrative understanding. Further analysis of model responses identifies typical failure modes in chart reading, evidence judgment, and instruction understanding. The benchmark is available at https://github.com/HKUSTDial/DataVista.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2610.11993"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "DataVista est le premier benchmark dédié à la compréhension de vidéos de données (intégrant visualisation et narration), avec 961 vidéos et 6 775 questions évaluant 3 niveaux de compétences (perception, raisonnement temporel, compréhension narrative). Les meilleurs MLLMs atteignent 70% de précision, loin des performances humaines.",
+   "score": 7.6
+  },
+  {
+   "id": "fd6080c7b02029c3",
+   "title": "Reflex: Visually Grounded Reactive Humanoid Control",
+   "url": "https://huggingface.co/papers/2610.12772",
+   "summary": "Humans effortlessly react to the world; they adeptly return a tennis shot, catch a falling cup, step aside from a passing cart, or pass a box tossed during truck unloading. These everyday actions require anticipating a moving target and reflexively responding with the whole body within about a second. Such visual reactive whole-body control remains challenging for humanoids, which must (1) coordinate whole-body control, (2) react to object dynamics in real time, and (3) ground perception in egocentric vision. We study catching thrown boxes as a representative task that demands all three capabilities; existing systems cover only part of it, relying on end-effectors, motion capture, or marked objects. We present Reflex, a three-stage framework that learns these capabilities stage by stage while connecting them through a compact representation of object dynamics. First, a state-based policy learns whole-body catching with reinforcement learning. Second, the policy learns to infer the dynamics of a moving box from delayed and incomplete observations. Third, an egocentric RGB-D encoder learns to recover this dynamics representation directly from visual observations while keeping the whole-body controller fixed. This decomposition provides each capability with a direct training signal and makes visual learning substantially more scalable. In simulation, Reflex achieves 85.7% catch success from egocentric RGB-D, compared with 87.9% when given privileged box observations. Temporal visual history is critical: removing it reduces success by 35.6 and 39.8 points on centered and laterally offset throws. On a real Unitree G1, Reflex catches human-thrown boxes with 65% and 40% success at 2.5 and 5 m, reaching 76% and 59% of human catchers' success at the same distances.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 126,
+    "arxiv_id": "2610.12772"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "vision"
+   ],
+   "tldr": "Reflex propose un cadre en 3 étapes pour contrôler des humanoïdes de manière réactive et visuelle, combinant apprentissage par renforcement pour la coordination corporelle, inférence de dynamique d'objets et encodage visuel egocentrique. Le système apprend à attraper des boîtes en mouvement avec une latence d'environ 1 seconde.",
+   "score": 7.6
+  },
+  {
+   "id": "eec697e49be820df",
+   "title": "MixTok: Adaptive Visual Tokenization with Global 1D Tokens and Sparse 2D Refinement",
+   "url": "https://huggingface.co/papers/2610.13181",
+   "summary": "Efficient visual tokenization requires balancing representation compactness with the preservation of fine-grained image content. Conventional grid-based tokenizers allocate tokens uniformly across spatial locations despite non-uniform visual complexity, whereas compact 1D tokenizers aggregate global information but can struggle to preserve local details. We introduce MixTok, a hybrid visual tokenizer that combines a compact 1D global representation with sparse 2D tokens for local refinement. A content-adaptive router ranks candidate locations by refinement priority and determines the number of 2D tokens for each image under a target average token budget. At the highest-scoring locations, 2D token features replace the spatial features recovered from the 1D representation, and a shared decoder reconstructs the image from the resulting mixed features. On ImageNet 256 x 256, MixTok achieves highly competitive reconstruction and generation performance, with an rFID of 1.195 and a gFID of 1.95 at respective average budgets of approximately 128 and 131 content tokens per image.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2610.13181"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "MixTok combine une tokenisation 1D globale et des tokens 2D épars pour optimiser la compression visuelle tout en préservant les détails locaux. Pertinent pour réduire les coûts de calcul en vision par IA.",
+   "score": 7.6
+  },
+  {
+   "id": "1208251a18aa88c9",
+   "title": "SepGen: Multi-Stem Audio-Video Separation and Generation in a Single Model",
+   "url": "https://huggingface.co/papers/2610.11361",
+   "summary": "A 4D audio-visual scene comprises a video, the dynamic geometry it depicts, and the sound sources that populate it, each with its own position and trajectory. Rendering such a scene from a novel viewpoint requires that every source be available as an individual waveform, so that it can be localized in the scene and propagated to the observer before the signals are mixed. Joint audio-video generators can synthesize the video and its soundtrack, but the soundtrack is emitted as a single audio-mix in which the sources are not individually accessible. We present SepGen, which extends a pretrained audio-video generator to emit the video, the mixed soundtrack, and one waveform per captioned source in one joint sampling run. SepGen supports two complementary modes: generation and separation. In generation mode, each source caption specifies what its stem contains. A two-speaker dialogue, for example, comes out as one stem per speaker in the original turn order. In separation mode, the input audio-mix remains clean while the captions specify what to extract, so the model can decompose a recording from a free-text description. We evaluate generation on scenes synthesized from text, and separation on scenes rendered by other generators and on real recordings of speech, music, and sound effects. Given an audio-mix and captions that carry the spoken lines, SepGen outperforms language-conditioned separators, most clearly on speech, and it keeps the lead when the lines are removed from the captions. Code, checkpoints, and datasets are available at https://sepgen.github.io/",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 38,
+    "arxiv_id": "2610.11361"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "vision"
+   ],
+   "tldr": "SepGen étend les générateurs audio-vidéo pour séparer et générer des sources individuelles (stems) à partir d'un mix ou d'une description textuelle, en un seul passage. Innovant pour la séparation et la génération de scènes audio-visuelles complexes.",
+   "score": 7.6
+  },
+  {
+   "id": "97c136e29d6d3ca9",
+   "title": "Simreal-AI/Simreal-MLBench",
+   "url": "https://github.com/Simreal-AI/Simreal-MLBench",
+   "summary": "[Public preview] Externally scored agentic ML research benchmark: 60 tasks, real competition ground truth. Open protocol, operated evaluation.",
+   "published": "2026-09-21T11:29:47Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 301,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark open-source pour évaluer des agents IA sur 60 tâches avec des métriques externes et un protocole d'évaluation transparent, utile pour comparer les performances des modèles décisionnels dans des scénarios réels.",
+   "score": 7.4
+  },
+  {
+   "id": "ad9124d2b016833a",
+   "title": "Self-Preservation in Language Models",
+   "url": "https://huggingface.co/papers/2610.12602",
+   "summary": "Continual learning (CL) seeks to adapt pretrained models while preserving prior capabilities. Yet the tasks supplied for preservation cover only part of what a model knows, while forgetting can extend beyond them. Recent work shows that language models can supplement this limited evidence by generating useful replay without access to their original training data. This raises a question about self-preservation: can a model help choose preservation targets that protect its own capabilities more broadly? To study this question, we organize task descriptions and their examples into Task Banks, whose entries can be selected and combined to guide replay generation by a frozen model. Continual instruction tuning with Qwen models of varying sizes yields three findings. First, the new task and learning rate shape which prior capabilities degrade, while tracking previously correct answers reveals losses that average accuracy can conceal. Second, generated replay reduces forgetting on tasks outside the bank. Combining partial banks strengthens this protection, improving mean retention of previously correct answers over either bank alone across the tested sizes. Third, the model can also help choose replay targets: selection informed by the new task improves mean held-out retention over random selection at 4B, with similar new-task gains, although smaller models show no corresponding advantage. Under a fixed example budget, however, replacing new-task examples with replay improves preservation at the cost of smaller new-task gains. Together, these findings show that models can support broader self-preservation by generating replay data and, in some settings, choosing which tasks to replay.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.12602"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Étudie l'auto-préservation dans les modèles de langage via la génération de replay, montrant que les modèles peuvent sélectionner des cibles de préservation pour limiter l'oubli hors des tâches explicites, avec des gains mesurables sur la rétention.",
+   "score": 7.3
+  }
+ ]
+}
