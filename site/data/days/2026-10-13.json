@@ -1,0 +1,743 @@
+{
+ "date": "2026-10-13",
+ "digest": {
+  "headline": "Les benchmarks révèlent un décalage critique entre les capacités des agents autonomes et les exigences réelles des utilisateurs",
+  "overview": "La veille du 2026-10-13 met en lumière des avancées méthodologiques en IA, notamment dans l'évaluation des agents, l'optimisation des LLM et la coordination multi-agents. Plusieurs travaux soulignent des lacunes structurelles dans les approches actuelles, avec des implications pour la robustesse et l'applicabilité des systèmes. Les contributions couvrent des domaines variés, de la robotique à la médecine, en passant par l'interprétabilité.",
+  "highlights": [
+   {
+    "title": "Échec des agents autonomes face aux cahiers des charges réels",
+    "text": "Le benchmark AgentSWE évalue la capacité des agents à construire, éditer et optimiser d'autres agents selon un cahier des charges. Aucun modèle testé ne répond aux exigences pratiques, révélant des limites majeures dans la compréhension des besoins utilisateurs et la génération de solutions adaptées. Ce travail souligne l'urgence de repenser les métriques d'évaluation pour les systèmes autonomes."
+   },
+   {
+    "title": "Décalage entre évaluations théoriques et usages cliniques des LLM",
+    "text": "Une analyse de 127 833 requêtes médicales réelles montre que 65% des usages concernent la documentation ou la recherche de connaissances, et que 35% des requêtes sont mal formulées. Les benchmarks publics (58 analysés) ne couvrent pas ces cas d'usage, exposant un écart entre les évaluations académiques et les besoins concrets des cliniciens. Cela remet en question la pertinence des métriques actuelles pour les applications professionnelles."
+   },
+   {
+    "title": "Optimisation et grounding : des méthodes pour améliorer l'efficacité des LLM et agents",
+    "text": "Plusieurs travaux proposent des solutions pour optimiser les LLM et agents : *BranchOPD* réduit les coûts de distillation de 19 à 31% via un branchement basé sur l'incertitude ; *uncertainty-guided progressive contraction* cible les trajectoires incertaines pour compresser les données de post-training ; *GroundingPI* améliore le grounding physique avec des primitives visuelles, établissant un nouvel état de l'art sur 34 benchmarks. Ces méthodes adressent des problèmes critiques d'efficacité et de robustesse."
+   },
+   {
+    "title": "Coordination multi-agents et mentalisation : vers des systèmes plus adaptatifs",
+    "text": "MAVLN formalise la navigation multi-agents en vision-langage comme un problème de coordination contraint, avec un benchmark (TRISS) et des métriques dédiées. Parallèlement, les *agents à modèles mentaux* introduisent une représentation latente des états mentaux des partenaires pour améliorer la prise de décision, via une structure récursive de théorie de l'esprit. Ces approches visent à combler les lacunes des systèmes actuels en matière de collaboration et d'adaptabilité."
+   },
+   {
+    "title": "Risques d'interprétabilité et optimisation matérielle des LLM",
+    "text": "Une preuve théorique montre que les modèles d'IA peuvent cacher des capacités arbitraires (ex: backdoors) de manière indétectable, même après fine-tuning. Ce résultat pose un défi majeur pour la sécurité des LLM. En parallèle, *Janas* propose une méthode pour exécuter des LLM plus grands que la RAM en streamant des experts depuis un SSD, une avancée technique pour l'inférence efficace sur des infrastructures limitées."
+   }
+  ],
+  "trend": "Les travaux récents confirment une tendance vers l'amélioration des méthodes d'évaluation et d'optimisation, tout en exposant des limites structurelles dans l'alignement des systèmes IA avec les besoins réels. La coordination multi-agents et le grounding physique émergent comme des axes prioritaires pour des applications robustes et adaptatives."
+ },
+ "items": [
+  {
+   "id": "cf5f1f2c45521eed",
+   "title": "AgentSWE: Can Coding Agents Build the Agent You Actually Want?",
+   "url": "https://huggingface.co/papers/2610.13361",
+   "summary": "As the production of software passes into the hands of software itself, coding agents are increasingly commissioned to build agents fitted to their users' own workflows. This delegation carries a quiet assumption, that the delivered agent will faithfully serve the requirement it was built for, rather than merely appear to. No existing benchmark tests that assumption. We introduce AgentSWE, a benchmark for agent software engineering spanning three stages of the agent development lifecycle: Creation of a complete agent from a natural-language requirement, Editing of production agent codebases, and Optimization toward a measurable target. Each of its 25 tasks is framed as a commission rather than an exam: the builder iterates against a handful of illustrative cases, while acceptance exercises the frozen submission on held-out cases designed to span the full requirement, grading behavior against requirement-derived rubrics under hard pass/fail gates or, for Optimization, against the source benchmark's own objective. Evaluating a range of coding agents across models and harnesses, we find that none comes close to delivering what a requirement asks for: the gap between what a builder demonstrates and what it delivers is the norm, not the corner case. An accompanying empirical analysis of the failure trajectories identifies recurring failure modes, among them overfitting to the visible cases, hollow runtimes behind code that looks complete, and unsupported claims of completion, each a signal by which coding agents can learn to build the agents they are asked for.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 199,
+    "arxiv_id": "2610.13361"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Benchmark AgentSWE évaluant la capacité des agents à construire des agents conformes à un cahier des charges (création, édition, optimisation), révélant des lacunes majeures : aucun agent ne répond aux exigences réelles. Travail critique pour l'évaluation des agents autonomes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème central abordé par cette publication est l'évaluation de la capacité des agents de codage (coding agents) à produire des agents logiciels qui répondent fidèlement aux exigences des utilisateurs, et non simplement à simuler une conformité superficielle. Actuellement, aucun benchmark ne permet de vérifier si ces agents livrent réellement des solutions fonctionnelles et adaptées aux besoins réels, plutôt que des artefacts incomplets ou surajustés à des cas d'exemple.",
+    "methode": "Les auteurs proposent **AgentSWE**, un benchmark couvrant trois étapes clés du cycle de développement d'agents : 1) la **création** d'un agent complet à partir d'une spécification en langage naturel, 2) l'**édition** de bases de code d'agents en production, et 3) l'**optimisation** vers un objectif mesurable. Les 25 tâches du benchmark sont conçues comme des *commissions* (et non des examens) : l'agent constructeur itère sur quelques cas illustratifs, tandis que l'évaluation finale teste la soumission figée sur des cas cachés couvrant l'intégralité des exigences. La notation repose sur des grilles dérivées des spécifications, avec des critères binaires (réussite/échec) ou, pour l'optimisation, sur les métriques du benchmark source. Une analyse empirique des trajectoires d'échec identifie des modes de défaillance récurrents (ex. : surapprentissage aux cas visibles, code semblant complet mais avec des exécutions creuses, fausses déclarations de complétion).",
+    "resultats": "Les évaluations menées sur divers agents de codage (modèles et infrastructures variés) révèlent qu'**aucun ne parvient à livrer un agent conforme aux exigences demandées**. L'écart entre ce que l'agent constructeur démontre pendant le développement et ce qu'il livre effectivement est systématique. Les auteurs soulignent que les modes de défaillance identifiés (comme le surajustement ou les exécutions incomplètes) sont la norme, et non des exceptions. Aucune donnée quantitative précise (ex. : taux de réussite par tâche) n'est fournie dans le résumé disponible.",
+    "limites": "Le contenu accessible ne permet pas d'évaluer la représentativité des 25 tâches du benchmark (diversité des domaines, complexité réelle). De plus, l'absence de détails sur les modèles testés ou les métriques quantitatives limite la reproductibilité. Enfin, la méthodologie de notation binaire (pass/fail) pourrait masquer des nuances dans la qualité des solutions partielles.",
+    "verdict": "Ce travail mérite une attention critique pour son approche novatrice de l'évaluation des agents de codage, mais ses conclusions alarmantes sur leur fiabilité actuelle doivent être confirmées par une analyse plus approfondie des données et des protocoles."
+   }
+  },
+  {
+   "id": "7089c7b585198c42",
+   "title": "Initialization Improves LLM-Driven Discovery",
+   "url": "https://huggingface.co/papers/2610.00707",
+   "summary": "Large Language Models (LLMs) have been used for novel discovery of algorithms, theorems, drugs, and other tasks through the use of harnesses that prompt an LLM to iteratively optimize an objective. In this work, we study the relationship between the population of previous iterates and eventual discovery success. We generalize past work on harness design to develop a suite of 12 harnesses called 'Modular' and characterize their performance across 5 diverse discovery tasks, finding that discovery success is brittle and sensitive to harness design. We uncover mode collapse, characterized by a dramatic drop in the diversity of iterates, as a common failure mode. We find that popular state-of-the-art harnesses and diversity-inducing harness interventions, which aim to prolong this collapse, yield inconsistent gains. Our results instead uncover that the performance of early discoveries is predictive of eventual success. We therefore propose a universally applicable intervention that performs an initial stage of parallel exploration in order to initialize subsequent iterative optimization. Our method provides consistent gains across many harnesses and target applications, confirming the importance of initialization in LLM-driven discovery.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.00707"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Étude sur l'optimisation itérative par LLM pour la découverte (algorithmes, médicaments, etc.), révélant que la performance des premières itérations prédit le succès final et proposant une méthode d'initialisation parallèle pour améliorer la robustesse. Travail méthodologique solide avec analyse des échecs (mode collapse) et solutions concrètes.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde la fragilité des découvertes réalisées par les grands modèles de langage (LLM) lorsqu'ils sont utilisés pour optimiser itérativement des objectifs complexes (algorithmes, théorèmes, molécules, etc.). Le problème central est que le succès de ces découvertes dépend fortement de la conception du *harness* (cadre d'optimisation) et souffre souvent d'un effondrement de la diversité des solutions explorées (*mode collapse*), limitant leur efficacité.",
+    "methode": "Les auteurs généralisent les travaux antérieurs sur la conception de *harness* en proposant une suite de 12 *harness* modulaires (*Modular*), testés sur 5 tâches de découverte variées (ex. : optimisation d'algorithmes, découverte de médicaments). Ils analysent l'impact de la population des itérations précédentes sur le succès final. Pour contrer le *mode collapse*, ils évaluent des interventions visant à préserver la diversité, mais constatent des gains inconstants. Leur solution clé consiste en une phase initiale d'exploration parallèle (*initialization stage*) pour générer un ensemble diversifié de points de départ avant l'optimisation itérative, améliorant ainsi la robustesse des découvertes.",
+    "resultats": "Les résultats montrent que les *harness* existants (y compris les approches état-de-l'art) sont sensibles à leur conception et que les interventions pour induire de la diversité n'apportent pas systématiquement des gains. En revanche, la qualité des découvertes précoces prédit bien le succès final. Leur méthode d'initialisation parallèle offre des améliorations cohérentes sur plusieurs *harness* et applications, validant l'importance d'une bonne initialisation pour les découvertes pilotées par LLM.",
+    "limites": "Le document ne détaille pas explicitement les 5 tâches de découverte ni les métriques précises utilisées pour évaluer la diversité ou le succès. De plus, l'efficacité de l'initialisation parallèle pourrait dépendre de la nature de la tâche (ex. : moins utile pour des espaces de recherche très contraints). Enfin, l'étude se concentre sur des LLM génériques sans explorer l'impact de leur architecture ou de leur taille.",
+    "verdict": "Cette publication mérite l'attention pour son analyse systématique des échecs des LLM en découverte itérative et sa proposition simple mais efficace d'initialisation, applicable à divers domaines."
+   }
+  },
+  {
+   "id": "60ab672b278ca9af",
+   "title": "Branching On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2610.13481",
+   "summary": "On-policy distillation (OPD) provides teacher supervision on student-generated trajectories, but a single trajectory realizes only one continuation at each decision, limiting supervision coverage under a finite sampling budget. We propose BranchOPD (Branching On-Policy Distillation), which selects informative decision points using student uncertainty and teacher-student disagreement, resamples student-policy continuations from shared prefixes, and applies token-level teacher supervision to both main trajectories and branches. BranchOPD operates at token-level decisions in mathematics and within-turn decisions in agent tasks. Shared-prefix reuse reduces student-generated token costs by approximately 19% on ALFWorld and 31% on WebShop relative to seven independent trajectories. We also introduce protocol-boundary repair (PBR), which uses targeted supervision under protocol constraints to mitigate repetition and wasted generation. BranchOPD outperforms Vanilla OPD and Multi-Rollout OPD (n=7) across all evaluated benchmarks, with gains over Vanilla OPD of 18.55 percentage points in mean mathematics accuracy over 16 sampled answers (avg@16) and 13.8 points in mean ALFWorld ID/OOD success. Mechanistic analyses and selection ablations show that branching at uncertain decisions expands subsequent behavior coverage and outperforms random selection and turn-initial branching.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.13481"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode BranchOPD pour l'on-policy distillation améliorant l'efficacité et la couverture des trajectoires étudiantes via branchement basé sur incertitude et désaccord enseignant-étudiant, réduisant les coûts de génération de 19 à 31% tout en boostant les performances sur mathématiques et tâches d'agents.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "La distillation on-policy (OPD) classique souffre d'une couverture limitée de la supervision enseignant-élève, car une seule trajectoire générée par l'élève ne réalise qu'une continuation par décision. Avec un budget d'échantillonnage fini, cela restreint l'efficacité de l'apprentissage, notamment pour des tâches complexes comme les mathématiques ou les agents interactifs.",
+    "methode": "BranchOPD propose une approche de distillation on-policy avec branchement dynamique. Elle identifie les points de décision informatifs en combinant l'incertitude de l'élève et le désaccord enseignant-élève, puis rééchantillonne des continuations depuis des préfixes partagés. La supervision token-level de l'enseignant est appliquée à la fois sur les trajectoires principales et les branches. Le mécanisme de *protocol-boundary repair* (PBR) corrige les répétitions ou les générations inefficaces sous contraintes protocolaires. BranchOPD optimise ainsi le coût de génération (réduction de 19% à 31% des tokens) tout en élargissant la couverture des comportements supervisés.",
+    "resultats": "BranchOPD surpasse les méthodes OPD classiques (Vanilla OPD) et Multi-Rollout OPD (n=7) sur tous les benchmarks évalués. Les gains incluent +18,55 points de précision moyenne (avg@16) en mathématiques et +13,8 points de succès en moyenne sur ALFWorld (ID/OOD). Les analyses mécanistiques confirment que le branchement ciblé sur les décisions incertaines améliore la couverture des comportements ultérieurs, surpassant les stratégies aléatoires ou basées sur le début de tour.",
+    "limites": "Le document ne détaille pas les coûts computationnels supplémentaires liés au branchement dynamique ni les éventuels biais introduits par la sélection des points de décision. L'efficacité de PBR dépend fortement des contraintes protocolaires, ce qui pourrait limiter sa généralisation à d'autres tâches. Enfin, les résultats reposent sur des benchmarks spécifiques (ALFWorld, WebShop), sans garantie de transférabilité.",
+    "verdict": "Cette approche mérite une attention particulière pour son innovation dans l'optimisation de la distillation on-policy, mais son applicabilité à grande échelle et sa robustesse hors des benchmarks testés restent à valider."
+   }
+  },
+  {
+   "id": "d57823d5abaa3c7c",
+   "title": "Relevance Does Not Imply Applicability: Experience Activation for Personal GUI Agents",
+   "url": "https://huggingface.co/papers/2609.33304",
+   "summary": "Personal Graphical User Interface (GUI) agents rely on interaction history to infer what a user wants from ambiguous instructions and to anticipate recurring routines. Existing approaches retrieve task-relevant history and append it to the policy's context, implicitly assuming that experience relevant to a task remains useful for each decision within it. We find that this help is largely spent at the first decision: retrieved history strongly improves the opening step of an episode, yet provides little sustained benefit over the remaining 90\\% of steps, and offers weak guidance on whether a proactive suggestion is warranted. A relevant record may tell the agent where to begin, but not which past action applies to the current screen or whether a routine is due now. The underlying issue is that relevance does not imply applicability}: relevance is determined at the task level, whereas applicability depends on the situation at decision time. We therefore recast personalization as experience activation and introduce ExpActivator, a training-free framework that activates only the experience applicable to the current situation. During execution, ExpActivator matches each new screen to historical states in the frozen GUI backbone's latent space and supplies the corresponding action as a reference. Before execution, it activates a recurring intent only when the current time and scenario provide sufficient support, and otherwise abstains. Across four GUI backbones, ExpActivator improves within-trajectory step success by 28\\% on average, achieves the best personalized execution on every backbone while using about one-fifth as many history tokens, and reaches approximately 2.3times the Matthews correlation coefficient of the strongest proactive baseline. Experience pays where it is activated, not where it is appended.",
+   "published": "2026-09-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 30,
+    "arxiv_id": "2609.33304"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "ExpActivator propose un cadre sans entraînement pour activer uniquement les expériences applicables aux agents GUI personnels, corrigeant le problème de pertinence vs applicabilité dans l'historique des interactions utilisateur.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents d'interface graphique (GUI) personnels utilisent l'historique d'interactions pour interpréter des instructions ambiguës et anticiper des routines récurrentes. Cependant, les approches existantes supposent à tort que l'historique pertinent pour une tâche reste utile à chaque étape de son exécution, alors qu'en réalité, cette pertinence ne se traduit pas systématiquement par une applicabilité immédiate dans le contexte dynamique d'une session utilisateur.",
+    "methode": {
+     "description": "Les auteurs proposent de reformuler la personnalisation comme un problème d'*activation d'expérience* plutôt que de simple récupération et concaténation d'historique. Leur framework, *ExpActivator*, est une solution *training-free* qui active uniquement les expériences applicables à la situation courante.",
+     "details_techniques": [
+      "Durant l'exécution, *ExpActivator* compare chaque nouvel écran avec des états historiques dans l'espace latent d'un modèle de GUI pré-entraîné (frozen backbone), puis fournit l'action correspondante comme référence.",
+      "Avant l'exécution, le système évalue si l'intention récurrente doit être activée en fonction du contexte temporel et scénaristique, et s'abstient en cas de support insuffisant.",
+      "L'approche évite l'ajout massif de tokens d'historique dans le contexte du modèle, réduisant ainsi la charge computationnelle tout en améliorant la précision des décisions."
+     ]
+    },
+    "resultats": {
+     "performance": "Sur quatre backbones de GUI différents, *ExpActivator* améliore le taux de succès des étapes *intra-trajectoire* de 28 % en moyenne.",
+     "efficacite": "Il obtient les meilleures performances de personnalisation sur chaque backbone tout en utilisant environ un cinquième des tokens d'historique par rapport aux méthodes existantes.",
+     "proactivite": "Le framework atteint environ 2,3 fois le coefficient de corrélation de Matthews (MCC) de la meilleure baseline proactive, démontrant une meilleure capacité à suggérer des actions pertinentes au bon moment."
+    },
+    "limites": {
+     "observations": [
+      "L'étude ne précise pas clairement les critères quantitatifs utilisés pour définir l'*applicabilité* d'une expérience, ce qui pourrait introduire une subjectivité dans l'évaluation.",
+      "La dépendance à l'espace latent d'un modèle pré-entraîné (frozen backbone) pourrait limiter la généralisation à des interfaces ou des tâches non couvertes par ce modèle.",
+      "Les résultats sont présentés sans analyse approfondie des échecs, notamment sur les cas où l'abstention du système serait préférable mais mal évaluée."
+     ],
+     "manques": "Le contenu disponible ne permet pas d'évaluer la robustesse du framework face à des historiques bruités ou incomplets, ni son adaptabilité à des environnements dynamiques en temps réel."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante et ses gains significatifs en efficacité, mais son applicabilité réelle dépendra de sa capacité à surmonter les limites liées à la généralisation et à la définition précise de l'applicabilité contextuelle."
+   }
+  },
+  {
+   "id": "eaafeeeb5c8d4401",
+   "title": "Systematic Multi-Agent Vision-and-Language Navigation: Formulation, Benchmark, and Method",
+   "url": "https://huggingface.co/papers/2609.35965",
+   "summary": "Vision-and-Language Navigation (VLN) has largely focused on a single agent following a single instruction, yet many real-world applications require teams of robots to tackle tasks beyond the capabilities of any individual agent. We present Systematic Multi-Agent Vision-and-Language Navigation, providing, to our knowledge, the first systematic formalization of multi-agent VLN as a constrained coordination problem: each mission consists of subtasks carrying dependency and resource constraints (presence locks and holding chains). A verified four-stage crafting pipeline instantiates the task as MAVLN, comprising 11,724 episodes across 145 scenes with teams of up to four agents under three instruction regimes, accompanied by tailored constraint-aware metrics. We further present TRISS, a coordination-ready navigation system coupling an LLM-based subtask scheduler, a shared topological memory that turns each agent's exploration into team knowledge, and a conflict-aware execution mechanism that realizes simultaneous intentions as collision-free routes. Extensive experiments establish TRISS as a comprehensive baseline and reveal substantial room for improvement across scheduling, planning, and execution, highlighting the challenges of coordinating under MAVLN task constraints. Project page: https://xyz9911.github.io/mavln.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2609.35965"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "MAVLN formalise pour la première fois la navigation multi-agents en vision-langage comme un problème de coordination contraint, avec un benchmark (TRISS) et des métriques adaptées, révélant des marges d'amélioration majeures.",
+   "score": 8.8
+  },
+  {
+   "id": "19065b26947bd68c",
+   "title": "Clinician use of language models diverges from how the models are evaluated",
+   "url": "https://huggingface.co/papers/2610.11069",
+   "summary": "Large language model (LLM) assistants are being deployed to clinicians across health systems, and judgments about their readiness rest largely on benchmark scores, most of them derived from examination questions or curated cases. A benchmark predicts performance in deployment only to the extent that its items resemble real use, yet whether benchmarks reflect the work these systems receive has rarely been measured. Here we analyze 127,833 queries sent by 6,342 physicians, advanced practice providers and nurses in 35 specialties to an institutional assistant during an eight-month roll-out. We characterize each query with RCQ-Map, a clinician-validated framework grounded in taxonomies of clinical questions and of LLM evaluation, which records its task, intent, answerability, missing information and potential harm. Documentation and administration (36.2%) and knowledge retrieval (28.9%) made up nearly two-thirds of use, and diagnosis 3.7%; more than a third of queries could not be answered well as posed. Applying RCQ-Map to 58 public benchmarks drawn from major evaluation suites and frontier model reports, which we assemble into the Clinical AI Benchmark Atlas, showed that the median benchmark contained no documentation requests and shared 31% of the task mix of real use, less than an even spread across task categories would. Benchmarks in suites designed to resemble clinical practice were individually no closer to real use than those used in frontier model reports. Benchmark scores therefore say little about how clinical AI performs on most of the work it is actually given, and evaluation should be matched to real clinical use.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.11069"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Analyse de 127 833 requêtes médicales réelles auprès d'un assistant LLM, révélant que 65% des usages concernent documentation/administration et recherche de connaissances, et que 35% des requêtes sont mal posées. Comparaison avec 58 benchmarks publics montre un décalage majeur entre évaluations théoriques et besoins réels en milieu clinique.",
+   "score": 8.8
+  },
+  {
+   "id": "b3b66b6d55125070",
+   "title": "GroundingPI: A Grounding Foundation Model towards Physical Intelligence with Visual Primitives",
+   "url": "https://huggingface.co/papers/2609.39601",
+   "summary": "Precise grounding matters. It specifies which object is the target and where that object is, even in clutter and for tiny objects, and it has to be fast enough for closed-loop control. Yet vision-language-action (VLA) and world-action models (WAMs) take perception from general-purpose vision-language and video-generation backbones, which still fail in these settings. We introduce GroundingPI, a 4B grounding foundation model that generates points and boxes as quantized coordinates in a shared vocabulary. Training combines multimodal and spatial pretraining, supervised fine-tuning, and reinforcement learning with GRPO, using supervision from public datasets and dedicated data engines. Against 44 baselines across 34 grounding benchmarks spanning 11 perceptual capabilities, GroundingPI establishes a new state of the art, averaging 73.68%, above the larger GPT-6 Astra (71.54%). As a downstream visual backbone, GroundingPI improves performance on robotic manipulation and autonomous driving. On RoboTwin 2.0, it outperforms every mainstream backbone we evaluate in all four out-of-distribution settings, by up to 24.8% relative to the strongest backbone. On RoboCasa-GR1, GroundingPI trained with 50% of the demonstrations outperforms those baselines trained with 75%. On nuScenes, used as the visual backbone, GroundingPI attains an average open-loop L2 error of 0.296 m. We systematically analyze GroundingPI's pretraining in scale and data composition. Downstream autonomous driving and robotic manipulation improve as the pretraining is scaled. Analyzing the data recipe across these 11 perceptual capabilities shows dense grounding's substantial benefits for both, and OCR's potential as a catalyst for perceptual learning. These results support grounding as a perceptual foundation, and dedicated perceptual pretraining as a promising direction for foundation models of physical intelligence.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 191,
+    "arxiv_id": "2609.39601"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Modèle GroundingPI (4B) pour le grounding physique avec primitives visuelles, établissant un nouvel état de l'art sur 34 benchmarks (73.68%) et améliorant les performances en manipulation robotique et conduite autonome. Solution robuste et généralisable.",
+   "score": 8.5
+  },
+  {
+   "id": "9bf132e96d08bac4",
+   "title": "Mental-Models for Multi-Agent Systems",
+   "url": "https://huggingface.co/papers/2610.12453",
+   "summary": "Large foundation models have accelerated progress toward general-purpose agents that interact with humans and other agents through language and multimodal signals. However, robust multi-agent decision-making requires reasoning about what other agents know, intend, and are likely to do under partial observability. Current agentic systems often operate through prompt design, memory, or end-to-end behavioral shaping, but typically do not learn an explicit partner-state representation that can be reused as a decision variable across tasks. We introduce mental-model-enabled agents, a framework that equips an agent with a latent mental model of its counterpart, allowing it to infer hidden beliefs, intentions, and likely reactions from the observed history and use these inferences to guide action selection. Our method learns an amortized recursive Theory-of-Mind representation, with first- and second-order mental-state structure, jointly with a belief-conditioned reward model that evaluates candidate actions relative to the inferred partner state. A policy is then learned under this belief-aware signal, yielding an agent that can act independently at inference time while retaining the benefits of explicit partner modeling. We evaluate the same framework on both language-only and multimodal benchmarks. Across these settings, explicit mental-state modeling consistently improves interaction quality and Theory-of-Mind performance over base agentic systems, showing that structured partner modeling is a useful inductive bias for general multi-agent systems. Our code is publicly available at https://github.com/hananshafi/Mental-Models",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.12453"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Les agents à modèles mentaux introduisent une représentation latente des états mentaux des partenaires pour améliorer la prise de décision multi-agents, avec une structure récursive de théorie de l'esprit et un modèle de récompense conditionné par les croyances.",
+   "score": 8.5
+  },
+  {
+   "id": "995128ef1a868106",
+   "title": "Learning More by Training Less: Uncertainty-Guided Progressive Contraction for Efficient Reasoning Post-Training",
+   "url": "https://huggingface.co/papers/2610.12933",
+   "summary": "Large language models have achieved remarkable advances in complex reasoning. However, scaling reasoning post-training with ever-larger corpora can substantially increase training cost without proportional performance gains. In this study, we therefore ask: how far can reasoning supervision be compressed without sacrificing capability? To this end, we propose an uncertainty-guided progressive contraction framework that concentrates supervision and optimization on the reasoning trajectories most valuable for learning. Specifically, rather than treating a teacher-generated chain-of-thought (CoT) as a single realized path, we construct uncertainty-profiled reasoning supervision by building Monte Carlo reasoning trees around intermediate reasoning states to expose process-level uncertainty. This uncertainty first contracts the original corpus into a compact teacher-informed pool. A second, learner-aware contraction then performs online routing during SFT, concentrating optimization according to the student's evolving learning state. Together, the two stages progressively contract both supervision and optimization, substantially reducing the student training budget. Experiments across diverse reasoning benchmarks and LLM families show that our method uses as little as 0.22% of the optimization budget of full-data SFT, over 450x less training exposure, while maintaining or improving reasoning performance. Notably, our framework generalizes well across heterogeneous student families, black-box teachers, and weak-to-strong transfer. This indicates that it is not only a way to accelerate training but can also enhance reasoning capability.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.12933"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode *uncertainty-guided progressive contraction* pour compresser les données de supervision en post-training des LLM, réduisant les coûts d'entraînement sans perte de performance via ciblage des trajectoires incertaines (arbres de raisonnement Monte Carlo). Résultats expérimentaux solides.",
+   "score": 8.2
+  },
+  {
+   "id": "1d7491c7333acd4f",
+   "title": "GroundAnything: Reconciling Parallel Decoding with Precise Visual Grounding at Flash Speed",
+   "url": "https://huggingface.co/papers/2609.39600",
+   "summary": "Autoregressive (AR) grounding models serialize spatial predictions, introducing sequential latency and imposing a causal order on output tokens. We view grounding as visual evidence extraction: objects, locations, and spatial relations are jointly constrained by the image and query, yet their dependencies do not imply an intrinsic left-to-right generation order. This distinction makes bidirectional diffusion a natural fit, allowing spatial hypotheses to emerge in parallel and be jointly refined through iterative denoising. We introduce GroundAnything, a 4B-parameter grounding foundation model that reconciles fast parallel decoding with precise localization through blockwise denoising. Training combines grounding pretraining from public datasets and dedicated data engines, direct AR-to-diffusion conversion with joint AR and diffusion objectives, supervised fine-tuning, and GRPO-based reinforcement post-training. Across 30 grounding benchmarks, our autoregressive variant, GroundAnything-VLM, establishes a new overall state of the art among similarly sized models at 72.42%, remaining competitive with GPT-6 Astra (71.35%). With entropy-guided decoding, GroundAnything also surpasses the prior state of the art at this scale, averaging 61.75% versus 53.32% for the fast MTP-based LocateAnything model. We further explore decoding strategies, showing that an optional self-speculative mode achieves a 4.51times speedup over the AR counterpart with a 0.74 percentage-point drop in COCO F1mIoU. Infrastructure experiments show that progressive inference optimizations translate parallel decoding into practical speedups. These support efficient visual grounding in latency-sensitive real-world systems.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2609.39600"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Modèle GroundAnything combinant décodage parallèle (diffusion) et grounding précis via *blockwise denoising*, atteignant 72.42% sur 30 benchmarks de grounding tout en surpassant les modèles AR classiques. Approche innovante pour réduire la latence et améliorer la précision.",
+   "score": 8.2
+  },
+  {
+   "id": "5e317c819490c14a",
+   "title": "ARCS: Towards Precise Text-to-SQL via Structured Disambiguation",
+   "url": "https://huggingface.co/papers/2610.09396",
+   "summary": "As text-to-SQL systems move beyond demonstrations toward real-world deployment, ambiguity in user questions becomes a primary source of errors. Such ambiguities are often subtle, domain- or data-specific, and can silently cause system outputs to deviate from the user's true intent. Ambiguity is traditionally addressed through conversational clarification, which is often inefficient, cognitively demanding, and poorly aligned with real-world user workflows. We propose structured disambiguation, a new paradigm in which ambiguity is resolved through explicit, constrained interactions rather than free-form dialogue. We construct ARCS (Ambiguity Resolution Corpus for SQL), the first text-to-SQL benchmark featuring naturally occurring, unconstrained ambiguities over real-world databases, with complete annotations of all valid ambiguity points, interpretations, and SQL queries. Experimental results show that text-to-SQL remains challenging in the presence of ambiguity: gpt-6-sol achieves only 51% end-to-end execution accuracy, and no open-source model exceeds 27%.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.09396"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "ARCS introduit une nouvelle approche de désambiguïsation structurée pour les systèmes text-to-SQL, avec un benchmark (ARCS) évaluant la capacité des modèles à gérer des ambiguïtés réelles dans des bases de données complexes, révélant des limites majeures des modèles actuels.",
+   "score": 8.2
+  },
+  {
+   "id": "94e823f51cf0e3a2",
+   "title": "SpatialASM: Internalizing Active Mentalization for Spatial Reasoning",
+   "url": "https://huggingface.co/papers/2610.13832",
+   "summary": "When solving complex spatial reasoning tasks, ordinary humans naturally revisit the scenes from task-relevant viewpoints and mentally reconstruct the spatial layouts from those viewpoints. But can Large Vision-Language Models (LVLMs) proactively think in the same way? We term this ability Active Spatial Mentalization (ASM), an intrinsic component of visual intelligence that remains substantially underdeveloped in current LVLMs. To bridge this gap, we introduce SpatialASM, a scalable framework to internalize ASM into LVLMs through training-time spatial simulation. SpatialASM employs an allocentric novel-view generator to ground hypothetical viewpoints in visual evidence and produces two complementary forms of supervision: i) explicit ASM trajectories that teach LVLMs when and how to adaptively invoke view planning and imagination during spatial reasoning, and ii) automatically-constructed perspective-taking tasks that further strengthens viewpoint-conditioned scene imagination. On seven benchmarks spanning relatively perception-oriented spatial understanding to more challenging tasks requiring multi-image, cross-view and viewpoint-transformation reasoning, SpatialASM yields performance gain on LVLMs of four LVLM backbones in spatial reasoning while retaining their original general vision capabilities. The experimental results demonstrate that our approach improves average accuracy across the seven spatial benchmarks. And the synthesis of ASM trajectories provides a scalable pathway to alleviate the scarcity of spatial Chain-of-Thought (CoT) supervision for eliciting active viewpoint exploration and mental scene simulation.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2610.13832"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "vision"
+   ],
+   "tldr": "SpatialASM internalise la capacité de mentalisation spatiale active dans les LVLMs via un entraînement simulant des trajectoires de vue, améliorant significativement les performances sur des benchmarks de raisonnement spatial complexe.",
+   "score": 8.2
+  },
+  {
+   "id": "83ef3593dad0fe6c",
+   "title": "Few-Step Generation via Data-Space Iteration",
+   "url": "https://huggingface.co/papers/2610.12102",
+   "summary": "Flow matching has emerged as a scalable paradigm for training high-quality generative models, but sampling from the learned probability flow requires many network evaluations. Distillation can reduce this cost to one or a few evaluations; however, one-step generation often sacrifices quality, making few-step generation the practical operating regime. Existing few-step methods perform their iterative computation along the probability flow and therefore require a fixed, manually chosen timestep discretization. This discretization is often chosen heuristically and is expensive to tune; it may also be restrictive when refinement difficulty differs across samples or spatial locations. We introduce data-space iteration, a few-step generation framework that removes flow discretization altogether. Starting from noise, a shared generator directly refines its prediction in data space, with every iteration trained to produce the best sample permitted by its capacity. Our formulation integrates with distribution matching distillation (DMD) with minimal changes, enabling a controlled comparison between iteration methods under matched training settings. On class-conditional ImageNet 256x256, data-space iteration outperforms standard discretization baselines and matches or improves upon variants selected through schedule search, without requiring schedule-specific training. These results show that data-space iteration provides a simple and effective alternative to discretized flow-space iteration for fast generation.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.12102"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Data-Space Iteration introduit un framework de génération en quelques étapes qui supprime la discrétisation des flux de probabilité, permettant des itérations directes dans l'espace des données. Sur ImageNet 256x256, méthode surpassant les approches existantes en qualité et efficacité avec 4-8 itérations.",
+   "score": 7.9
+  },
+  {
+   "id": "0f49cf0012fc2d39",
+   "title": "Scaling Agentic Data for Long-Horizon Terminal Intelligence",
+   "url": "https://huggingface.co/papers/2610.13166",
+   "summary": "Terminal agents are moving beyond local operations toward completing real-world professional tasks. Short trajectories can demonstrate commands and tool calls, but they do not fully show how agents accumulate evidence through exploration, use it to inform judgments, continually adjust strategies based on feedback, and turn intermediate results into final deliverables. High-quality long-horizon trajectories capture these agentic behavioral patterns and their connections within a single problem-solving process, providing richer experience for sustained autonomous work. However, environment synthesis may complete or simplify the key work underlying these patterns in advance and thus remove the need for exploration, implementation, and verification that the agent was meant to perform. To address this, we introduce TerminalHorizon, a fully automated data synthesis engine for long-horizon terminal agents. Starting from real-world professional work, it uses independent execution to identify key work omitted during construction and uses the resulting evidence to guide environment reconstruction. To extend these patterns across stages, it progressively expands tasks under the same goal, introducing new requirements that build on prior results and call for further exploration and improvement. Using this engine, we construct 1.5K task environments and perform supervised fine-tuning of Qwen3.5-27B on the resulting dataset to obtain TerminalHorizon-27B. We achieve substantial performance gains on all 12 benchmarks spanning coding-agent tasks, agentic tasks in real-world production settings, and general reasoning. Multiple RSI case studies, each with a 12-hour research budget, further demonstrate the model's ability to continue experimenting beyond an initial solution, improve its methods based on feedback, and retain effective improvements in its final deliverables.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 129,
+    "arxiv_id": "2610.13166"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "Dataset TerminalHorizon pour entraîner des agents terminaux à long horizon via synthèse automatique de données, capturant des patterns comportementaux complexes (exploration, ajustement stratégique). Approche méthodologique prometteuse pour les agents professionnels.",
+   "score": 7.6
+  },
+  {
+   "id": "7113d82ef4a5d496",
+   "title": "Multi-Stream Attention Residuals",
+   "url": "https://huggingface.co/papers/2610.13630",
+   "summary": "Attention Residuals (AttnRes) enables content-dependent retrieval over network depth, which can be viewed as single-stream softmax attention along the depth axis. Inspired by the success of multi-head attention along the sequence axis, we introduce Multi-Stream Attention Residuals (MSAR), an extension of AttnRes that generalizes this mechanism to multi-head depth attention, yielding substantial performance gains with minimal additional overhead. MSAR draws stream diversity from sequence context through multi-scale causal convolutions, allowing different heads to retrieve historical representations through distinct contextual views while preserving the integrity of the hidden representation. The retrieved streams are combined through lightweight adaptive mixing to generate the single-stream layer input. By retaining single-stream sources and expanding them on demand, MSAR supports multi-stream computation without requiring persistent multi-stream storage or communication. Across all 12 downstream benchmarks at the 18B and 28B MoE scales, MSAR consistently outperforms prior residual variants, including standard residual connections, manifold-constrained Hyper-Connections (mHC), and AttnRes. Scaling-law experiments yield an iso-loss compute speedup of 1.58times over the standard residual baseline, compared with 1.35times for AttnRes and 1.30times for mHC. These results make MSAR a promising residual architecture for large-scale pre-training.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2610.13630"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "MSAR étend les Attention Residuals en une attention multi-flux le long de l'axe de profondeur, améliorant les performances sur 12 benchmarks avec un surcoût minimal, grâce à une combinaison adaptative de flux contextuels.",
+   "score": 7.6
+  },
+  {
+   "id": "224c102190be4dc2",
+   "title": "AI models can provably hide arbitrary capabilities",
+   "url": "https://arxiv.org/abs/2610.13928",
+   "summary": "",
+   "published": "2026-10-13T02:07:08Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 252,
+    "comments": 118
+   },
+   "relevance": 9,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Preuve théorique que les modèles d'IA peuvent cacher des capacités arbitraires (ex: backdoors) de manière indétectable, même après fine-tuning ou distillation. Critique majeure pour la sécurité et l'interprétabilité des LLM, mais nécessite des sources académiques pour validation.",
+   "score": 7.4
+  },
+  {
+   "id": "9ca2bcd34e5443c6",
+   "title": "Janas: Run LLMs larger than RAM by streaming experts from SSD",
+   "url": "https://github.com/prabanta-dev/janas",
+   "summary": "",
+   "published": "2026-10-12T22:05:43Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 189,
+    "comments": 69
+   },
+   "relevance": 9,
+   "reliability": 5,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Janas propose une méthode pour exécuter des LLM plus grands que la RAM en streamant des experts depuis un SSD, une avancée technique pertinente pour l'inférence efficace des modèles de langage.",
+   "score": 7.4
+  },
+  {
+   "id": "b54de4c0d11677fd",
+   "title": "wfzyx/von",
+   "url": "https://github.com/wfzyx/von",
+   "summary": "The open-source System One decision model. Sub-15ms, non-autoregressive, local drop-in alternative to TypeSafe Jev.",
+   "published": "2026-09-18T05:03:47Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 895,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Modèle de décision open-source non-autoregressif (système *System One*) avec latence <15ms, conçu comme alternative locale à TypeSafe Jev. Approche prometteuse pour l'inférence rapide et l'optimisation.",
+   "score": 7.4
+  },
+  {
+   "id": "ab2de0b803921951",
+   "title": "fstandhartinger/jevbench",
+   "url": "https://github.com/fstandhartinger/jevbench",
+   "summary": "JevBench by Benchmark Heaven: benchmark and leaderboard for AI decision models, measuring typed decision accuracy, calibration, latency and cost.",
+   "published": "2026-09-19T07:07:36Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 267,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "benchmark",
+    "architecture"
+   ],
+   "tldr": "Benchmark open-source mesurant la précision, calibration, latence et coût des modèles de décision (ex: System One). Outil clé pour évaluer l'efficacité des architectures de décision en conditions réelles.",
+   "score": 7.4
+  },
+  {
+   "id": "a16080aaffa0dd3f",
+   "title": "VIS-Ground: Video Interactive Storytelling with Contextual Grounding",
+   "url": "https://huggingface.co/papers/2610.09326",
+   "summary": "Video interactive storytelling enables viewers to actively steer how a video unfolds. However, once we allow viewers to intervene during generation, a new challenge arises: The viewer's request can have latent dependencies on both the grounding source and the current rendered video state. These dependencies may not be explicitly stated in any individual input, but emerge only when the source, rendered history, and new viewer intent are considered jointly. Existing interactive video generation systems primarily emphasize following viewer instructions, while source-grounded video generation methods focus on aligning generated content with an external narrative or knowledge source. This leaves a fundamental question underexplored: What context should a generation model ground on during interactive continuation, and how can heterogeneous, unstructured inputs be transformed into such grounding context? In this work, we formulate contextual grounding as the process of transforming heterogeneous input context into an executable constraint model for video generation. To address this challenge, we introduce VIS-Ground, which performs Structured Context Abstraction to recover grounded states and cross-context dependencies, Generation Constraints Induction to project relevant dependencies into candidate-specific constraints, and Constrained Video Generation to enforce these constraints through planning, verification, revision, and rendering. Across three video generation backbones, VIS-Ground consistently achieves the highest overall composite score, reaching an average absolute improvement of 10.3 points over the strongest per-backbone baselines. Detailed analysis further shows gains across both narrative and knowledge grounding, and reveals remaining challenges in dependency extraction, and faithful realization during video rendering.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 63,
+    "arxiv_id": "2610.09326"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "vision"
+   ],
+   "tldr": "Système VIS-Ground pour le storytelling interactif vidéo avec *contextual grounding* (abstraction structurée de l'état) permettant de gérer les dépendances latentes entre requêtes, source et état vidéo. Approche conceptuelle intéressante mais validation limitée.",
+   "score": 7.3
+  },
+  {
+   "id": "898684fe6952f254",
+   "title": "T3lescope: Arbitrary-Resolution High-Fidelity Generative Surface Reconstruction from Images",
+   "url": "https://huggingface.co/papers/2610.03308",
+   "summary": "We reconstruct high-fidelity 3D scene meshes from posed multi-view images without per-scene optimization, across scales ranging from single objects to large outdoor scenes. Per-scene optimization methods lack the learned 3D prior needed when observations are sparse or surfaces are glossy or transparent. Existing generative methods leverage such priors to complete geometry in sparsely observed regions, but typically operate at a fixed resolution over a limited spatial extent, trading spatial coverage against detail. Reconstructing a large scene therefore often requires partitioning it into independently processed overlapping local regions, making it difficult to maintain global geometric consistency. To address these issues, we propose T3lescope, which applies a single fixed-resolution generator across scene scales in an inference-time coarse-to-fine cascade. A coarse level establishes the scene layout, and finer levels perturb and denoise geometry inherited from the coarser level within progressively finer spatial cells to recover surface detail. The model is trained on individual cells at multiple scales and shares its weights across all levels, so no hierarchy is fixed during training, and the number of levels, cell scales, and cell locations are determined at inference time. On indoor, outdoor, and city-scale scenes, T3lescope outperforms feed-forward and generative baselines, matches or surpasses per-scene optimization, and recovers fine structures as well as glossy and transparent surfaces. These results show that our method generalizes across diverse scenes, view counts, and image resolutions. Project page: https://pfnet-research.github.io/t3lescope/",
+   "published": "2026-10-01T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.03308"
+   },
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "T3lescope propose une méthode de reconstruction 3D à partir d'images multi-vues sans optimisation par scène, utilisant un générateur à résolution fixe dans une cascade coarse-to-fine pour maintenir la cohérence géométrique globale tout en récupérant les détails fins.",
+   "score": 7.3
+  },
+  {
+   "id": "5c133c4f16190848",
+   "title": "Thinking Inertia: LLMs Keep Thinking When Told Not To",
+   "url": "https://huggingface.co/papers/2610.11765",
+   "summary": "Large Language Models (LLMs) increasingly ship with explicit \"thinking modes\", yet their counterpart, \"no-thinking\", has received far less attention. We study LLMs' no-thinking behavior along two axes. a. How to measure no-thinking? Prior work typically defines no-thinking through proxies such as a disabled thinking mode or the absence of long traces. These proxies are unreliable: disabled thinking modes may still emit reasoning, while long traces may contain filler rather than genuine inference. We instead normalize each response into a pre-answer trace and final answer, and evaluate it at three levels: (i) Empty-Thinking Rate for strict answer-only compliance; (ii) instruction-aware Question-Pre-answer Relevance for similarity between the question and pre-answer trace; and (iii) LLM-as-judge Explicit Inference Rate for visible explicit inference. Together, these metrics distinguish answer-only output, relevant but non-inferential text, and explicit inference. b. How does no-thinking vary across tasks and models? We evaluate six prompting interventions on six LLMs across Boolean, multiple-choice, and open-ended questions. We find that explicit no-think controls cannot reliably eliminate visible inference. Models instead exhibit \"Thinking Inertia\": explicit inference persists even under strict controls and becomes more prevalent as the answer space opens. Accuracy remains stable on Boolean and multiple-choice tasks, whereas open-ended tasks reveal a trade-off between answer-only compliance and task accuracy. Rewriting the same questions across answer spaces shows that supplying candidate answers makes answer-only responses easier to produce. These findings establish no-thinking as a non-trivial capability: stopping explicit reasoning cannot be assumed from model settings or instructions alone and deserves systematic evaluation alongside reasoning ability.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 129,
+    "arxiv_id": "2610.11765"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "L'étude 'Thinking Inertia' révèle que les LLMs continuent de générer des traces de raisonnement même lorsqu'ils sont explicitement invités à ne pas le faire, avec des métriques normalisées pour évaluer ce comportement.",
+   "score": 7.3
+  },
+  {
+   "id": "72b61f0634da833c",
+   "title": "BudgetPix: Compute-Adaptive Tokenization for Pixel-Space Image Diffusion",
+   "url": "https://huggingface.co/papers/2610.12307",
+   "summary": "Most image generation models rely on uniform tokenization, allocating the exact same computational budget to equally-sized image patches. This static paradigm cannot adapt to different resource constraints at inference time, and yields suboptimal quality-cost tradeoff by devoting the same effort to both plain backgrounds and intricate details. We propose BudgetPix, an adaptive tokenization framework that dynamically allocates compute based on visual complexity and spatial layout, enabling flexible computational budgeting at inference time. BudgetPix comprises three key components: (1) an adaptive encoder that maps a fixed-size image to a variable-length token sequence using an entropy-guided quadtree alongside a multi-scale patch embedder; (2) a scale-aware decoder reconstructs fixed-resolution images from multi-scale token sets; and (3) a flexible training and sampling schedule that enables pixel-space denoisers to operate across variable token counts. BudgetPix seamlessly integrates with existing pixel-space diffusion architectures, enabling a single checkpoint to be operated at a wide range of compute budgets. Evaluated on text-to-image generation, BudgetPix matches the fidelity of MiniT2I-L at 512^2 and PixelDiT at 1024^2 using just 25% of the original compute budget. In class-conditional generation using a MeanFlow backbone, BudgetPix requires merely 60% of the full compute budget to produce images with near-zero quality degradation, observing a marginal 0.8-point increase in FID. Comprehensive assessments by human and VLM judges confirm that BudgetPix establishes a significantly improved quality-efficiency tradeoff over prior budget-adaptive baselines. More details are available at our project page: https://karaozgur.com/BudgetPix",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.12307"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "vision"
+   ],
+   "tldr": "BudgetPix propose une tokenisation adaptative basée sur la complexité visuelle pour les modèles de diffusion image, permettant un ajustement flexible du budget de calcul à l'inférence tout en maintenant la qualité.",
+   "score": 7.3
+  },
+  {
+   "id": "8814941b4f033b8a",
+   "title": "GATOR: Generative and Agentic 3D Object Reconstruction From Casual Images",
+   "url": "https://huggingface.co/papers/2610.11215",
+   "summary": "Reconstructing complete, scene-aligned 3D objects from casual images requires integrating sparse, uncertain observations and inferring surfaces hidden by occlusions. We present GATOR, a generative and agentic framework that recovers textured object assets and their scene-relative pose from one or more images. Our local modality mixer couples patch-aligned RGB, target-mask, and pointmap features before cross-view reasoning, preserving scene context while distinguishing the target from its surroundings. Text-guided semantic conditioning complements these spatial cues with category names and object captions through stage-specific adapters for structure, geometry, and appearance generation. The generated asset initializes a multimodal agent, providing instance-specific geometry and pose for targeted structural and texture refinement through an observation-guided edit-render-review loop. Across synthetic objects, cluttered tabletops, and indoor scenes, GATOR achieves strong geometric and appearance fidelity while recovering scene-relative pose from sparse observations. Time-budget comparisons and scene-level simulation further demonstrate the reconstruction efficiency and simulation readiness. Project page: https://research.nvidia.com/labs/lpr/gator/",
+   "published": "2026-10-08T00:13:04.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.11215"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "GATOR combine génération 3D d'objets et un agent multimodal pour reconstruire des assets texturés et leur pose relative à partir d'images casuales. Méthode évaluée sur objets synthétiques et scènes réelles, avec gains en fidélité géométrique et efficacité de reconstruction.",
+   "score": 7.3
+  },
+  {
+   "id": "1ddbe506c99ed56b",
+   "title": "When to Rethink: Learning Multi-Perspective Self-Verification for Vision-Language Models",
+   "url": "https://huggingface.co/papers/2610.07018",
+   "summary": "Vision-language models (VLMs) have achieved strong performance in multimodal reasoning, yet they remain prone to generating plausible but incorrect answers. Self-verification offers a practical way to improve answer reliability without relying on external judges, but existing methods typically depend on a single verification criterion or fixed prompt, resulting in incomplete and unstable reliability estimates. We first systematically analyze how verifier capability and prompt design affect verification performance. Our findings show that stronger verifiers provide more reliable judgments, while verification performance is highly sensitive to prompt choice, with no single prompt consistently dominating across tasks. Guided by these findings, we propose MOTIVE, a Multi-View Self-VerificatiOn wiTh RelIability-Guided SelectiVE Rethinking framework for reliable multimodal reasoning. MOTIVE evaluates each candidate answer from complementary verification perspectives and learns a correctness-aligned reliability score through correctness-grounded multi-view verification learning. During inference, this score governs an accept-or-rethink decision, allowing reliable answers to be returned directly while uncertain ones trigger history-guided rethinking. Extensive experiments across diverse multimodal benchmarks and VLM backbones demonstrate that MOTIVE consistently outperforms strong self-verification and self-correction baselines. Further results show that reliable verification improves accept-or-rethink decisions and reduces unnecessary reasoning turns, enabling more reliable and efficient self-verification without an external judge.",
+   "published": "2026-10-03T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.07018"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "MOTIVE propose un cadre de vérification multi-perspective pour les VLMs, combinant évaluation de la fiabilité et réévaluation ciblée des réponses. Méthode améliore la robustesse des réponses sans dépendre d'outils externes, avec gains significatifs sur des tâches multimodales.",
+   "score": 7.3
+  },
+  {
+   "id": "f2155f2e5494846a",
+   "title": "Ebony-Vinyl/dsh-our-free-model",
+   "url": "https://github.com/Ebony-Vinyl/dsh-our-free-model",
+   "summary": "在 dsh 里装上这个插件即可，无需登录、注册或填 API Key，就能使用包括 DeepSeek V4.1 Flash、Kimi K3 在内的前沿模型——完全免费，不限量。 All you do is install this plugin in dsh: no login, no sign-up, no API key — the frontier models are just there, DeepSeek V4.1 Flash and Kimi K3 among them. Completely free, with no usage cap.",
+   "published": "2026-09-24T16:17:19Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 13627,
+    "language": "JavaScript"
+   },
+   "relevance": 8,
+   "reliability": 6,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "Plugin GitHub permettant d'utiliser gratuitement des modèles avancés comme DeepSeek V4.1 Flash ou Kimi K3 sans API Key, offrant un accès facile à des LLM de pointe mais avec des limites de fiabilité liées à son modèle open-source.",
+   "score": 7.1
+  },
+  {
+   "id": "e6bb69f517c664dd",
+   "title": "AI models may be capable of self-replicating without access to a datacenter",
+   "url": "https://www.anthropic.com/research/self-replicating-ai",
+   "summary": "",
+   "published": "2026-10-12T19:25:29Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 91,
+    "comments": 103
+   },
+   "relevance": 8,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Étude théorique explorant la possibilité que des modèles d'IA puissent s'auto-reproduire sans accès à un datacenter, via des mécanismes de compression ou de propagation. Question cruciale pour la sécurité et les limites des architectures actuelles, mais nécessite des preuves empiriques.",
+   "score": 6.8
+  },
+  {
+   "id": "73e76eb28cd3819e",
+   "title": "CrossTimeEdit: A Decade-Spanning Cross-View Dataset and Reward-Guided Editing for Historical Street-View Generation",
+   "url": "https://huggingface.co/papers/2609.36616",
+   "summary": "Historical street-view imagery records urban evolution, but uneven coverage leaves substantial gaps in historical records. Generating plausible past appearances requires restoring changed structures while preserving persistent scene content. We construct VIGOR-his, a decade-spanning cross-view dataset containing 43,653 location-level quadruplets across 11 cities on three continents. Its automated pipeline performs spatial pairing, consistency screening, change classification, and the generation and validation of satellite-based change descriptions and local editing instructions. Based on VIGOR-his, we propose CrossTimeEdit, a model that reformulates historical street-view generation as editing, using recent street views to constrain viewpoint and unchanged appearance and temporal satellite differences as change evidence. Starting from FLUX.2 [Klein] 4B, we train CrossTimeEdit through supervised fine-tuning (SFT) followed by online reinforcement learning (RL). We design three street-view editing criteria, namely Instruction Alignment (IA), Background Preservation (BP), and Quality and Physical Plausibility (QP), as both RL reward dimensions and evaluation metrics. We optimize this multi-reward objective using Within Group Relative Policy Optimization for flow-matching models (Flow-GRPO) with Group reward-Decoupled Normalization Policy Optimization (GDPO), which normalizes each reward dimension before aggregation. CrossTimeEdit improves overall performance across the three editing criteria by 17.12\\% over the pretrained baseline and outperforms cross-view generation models in scene consistency, visual realism, and perceptual quality. The implementation code, dataset, and model weights are available at https://luhanwen67.github.io/CrossTimeEdit-release/.",
+   "published": "2026-09-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2609.36616"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "autre"
+   ],
+   "tldr": "Nouveau dataset VIGOR-his pour la génération de vues historiques de rues (11 villes, 43k quadruplets) et modèle CrossTimeEdit utilisant RL pour éditer des vues récentes en préservant les éléments persistants, avec métriques d'évaluation dédiées (IA, BP, QP). Approche innovante mais niche.",
+   "score": 6.7
+  },
+  {
+   "id": "e92a5483f4894a10",
+   "title": "Humanity's Sixth Sense: Benchmarking Intuitive Visual Reasoning in Multimodal Models",
+   "url": "https://huggingface.co/papers/2610.08966",
+   "summary": "Humans perceive far more in a scene than what is explicitly depicted: a single glance captures past causes and future trajectories; a quick peek determines if a vehicle can fit between two parked cars; a few seconds of video reveals who holds authority in a room; and a fleeting clip highlights subtle abstract patterns like unwritten rules or hidden labels. This capacity reflects a form of humanity's sixth sense: an intuitive reasoning mechanism that recovers implicit information beyond raw sensory perception. Crucially, this rapid, zero-shot visual intuition underpins everyday navigation and social interaction, making it a vital capability for Multimodal Large Language Models (MLLMs) deployed alongside people. Existing visual benchmarks, however, target either deliberate expert-level analysis in academic and mathematical domains or low-level perception, leaving the intuitive reasoning that people perform largely untested. To bridge this gap, we introduce Humanity's Sixth Sense (HSS), a benchmark for intuitive visual reasoning. HSS spans diverse image and video inputs, organizes items under a structured taxonomy, and pairs each with human-written prompts probing the implicit temporal, spatial, social, and abstract structure that people infer at a glance. Frontier MLLMs fall short of human performance: participants reach 93.1% accuracy, while the strongest model, GPT-6-astra, reaches only 53.6% even at maximum reasoning effort. Despite excelling in many complex tasks that require advanced perception and knowledge, current models still struggle significantly on these visual tasks that are intuitive for humans. We further explore agentic setup that apply dynamic visual manipulation to HSS, which narrows but does not close the gap. HSS establishes intuitive visual reasoning as a measurable axis and directs attention to a capability that scaling on current benchmarks has so far left behind.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2610.08966"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Le benchmark 'Humanity's Sixth Sense' évalue la capacité des MLLMs à raisonner de manière intuitive et implicite (trajectoires, intentions, règles sociales), un domaine peu couvert par les benchmarks existants.",
+   "score": 6.7
+  },
+  {
+   "id": "4c7873621460e1be",
+   "title": "Video-Conditioned Generative Joint 2D-3D Hand Motion Recovery",
+   "url": "https://huggingface.co/papers/2610.10512",
+   "summary": "Recovering faithful 3D hand motion from video remains challenging due to frequent occlusions and incomplete visual observations, which make frame-wise pose estimates unreliable and temporally inconsistent. To address this problem, we propose JoHan, a unified generative framework that recovers hand motion directly from video sequences without relying on intermediate per-frame pose predictions. Trained from scratch, our model jointly generates aligned 2D and 3D local hand pose sequences by learning their temporal dynamics and cross-representation correspondence. The generated 2D trajectories exploit direct spatial and temporal cues from the 2D images to guide the following generative 3D motion reconstruction, while the learned motion prior promotes temporal consistency. Their learned 2D-3D correspondence further enables recovery of the hand's global position and orientation relative to the camera. Extensive experiments on challenging benchmarks demonstrate significantly improved accuracy and speed in local hand-pose and camera-space reconstruction. Notably, our method captures much better hand-motion dynamics, producing significantly smoother motion than previous methods while maintaining high per-frame pose accuracy.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.10512"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "JoHan propose un cadre génératif unifié pour reconstruire des mouvements 3D de mains à partir de vidéos, évitant les estimations par-frame et améliorant la cohérence temporelle et la précision. Méthode validée sur des benchmarks exigeants, avec gains notables en fluidité et reconstruction globale.",
+   "score": 6.7
+  }
+ ]
+}
