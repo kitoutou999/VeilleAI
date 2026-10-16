@@ -1,0 +1,725 @@
+{
+ "date": "2026-10-16",
+ "digest": {
+  "headline": "Les optimisations des LLM pour le contexte long et les architectures agentiques dominent la recherche en IA, avec des avancées majeures en efficacité et généralisation",
+  "overview": "Ce 16 octobre 2026, la veille met en lumière des travaux ciblant deux axes critiques : l'optimisation des modèles de langage pour le traitement de contextes longs, et l'amélioration des architectures agentiques pour la robotique et l'interaction avec des outils. Les solutions proposées abordent des limites structurelles, comme la latence des caches KV ou la fragmentation des trajectoires d'apprentissage, tout en intégrant des mécanismes de personnalisation et de vérification sémantique.",
+  "highlights": [
+   {
+    "title": "Optimisation des caches KV et de l'attention longue-contexte",
+    "text": "Deux études (Scaling Remote KV Tiers et Virtual Head Attention) résolvent des goulots d'étranglement critiques pour les LLM en contexte long. La première identifie un seuil de rentabilité (B*) pour l'utilisation de caches KV distants, évitant des dégradations de latence (p99 passant de 3.96s à 17.3s). La seconde, VHA, contourne le 'triangle impossible' de l'attention via des opérations linéaires réduisant le cache KV à 2 têtes, compatible avec GQA. Ces travaux sont essentiels pour déployer des modèles sur des infrastructures hétérogènes et à moindre coût."
+   },
+   {
+    "title": "Amélioration des modèles Vision-Language-Action (VLA) et agents robotiques",
+    "text": "VLA-Δ et CarryOn renforcent la robustesse des VLA en introduisant une supervision explicite des transitions d'état physique et un double boucle de personnalisation. VLA-Δ réduit le surapprentissage des correspondances observation-action, tandis que CarryOn intègre des préférences utilisateur persistantes et des mécanismes de récupération. Parallèlement, CoDA et LIBERO-PeRM proposent des cadres pour la co-évolution des environnements et des politiques, ou l'évaluation de la personnalisation robotique, avec des gains significatifs en généralisation hors distribution."
+   },
+   {
+    "title": "Benchmarks et méthodes pour agents longue-horizon et multi-session",
+    "text": "Recursive Environment Scaling (RES) et Mosaic adressent des défis clés des agents : la composition de dépendances et la gestion de trajectoires fragmentées. RES révèle une dégradation des performances jusqu'à 77% sur des benchmarks modifiés récursivement, soulignant l'importance de l'héritage des dépendances. Mosaic formalise l'apprentissage multi-session, optimisant les avantages par session sans critique hiérarchique. Ces travaux fournissent des outils pour évaluer et améliorer la robustesse des agents dans des tâches complexes."
+   },
+   {
+    "title": "Plateformes et piles open-source pour agents généralistes",
+    "text": "MAI-Gym et OpenGCUA proposent des infrastructures unifiées pour l'entraînement et l'évaluation d'agents GUI ou d'utilisation générale. MAI-Gym offre 20k instances parallèles pour des tâches mobiles et web, tandis qu'OpenGCUA intègre exécution de code et prise de décision dynamique, améliorant les scores sur OSWorld-v2. Ces initiatives accélèrent le développement d'agents autonomes en fournissant des environnements standardisés et reproductibles."
+   },
+   {
+    "title": "Efficacité et vérification dans les agents utilisant des outils",
+    "text": "SpecAgent et Waypoint-OPD optimisent les agents via des approches complémentaires. SpecAgent réduit la charge computationnelle en déléguant la génération d'étapes à un modèle faible, avec vérification sémantique par un modèle fort. Waypoint-OPD améliore la distillation de politiques en filtrant les shifts incohérents, avec des gains en raisonnement mathématique et génération de code. Ces méthodes permettent une meilleure scalabilité et fiabilité des agents dans des workflows complexes."
+   },
+   {
+    "title": "Apprentissage par imitation et manipulation dexterous",
+    "text": "Dexterity from Supervised Play (DSP) et OneWM montrent des progrès en manipulation robotique. DSP combine apprentissage par imitation et collecte autonome de données, améliorant les performances de 69,6% avec 490 fois moins de données. OneWM unifie l'entraînement des modèles de monde et d'actions via des vidéos, améliorant réciproquement leurs performances. Ces travaux ouvrent la voie à des politiques plus robustes et généralisables pour la robotique."
+   }
+  ],
+  "trend": "La recherche se concentre sur des architectures hybrides combinant optimisations bas-niveau (caches, attention) et mécanismes haut-niveau (personnalisation, vérification sémantique), avec une emphase croissante sur la généralisation hors distribution et l'autonomie des agents. Les benchmarks et plateformes open-source jouent un rôle clé pour évaluer ces avancées de manière reproductible."
+ },
+ "items": [
+  {
+   "id": "709a881ab9cb3417",
+   "title": "When the KV Cache Is Slower Than the GPU: Scaling Remote KV Tiers for Context-Parallel Prefill",
+   "url": "https://huggingface.co/papers/2610.21500",
+   "summary": "Reusing the attention KV cache across requests is a standard way to cut prefill cost in long-context LLM serving, and production systems increasingly back the per-engine cache with a remote tier shared by every engine. We study such a tier in a disaggregated deployment of GLM-5.3, an FP8 mixture-of-experts model with multi-head latent attention (MLA), on 8xB300 nodes running prefill context parallelism (PCP8). Enabling the remote tier (LMCache with a Valkey store) left median time-to-first-token unchanged but raised the 16k-token p99 from 3.96 s to 17.3 s. Replaying a production request stream on an isolated engine, we find that a remote hit took 0.88 s against 0.31 s to recompute the prompt, and that synchronous loading turned a hit-heavy stream into an unstable queue: p99 83.32 s with the GPUs 7% busy. A two-term cost model explains both: a hit pays off only if the tier delivers more than B* = sR (2.53 GB/s for this model and GPU), and a fixed per-hit engine cost (T0 ~ 0.33 s) means that hits on prompts shorter than about 17k tokens cannot beat recompute at any bandwidth. Guided by the model, we (i) shard the MLA KV store across PCP ranks, with a proof that the existing minimum-over-ranks lookup returns the longest cached prefix and a load protocol that can never desynchronize collectives; (ii) partition the remote tier by rank, one server instance per rank with no coordination, which raises GET bandwidth 6.3x to 10.76 GB/s; (iii) add asynchronous loading to the sharded store; and (iv) fix three client bugs that caused unbounded stalls. On the hit-heavy stream, with 98.5% of prompt tokens served from the remote tier, p99 falls from 83.32 s to 0.67 s. The sharded store raises prefill throughput by 14%, and by 34% together with an upstream kernel fix. All changes are submitted upstream to LMCache.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.21500"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "L'étude démontre que l'utilisation d'un cache KV distant pour le préfill en contexte long peut dégrader les performances (p99 de 3.96s à 17.3s) en raison de latences réseau et de coûts fixes, et propose un modèle de coût pour optimiser son déploiement via un seuil de rentabilité (B*) et un sharding adapté.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un défi majeur dans le déploiement d'inférences de grands modèles de langage (LLM) avec des contextes longs : l'optimisation du cache des clés-valeurs (KV cache) pour réduire le coût du préfill. Le problème spécifique est que l'utilisation d'un cache KV distant, partagé entre plusieurs moteurs d'inférence, peut introduire des latences imprévues et dégrader les performances, notamment pour les percentiles élevés (p99), rendant le système moins efficace que la recomputation pure des tokens.",
+    "methode": "Les auteurs étudient un déploiement disaggregé du modèle GLM-5.3 (FP8, mixture-of-experts avec attention latente multi-têtes, MLA) sur 8 nœuds B300 utilisant le parallélisme de contexte pour le préfill (PCP8). Ils analysent les performances d'un cache KV distant (LMCache avec un backend Valkey) et modélisent son coût via une équation à deux termes : un seuil de bande passante minimale (B*) pour qu'un hit soit rentable, et un coût fixe par hit (T0) rendant les hits inefficaces pour les prompts courts. Pour résoudre ces problèmes, ils proposent : (1) un sharding du cache MLA KV par rang PCP, avec une preuve formelle sur la cohérence des préfixes et un protocole de chargement évitant les désynchronisations ; (2) une partition du tier distant par rang, éliminant la coordination entre serveurs ; (3) un chargement asynchrone du cache shardé ; (4) la correction de bugs clients causant des blocages.",
+    "resultats": "Les optimisations réduisent la latence p99 de 83,32 secondes à 0,67 seconde pour un flux de requêtes à forte proportion de hits (98,5 % des tokens servis depuis le cache distant). Le débit de préfill augmente de 14 % avec le sharding seul, et de 34 % combiné à une correction de kernel en amont. La bande passante GET du cache distant est multipliée par 6,3, atteignant 10,76 Go/s. La latence médiane reste inchangée, mais les gains sur les percentiles élevés sont significatifs.",
+    "limites": "Les résultats dépendent fortement du matériel spécifique (nœuds B300, modèle GLM-5.3) et du backend Valkey, limitant leur généralisation. Le modèle de coût suppose une stabilité des paramètres (B*, T0) qui pourrait varier avec d'autres configurations. Enfin, les bugs corrigés suggèrent une maturité limitée des outils actuels (LMCache), ce qui peut introduire des biais dans l'évaluation.",
+    "verdict": "Cette publication mérite une attention particulière pour son analyse rigoureuse des goulots d'étranglement du cache KV distant et ses solutions techniques innovantes, bien que son applicabilité doive être validée sur d'autres architectures."
+   }
+  },
+  {
+   "id": "a13b8b8118dce021",
+   "title": "Virtual Head Attention",
+   "url": "https://huggingface.co/papers/2610.17959",
+   "summary": "The design of attention mechanisms in long-context large language models faces an ``impossible triangle'' among KV cache size, training and prefill FLOPs, and model quality. GQA achieves strong quality but incurs high KV cache overhead; alternative approaches such as MLA and MFA can compress the cache, but MLA suffers from quality loss while MFA substantially increases training and prefill compute. We propose Virtual Head Attention (VHA), which simultaneously improves all three vertices through two lightweight linear operations: Q Premix applies a near-identity transformation to queries within each KV group to recover virtual head diversity from halved physical query heads, and Linear Postmix fuses inter-head features via a low-rank I + AB^top residual structure. Since VHA introduces no nonlinear operations, Premix can be folded into the query projection and Postmix into the output projection at inference time, reducing the model to a standard GQA-2 architecture that directly reuses all existing GQA inference optimizations. With only two KV heads, the group size in large models readily reaches 64, fully exploiting Tensor Core parallelism during decoding. Across four scales with 4K-context 50B-token pretraining, VHA consistently surpasses the standard GQA baseline at every scale (+0.05\\% to +0.81\\%), while reducing KV cache by 4times vs.\\ GQA-8 at dense scales and 2times vs.\\ GQA-4 at the MoE scale, and lowering training and prefill FLOPs by 7.9\\% (1.7B, S{=}4096). On an industrial 30B-A3B MoE model trained on 500B tokens at 8K context, VHA outperforms both MLA and GQA-4 by +0.70\\,/\\,+2.60\\,\\% on a 12-benchmark base-model evaluation suite; in a separate matched 10B-A1B MoE comparison after long-context mid-training, VHA attains an average RULER score of 84.4 over 8K--128K versus 73.0 for GQA, while using two rather than four KV heads in the full-attention layers.",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.17959"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "VHA résout le 'triangle impossible' de l'attention longue-contexte (taille du cache KV, FLOPs, qualité) via deux opérations linéaires (Q Premix et Linear Postmix) qui réduisent le cache KV à 2 têtes tout en maintenant la qualité, compatible avec les optimisations GQA existantes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La publication aborde le « triangle impossible » des mécanismes d'attention dans les grands modèles de langage (LLM) à contexte long, où il est difficile de concilier trois objectifs : réduire la taille du cache KV (clés-valeurs), limiter les coûts computationnels (FLOPs) lors de l'entraînement et du pré-remplissage, et maintenir une qualité élevée du modèle. Les solutions existantes, comme GQA, MLA ou MFA, optimisent seulement deux de ces aspects au détriment du troisième.",
+    "methode": "Virtual Head Attention (VHA) propose une solution basée sur deux opérations linéaires légères : *Q Premix* applique une transformation quasi-identitaire aux requêtes au sein de chaque groupe KV pour restaurer une diversité de têtes virtuelles à partir d'un nombre réduit de têtes physiques, et *Linear Postmix* fusionne les caractéristiques inter-têtes via une structure résiduelle de faible rang (I + AB^top). Ces opérations, dépourvues de non-linéarités, peuvent être intégrées aux projections de requêtes et de sortie lors de l'inférence, ramenant le modèle à une architecture GQA-2 standard. Cela permet de réutiliser les optimisations existantes pour GQA et d'exploiter pleinement le parallélisme des Tensor Cores lors du décodage, avec un groupe de taille 64 pour seulement deux têtes KV.",
+    "resultats": "VHA surpasse systématiquement le baseline GQA à toutes les échelles lors d'un pré-entraînement sur 50 milliards de tokens avec un contexte de 4K, avec des gains allant de +0,05 % à +0,81 %. Il réduit le cache KV d'un facteur 4 par rapport à GQA-8 (échelles denses) et d'un facteur 2 par rapport à GQA-4 (échelle MoE), tout en diminuant les FLOPs d'entraînement et de pré-remplissage de 7,9 % pour un modèle de 1,7 milliard de paramètres. Sur un modèle MoE industriel de 30B-A3B (8K contexte), VHA dépasse MLA et GQA-4 de +0,70 % et +2,60 % respectivement. Enfin, sur un modèle MoE de 10B-A1B, VHA atteint un score RULER moyen de 84,4 (contre 73,0 pour GQA) sur des contextes de 8K à 128K, avec seulement deux têtes KV.",
+    "limites": "Les détails sur l'implémentation pratique de *Q Premix* et *Linear Postmix* restent succincts, notamment concernant la stabilité numérique ou la sensibilité aux hyperparamètres (comme le rang de la matrice AB^top). De plus, les gains en qualité semblent modestes (+0,05 % à +0,81 %) pour certains cas, ce qui pourrait limiter l'adoption si le coût d'intégration n'est pas négligeable. Enfin, l'évaluation se concentre sur des benchmarks spécifiques, et la généralisation à d'autres tâches ou architectures reste à démontrer.",
+    "verdict": "VHA mérite une attention particulière pour son approche élégante et ses résultats prometteurs en efficacité computationnelle et mémoire, mais son adoption dépendra de sa robustesse en pratique et de sa scalabilité au-delà des benchmarks présentés."
+   }
+  },
+  {
+   "id": "c5e7c5125f2366da",
+   "title": "VLA-Δ: Learning Physical State Transition for Vision-Language-Action Models",
+   "url": "https://huggingface.co/papers/2610.21306",
+   "summary": "Vision-language-action (VLA) models transfer semantic knowledge acquired through vision-language pretraining to robot control, achieving strong performance across various benchmarks. However, most VLAs directly map observations to demonstrated actions without explicit supervision of intermediate physical state changes, making them prone to overfitting observation-action correspondences. Some methods introduce intermediate reasoning or future-state prediction in language, visual, or latent spaces to guide action generation, but do not explicitly supervise the physical state transition itself. We therefore propose VLA-Δ, a general framework that uses physical changes between current and future states as explicit learning targets. To support this objective, we construct a large-scale pretraining dataset and derive physical state-transition annotations covering task-relevant semantics and visual motion changes, providing more direct supervision for continuous action generation. During inference, the model generates actions directly from current observations without additional inference overhead. VLA-Δ achieves performance competitive with the state of the art on LIBERO and RoboTwin, and outperforms π_{0.5} in real-robot experiments. Our code is available at https://github.com/ZJU-OmniAI/VLA-Delta",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 29,
+    "arxiv_id": "2610.21306"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "VLA-Δ introduit une supervision explicite des transitions d'état physique pour les modèles Vision-Language-Action (VLA), améliorant leur généralisation et réduisant le surapprentissage des correspondances observation-action. Cette approche, validée sur des benchmarks robotiques comme LIBERO et RoboTwin, propose une alternative plus robuste aux méthodes existantes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles Vision-Language-Action (VLA) actuels établissent une correspondance directe entre les observations et les actions démontrées, sans supervision explicite des transitions d'états physiques intermédiaires. Cela les rend vulnérables au surapprentissage des corrélations observation-action, limitant leur généralisation et leur robustesse dans des environnements dynamiques ou non familiers.",
+    "methode": "VLA-Δ introduit un cadre général qui utilise les changements physiques entre l'état courant et l'état futur comme cibles d'apprentissage explicites. Pour ce faire, les auteurs construisent un jeu de données de préentraînement à grande échelle, enrichi d'annotations de transitions d'états physiques couvrant à la fois la sémantique pertinente pour la tâche et les changements visuels de mouvement. Ces annotations sont dérivées pour fournir une supervision directe lors de la génération d'actions continues. Le modèle conserve une inférence efficace, générant des actions directement à partir des observations courantes sans surcoût calculatoire. La méthode s'appuie sur une architecture VLA standard, mais intègre une perte supplémentaire pour optimiser la prédiction des transitions d'états physiques.",
+    "resultats": "VLA-Δ atteint des performances compétitives avec l'état de l'art sur les benchmarks LIBERO et RoboTwin. Dans des expériences sur robot réel, il surpasse le modèle π₀.₅, démontrant une meilleure généralisation et une capacité accrue à gérer des transitions d'états complexes. Les chiffres précis de performance (ex. scores de réussite) ne sont pas détaillés dans le contenu disponible.",
+    "limites": "La dépendance à des annotations de transitions d'états physiques peut limiter l'applicabilité du cadre à des environnements où ces transitions sont difficiles à modéliser ou à annoter. De plus, la qualité des résultats repose fortement sur la précision et la couverture du jeu de données de préentraînement, ce qui pourrait poser des défis en termes de scalabilité ou de biais. Enfin, l'absence de détails sur l'architecture exacte ou les hyperparamètres rend difficile une évaluation complète de la robustesse de la méthode.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante de supervision explicite des transitions d'états physiques, offrant une piste prometteuse pour améliorer la généralisation des modèles VLA, malgré des limites liées à la dépendance aux données annotées."
+   }
+  },
+  {
+   "id": "cfdf06bec85441f3",
+   "title": "PINT: A Unified Model with Shared Predictive Intent for Robot Manipulation",
+   "url": "https://huggingface.co/papers/2610.16355",
+   "summary": "Generalist robot manipulation can benefit from pretrained vision-language models (VLMs) for semantic reasoning and video generation models (VGMs) for world modeling. However, existing unified models that directly fuse them through shared attention at multiple layers can make it harder to draw on their specialized capabilities. We introduce PINT, a unified model that coordinates semantic reasoning, world modeling, and action generation through a shared chunk-level Predictive Intent while preserving expert-specific pathways. PINT inserts learnable Intent Tokens into the VLM sequence to form this representation, conditioning both the VGM and an Action Expert (AE). It replaces only the VGM's prompt conditioning and retains the VGM at inference, where the AE reads its representations through one-way attention. Rather than prescribing what Predictive Intent should encode, PINT learns it jointly from the native prediction objectives of the VLM, VGM, and AE, which provide complementary views of the same upcoming task execution. Training uses two stages: Stage 1 freezes the VGM so that future video prediction shapes Predictive Intent with task-relevant future dynamics, while Stage 2 fixes the learned Intent and adapts the VGM and AE. Without embodied pretraining, PINT achieves strong in-distribution (ID) performance and substantially improves out-of-distribution (OOD) generalization, reaching 15.5% on RoboTwin 2.0-Hard compared with 1.8% for Fast-WAM and 3.2% for StarVLA, and 79.5% on LIBERO-Plus compared with 51.5% and 75.0%, respectively. Across five real-world bimanual tasks, PINT reaches 68% ID and 24% OOD success, compared with 35%/9% for pretrained Motus and 67%/35% for pretrained π_{0.5}.",
+   "published": "2026-10-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.16355"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "MRTPO introduit une assignation token-par-token des récompenses dans les RL multi-récompenses, en utilisant la distance de Jensen-Shannon pour identifier les tokens pertinents. La méthode accélère la convergence et améliore les performances sur des tâches comme le text-to-SQL et l'appel d'outils, sans annotations supplémentaires.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le modèle PINT vise à résoudre le défi de la manipulation robotique généraliste en intégrant de manière efficace des modèles pré-entraînés de vision-langage (VLM) pour le raisonnement sémantique et des modèles de génération vidéo (VGM) pour la modélisation du monde. Les approches existantes, qui fusionnent directement ces modèles via des mécanismes d'attention partagée, peinent à exploiter pleinement leurs capacités spécialisées sans compromettre leur performance individuelle.",
+    "methode": "PINT propose une architecture unifiée qui coordonne le raisonnement sémantique, la modélisation du monde et la génération d'actions via un *Predictive Intent* partagé au niveau des chunks. Ce dernier est formé par l'insertion de *Intent Tokens* apprenables dans la séquence du VLM, conditionnant à la fois le VGM et un expert d'action (AE). Contrairement aux méthodes classiques, PINT préserve les voies spécifiques à chaque expert et remplace uniquement le conditionnement par prompt du VGM. L'entraînement se déroule en deux étapes : d'abord, le VGM est gelé pour façonner le *Predictive Intent* avec des dynamiques futures pertinentes pour la tâche, puis ce dernier est figé pour adapter conjointement le VGM et l'AE. L'apprentissage est guidé par les objectifs natifs de prédiction des trois composants (VLM, VGM, AE), offrant des vues complémentaires de l'exécution future de la tâche.",
+    "resultats": "Sans pré-entraînement spécifique à l'embodiment, PINT obtient des performances élevées en distribution (ID) et améliore significativement la généralisation hors distribution (OOD). Sur RoboTwin 2.0-Hard, il atteint 15,5 % de succès (contre 1,8 % pour Fast-WAM et 3,2 % pour StarVLA), et 79,5 % sur LIBERO-Plus (contre 51,5 % et 75,0 % respectivement). En conditions réelles sur cinq tâches bimanuelles, PINT enregistre 68 % de succès ID et 24 % OOD, surpassant Motus (35 %/9 %) et rivalisant avec π₀.₅ (67 %/35 %).",
+    "limites": "Les détails sur la robustesse du *Predictive Intent* face à des scénarios non couverts par les données d'entraînement restent flous. De plus, la dépendance à des modèles pré-entraînés (VLM/VGM) pourrait limiter l'adaptabilité à des environnements radicalement nouveaux. Enfin, l'absence de comparaison avec des méthodes hybrides récentes (autres que Fast-WAM et StarVLA) laisse planer un doute sur sa supériorité absolue.",
+    "verdict": "PINT mérite une attention particulière pour son approche innovante de coordination modulaire entre experts, mais son évaluation en conditions réelles variées et son passage à l'échelle restent à confirmer."
+   }
+  },
+  {
+   "id": "ade8e07cac4a8277",
+   "title": "Recursive Environment Scaling for General Long-Horizon Agents",
+   "url": "https://huggingface.co/papers/2610.16397",
+   "summary": "We study environment scaling as a way to increase agent-benchmark difficulty while holding core task objectives fixed. Our framework, Recursive Environment Scaling (RES), transforms existing benchmark environments while preserving their objectives and completion requirements. A proposer changes information access, resource relations, and execution dependencies; execution-grounded checks validate the resulting candidate, and accepted changes are inherited across rounds. This produces related environments for paired evaluation and training-trajectory collection. Experiments on 294 initial tasks from three benchmarks show lower task success for all six evaluation models, with decreases of 57.14--77.14 percentage points on Claw-Eval-Live. With equal trajectory counts and identical optimization settings, fine-tuning on RES trajectories outperforms original-trajectory SFT in all nine model--benchmark comparisons by 7.00--14.61 percentage points. Ablations identify recursive inheritance and dependency composition as important contributors to increased difficulty. Together, these results support environment scaling for both agent evaluation and training.",
+   "published": "2026-10-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.16397"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Le cadre *Recursive Environment Scaling (RES)* propose une méthode pour augmenter la difficulté des benchmarks d'agents en modifiant récursivement les environnements tout en conservant leurs objectifs initiaux. Les résultats montrent une dégradation significative des performances des modèles (jusqu'à -77%) et une amélioration de 7-14 points lors du fine-tuning avec les trajectoires RES, soulignant l'importance de la composition des dépendances et de l'héritage récursif.",
+   "score": 9.1
+  },
+  {
+   "id": "9ada2e54ecc0a127",
+   "title": "MAI-Gym: An Open All-in-One Platform for GUI Agent Evaluation and RL Training across Mobile and Computer Environments",
+   "url": "https://huggingface.co/papers/2610.20939",
+   "summary": "Online reinforcement learning (RL) with verifiable rewards has driven rapid progress in mathematics, coding, and tool use, but scaling this success to GUI agents remains challenging due to the high cost of interactive environments and the scarcity of realistic training tasks. We introduce MAI-Gym, an open all-in-one platform that unifies GUI agent evaluation, data collection, and online RL training across mobile, computer, and web environments. Through a shared rollout pipeline, MAI-Gym ensures consistent agent behavior across evaluation and training, supports ten established benchmarks, and scales to 20,000 parallel environment instances. Beyond scalable infrastructure, MAI-Gym enables automated synthesis of diverse GUI applications and challenging tasks, including resettable mocked apps and coherent cross-app worlds with execution-validated task verifiers. Using MAI-Gym, we train MAI-Gym-9B, a unified 9B agent for mobile and computer use, achieving state-of-the-art performance among open GUI agents under 10B parameters: 78.4% on MobileWorld and 76.2% on OSWorld-Verified. Importantly, RL in a mocked train-ticketing app transfers to its real-world counterpart, improving task success on a phys- ical phone from 28.8% to 48.1%. We release the framework, synthesis skills, mocked apps, 2,000 verified tasks, and the model checkpoint to support repro- ducible research and further advances in scalable GUI agent training.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2610.20939"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "robotique"
+   ],
+   "tldr": "MAI-Gym fournit une plateforme unifiée pour l'entraînement et l'évaluation d'agents GUI (mobile, web, ordinateur) avec 20k instances parallèles, incluant des tâches synthétiques et une validation croisée entre environnements simulés et réels, atteignant des performances SOTA avec MAI-Gym-9B.",
+   "score": 8.8
+  },
+  {
+   "id": "7c3a547ab4228c00",
+   "title": "OpenGCUA: Toward a Fully Open Stack for Generalist Computer Use",
+   "url": "https://huggingface.co/papers/2610.22200",
+   "summary": "Computer use has reached a turning point: the focus is expanding from GUI-only interaction to systems that complete tasks on users' computers through visual and programmatic interfaces. We define a generalist computer-use agent (GCUA) as a system in which the model chooses how to observe, act, and organize its work across visual and programmatic interfaces. Yet frontier implementations, such as GPT-6 Astra's computer-use system, remain largely closed, limiting systematic study of their design. We introduce Open Generalist CUA (OpenGCUA), an ongoing project to develop and open the full stack for GCUAs with the community. This report presents the first release of OpenGCUA. Code execution is a key feature of our agent design: it lets intermediate results determine subsequent operations and enables models to apply their existing programming capabilities directly to computer interaction. We also propose harness-to-model decision transfer, moving selected observations and task-state decisions from fixed harness rules to the model. On OSWorld-v2, our full configuration improves task scores across all eight evaluated models, including GPT-6 Astra and Claude Opus 5, raising mean partial score by +19.6 points and reducing reported steps per task by an average of 53.0% relative to batched GUI-only execution. We release our implementation and prompts, evaluation trajectories from all eight models, and preliminary versions of a real-device harness and a cross-device SDK. The harness addresses real-device challenges not fully captured by benchmarks, while the SDK provides a common programming interface across computers, mobiles and browsers. Across four real macOS tasks under our real-device harness, selected Qwen3.8-Max runs use 19.4 times as many reported reasoning tokens as GPT-6 Astra, highlighting substantial differences between models in real-device execution efficiency.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 71,
+    "arxiv_id": "2610.22200"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "produit",
+    "benchmark"
+   ],
+   "tldr": "OpenGCUA propose une pile open-source complète pour les agents d'utilisation générale de l'ordinateur (GCUA), intégrant exécution de code, prise de décision dynamique et évaluation sur OSWorld-v2, améliorant les scores de tâches pour plusieurs modèles frontaliers.",
+   "score": 8.8
+  },
+  {
+   "id": "fd947e1be9ac89b5",
+   "title": "MLExpert: Towards a Generalist Agentic Model for Autonomous Machine Learning Engineering",
+   "url": "https://huggingface.co/papers/2610.22344",
+   "summary": "Large language models (LLMs) are expanding from assisting scientific research and engineering to autonomously developing and improving AI systems, advancing AI for AI (AI4AI) as a pathway toward recursive self-improvement (RSI). Workflow-driven machine learning engineering (MLE) systems provide a practical path toward this pursuit through complex orchestration that manages long-horizon experimentation, while recent MLE systems adopt model-directed interaction, allowing models to autonomously organize experiments and adapt optimization strategies based on execution feedback. However, feedback from each experiment reflects several preceding decisions, and a long MLE run contains many such costly experiments. Training must therefore select useful supervision from long interaction trajectories and learn from intermediate outcomes. We propose a post-training method for autonomous long-horizon MLE optimization and apply it to train MLExpert, a 35B Mixture-of-Experts agentic model. We design the Kaggle-MLE Factory to construct executable tasks and an interaction harness for model-directed experimentation. Hierarchical agentic SFT transfers general tool-use and coding capabilities to MLE through outcome-guided supervision. Windowed Interaction RL (WIRL) treats the multi-turn decisions between successive experiment results as an execution window and assigns it a shared outcome-based reward. Asynchronous collection and policy correction support policy updates before the trajectory ends. On MLE-Bench Lite, MLExpert improves the average medal rate of the base model from 37.9% to 72.7%, achieving performance comparable to larger frontier models such as Kimi-K3 and GLM-5.3. Further experiments show that MLExpert improves performance on NatureBench Lite, agent scaffold optimization, and algorithm optimization, suggesting that the learned optimization capability generalizes to other tasks.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2610.22344"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "MLExpert est un modèle agentique de 35B paramètres (MoE) conçu pour l'ingénierie autonome de ML, orchestrant des expériences longues et adaptatives via un système de feedback hiérarchique. Entraîné sur des tâches exécutables, il démontre des capacités d'auto-amélioration dans des workflows complexes.",
+   "score": 8.8
+  },
+  {
+   "id": "f09ee7ca5e3baa5d",
+   "title": "Mosaic: Multi-Session Agentic Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2610.22174",
+   "summary": "Most existing agentic reinforcement learning methods assume single-session trajectories, where interaction proceeds within one continuously accumulated context. However, agentic techniques such as context compaction and subagent forking may produce trajectories spanning multiple sessions, creating a mismatch between the single-session training assumption and inference-time execution. Therefore, we introduce Multi-Session Agentic Reinforcement Learning, a more general setting that supports an arbitrary number of sessions within a trajectory. Under this setting, a widely adopted method is to broadcast trajectory-level advantages to all sessions, but this does not distinguish contributions from various sessions or guide session allocation within trajectories. To address this issue, we propose Mosaic, a multi-session agentic RL method with critic-free hierarchical optimization. At the trajectory level, it incorporates session-usage signals into advantage estimation. At the session level, it shapes each session's advantage according to the estimated marginal contribution. Experiments on BrowseComp with Qwen3.5-4B show that Mosaic outperforms broadcasting in both context compaction and subagent forking scenarios while using fewer sessions on average. Further analyses show that our method achieves improvements in session utility and allocation, which we suggested is a promising target for future advances in multi-session agentic RL.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 45,
+    "arxiv_id": "2610.22174"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Mosaic formalise l'apprentissage par renforcement multi-session pour les agents, permettant de gérer des trajectoires fragmentées en sessions multiples et d'optimiser les avantages par session via une approche hiérarchique sans critique, améliorant les performances sur BrowseComp avec Qwen3.5-4B.",
+   "score": 8.8
+  },
+  {
+   "id": "33a9a4488f8529e1",
+   "title": "CarryOn: A Dual-Loop Harness for Personalized and Reliable Robot Assistance",
+   "url": "https://huggingface.co/papers/2610.21453",
+   "summary": "While generalist vision-language-action (VLA) models have enabled diverse open-world manipulation, real-world robotic assistance requires two critical capabilities they currently lack: personalization and reliable execution. First, executing an instruction like \"make me a sandwich\" requires grounding subtask decomposition in persistent user preferences rather than relying on a single generic solution. Second, reliable deployment demands explainable safety assurance that proactively prevents hazards and gracefully recovers from occasional physical failures. To address these gaps, we present CarryOn, a dual-loop harness designed to augment a frozen VLA policy. The planning loop maintains persistent user-level and scene-level context that is continually grounded against new observations and revised through interaction, enabling personalized task selection and execution grounding across conversations and changing scenes. The execution loop actively supervises policy rollouts, shielding actions from predicted hazardous contact. When execution fails, the system invokes reusable control-based recovery skills that restore task progress and are refined through reflection on earlier failures. On a real robot and in simulation, CarryOn dispatches preference-consistent subtasks across users and scenes, reduces the violation rate of an already safety-finetuned VLA from 52.6% to 6.1%, and increases recovery success from 13% to 80% when refined skills are reused.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.21453"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents",
+    "produit"
+   ],
+   "tldr": "CarryOn propose un double boucle (planification et exécution) pour personnaliser et sécuriser les politiques VLA en robotique, intégrant des préférences utilisateur persistantes et des mécanismes de récupération basés sur des compétences contrôlables, améliorant la fiabilité des tâches de manipulation.",
+   "score": 8.8
+  },
+  {
+   "id": "5e2c1d488337fcda",
+   "title": "Trajectory-Level Speculation with Semantic Verification for Tool-Using Agents",
+   "url": "https://huggingface.co/papers/2610.21463",
+   "summary": "Large language model agents solve tasks through long sequences of tool calls, and the prevailing design has a single strong model generate every step, although many steps are routine enough for a much smaller model. Existing ways of sharing this work keep the strong model as the generator: routers and collaborative agents decide which model handles each query or step, and speculative methods check a small model's drafts one step at a time, usually against the strong model's own action. We introduce SpecAgent, a collaboration protocol that turns the strong model from the author of each step into a reviewer of steps drafted by a weak model. The weak model executes read-only tool calls as it drafts, so that every step is grounded in real observations, and holds the first action that would modify the environment. The strong model then verifies the drafted segment in a single prefill pass, commits the longest prefix it judges semantically valid, and repairs the first rejected step. Because verification replaces autoregressive decoding with parallel prefill, the strong model decodes only short verdicts and occasional repairs rather than every step. On τ^2-Bench, SpecAgent comes within one point of the strong model's success rate while roughly halving memory traffic and wall time, and on AutomationBench and VitaBench it recovers 44-75% of the quality gap while lowering both. In an edge-cloud deployment on MCP-Atlas with three cloud models, it closes 53-75% of the weak-strong quality gap while the strong model generates at most half as many tokens. These results suggest that a strong model need not author every step of an agent: reviewing grounded drafts retains most of its quality while cutting both latency and memory traffic.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.21463"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "SpecAgent optimise les agents utilisant des outils en déléguant la génération des étapes à un modèle faible, tandis que le modèle fort vérifie sémantiquement des segments entiers en une seule passe, réduisant la charge de calcul tout en maintenant des performances proches de l'état de l'art sur τ²-Bench.",
+   "score": 8.8
+  },
+  {
+   "id": "c593dc488338aaf9",
+   "title": "Dexterity from Supervised Play",
+   "url": "https://arxiv.org/abs/2610.22340v1",
+   "summary": "How can robots autonomously collect the contact-rich experience needed to learn dexterous manipulation? We present DSP: Dexterity from supervised play, a framework in which a robot learns a play policy from minutes of human play through behavior cloning, then deploys it autonomously to collect hours of interaction data to train a world model. During inference, the same play policy then guides model-predictive control (MPC) by proposing candidate action sequences for evaluation under the learned world model. To accelerate inference, we also introduce a method for distilling a closed-loop, goal-conditioned policy through self-play within the learned world model. We evaluate this framework on underactuated pushing and any-to-any in-hand pose reorientation with a multifingered hand, in simulation and real world. In real world experiment, our method outperforms hindsight behavior cloning by 69.6% in success rate and achieves comparable success to reinforcement learning with 490 times less interaction data. These results demonstrate that supervised play can autonomously collect interaction data, guide model-based planning, and enable policy learning without any task-specific demonstrations or sim-to-real transfer.",
+   "published": "2026-10-15T17:55:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Botao He, Yiming Dou, Yiannis Aloimonos, Jitendra Malik, Akash Sharma, Ruoshi Liu"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "DSP (Dexterity from Supervised Play) permet à un robot d'apprendre des politiques de manipulation dexterous via un apprentissage par imitation à partir de données humaines, puis de collecter des données autonomes pour entraîner un modèle du monde, améliorant les performances en manipulation in-hand de 69,6% par rapport à des méthodes existantes avec 490 fois moins de données.",
+   "score": 8.6
+  },
+  {
+   "id": "195efd2b822ad19f",
+   "title": "Beyond Policy Rollouts: Embedding-Space Directional Exploration with Anchored Noise for LLM RLVR",
+   "url": "https://huggingface.co/papers/2610.16105",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) typically uses small rollout groups per prompt, where repeated sampling from the same policy can yield highly similar trajectories, reducing within-group reward variation and weakening group-relative advantage signals. Existing remedies such as higher sampling temperature, entropy bonuses, asymmetric clipping, and larger rollout budgets broaden sampling or modify policy updates but leave rollout conditioning unchanged. In this paper, we propose EDEN (Embedding-space Directional Exploration via anchored Noise), which intervenes at the rollout source through anchored input perturbations. EDEN explores beyond the policy's own rollouts. Within the same rollout budget, it replaces a small fraction of standard rollouts in each group with rollouts that the same policy generates from the prompt plus a single appended, perturbed embedding position, rather than from the prompt alone. Gaussian noise drives variation, while a shared anchor provides a common conditioning direction within each prompt group. Selected perturbed rollouts contribute to GRPO updates with downweighted advantages, and the model architecture, discrete decoding, and test-time inference remain unchanged. Across model scales and mathematical reasoning benchmarks, EDEN outperforms GRPO and the exploration controls evaluated in the same pipeline, with the largest gains in sampled solution coverage. Analyses show that more prompt groups provide non-zero group-relative learning signals and that noise and anchoring play complementary roles. Intervening at the rollout source is thus an effective lever for exploration in RLVR.",
+   "published": "2026-10-11T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.16105"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "EDEN propose une méthode de RL avec récompenses vérifiables (RLVR) qui améliore l'exploration des trajectoires en perturbant les embeddings d'entrée avec un bruit ancré, permettant une diversification des rollouts sans modifier la politique de base, ce qui renforce les signaux d'avantage relatif dans les groupes de rollouts.",
+   "score": 8.5
+  },
+  {
+   "id": "01ed800a4683d5b1",
+   "title": "FlashMask-3: Efficient and Expressive Mask-Aware Distributed Attention",
+   "url": "https://huggingface.co/papers/2610.17901",
+   "summary": "Long-context training of large language and multimodal models couples structured attention masks (document, prefix-LM, share-question, sliding-window, block-sparse) with multi-node context parallelism, making the mask a dominant bottleneck. FlashMask's column-wise sparse mask compresses them from O(n^2) to O(n) via four query-axis boundary vectors, covering broad structured patterns. Implemented for Ampere GPUs, it neither exploits FlashAttention-3's TMA/WGMMA warp-specialized pipeline on Hopper nor supports distribution. The column-wise sparse mask is indexed by key positions but stores query-axis interval boundaries. Under any multi-chunk context-parallel assignment, it reduces per-rank mask localization to a provably zero-communication clip--shift--max on the boundary vectors, compatible with the single-GPU kernel. FlashMask-3 introduces a mask-aware Hopper kernel with three-role warp specialization atop FlashAttention-3's TMA/WGMMA pipeline, plus a mask-aware distributed extension: zero-communication mask localization, a sparsity-aware load balancer (HCC-IPO), and a mask-aware compute-communication overlap with mask-driven communication pruning, whose forward all-gather uses topology-aware hierarchical routing. On a single H100 across 12 masks at 4K--128K context, it improves achieved TFLOPs over FlashMask, FlexAttention, and MagiAttention by 45--141%, 34--71%, and 2--44%. At context-parallel degrees 4--32 with 8K sequence per device, it attains 31--75% compute-communication overlap efficiency and improves throughput over Megatron-Core CP ring, Megatron-Core CP all-gather, and MagiAttention by 1.80times--3.71times, 1.71times--2.92times, and 1.09times--1.46times. In end-to-end training of a 118B-A14B MoE at 128K on 128 H100 GPUs, it raises throughput by 7.3--11.0% over a Dual Chunk all-gather baseline, with attention forward+backward 24.5--44.9% faster.",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.17901"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "FlashMask-3 optimise l'attention structurée longue-contexte (masques, parallélisme distribué) via un masque creux par colonnes et un noyau Hopper spécialisé, réduisant la communication et la complexité de O(n²) à O(n) tout en exploitant FlashAttention-3.",
+   "score": 8.5
+  },
+  {
+   "id": "fb48bdee5e46da68",
+   "title": "Can World and Action Modeling Benefit Each Other under Unified Causal Training?",
+   "url": "https://huggingface.co/papers/2610.21095",
+   "summary": "World and action modeling are closely related, yet their reciprocal benefits under unified causal training remain unclear. We introduce OneWM, a simple framework for unified causal training that treats actions as both conditions for world prediction and targets for policy learning within a shared video-action architecture. Using this framework, we investigate whether learning forward dynamics conditioned on specified actions improves action learning, and whether learning to generate actions in turn improves action-conditioned world modeling. We use LIBERO, LIBERO-Plus, and RoboCasa365 as embodied testbeds to evaluate both policy learning and world modeling, complemented by real-world policy experiments. Learning the visual consequences of specified actions improves policy performance and generalization across changing scenes. In turn, action learning improves multi-view world-prediction fidelity under the same architecture. Together, these results answer both questions positively, supporting reciprocal benefits between world modeling and action generation under unified causal training.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.21095"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "OneWM montre que l'entraînement causal unifié des modèles de monde et d'actions (via des vidéos) améliore réciproquement les performances des politiques et la modélisation du monde, validé sur LIBERO, RoboCasa365 et des expériences réelles.",
+   "score": 8.5
+  },
+  {
+   "id": "dd5f2cb6ec697566",
+   "title": "Waypoint-OPD: Transferring RL-Induced Policy Shifts via Gated On-Policy Distillation",
+   "url": "https://huggingface.co/papers/2610.21601",
+   "summary": "Policy-shift distillation reuses the difference between a teacher's log probabilities before and after reinforcement learning (RL) as supervision on student-generated trajectories. However, this endpoint policy shift cannot reveal whether local action preferences evolved consistently during teacher training. The same endpoint shift can result from early and late shifts that reinforce or partially cancel each other. We investigate whether agreement between early and late teacher policy shifts can guide selective transfer. We introduce Waypoint-guided On-Policy Distillation (Waypoint-OPD), which uses an intermediate teacher checkpoint from the same RL run to compare early and late shifts in relative action preferences at student-visited prefixes. We gate the endpoint shift according to the directional agreement between the early and late shifts, suppressing it when they point in opposing directions. Compared with endpoint-only transfer, our method requires only one additional frozen-teacher scoring pass. Using RL-trained Qwen3-4B teachers, we evaluate our method with Qwen3-8B, Qwen3-14B, and Qwen3-30B-A3B as student models in mathematical and code reasoning. In all six domain--student settings, Waypoint-OPD achieves the highest domain-average score among the compared distillation methods. Ablations with the Qwen3-8B student show that removing or shuffling gates reduces mathematical reasoning performance. These results support the use of directional agreement between early and late teacher policy shifts to weight the endpoint shift during student training.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 181,
+    "arxiv_id": "2610.21601"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Waypoint-OPD améliore la distillation de politiques en comparant les shifts de politique intermédiaires et finaux d'un enseignant RL, filtrant les transferts incohérents. Les résultats sur Qwen3 (4B à 30B paramètres) montrent des gains en raisonnement mathématique et en génération de code, avec un coût computationnel minimal.",
+   "score": 8.5
+  },
+  {
+   "id": "1e47cd19a8db6056",
+   "title": "RoTA-Bench: Evaluating 3D Spatial Reasoning through Interactive Projection Alignment",
+   "url": "https://huggingface.co/papers/2610.17665",
+   "summary": "Can vision-language models turn 2D observations into 3D understanding that supports precise action? This requires inferring object geometry, anticipating the effects of rotation, and refining actions through visual feedback. We introduce RoTA-Bench to evaluate these abilities through interactive 3D-to-2D projection alignment. Given a target silhouette, a model observes a rotated object and chooses successive rotations to recover the target projection within a limited action budget. Our automated pipeline constructs silhouette-preserving 3D objects from 2D icons and uses reversible initialization to guarantee solvability, yielding 674 tasks and a stratified 100-task test set. Empirically, we find that (i) a substantial human-model gap persists: GPT-5.6-Sol succeeds on only 17% of tasks, whereas 20 undergraduate participants collectively complete the test set four times with a 100% success rate; (ii) image-space and pose-space progress can diverge: at matched states, the model more often improves silhouette overlap while worsening pose alignment than humans (19.4% vs. 10.9%); and (iii) fine-grained control is sensitive to interaction history: removing it leaves 96.8% of the model's actions at a coarse 30-degree step size and sharply reduces observed task success. These findings highlight the challenge of converting visual evidence into precise 3D control, beyond recognizing or matching individual images.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 136,
+    "arxiv_id": "2610.17665"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "benchmark",
+    "agents"
+   ],
+   "tldr": "RoTA-Bench évalue la capacité des VLM à transformer des observations 2D en compréhension 3D via un alignement interactif de projections, révélant un écart humain-modèle (17% vs 100% de succès) et des limites dans le contrôle fin et la cohérence temporelle.",
+   "score": 8.5
+  },
+  {
+   "id": "8031ac42ea200d6c",
+   "title": "LIBERO-PeRM: Benchmarking Personalized Robotic Manipulation",
+   "url": "https://arxiv.org/abs/2610.22372v1",
+   "summary": "Personalization is essential for general-purpose robots to transition into household environments and achieve true practicality. While general robotic manipulation has been extensively studied, personalized robotic manipulation (PeRM) lacks a controlled benchmark for separating task completion from preference satisfaction. We introduce LIBERO-PeRM, a benchmark for preference learning in embodied agents. LIBERO-PeRM studies five questions: 1) how policies follow preferences in zero-shot settings; 2) how they learn single preferences from demonstrations; 3) how efficiently they acquire preferences as demonstrations increase; 4) how learned preferences generalize across layouts and tasks; and 5) how policies compose preferences and behave under conflicts. We propose a controlled formulation and taxonomy of observable preferences in simulation, covering motion, skill, and user-profile choices. This formulation is restricted to language-expressible preferences that can be instantiated in LIBERO without changing the task goal, evaluated automatically, and reused across tasks. Building on LIBERO, our procedural pipeline generates paired demonstrations with and without preferences. We create five task suites (312 tasks) with high-quality demonstrations, rich metadata, and preference-satisfaction metrics. Experiments show that current VLA policies struggle with zero-shot personalization, while SFT makes preferences learnable. Mixed training achieves better no-preference retention than sequential adaptation and improves performance with contextual prompts compared with preference-only training, but can weaken motion-preference learning; preference generalization, decomposition, and conflict handling remain difficult. The code, datasets, and demos can be found on the project website: https://libero-perm.github.io/.",
+   "published": "2026-10-15T17:59:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhixu Li, Keqian Tang, Litian Gong, Jingyu Yao, Wenqian Zhang, Tianze Xu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "LIBERO-PeRM propose un benchmark pour évaluer la capacité des agents robotiques à suivre des préférences utilisateur (motion, skill, profil) dans des tâches de manipulation, avec une formulation contrôlée et une taxonomie des préférences observables. Intéressant pour l'IA embarquée et l'adaptation personnalisée, avec des questions clés sur la généralisation et les conflits de préférences.",
+   "score": 8.3
+  },
+  {
+   "id": "f85afceab2ad1c9b",
+   "title": "CoDA: Co-Evolution of Data Engines and Action Policies",
+   "url": "https://arxiv.org/abs/2610.22362v1",
+   "summary": "Generative simulation can automate robot environment construction, but physically valid environments are not necessarily useful for training. The challenge is to identify environments that address a policy's failures and supervision that helps it overcome them. We introduce CoDA, a framework in which a simulation data engine and an action policy co-evolve through a shared heterogeneous memory of environment construction, policy failures, and learning progress. The memory compiles validated diagnoses from a vision-language critic into generation programs that recreate difficulties and training programs that help the policy overcome them. We further propose Text2potential to convert these diagnoses into staged potentials for action-chunk value learning, providing dense supervision for policy updates while preserving the task's optimal policy under standard shaping assumptions. Measured learning progress guides further generation and program refinement. Across four manipulation task families, CoDA improves out-of-distribution success from 5.3% after supervised fine-tuning to 27.6%, exceeding the strongest closed-loop baseline by 9.5 percentage points with the same generation budget. On LIBERO-Pro, 15 rounds of generation and training raise success from 25% to 84% under position perturbations and from 1% to 76% under instruction perturbations.",
+   "published": "2026-10-15T17:59:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Tianjiao Yu, Zhilin Ou, Yifan Shen, Xinzhuo Li, Yuanzhe Liu, Onkar Kishor Susladkar"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "CoDA propose un cadre de co-évolution entre un moteur de simulation et une politique d'action, utilisant une mémoire partagée pour générer des environnements et supervisions ciblant les faiblesses du modèle. Améliore significativement les performances OOD en manipulation (passant de 5.3% à 27.6%).",
+   "score": 8.3
+  },
+  {
+   "id": "f556e760e5f2b4c3",
+   "title": "Learning Self-Orchestration in Decentralized Agent Swarms",
+   "url": "https://arxiv.org/abs/2610.22322v1",
+   "summary": "The capabilities of an agent swarm depend on both its individual members and how they coordinate. Yet existing multi-agent systems often train agents within fixed orchestration structures, separating the learning of individual capabilities from the organization of collective behavior. We introduce market-based post-training (MPT), a framework for jointly learning action policies and self-orchestration in decentralized agent swarms. Agents express their willingness to participate through bids, which determine who acts and how collective outcomes provide local training credit. Learning both action and bidding behavior allows individual capabilities and patterns of participation to adapt together without a central coordinating agent. We evaluate MPT on embodied crafting, robot navigation, and deep research. Results show gains over monolithic post-training and confirm that agent participation indeed evolves with learning. With the same post-trained action policies, learned self-orchestration outperforms alternative coordination strategies. Ablations show that both action and bidding benefit from learning, and that learned bids provide more effective action-training signals. Beyond the original training objectives, trained swarms adapt faster to related tasks and achieve better performance with larger populations at inference time. Larger populations also suffer smaller performance losses under agent dropout, demonstrating that learned self-orchestration supports reuse, scaling, and robustness in decentralized agent swarms. Code and trained models are available at https://github.com/Embodied-Minds-Lab/MPT.",
+   "published": "2026-10-15T17:51:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Guowei Xu, Zhenting Qi, Amani Kiruga, Himabindu Lakkaraju, Yilun Du"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Présentation de *Market-based Post-Training (MPT)*, une méthode pour optimiser simultanément les politiques d'action et l'auto-organisation décentralisée d'essaims d'agents via un mécanisme de mise en concurrence (enchères). Les résultats montrent des gains significatifs en coordination et en performance sur des tâches complexes (crafting, navigation robotique, recherche approfondie), avec une adaptation dynamique des rôles des agents.",
+   "score": 8.3
+  },
+  {
+   "id": "4cd2c601ecb34c16",
+   "title": "Learning to Steer LLM Agents and Multi-Agent Systems",
+   "url": "https://arxiv.org/abs/2610.22316v1",
+   "summary": "Large language model (LLM)-based agents and multi-agent systems increasingly tackle complex tasks through long-horizon tool use and inter-agent collaboration. However, these systems are prone to deviating from the overall goal as execution unfolds, which wastes execution resources and leads to undesired outcomes, a failure termed goal drift. In this work, we propose a steering agent that supervises execution on the fly and steers the system back on track when drift occurs. The steering agent observes the execution context, deciding when to intervene with a low-cost fast path and how to intervene with a high-cost slow path. To unlock its steering intelligence, the ability to assess goal drift and generate effective interventions, we jointly train the two paths with reinforcement learning, combining a pairwise ranking objective with group-relative policy optimization (GRPO). Experiments on information-seeking search tasks show that the steering agent provides effective supervision for both single-agent and multi-agent systems, improving their performance and efficiency. The learned steering intelligence generalizes to out-of-domain tasks, transfers to unseen executors, and supports controllable intervention frequency without retraining.",
+   "published": "2026-10-15T17:51:17+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Leyang Shen, Yaxin Gong, Yang Zhang, Chenxiao Fan, Jiakai Wang, Dong Wang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Introduction d'un *agent de pilotage* pour corriger la dérive des objectifs (*goal drift*) dans les systèmes multi-agents basés sur LLM. Le modèle utilise un apprentissage par renforcement pour évaluer et corriger les écarts en temps réel, améliorant l'efficacité et la robustesse sur des tâches de recherche d'information.",
+   "score": 8.3
+  },
+  {
+   "id": "1b073d7049d5ffd3",
+   "title": "Towards Continual Learning: Mitigating Forgetting With Subspace Tuning",
+   "url": "https://arxiv.org/abs/2610.22293v1",
+   "summary": "Large language models (LLMs) acquire new skills through fine-tuning, but it can destroy capabilities they already have: catastrophic forgetting remains a central obstacle to continual learning in LLMs. Recent works connect forgetting to how far, and along which directions, fine-tuning moves the weights. On-policy methods such as reinforcement learning and on-policy distillation avoid updating the principal singular directions of weight matrices and thus forget less. In contrast, SFT concentrates updates along these directions and is susceptible to catastrophic forgetting. In this work, we introduce Subspace Tuning (SST), which restricts each weight update to the bottom singular subspace, eliminating changes along the principal directions. SST is optimizer-agnostic and composes well with fine-tuning recipes including SFT and self-distillation. SST combines tight subspace protection, dense gradient estimation, and a simple refresh mechanism, enabling stronger learning than prior orthogonal fine-tuning methods. With these mechanisms, protecting as much as 99\\% of the weight subspace substantially improves retention while preserving strong target-task performance. This behavior strengthens with model and data size and nearly eliminates forgetting in the large-model regime. SST also keeps the model close to its base distribution, inducing $2$--$4\\times$ less KL drift than the baseline recipes. Overall, SST advances the learning--forgetting Pareto frontier, making it a practical default for fine-tuning pre-trained language models.",
+   "published": "2026-10-15T17:44:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Arnav Chavan, Kusha Sareen, Rishabh Tiwari, Abhranil Chandra, Johan Obando-Ceron, Kurt Keutzer"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode *Subspace Tuning (SST)* pour limiter l'oubli catastrophique en fine-tuning des LLM en ciblant les mises à jour des poids sur les sous-espaces secondaires. Permet de conserver jusqu'à 99% du sous-espace des poids tout en améliorant la rétention des compétences existantes, avec une approche compatible avec les recettes de fine-tuning classiques.",
+   "score": 8.3
+  },
+  {
+   "id": "c184af52a310f8b9",
+   "title": "Language Is a Security Surface for Agent Guards",
+   "url": "https://arxiv.org/abs/2610.22244v1",
+   "summary": "Step-level guards decide, before each tool call, whether an agent's next action is safe given the user's request and the trajectory so far. Users write those requests in many languages, while guard prompts and the benchmarks on which purpose-built guards are trained and evaluated are English. We ask whether a guard's verdict depends on the language of the request. We build LinguaGuardBench from the 1,220 labelled steps of TS-Bench AgentDojo-Traj: we translate only the user instruction into German, French, Turkish, Swahili and Amharic, and keep every tool call, observation and label byte-identical, so any change in a verdict is attributable to language alone. Six English rewordings and a whitespace placebo serve as controls, and managed guards are run three times to measure their noise. Across 19 guards, from frontier APIs to 4B open models and four purpose-built agent guards, most open, small and purpose-built guards change verdicts under translation beyond their own noise floor, and the effect grows with the rarity of the language: among the nine guards below 13B parameters, the mean placebo-adjusted flip rate rises from +1.5 pp on French to +4.4 pp on Amharic. Purpose-built guards are the most sensitive. The direction of the damage tends to follow guard size: open guards of 12-30B parameters block more benign steps (up to +5.0 pp false positives), and every significant loss of recall is in a guard below 10B (up to -7.4 pp). Frontier guards shift by at most about one point; the strongest, Gemini 3.8 Flash, returns identical verdicts with and without the request. The damage is concentrated in a few instructions and, in a post-hoc analysis, falls on steps where the agent's reasoning restates the English request, consistent with guards reacting to inconsistency between channels. English paraphrase moves every guard less than translation does. We release the benchmark and all 489k verdicts.",
+   "published": "2026-10-15T17:19:40+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hasan Demirkiran, Jens Ernstberger"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "LinguaGuardBench révèle que les gardes de sécurité pour agents sont sensibles à la langue de l'instruction utilisateur, avec des taux de changement de verdicts élevés pour les langues rares. Critique pour l'évaluation robuste des systèmes d'agents multilingues.",
+   "score": 8.3
+  },
+  {
+   "id": "dcac42dc78803cdf",
+   "title": "Shortcut Sensitivity in Agent-Safety Evaluations",
+   "url": "https://arxiv.org/abs/2610.22243v1",
+   "summary": "AI agents take actions through tools. Some actions are sensitive, so guards that supervise them must themselves be evaluated reliably. Yet the data used to evaluate a guard can include cues that make labels predictable without measuring the intended safety construct, and those cues can also influence guard decisions. We introduce a three-level shortcut-auditing framework and audit completed LinuxArena trajectories and two TS-Bench-derived step datasets. We distinguish label predictability, observational guard association, and paired decision sensitivity. In LinuxArena, shorter average shell commands strongly predict trajectory labels. In AgentDojo-Traj, exact-tool lookup falls from F_1=.901 with mixed-domain folds to .495 under domain holdout. In AgentHarm-Traj, released TS-Guard F_1 falls from .902 under row weighting to .719 with equal interaction weighting, while balanced accuracy rises. We then test the strongest safe-row marker association in a seven-configuration screen on a frozen 64-step AgentDojo-Traj cohort using repeated, interleaved Haiku calls. Rewriting the marker lowers blocking by 8.33 percentage points, while opaque tool aliases raise it by 11.46 points. All unsafe calls remain blocked; the changes concern false positives against inherited labels. Both effects remain nonzero after subtracting the formatting-placebo effect, with exploratory 95% ranges excluding zero. The same edits also change measured accuracy against inherited labels. This provides direct evidence that benchmark representation can materially change a guard's decisions and measured evaluation performance. The Haiku-sized effects do not reproduce in Luna or deterministic Q8 TS-Guard. We recommend domain group holdouts, evaluation-unit metrics, and placebo-controlled paired interventions.",
+   "published": "2026-10-15T17:18:05+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Hasan Demirkiran, Jens Ernstberger"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Ce papier audite les biais dans les évaluations de sécurité des agents (ex: raccourcis dans les labels) et montre comment des artefacts de données faussent les métriques. Essentiel pour concevoir des benchmarks fiables en sécurité des agents.",
+   "score": 8.3
+  },
+  {
+   "id": "b0e34775189c4af6",
+   "title": "Training-Free On-Policy Distillation",
+   "url": "https://arxiv.org/abs/2610.22236v1",
+   "summary": "On-policy distillation consolidates specialist models into one student at the price of rollouts, teacher passes and gradient steps for every teacher. We show that the consolidation does not need training: with forward passes only, the capabilities of separately tuned specialists can be aggregated into one model that is, on average, more accurate than either specialist alone. When specialists share a base model, distillation has an exact layer-wise solution: each linear layer of the fused model must reproduce every specialist's output on the inputs that specialist receives while reading its own answers, a least-squares problem whose solution needs only the second moments of those inputs. One forward pass over a few hundred rollouts provides them. We call this training-free on-policy distillation (\\method). What the rollouts contain matters more than the solver: answers truncated in repetition loops are few among a mathematics specialist's rollouts but carry a large share of their tokens, and removing them lifts the fused model on AIME25 from task arithmetic's level to the specialist's at matched precision. On Olmo~3 7B, a few GPU-hours of forward computation per specialist yield a generalist that keeps most of each specialist's gain on each of seven mathematics and code benchmarks.",
+   "published": "2026-10-15T17:15:01+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Bangji Yang, Jiajun Fan, Zhaoyu Zhu, Hongbo Ma, Ge Liu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode de distillation *on-policy* sans entraînement pour agréger des modèles spécialisés en un seul étudiant, via une résolution par moindres carrés des couches linéaires. Permet d'améliorer les performances (ex: AIME25) sans coût de calcul en forward passes, en filtrant les réponses redondantes des spécialistes.",
+   "score": 8.3
+  },
+  {
+   "id": "901863d4ad00ddec",
+   "title": "WorldCast: Exploring Intelligent Visual Generation in World State Prediction",
+   "url": "https://huggingface.co/papers/2610.20731",
+   "summary": "Humans interpret multimodal observations of the world and forecast how it will evolve. Recent multimodal generative systems have demonstrated similar capabilities: they can integrate multimodal context and synthesize visual outputs that depict changes in the world. To characterize this emerging trajectory, we organize model capabilities into a four-level hierarchy and discover that higher-level tasks remain relatively underexplored despite model progress. To bridge this gap, we explore model performance on multi-step world state prediction, a high-level task that requires models to forecast successive future world states from multimodal observations and diverse references. Such a task requires models to possess entangled understanding and generation capabilities, as well as extensive world knowledge to translate human action sequences, physical transformations, and abstract visual reasoning into coherent visual outputs. We introduce WorldCast, a benchmark comprising 320 manually designed cases across eight categories, and evaluate 12 representative models. The conducted experiments yield three key insights: (a) advances in frontier models are rapidly pushing the boundaries of intelligent world modeling, with the GPT-Image-2.5 System scoring 72.8 and demonstrating early-stage visual state prediction capabilities on real-world tasks; (b) WorldCast reveals substantial gaps between models: even Nano Banana Pro reaches only 42.8 and the best open-source model scores 20.1, with deficits in handling complex context, entangled references, and reasoning-heavy tasks; (c) strong generative models effectively draw on the capabilities of their underlying language models. These findings highlight the need for multimodal generative models that are capable of dynamic planning and reasoning while also being deeply unified to faithfully simulate real-world states.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 28,
+    "arxiv_id": "2610.20731"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "WorldCast introduit un benchmark et une hiérarchie de 4 niveaux pour évaluer la prédiction multi-étapes de l'état du monde à partir d'observations multimodales, révélant des lacunes dans les capacités des modèles actuels pour les tâches de haut niveau nécessitant une compréhension visuelle et physique intégrée.",
+   "score": 8.2
+  },
+  {
+   "id": "5e923b6a0dd46815",
+   "title": "Knowledge That Is Linear Before Fine-Tuning Generalizes After It",
+   "url": "https://arxiv.org/abs/2610.22300v1",
+   "summary": "Not all facts a language model can recall support further learning equally well. We distinguish active facts, which support generalization beyond their own recall, from inert facts, which can be recalled but do not support such generalization in a given task. We study this distinction by constructing new relations from existing ones. Take the relation that maps a place to its continent (Paris -> Europe) and assign each of its answers an arbitrary new label (Europe -> crab, Asia -> zebra). The new relation then maps Paris -> crab. We fine-tune the model on the new relation for a subset of subjects, without telling it the original relation or the relabeling rule, and test whether it assigns the corresponding labels to held-out subjects that share an answer in the original relation. Having learned Paris -> crab, does it answer Munich -> crab? Across eleven language models and 70 relations, how linearly readable the original relation is in pretrained representations strongly predicts this generalization. Within each model, the two correlate across relations at Pearson r = 0.87 to 0.92. This association persists when controlling, separately and jointly, for the number of fine-tuning subjects and answers, the model's accuracy on the original relation, and how often the subjects occur in pretraining text. It is also robust to re-randomizing the label assignment and fine-tuning seed, and to replacing the animal labels with labels from thirteen other semantic categories. When we map a fine-tuned model's wrong label back to the original answer it was assigned to, Munich -> zebra becomes Munich -> Asia. Answers recovered this way are more often among the linear probe's top answers for the subject than among the pretrained model's own. Whether a new relation generalizes depends less on whether its facts can be recalled than on how readily their shared structure can be read out linearly.",
+   "published": "2026-10-15T17:47:52+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Faridoun Mehri, Hinrich Schütze"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Étude démontrant que la *linéarité* des connaissances dans les représentations pré-entraînement d'un LLM est un prédicteur fort de leur généralisation après fine-tuning. Les auteurs montrent une corrélation quasi parfaite (r=0.87-0.92) entre cette linéarité et la capacité à transférer des connaissances relabelisées, offrant des pistes pour optimiser l'efficacité des modèles.",
+   "score": 8.0
+  },
+  {
+   "id": "7fba4e9ccb501f0c",
+   "title": "BitSparse: Compact Activation Storage for ReLU Feed-Forward Networks",
+   "url": "https://arxiv.org/abs/2610.22256v1",
+   "summary": "Reducing memory use in large language model (LLM) training is an ongoing challenge. Activation checkpointing saves memory by recomputation, while lossy compression changes the stored activations. The reemergence of sparse $\\relu$ and $\\relu^2$ activations creates a third opportunity: losslessly compressing the activation cache itself. We present BitSparse, a GPU-resident lossless compression format for sparse activations. Compression and reconstruction run in custom Triton kernels fused into an autograd function, shrinking the activation cache while recovering it exactly for the backward pass. Bfloat16 (BF16) and FP8 activations are supported. Optional sign-bit packing further increases compression up to close to the theoretical limit. We analyze its compression ratio and compare it to the theoretical optimum. BitSparse lowers per-token VRAM by 31\\% and 30\\% Modded-NanoGPT and Nemotron-H respectively, with overheads of no more than 1\\% at practical sequence lengths. Additionally, a new preallocated buffer system avoids host synchronization during training when variable size tensors are allocated.",
+   "published": "2026-10-15T17:24:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Max Zhu, Bohang Sun, Pietro Lio, Jialin Yu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "BitSparse introduit un format de compression sans perte pour les activations ReLU dans les LLM, réduisant l'usage VRAM de 30% avec un surcoût minimal. Solution concrète pour l'optimisation mémoire des modèles d'inférence et d'entraînement.",
+   "score": 8.0
+  },
+  {
+   "id": "18be8d1f2c64dafc",
+   "title": "ForcingBooster: Adaptive Patch-wise Denoising for Fast Autoregressive Video Diffusion",
+   "url": "https://huggingface.co/papers/2610.12625",
+   "summary": "Autoregressive video diffusion models have become a leading approach to real-time interactive video generation and video world modeling. However, existing methods typically allocate computation uniformly across space when generating the next video chunk, updating all patches with the same denoising schedule and number of function evaluations. This ignores the spatial heterogeneity of video content: static, simple, or recurring regions are often easier to denoise, while other regions require further refinement or additional context. A uniform budget thus leads to redundant computation on easy patches, whereas reducing the fixed step count can leave difficult patches insufficiently refined. We introduce , a general framework that dynamically allocates denoising steps to individual patches: easy patches stop early to improve efficiency, while difficult patches receive more refinement steps. This design accelerates generation with negligible quality degradation. Our method is compatible with most existing few-step autoregressive diffusion models, requiring only a lightweight routing module with modest training. Experiments demonstrate that reduces the total number of denoising steps applied across video patches by about 50\\% while maintaining visual quality comparable to the four-step baseline.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.12625"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "ForcingBooster optimise l'inférence des modèles de diffusion vidéo autorégressifs en allouant dynamiquement les étapes de débruitage par patch, réduisant les calculs redondants sur les zones statiques tout en améliorant la qualité sur les zones complexes, avec une compatibilité étendue aux architectures existantes.",
+   "score": 7.9
+  },
+  {
+   "id": "f49f266d25d6ab7b",
+   "title": "SimForcing: Distilling Simulation Motion Priors into Real-Domain Robot World Models",
+   "url": "https://huggingface.co/papers/2610.06598",
+   "summary": "Action-conditioned robot world models must respond precisely to robot trajectories while preserving realistic visual dynamics, yet learning both from heterogeneous robot videos remains challenging. Simulation offers structured motion supervision, but appearance differences hinder direct transfer, and inaccurate simulation predictions can misguide real-video generation. We present SimForcing, a simulation-guided framework that uses simulation both as a source of transferable motion knowledge and as a controllable reference for prediction. First, we transfer motion knowledge from a simulation teacher through latent-motion distillation, aligning temporal changes in latent space to internalize motion priors while mitigating the influence of appearance differences. Second, we introduce multi-block simulation conditioning with condition dropout to exploit predicted simulation trajectories without relying excessively on their accuracy. Our simulation-conditioning classifier-free guidance scheme unifies these two ideas by balancing predictions based on internalized motion knowledge with those additionally guided by simulation latents. The jointly trained student generates both simulation conditions and real-domain videos, requiring no additional world model at inference. On Bridge, SimForcing achieves the best PSNR, SSIM, LPIPS, and FVD among the compared methods without external embodied pretraining. Evaluation on InternData-A1 further supports its applicability across robot datasets. Moreover, using our trained world model to initialize a vision-language-action model improves LIBERO success, suggesting its utility for downstream policy learning. https://github.com/Wang-Xiaodong1899/SimForcing",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.06598"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "SimForcing distille des priors de mouvement simulés dans des modèles de monde robotique réels via un cadre de distillation latente et un conditionnement multi-blocs, équilibrant prédictions internes et guidage par simulation pour des dynamiques visuelles réalistes.",
+   "score": 7.9
+  }
+ ]
+}
