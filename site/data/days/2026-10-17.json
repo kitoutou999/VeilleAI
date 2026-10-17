@@ -1,0 +1,732 @@
+{
+ "date": "2026-10-17",
+ "digest": {
+  "headline": "Les Mixture-of-Experts (MoE) révèlent des mécanismes interprétables de personnalisation dans les LLM, ouvrant la voie à des modèles plus efficaces et contrôlables",
+  "overview": "La veille du 2026-10-17 met en lumière des avancées majeures en interprétabilité, en agents autonomes et en architectures multimodales. Les travaux sur les MoE et les autoencodeurs clairsemés (SAE) dominent les discussions sur la transparence des modèles, tandis que les benchmarks et méthodes pour agents (FDE-Gym, CoWorld Reasoner) soulignent les défis persistants en généralisation et en raisonnement long terme.",
+  "highlights": [
+   {
+    "title": "Interprétabilité des MoE et SAE : vers des LLM plus contrôlables",
+    "text": "Deux études complémentaires abordent l'interprétabilité des architectures modernes. La première propose une méthode pour localiser et contrôler les mécanismes de personnalisation dans les MoE, exploitant leur sparsité pour identifier des latents interprétables et réduire la polysémie. La seconde révèle que les représentations des SAE ne sont pas pleinement additives, avec des termes d'ordre supérieur améliorant significativement la fidélité des coalitions. Ces travaux sont cruciaux pour le débogage et le contrôle des modèles, notamment dans des contextes sensibles."
+   },
+   {
+    "title": "Benchmarks et méthodes pour agents : combler le fossé entre simulation et réalité",
+    "text": "FDE-Gym et CoWorld Reasoner introduisent des cadres pour évaluer et améliorer les agents dans des scénarios réalistes. FDE-Gym simule des tâches de livraison avec ambiguïtés et contraintes implicites, tandis que CoWorld Reasoner utilise un modèle de monde vidéo (VWM) pour un raisonnement spatiotemporel et causal. Ces approches soulignent l'importance des feedbacks d'exécution et des environnements dynamiques pour la généralisation des agents, un défi clé pour les applications industrielles."
+   },
+   {
+    "title": "Optimisation des politiques et données : co-évolution et supervision dense",
+    "text": "CoDA et SERO illustrent des stratégies pour améliorer les politiques d'agents via des données ciblées. CoDA co-évolue un moteur de simulation générative et une politique robotique, améliorant les performances OOD de 27.6% grâce à une mémoire partagée et un apprentissage par chunks. SERO, quant à lui, intègre des continuations exécutables d'oracle pour une supervision plus profonde en RL long terme, accélérant l'apprentissage. Ces méthodes répondent au besoin croissant de données synthétiques et de supervision fine pour des tâches complexes."
+   },
+   {
+    "title": "Architectures et efficacité : transformers, raisonnement spatial et alignement perception-action",
+    "text": "Plusieurs travaux optimisent les architectures pour des tâches spécifiques. MJev-Spatial accélère le raisonnement spatial en remplaçant la génération textuelle par une classification native, réduisant la latence. PAIR aligne les représentations perception-action dans les modèles VLA via des tokens latents d'action, améliorant la généralisation. Enfin, une explication pédagogique des transformers rappelle les principes fondamentaux de ces architectures, utile pour la recherche en interprétabilité et en optimisation."
+   }
+  ],
+  "trend": "Les avancées en interprétabilité et en agents autonomes convergent vers une meilleure localisation des mécanismes internes et une supervision plus fine, avec un accent croissant sur la co-évolution des modèles et des données. Les architectures multimodales et les benchmarks réalistes deviennent des outils clés pour évaluer et améliorer la robustesse des systèmes."
+ },
+ "items": [
+  {
+   "id": "3de529c7df343bec",
+   "title": "Explaining the Roles of Experts in Mixture-of-Experts LLMs for Personalization",
+   "url": "https://huggingface.co/papers/2610.22127",
+   "summary": "Personalization of Large Language Models (LLMs) is increasingly important for user-centric applications, yet prior methods mainly adapt dense LLMs, whose polysemantic neurons, each encoding multiple unrelated concepts, hinder localizing the components behind personalization, and thus understanding and controlling it. We propose to personalize Mixture-of-Experts (MoE) LLMs, which sparsely route each token to a few specialized experts, reducing polysemanticity and enabling such localization. We adapt three open-weight MoE LLMs on a large-scale personalization dataset and train crosscoders on paired activations of the personalized and non-personalized models to learn interpretable personalized latents, from which we identify the experts encoding distinct personalization features. The personalized MoE LLMs perform competitively with dense LLMs while activating only a fraction of their parameters, exhibit lower polysemanticity than dense LLMs with similar active parameters, and, within the same model family, yield personalized latents that are less shared with the non-personalized model. Causal interventions show that these latents suffice to recover the personalized model's behavior and that boosting their associated experts moves the non-personalized model toward it, revealing distinct routing paths for different personalization features.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.22127"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude propose une méthode pour localiser et contrôler les mécanismes de personnalisation dans les LLM de type Mixture-of-Experts (MoE), en exploitant leur sparsité pour réduire la polysémie et identifier des latents interprétables. Les MoE personnalisés activent moins de paramètres tout en rivalisant avec les LLM denses, avec une meilleure localisation des features de personnalisation.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La personnalisation des grands modèles de langage (LLM) est cruciale pour des applications centrées sur l'utilisateur, mais les méthodes actuelles reposent principalement sur des LLM denses. Ces modèles souffrent de neurones polysémiques, qui encodent plusieurs concepts sans lien entre eux, ce qui rend difficile l'identification des composants responsables de la personnalisation. Cela complique la compréhension et le contrôle de ce processus.",
+    "methode": "Les auteurs proposent de personnaliser des LLM basés sur une architecture *Mixture-of-Experts* (MoE), où chaque token est routé de manière sparse vers quelques experts spécialisés. Cette approche réduit la polysémie et permet de localiser les experts impliqués dans la personnalisation. Trois LLM MoE open-weight sont adaptés sur un jeu de données de personnalisation à grande échelle. Des *crosscoders* sont entraînés sur des paires d'activations (modèles personnalisés vs non-personnalisés) pour apprendre des latents interprétables liés à la personnalisation. Ces latents permettent d'identifier les experts encodant des caractéristiques distinctes de personnalisation. Des interventions causales sont ensuite réalisées pour valider le rôle de ces latents et experts.",
+    "resultats": "Les LLM MoE personnalisés obtiennent des performances compétitives avec les LLM denses, tout en activant seulement une fraction de leurs paramètres. Ils présentent une polysémie réduite par rapport aux LLM denses avec un nombre similaire de paramètres actifs. Les latents de personnalisation identifiés sont moins partagés avec le modèle non-personnalisé au sein d'une même famille de modèles. Les interventions causales montrent que ces latents suffisent à reproduire le comportement du modèle personnalisé et que renforcer leurs experts associés rapproche le modèle non-personnalisé de ce comportement.",
+    "limites": "Le contenu disponible ne précise pas les détails du jeu de données de personnalisation utilisé, ni les métriques exactes de performance ou de polysémie. L'interprétabilité des latents et des experts reste sujette à des biais potentiels liés aux méthodes d'entraînement des crosscoders. Enfin, l'extrapolation de ces résultats à d'autres architectures MoE ou contextes de personnalisation n'est pas garantie.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à améliorer l'interprétabilité et l'efficacité des LLM personnalisés, mais des validations supplémentaires sur des jeux de données variés et des architectures différentes sont nécessaires."
+   }
+  },
+  {
+   "id": "3adc556ab3f7de04",
+   "title": "FDE-Gym: The Last Mile of AI Delivery",
+   "url": "https://huggingface.co/papers/2610.22350",
+   "summary": "Existing agent benchmarks typically evaluate agents on well-specified tasks defined by issue reports, specifications, or task tickets. Real-world customer delivery is different: forward-deployed engineers (FDEs) must clarify ambiguous requirements, work in live systems, and uncover unstated constraints. We introduce FDE-Gym, a benchmark of 95 end-to-end delivery tasks from 20 customer scenarios across 18 sectors, each adapted by industry experts from real-world delivery projects. In simulated customer environments with scripted stakeholders and modifiable customer systems, agents interact with stakeholders and operate on production-like systems to deliver working solutions. FDE-Gym scores a delivery by how much it improves the customer's own success metric, normalized between 0 (unchanged system) and 1 (reference solution), with penalties for stakeholder interactions (messages, trial runs, and waiting time). An online platform lets humans practice FDE skills under the same grading criteria. We evaluate 13 model configurations from seven providers. In the realistic setting, where unstated constraints must be discovered, the best configuration achieves a mean FDE-Gym score of 0.56 and resolves only 14 of the 95 tasks (a score of at least 0.8 with no incident). Discovering unstated constraints is the primary bottleneck: performance drops sharply when models must uncover them without explicit guidance. Yet information discovery alone does not account for the gap: even on the 23 tasks where the best configuration obtains every key fact from stakeholders, it reaches a normalized business uplift of 0.8 or above on only 10. These results reveal a substantial gap between solving well-specified tasks and delivering effective AI systems for real customers.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 281,
+    "arxiv_id": "2610.22350"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "FDE-Gym simule des scénarios de livraison réelle pour agents, avec des tâches ambiguës et des contraintes non déclarées. Le benchmark évalue la capacité des agents à améliorer des métriques clients, avec une plateforme en ligne pour l'entraînement. Les meilleurs modèles atteignent un score de 0.56 en moyenne.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le benchmark FDE-Gym vise à combler une lacune majeure dans l'évaluation des agents d'IA : les benchmarks existants se concentrent sur des tâches bien définies, alors que les déploiements réels en production exigent de gérer des exigences ambiguës, des systèmes dynamiques et des contraintes implicites. Les ingénieurs en déploiement (FDE) doivent interagir avec des parties prenantes, clarifier des besoins flous et adapter des solutions dans des environnements clients complexes, ce qui n'est pas reflété dans les évaluations actuelles.",
+    "methode": {
+     "description": "FDE-Gym propose un benchmark de 95 tâches de livraison complètes, dérivées de 20 scénarios clients réels couvrant 18 secteurs. Ces tâches sont adaptées par des experts industriels pour reproduire des projets de déploiement concrets.",
+     "environnement": "Les agents évoluent dans des environnements clients simulés, incluant des parties prenantes scriptées et des systèmes modifiables proches de la production. Ils doivent interagir avec ces acteurs et opérer sur les systèmes pour livrer des solutions fonctionnelles.",
+     "evaluation": "Le score de livraison est basé sur l'amélioration d'une métrique de succès client (normalisée entre 0 et 1, où 1 correspond à une solution de référence). Des pénalités sont appliquées pour les interactions excessives (messages, essais, temps d'attente). Une plateforme en ligne permet aux humains de s'entraîner avec les mêmes critères d'évaluation.",
+     "modeles_testes": "13 configurations de modèles provenant de 7 fournisseurs ont été évaluées, dans un cadre réaliste où les contraintes non explicites doivent être découvertes."
+    },
+    "resultats": {
+     "performance_generale": "Dans le cadre réaliste, la meilleure configuration atteint un score moyen de 0,56 sur FDE-Gym et ne résout que 14 des 95 tâches (score ≥ 0,8 sans incident).",
+     "bottleneck_principal": "La découverte des contraintes implicites est identifiée comme le principal obstacle : les performances chutent fortement lorsque les modèles doivent les identifier sans guidance explicite.",
+     "limites_post_decouverte": "Même sur les 23 tâches où la meilleure configuration obtient toutes les informations clés des parties prenantes, elle n'atteint un score ≥ 0,8 que dans 10 cas, montrant que la découverte d'informations ne suffit pas à combler l'écart."
+    },
+    "limites": {
+     "representativite": "Bien que les scénarios soient basés sur des cas réels, la simulation des parties prenantes et des systèmes clients peut ne pas capturer toute la complexité des interactions humaines ou des environnements de production.",
+     "generalisation": "Les résultats sont limités aux 18 secteurs et 20 scénarios étudiés, ce qui peut ne pas refléter les défis spécifiques d'autres domaines ou contextes organisationnels.",
+     "biais_methodologique": "Les pénalités pour les interactions (messages, essais) pourraient favoriser des modèles plus prudents ou moins interactifs, sans garantir une meilleure adéquation aux besoins clients."
+    },
+    "verdict": "FDE-Gym représente une avancée significative pour évaluer les agents d'IA dans des conditions proches du réel, mais son adoption généralisée nécessitera des validations supplémentaires sur des cas encore plus diversifiés et des environnements non simulés."
+   }
+  },
+  {
+   "id": "38e464272c32204f",
+   "title": "Behavioral Compositionality of Sparse Autoencoder Representations",
+   "url": "https://huggingface.co/papers/2610.21261",
+   "summary": "Sparse autoencoders (SAEs) represent model activations with sparse, linearly decoded features, but the downstream effects of those features need not compose additively. We introduce SAE Additivity Residuals (SAR), which measure the behavioral variation left unexplained above a chosen interaction order. Under independent feature subset sampling, population SAR is exactly the normalized energy of interactions above that order and bounds coalition ordering error for the optimal low order approximation. To distinguish compositionality associated with the SAE representation from that induced by downstream computation, we compare learned SAE coordinates with sum preserving random rotations of the same selected subspace and find lower first order residuals for the learned coordinates across all 18 model and behavior settings. The coordinates are nevertheless not fully additive: pairwise terms improve held out coalition ordering in every setting and outperform parameter matched models using randomly selected third order terms. In a combined steering experiment, pairwise modeling raises rank fidelity from 0.5874 to 0.7790 and reduces ordering error from 0.1444 to 0.0606. Together, these results show that SAE coordinates support comparatively compositional behavioral descriptions while faithful joint explanations and interventions still require interactions beyond individual feature effects. Code is available at https://github.com/OpenSAE/SAE-Behavioral-Compositionality.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 104,
+    "arxiv_id": "2610.21261"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "SAE Additivity Residuals (SAR) révèlent que les représentations des autoencodeurs clairsemés (SAE) ne sont pas pleinement additives : les termes d'ordre 2 améliorent significativement la fidélité des coalitions et réduisent les erreurs d'ordonnancement, avec des implications pour l'interprétabilité et le contrôle des modèles.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde la question de la compositionnalité comportementale des représentations apprises par les autoencodeurs parcimonieux (Sparse Autoencoders, SAEs). Le problème central est de déterminer si les features (caractéristiques) identifiées par les SAEs, bien que décodées linéairement et de manière éparse, se combinent de façon additive pour expliquer le comportement des modèles, ou si des interactions d'ordre supérieur (paires, triplets, etc.) sont nécessaires pour une explication fidèle.",
+    "methode": "Les auteurs introduisent une métrique appelée *SAE Additivity Residuals* (SAR), qui quantifie la variation comportementale non expliquée par une approximation additive d'ordre donné (par exemple, premier ordre pour les effets individuels des features). Sous un échantillonnage indépendant de sous-ensembles de features, le SAR populationnel correspond exactement à l'énergie normalisée des interactions d'ordre supérieur à celui choisi. Pour distinguer la compositionnalité intrinsèque aux représentations SAEs de celle induite par les calculs en aval, les auteurs comparent les coordonnées apprises par les SAEs avec des rotations aléatoires préservant la somme du même sous-espace. Ils évaluent également l'impact des termes d'interaction (paires, triplets) sur l'ordre des coalitions (combinaisons de features) et la fidélité des interventions.",
+    "resultats": "Les coordonnées apprises par les SAEs présentent des résidus de premier ordre systématiquement plus faibles que les rotations aléatoires, confirmant une compositionnalité accrue pour 18 combinaisons de modèles et de comportements testées. Cependant, les termes d'interaction par paires améliorent significativement l'ordre des coalitions sur des données hors échantillon dans tous les cas, surpassant même des modèles appariés en paramètres utilisant des termes de troisième ordre aléatoires. Dans une expérience de *steering* (guidage du modèle), la modélisation par paires augmente la fidélité de rang de 0,5874 à 0,7790 et réduit l'erreur d'ordre de 0,1444 à 0,0606.",
+    "limites": "Les résultats reposent sur des hypothèses fortes, comme l'indépendance des sous-ensembles de features échantillonnés, qui peuvent ne pas refléter fidèlement les dépendances réelles dans les activations. De plus, l'étude se limite à des interactions d'ordre 2 ou 3, sans explorer systématiquement des ordres supérieurs, ce qui pourrait sous-estimer la complexité des interactions. Enfin, la généralisation des conclusions à d'autres architectures ou tâches reste à démontrer.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche rigoureuse et ses résultats quantitatifs sur la compositionnalité des SAEs, bien que des travaux complémentaires soient nécessaires pour valider sa portée et ses limites."
+   }
+  },
+  {
+   "id": "e8247065e9994245",
+   "title": "CoWorld Reasoner: Agentic Multimodal Reasoning with the Evolving Video World Model-Driven Harness",
+   "url": "https://huggingface.co/papers/2610.21910",
+   "summary": "As Vision-Language Models (VLMs) advance, they are increasingly expected to perform spatiotemporal reasoning over motion, actions, and view changes beyond what the input images show. Video World Models (VWMs) provide a natural unified engine for visual imagination by generating task-relevant visual content as additional evidence. However, existing approaches typically invoke a VWM through fixed pipelines centered on a predefined form of visual imagination, such as novel-view synthesis. To support flexible visual imagination for diverse reasoning tasks, we introduce CoWorld Reasoner, an agentic framework that uses a VWM as a unified visual reasoning engine. Its Video World Model-Driven Harness exposes multiple visual operations through tools and uses skills to guide the VLM in deciding whether to imagine, selecting an operation, constructing a generation request, and interpreting the resulting visual evidence. We further introduce VLM-VWM Harness Co-Evolution, which jointly revises tools, skills, and execution code based on execution feedback while keeping both model weights fixed. Across seven benchmarks spanning spatial intelligence, temporal and causal reasoning, and perceptual reasoning, CoWorld Reasoner outperforms direct reasoning with the same VLM. The strongest variant improves on all seven benchmarks, including relative accuracy gains of 11.8% on MMSI and 13.0% on ERQA, and outperforms all five evolving baselines using the same backbone across five benchmarks.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.21910"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "CoWorld Reasoner propose un cadre agentique utilisant un modèle de monde vidéo (VWM) comme moteur unifié de raisonnement visuel, avec une approche d'évolution conjointe des outils et compétences via feedback d'exécution. Intéressant pour l'intégration flexible de l'imagination visuelle dans des tâches de raisonnement spatiotemporel et causal.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles Vision-Langage (VLM) actuels peinent à effectuer un raisonnement spatiotemporel complexe sur des vidéos, notamment pour interpréter des mouvements, des actions ou des changements de point de vue non explicitement présents dans les images d'entrée. Les approches existantes reposent souvent sur des pipelines rigides et des formes prédéfinies d'imagination visuelle, limitant leur flexibilité pour des tâches de raisonnement variées.",
+    "methode": "CoWorld Reasoner propose un cadre agentique utilisant un *Video World Model* (VWM) comme moteur unifié de raisonnement visuel. Le *Video World Model-Driven Harness* expose plusieurs opérations visuelles via des outils et des compétences (*skills*), permettant au VLM de décider dynamiquement s'il faut générer une imagination visuelle, choisir une opération adaptée, construire une requête de génération et interpréter les résultats. Une approche de co-évolution (*VLM-VWM Harness Co-Evolution*) affine conjointement les outils, les compétences et le code d'exécution en fonction des retours d'exécution, sans modifier les poids des modèles sous-jacents. Cette méthode vise à rendre le raisonnement multimodal plus flexible et adaptatif.",
+    "resultats": "CoWorld Reasoner surpasse les méthodes de raisonnement direct avec le même VLM sur sept benchmarks couvrant l'intelligence spatiale, le raisonnement temporel et causal, ainsi que la perception. La variante la plus performante améliore les résultats sur l'ensemble des benchmarks, avec des gains relatifs de 11,8 % sur MMSI et 13,0 % sur ERQA. Elle dépasse également cinq baselines évolutives utilisant le même backbone sur cinq des sept benchmarks.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques sur les architectures exactes des outils ou des compétences, ni les mécanismes concrets de la co-évolution. Il manque aussi des informations sur les coûts computationnels ou les latences induites par l'utilisation dynamique du VWM. Enfin, la généralisation à des tâches hors des benchmarks évalués reste une zone d'ombre.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante combinant agentivité et imagination visuelle dynamique, mais son applicabilité réelle dépendra de sa scalabilité et de sa robustesse en dehors des benchmarks testés."
+   }
+  },
+  {
+   "id": "7f14563d8df61b18",
+   "title": "You could have invented transformers from memory",
+   "url": "https://alexwang.ai/posts/associative-memory/",
+   "summary": "",
+   "published": "2026-10-16T19:01:17Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 314,
+    "comments": 74
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Explication pédagogique de l'invention des transformers, mettant en lumière les principes mathématiques et architecturaux clés. Très pertinent pour la recherche fondamentale et l'interprétabilité.",
+   "score": 8.6
+  },
+  {
+   "id": "25a1cff42cdca5c1",
+   "title": "LEASH: Uncertainty-Aware Weak-to-Strong Escalation and Oversight for Computer-Use Agents",
+   "url": "https://huggingface.co/papers/2610.22280",
+   "summary": "Computer-use agents increasingly tackle long-horizon tasks, where running a frontier model at every step is expensive and a small open-weight model alone often fails. Weak-to-strong escalation offers a middle ground where a weak agent acts by default and hands control to a strong one only when needed. The core challenge is deciding when to escalate, which requires an uncertainty signal cheap enough to check at every step. However, even after handoff, the strong agent can still get lost, but a black-box API that the strong agent is usually served exposes no internals to monitor. To this end, we propose LEASH, a training-free framework that unleashes the strong agent only when the weak agent's latent uncertainty signals it is needed, and keeps it on a leash afterward. LEASH has three layers: (1) initial task uncertainty for early routing, (2) step-level uncertainty for runtime escalation, and, after handoff, (3) a shadow observer for continued oversight of the strong black-box agent. Here, we use latent uncertainty as a fuel for all three layers. Specifically, we compare the weak model's hidden states with those from its past successful and failed trajectories, and a state that looks more like the failures signals higher uncertainty. During weak-agent execution, our uncertainty estimator reuses activations already produced during action generation, so it needs no extra forward pass or dedicated monitor training. Experiments on OSWorld across four contemporary model backbones show that LEASH consistently improves over standalone weak agents and outperforms random escalation by 6.55--11.94 points at matched escalation rates. With Qwen3.5-35B-A3B, LEASH achieves 73.66% task success at $0.4117 per task, matching always-on Claude Opus 5 (72.90%) while reducing inference cost by 19.2%.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.22280"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "LEASH propose un cadre d'escalade faible-à-fort pour les agents utilisant des signaux d'incertitude latente, combinant routage initial, escalade dynamique et supervision continue pour éviter les échecs des modèles black-box tout en réduisant les coûts de calcul.",
+   "score": 8.5
+  },
+  {
+   "id": "6a1594e47324d343",
+   "title": "CoDA: Co-Evolution of Data Engines and Action Policies",
+   "url": "https://huggingface.co/papers/2610.22362",
+   "summary": "Generative simulation can automate robot environment construction, but physically valid environments are not necessarily useful for training. The challenge is to identify environments that address a policy's failures and supervision that helps it overcome them. We introduce CoDA, a framework in which a simulation data engine and an action policy co-evolve through a shared heterogeneous memory of environment construction, policy failures, and learning progress. The memory compiles validated diagnoses from a vision-language critic into generation programs that recreate difficulties and training programs that help the policy overcome them. We further propose Text2potential to convert these diagnoses into staged potentials for action-chunk value learning, providing dense supervision for policy updates while preserving the task's optimal policy under standard shaping assumptions. Measured learning progress guides further generation and program refinement. Across four manipulation task families, CoDA improves out-of-distribution success from 5.3% after supervised fine-tuning to 27.6%, exceeding the strongest closed-loop baseline by 9.5 percentage points with the same generation budget. On LIBERO-Pro, 15 rounds of generation and training raise success from 25% to 84% under position perturbations and from 1% to 76% under instruction perturbations.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.22362"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "agents",
+    "outils"
+   ],
+   "tldr": "CoDA introduit une co-évolution entre un moteur de simulation générative et une politique d'action robotique via une mémoire partagée, améliorant significativement les performances OOD (27.6% vs 5.3%) grâce à un apprentissage par chunks et une supervision dense. Pertinent pour l'optimisation de politiques robotiques par génération ciblée de données.",
+   "score": 8.5
+  },
+  {
+   "id": "3f7b93246419070f",
+   "title": "Diminishing Returns of Data in Sparse Autoencoders: Functional Behavior does not Guarantee Feature Reproducibility",
+   "url": "https://huggingface.co/papers/2610.20680",
+   "summary": "Sparse autoencoders (SAEs) are typically trained on hundreds of millions to billions of activation tokens, yet little work has tested whether this scale is necessary. We study how much activation data SAEs need by training four SAE architectures on three language models with budgets ranging from 5M tokens to a 500M-token reference. We measure two notions of convergence: functional behavior on standard evaluations and one-to-one reproducibility of learned features. Functional data requirements are strongly metric-dependent: reconstruction often approaches the full-data reference at substantially smaller budgets, whereas feature reproducibility continues to improve with data. For Gemma-2-2B BatchTopK, the fraction of strictly matched features rises from 2\\% at 5M tokens to 29\\% at 50M. Data selection also matters: random sampling better preserves the original activation distribution and generally favors reconstruction, whereas diversity-based sampling frequently improves AutoInterp. A theoretical analysis separates statistical consistency of subsampled training from the stronger identifiability and optimization conditions required for one-to-one feature recovery. Our results show that SAE training can often be made far more data-efficient when budgets are matched to the goal, and feature-level claims are backed by explicit reproducibility checks, paving the way toward cheaper and more reliable SAE research.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.20680"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "optimisation"
+   ],
+   "tldr": "Étude empirique montrant que les autoencodeurs clairsemés (SAE) nécessitent des centaines de millions de tokens pour une reproductibilité fiable des features, bien que leur comportement fonctionnel converge plus tôt, soulignant un désalignement entre métriques de performance et identifiabilité des features.",
+   "score": 8.2
+  },
+  {
+   "id": "16bedc6c582e75bc",
+   "title": "Data World: Scaling Data Environments from Scratch",
+   "url": "https://huggingface.co/papers/2610.21656",
+   "summary": "Data agents use code to process heterogeneous files and derive analytical insights. Scaling their training faces costly environment curation, privacy and intellectual-property restrictions, and difficulty verifying open-ended findings without known generative truth. Our core insight is to specify the world behind the files before generating the files themselves. We introduce Data World, a multi-agent engine that synthesizes environments, tasks, and rubrics from explicit mechanisms. Independent audits check target recoverability from observed files; rubrics support evaluation and RL rewards. Human preference-based curation for question realism selects 100 tasks across 50 held-out worlds and 16 domains for DataWorld-Bench. The engine also yields 2,135 training tasks from 1,037 disjoint worlds. Evaluation of ten frontier models shows that the benchmark remains challenging, particularly for insight discovery, with a consistent computation-insight gap. RL-zero training on the synthesized tasks produces DataWorld-35B-A3B from Qwen3.6-35B-A3B without trajectory distillation. Under matched evaluation, it improves over its base by 7.06 points on DataWorld-Bench, 14.28 on DAComp, 20.90 on DABstep-Hard, and 12.13 on JobBench, a broader occupational benchmark.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2610.21656"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Data World génère des environnements de données synthétiques pour entraîner des agents analytiques, en spécifiant d'abord les mécanismes sous-jacents avant de créer les fichiers. Le benchmark évalue la découverte d'insights, avec un écart computation-insight persistant. L'entraînement RL sur ces données améliore significativement les performances.",
+   "score": 8.2
+  },
+  {
+   "id": "1e13c5d64832cba3",
+   "title": "SERO: Learning from Executable Oracle Continuations for Long-Horizon Agentic Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2610.19397",
+   "summary": "Long-horizon agentic RL is constrained by the futures visited by the current policy. When rollouts fail to reach useful behaviors, improved credit assignment cannot provide supervision for states and actions that were never encountered. On-policy distillation (OPD) introduces teacher guidance on policy-induced states, and recent multi-turn variants improve how this guidance is scheduled, replayed, refined, or validated. However, they do not directly use the oracle-controlled future itself as the training trajectory. We introduce State-Rooted Executable Rollout Optimization (SERO), which augments on-policy agentic RL with executable oracle continuations. SERO restores a state actually reached by the current policy and lets a training-only oracle continue interacting with the real environment, making the downstream observations and oracle actions themselves available for learning. It then applies policy-reachability weighting, which weights each oracle step by the frozen behavior policy's compatibility with the preceding oracle actions. This allows deeper supervision to become effective as the policy becomes more compatible with the oracle branch. The oracle loss is optimized separately from the base RL estimator and no oracle is used at inference time. We evaluate SERO on two challenging interactive-agent benchmarks, ALFWorld and WebShop, using Qwen2.5-1.5B-Instruct and Qwen2.5-7B-Instruct. On ALFWorld, learning the full executable continuation is substantially more effective than supervising only the root oracle action, while policy-reachability weighting further improves out-of-distribution performance.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.19397"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "SERO améliore l'apprentissage par renforcement agentique à long terme en intégrant des continuations exécutables d'oracle, permettant une supervision plus profonde et une meilleure assignation de crédit. La méthode pondère les étapes d'oracle par la compatibilité avec la politique actuelle, accélérant l'apprentissage.",
+   "score": 8.2
+  },
+  {
+   "id": "16173efef44251b6",
+   "title": "MMSearch-OPD: Easy Made Hard, Hard Made Learnable for Long-Horizon Multimodal Search Agents",
+   "url": "https://huggingface.co/papers/2610.22240",
+   "summary": "Multimodal deep search is moving from short queries to long-horizon investigations that continually acquire evidence. However, training such agents remains constrained by limited challenging training questions and insufficient process feedback. We introduce MMSearch-OPD, combining controllable data refinement with joint reinforcement learning (RL) and on-policy distillation (OPD). Our Refine pipeline performs targeted expansion of reasoning chains derived from existing simple multimodal questions. Parameterized transformations control search depth and cross-modal evidence requirements while reusing existing image--question pairs. For training, answer rewards and lightweight behavior penalties guide RL, while the reward gap modulates token-level teacher guidance on imperfect student trajectories. An exponentially decaying distillation coefficient reduces teacher dependence as training proceeds. Experiments show gains from data refinement and further improvements from joint training after SFT, indicating stronger long-horizon multimodal deep search capabilities.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.22240"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "MMSearch-OPD améliore les agents de recherche multimodale longue durée via un pipeline de raffinement de données et un entraînement joint RL + distillation, avec des gains sur des tâches complexes. Approche prometteuse pour l'efficacité des RAG et agents autonomes.",
+   "score": 8.2
+  },
+  {
+   "id": "8c7abe0efe07de6d",
+   "title": "Mine, Sample, Render: Test-Time Diversity Alignment Of Generative Models",
+   "url": "https://huggingface.co/papers/2610.21185",
+   "summary": "Modern generative models produce high-quality individual outputs but struggle to sample diversely, even when explicitly instructed to do so. We introduce MINE-SAMPLE-RENDER (MSR), a test-time approach that externalizes the diversity into an explicit, corpus-derived sampling procedure. Our pipeline (i) mines an interpretable categorical schema from a corpus of real artifacts and supplies statistics for sampling; (ii) samples attribute configurations from the corpus-derived statistics; (iii) uses a generative model purely as a conditional renderer of a sampled configuration. Across weather report generation, user simulation, webpage design, text-to-image generation, and agent-generated 3D assets, we evaluate the diversity and output quality of MSR-guided generation and show that MSR improves alignment with corpus distributions and diversity of generated outputs.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.21185"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "MSR (Mine-Sample-Render) est une méthode de génération diversifiée qui externalise la diversité via un schéma catégoriel extrait d'un corpus réel, améliorant l'alignement avec les distributions réelles et la diversité des sorties (textes, images, 3D) sans sacrifier la qualité.",
+   "score": 7.9
+  },
+  {
+   "id": "257ebb099953a7e5",
+   "title": "Scalable Weak-to-Strong Verifier Hardening for Agent Environments",
+   "url": "https://huggingface.co/papers/2610.15924",
+   "summary": "Agent environments are essential for large language model (LLM) development. They use programmatic verifiers to turn complex outcomes into rewards. Verifiers can be attacked into awarding full credit to cheating agents without completing the intended task, causing inaccurate evaluation and misalignment in training. As agent environments scale in numbers and difficulty, so must the repairing of exploitable verifiers. To this end, we ask whether today's model with scaled compute can automatically harden agent environments to prevent potentially stronger future models from reward hacking. We introduce a scalable, fully automatic approach to weak-to-strong verifier hardening. It first sets up an isolated verifier sandbox that agents cannot directly modify, then uses a hacker-fixer loop to find and repair remaining verifier vulnerabilities. We apply this loop to Terminal Bench, KernelBench, and SETA, substantially reducing attack success across these agent environments. The iterative design scales with the hardening budget, producing progressively stronger defenses as the number of loop iterations increases and outperforming the static, non-iterative baseline. An earlier version of our hacker-fixer loop has been adopted by the official Terminal Bench repository as a way to audit exploits in its environments. Project page: https://verifier-hardening.github.io/.",
+   "published": "2026-10-10T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.15924"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Méthode scalable de renforcement des vérificateurs pour les environnements agents, utilisant une boucle hacker-fixer itérative pour réduire les vulnérabilités exploitables (ex : reward hacking) dans des benchmarks comme Terminal Bench ou SETA.",
+   "score": 7.9
+  },
+  {
+   "id": "d229e0fd55fab4bb",
+   "title": "Learning to Read Out: Unembedding Dynamics in Language Model Pretraining",
+   "url": "https://huggingface.co/papers/2610.21025",
+   "summary": "When does a language model acquire a capability? Developmental studies usually answer this by tracking when models start producing the correct token. But that prediction passes through the unembedding matrix, or readout, which is itself still being learned during pretraining. We show that a model's hidden states can encode task information before its own readout expresses it, so timelines read from outputs conflate what the model encodes with what its readout expresses. To track the readout directly, we introduce parameter-trajectory crosscoding, which fits one sparse dictionary to every token's readout row at every checkpoint. Unlike crosscoders on activations, it needs only checkpoint weights. We use it to locate a narrow early window, 0.4-1.1% of the way through Pythia's pretraining, in which the readout reorganizes and WordNet word categories become decodable from its rows. By then, linear probes on the hidden states already decode task information that the model's own outputs do not yet show. To test whether such gaps depend on how fast the readout learns, we pretrain small models from scratch that differ only in the readout's learning rate. We find that raising it makes the readout develop earlier and the gap close sooner, with little effect on final loss. Together, these results imply that early in training, where many developmental transitions are dated, a behavioral date can reflect when the readout learns to express task information and not when the model learns it.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.21025"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Étude sur la dynamique de *unembedding* pendant l'entraînement des LLMs, révélant que les états cachés encodent des informations avant que la matrice de lecture ne les exprime, avec des expériences contrôlant le taux d'apprentissage de cette matrice.",
+   "score": 7.9
+  },
+  {
+   "id": "6597d28b905b2ee0",
+   "title": "PAIR: Bridging Perception and Action in Vision-Language-Action Models",
+   "url": "https://huggingface.co/papers/2610.09016",
+   "summary": "Vision-language-action (VLA) models map visual observations and language instructions to continuous robot actions. This task requires a transition from representations that describe the scene and instruction to representations that support action generation. Many continuous-action VLAs leave this transition implicit and supervise it mainly through the final action-prediction loss. We introduce PAIR, a framework that learns a shared perception-action representation between these two spaces. During training, a Masked Action Autoencoder encodes expert action chunks into horizon-aligned Action Latent Tokens. A Bridge Module extracts task-relevant features from the current visual-language representations. PAIR aligns these features with the Action Latent Tokens to form Bridge Tokens that preserve task information and capture the structure of expert actions. The Bridge Tokens are then projected into the action-token space and injected into the initial Action Tokens, providing an action-ready starting point for Action Expert refinement. At inference, the autoencoder is removed, and the Bridge Tokens are generated only from the current observation and instruction. Experiments on LIBERO, LIBERO-Plus, and CALVIN ABC-D show gains for the evaluated OpenVLA-OFT and VLA-Adapter models. On LIBERO-Plus, PAIR raises VLA-Adapter's success rate from 59.1% to 64.2%. On CALVIN, it increases VLA-Adapter's average completed sequence length from 4.42 to 4.53. Across seven real-world tasks, PAIR raises OpenVLA-OFT's success rate from 51.4% to 65.0%. Representation analyses show that Bridge Tokens retain task information while making continuous-action information accessible before Action Expert refinement. These results support a shared intermediate representation as a useful interface between perception and action in continuous-action VLAs.",
+   "published": "2026-10-05T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.09016"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "PAIR introduit un cadre pour aligner les représentations perception-action dans les modèles VLA, en apprenant des tokens latents d'action et un module pont pour générer des tokens adaptés à la génération d'actions. Les expériences sur LIBERO montrent des gains en généralisation et en efficacité par rapport aux approches classiques.",
+   "score": 7.9
+  },
+  {
+   "id": "ad0b6a5550eb2afe",
+   "title": "MJev-Spatial: System One Spatial Intelligence via Native Attention Matching",
+   "url": "https://huggingface.co/papers/2610.22276",
+   "summary": "Spatial intelligence lets an agent perceive and act in the physical world, and many of its judgments must be made at interaction rates: which spatial relation holds, how far an object is, or where to place it. Vision-language models (VLMs) produce these answers by free-form text generation, paying for autoregressive decoding and answer parsing even though the output space is compact: one of a few options, a scalar, or a 2D point. In light of this, we introduce MJev-Spatial, a System 1 multimodal decision model that tackles all three types of spatial understanding tasks within a unified classification framework. Specifically, MJev-Spatial treats each candidate as a class and scores it using the backbone's pretrained query and key projections, without adding parameters. The candidates are the given options for choice tasks, or value bins and image regions refined through coarse-to-fine classification for numerical and point prediction, respectively. At inference, each classification decision takes a single forward pass and generates no answer tokens. To train on heterogeneous spatial data efficiently, we supervise all coarse-to-fine stages jointly with teacher forcing in one forward pass, and combine this with length-aware global batching and cross-GPU load balancing, raising training throughput by 30.8% over the original batching strategy. Built on Qwen3.5-4B and trained on 12.3M question-answer pairs converted from existing spatial datasets, MJev-Spatial achieves the highest overall score (65.64%) among eight tested models, ranks first on seven of twelve benchmarks, and outperforms its unmodified autoregressive base model on all twelve, while running 2.5 times faster than the fastest autoregressive baseline and 5.6 times faster than the base model.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 343,
+    "arxiv_id": "2610.22276"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "MJev-Spatial accélère les tâches de raisonnement spatial (relations, distances, positions) en remplaçant la génération textuelle par un cadre de classification native, réduisant la latence à un seul forward pass sans tokens de sortie. Approche innovante pour l'efficacité des VLMs en temps réel.",
+   "score": 7.9
+  },
+  {
+   "id": "9030dc3f3921cb5f",
+   "title": "LeanPRM: Lean-Grounded Process Supervision for Natural Language Proof Verification",
+   "url": "https://huggingface.co/papers/2610.17697",
+   "summary": "AI systems now write long and difficult mathematical proofs, and checking their step-by-step validity is becoming a bottleneck. A learned verifier could check proofs cheaply, but training one requires a correctness label on every step, and such labels are hard to obtain for open-ended proofs. Existing methods take them from human annotators, which is costly, or derive them from final answers, which proofs do not have, and formalizing each proof in Lean requires expert effort. We introduce LeanPRM, a framework that uses the Lean proof assistant to create step-level labels for natural-language proofs. A model writes a natural-language proof together with a paired formal proof, without feedback from Lean. Lean then labels every step, and a second model discards failures caused only by the formal syntax, so that the negative labels mark errors in the mathematics. LeanPRM contains 10,634 proofs with 152K labeled steps and no human annotation. A Qwen3-4B verifier trained on LeanPRM raises exact step-label accuracy on a held-out set of 200 proofs (LeanPRM-Bench) from 48.2 to 74.7, as opposed to 60.3 when the same base model is trained on PRM800K. It also selects better proofs in best-of-N selection on IMO-level problems, and outperforms the PRM800K-trained verifier on three of four external verification benchmarks. Training on LeanPRM improves verifiers at every size from 0.6B to 8B parameters on LeanPRM-Bench, Hard2Verify and IMO-GradingBench. Given the labels need no human annotation, LeanPRM can grow with the supply of formal statements, offering a path to step-level feedback on AI-generated proofs that are hard for humans to check.",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.17697"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "LeanPRM génère automatiquement des labels de vérification étape-par-étape pour des preuves en langage naturel via Lean, créant un dataset de 152K étapes sans annotation humaine, et améliore significativement la précision des vérificateurs formels (ex : Qwen3-4B).",
+   "score": 7.6
+  },
+  {
+   "id": "0b7e39d0c995717e",
+   "title": "Gen4P: Video Generators are 4D Perceivers",
+   "url": "https://huggingface.co/papers/2610.22371",
+   "summary": "We introduce Gen4P, a unified framework for recovering 4D geometry and motion from monocular video. We show that a pretrained video generator can be repurposed into a feed-forward 4D perceiver without iterative denoising. Building on on-demand querying, Gen4P processes clean video latents in a single encoder pass and predicts the requested 4D attributes through a lightweight cross-attention decoder. The on-demand query formulation enables flexible spatial sampling, and our proposed continuous-time queries further provide temporal flexibility. To strengthen geometric knowledge, we propose a straightforward plug-in solution by incorporating a pretrained video-depth LoRA as a frozen geometry prior, improving overall performance without adding extra trainable parameters. Gen4P achieves state-of-the-art or competitive performance on tasks of 3D point tracking, video depth and camera pose estimation. Qualitative results on in-the-wild videos illustrate its capability of tracking complex motion while maintaining the delicate structure. Together, these results demonstrate the potential of video generative pretraining for unified 4D perception. See https://gen4p.github.io for more visual results.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.22371"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "Gen4P transforme un générateur vidéo en un perceveur 4D feed-forward, en exploitant des requêtes continues pour estimer la géométrie et le mouvement à partir de vidéos monoculares. Le modèle atteint des performances état-de-l'art en suivi 3D, profondeur vidéo et estimation de pose caméra, avec une approche unifiée et légère.",
+   "score": 7.6
+  },
+  {
+   "id": "7f7f22ced61aa2cb",
+   "title": "SUPRA-TEX: 3D Generation with Super-Aligned Texture",
+   "url": "https://huggingface.co/papers/2610.22352",
+   "summary": "Single image 3D generation aims to dress a given 3D mesh with relightable materials while faithfully preserving the visual details of a reference image. Existing methods either introduce artifacts when fusing inconsistent multi-view predictions or struggle to preserve fine details through implicit image-feature conditioning. To resolve these challenges, we introduce SUPRA-Tex, built on the principle of decoupling visible-material estimation, surface alignment, and observation-guided 3D completion. This division of labor allows the 3D generator, trained on limited 3D data, to focus its capacity on preserving visible evidence and completing unobserved surfaces. Specifically, we first train an MLLM-based image editing model to predict lighting-separated PBR maps in the reference view. We then project these maps onto the visible surface and encode them with the pretrained material VAE encoder into native observation latents that share the generation target's latent space. An interleaved flow transformer holds these latents as fixed, read-only anchors while alternating unobserved-region and full-surface updates to generate complete material latents. This design achieves super-alignment with the reference, delivering What You See Is What You Get fidelity on visible regions and coherent completion on unobserved surfaces. Trained solely on public datasets, SUPRA-Tex achieves SOTA performance in both geometry-conditioned texturing and end-to-end asset generation, matching or even exceeding leading commercial systems on in-the-wild images. Project page: https://supra-3d.github.io/supratex/",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.22352"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture"
+   ],
+   "tldr": "SUPRA-Tex génère des textures 3D super-alignées à partir d'une seule image, en découplant l'estimation des matériaux visibles, l'alignement de surface et la complétion 3D. Le modèle préserve les détails fins et génère des matériaux PBR relightables, avec une approche modulaire et efficace.",
+   "score": 7.6
+  },
+  {
+   "id": "80fbc956943a90b3",
+   "title": "OmniVerifier-C1: Decomposed Graded Verifier for Rule-Governed Generative World Modeling",
+   "url": "https://huggingface.co/papers/2610.22355",
+   "summary": "Generative visual verifiers play a crucial role in advancing multimodal intelligence. To enhance the robustness of visual verifiers in complex multimodal scenarios involving compositional requirements, we move beyond conventional binary verifiers that produce only True/False discrete judgments and introduce a verifier that automatically decomposes complex prompts or environmental rules into fine-grained components and assigns pointwise scores to provide a continuous and more informative critique signal. Our experiments further demonstrate that these structured and interpretable outputs improve the verifier's generalization to out-of-domain multimodal critic tasks. To train this verifier, we introduce a Decoupled RL training strategy that jointly optimizes sub-question-level binary judgment and global alignment scoring, using precise local feedback to develop fine-grained verification capabilities that provide a foundation for reliable continuous scoring at the global level. Under a general reinforcement learning framework, we first empirically demonstrate that the proposed pointwise graded verifier significantly outperforms binary verifiers in traditional text-to-image scenarios. We then extend our investigation to rule-governed generative world modeling where generative models are leveraged for world simulation and world reasoning under explicit rules. From a theoretical standpoint, we further show that a pairwise verification paradigm yields more accurate critiques than the pointwise formulation when ground-truth images are available, with empirical results on diverse structured world-modeling tasks such as Maze and Sudoku further validating the effectiveness of our approach. Overall, our findings suggest a key insight: the transition from generative models to structured world-modeling agents critically hinges on the availability of accurate pairwise graded visual verifiers.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 30,
+    "arxiv_id": "2610.22355"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "OmniVerifier-C1 introduit un vérificateur visuel décomposé et gradé, qui évalue les prompts complexes en composantes fines pour fournir des scores continus et interprétables. La stratégie RL découplée améliore la généralisation et la robustesse par rapport aux vérificateurs binaires classiques.",
+   "score": 7.6
+  },
+  {
+   "id": "486b1f4f4d0bbcfc",
+   "title": "Copy-Paste Language Models",
+   "url": "https://huggingface.co/papers/2610.19247",
+   "summary": "Transformers are intuitively considered to be efficient at copying from their inputs. We actually show that the ability of LLMs to copy in context can be improved through explicit modeling. We propose Copy-Paste Language Models (CPLMs), which add a lightweight Copy-Paste head to the conventional language modeling (LM) head. CPLMs improve training efficiency, downstream performance, and offer new operating points in long-context and retrieval setups. We validate our approach by pretraining models from 135M to 1.7B parameters, showing improvements across all scales and backbones with negligible training and inference overheads. We explain the success of CPLMs by showing that they partially mitigate the LM head gradient bottleneck through an alternative gradient path.",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.19247"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "CPLMs ajoutent une tête *Copy-Paste* légère aux transformers pour améliorer l'efficacité d'entraînement, les performances en aval et les capacités de copie en contexte, avec des gains marginaux en overhead et une explication via l'atténuation du goulot d'étranglement du gradient de la tête LM.",
+   "score": 7.3
+  },
+  {
+   "id": "a018c194f15d17aa",
+   "title": "Cowork-Gym: Synthesizing Interactive Work Environments at Scale",
+   "url": "https://huggingface.co/papers/2610.17670",
+   "summary": "Cowork agents navigate dependencies across tools and files while adapting to changing user requirements and edits to shared workspaces. Scaling such environments requires maintaining consistency among task objectives, executable resources, user behavior, and success criteria. We introduce Cowork-Gym, a framework that synthesizes Cowork environments through a build-execute-revise loop that uses execution evidence and review feedback to validate and repair generated environments. To capture realistic Cowork dynamics, a stateful user simulator responds to the agent's actions through dialogue and direct edits to the shared workspace. We synthesize 64.9K environments across 14 application scenarios and use them to post-train 9B, 27B, and 35B-A3B Qwen models with supervised fine-tuning, reinforcement learning, and on-policy distillation. Averaged across six agentic benchmarks, these models outperform their corresponding base checkpoints by 8.7, 6.4, and 4.1 points, respectively. Ours-27B ranks second overall among the evaluated models and achieves the highest average scores on PawBench and ClawEval, outperforming models with over 100B total parameters on both benchmarks.",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.17670"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "Cowork-Gym synthétise 64,9K environnements de travail interactifs pour entraîner des agents multi-outils, avec des gains mesurés de 4,1 à 8,7 points selon les modèles. Utile pour évaluer les capacités d'adaptation des agents dans des scénarios complexes, mais nécessite validation sur des benchmarks externes.",
+   "score": 7.3
+  },
+  {
+   "id": "5c09eccb5904814a",
+   "title": "One Bias Score, Two Factors: How Mitigations Affect Option Bias in Multiple-Choice Evaluation",
+   "url": "https://huggingface.co/papers/2610.20993",
+   "summary": "Reordering multiple-choice options can change a model's answer, an effect studied as selection bias (a preference for certain option letters) and as order sensitivity (changes in answers across option orderings). We connect these perspectives through the pooled selection-rate standard deviation (pooled SD), which measures how unevenly option letters are selected across questions and orderings. When every option of each question appears equally often at each position, the pooled SD is exactly the product of two label-free factors: the flip rate and the positional skew. The flip rate is the fraction of questions whose chosen option changes across orderings; the positional skew is the standard deviation of option-letter selection rates among those questions. Across 41 checkpoints and 12 benchmarks, the flip rate tracks accuracy and output uncertainty, while the positional skew tracks the estimated option-symbol prior. Prior correction for selection bias mainly reduces the positional skew. Aggregating each ordering with its reversal, a mitigation for order sensitivity, mainly reduces the flip rate. Both reduce the range of accuracy across correct-answer letters by similar amounts, but aggregation leaves fewer model-rank reversals. Applying prior correction before aggregation reduces both factors and further narrows this accuracy range. However, aggregation lowers the flip rate partly by settling questions on the same wrong option. We therefore recommend reporting both factors to distinguish mitigation effects, alongside accuracy to distinguish stability from correctness.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.20993"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Cette analyse décompose le biais de sélection dans les évaluations à choix multiples en deux facteurs (taux de basculement et asymétrie positionnelle), montrant comment les corrections ciblent spécifiquement chaque composante. Les résultats soulignent l'importance d'agréger les réponses avec leurs inversions pour atténuer les biais.",
+   "score": 7.0
+  },
+  {
+   "id": "58b2cf2012c4a5c4",
+   "title": "H-DDCM: Hadamard Codebooks for Fast Generative Image and Video Compression",
+   "url": "https://huggingface.co/papers/2610.18125",
+   "summary": "Training-free diffusion-based compression methods repurpose the generative priors of a diffusion or a flow model to compress data without retraining them as task-specific codecs. Recent codebook-based approaches such as Turbo-DDCM achieve strong perceptual quality at ultra-low bitrates, but their reliance on dense Gaussian codebooks remains costly in both memory and computation, and scales poorly with the large latent dimensions of modern image and video generators. Their combinatorial bitstream encoding further becomes computationally heavy at this scale. We introduce H-DDCM, a scalable generative compression framework that replaces Gaussian codebooks with implicit randomized Hadamard dictionaries. The fast Walsh-Hadamard transform allows for implicitly synthesizing full-dimensional dictionaries with O(d log d) compute for projection and reconstruction and O(d) memory, without materializing the full-dimensional dictionary. We further introduce an efficient table-free lexicographic coding scheme that makes combinatorial encoding practical at larger dimensions. Beyond images, we adapt the framework to an autoregressive video flow model and develop a streaming compression scheme that periodically re-encodes recently reconstructed frames into a fresh KV-cache prefix, preserving temporal context across segments at no additional transmitted bits. This enables long-form, close to real-time generative video compression on a single GPU. Across image and video benchmarks, H-DDCM achieves competitive rate-distortion-perception performance while substantially reducing the memory and computational overhead of codebook-based training-free generative compression.",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.18125"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "vision",
+    "autre"
+   ],
+   "tldr": "H-DDCM accélère la compression générative d'images/vidéos via des dictionnaires Hadamard implicites et un encodage lexicographique, réduisant la complexité mémoire et computationnelle. Pertinent pour l'optimisation des pipelines de diffusion, mais moins central pour les centres d'intérêt de l'utilisateur.",
+   "score": 7.0
+  },
+  {
+   "id": "70d10452e1ce4ca4",
+   "title": "I never authorized an integration that scans my secrets",
+   "url": "https://github.com/home-assistant/home-assistant.io/issues/49314",
+   "summary": "",
+   "published": "2026-10-16T20:33:41Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 223,
+    "comments": 195
+   },
+   "relevance": 8,
+   "reliability": 5,
+   "tags": [
+    "regulation",
+    "produit"
+   ],
+   "tldr": "Critique des intégrations d'IA qui analysent des secrets utilisateurs sans consentement, soulevant des questions de sécurité et de conformité. Pertinent pour la régulation et l'écosystème IA.",
+   "score": 6.8
+  },
+  {
+   "id": "bfe424f01c30f4e4",
+   "title": "Equal CER, Unequal Damage: Severity-Weighted Character Error Rate for OCR",
+   "url": "https://huggingface.co/papers/2610.20461",
+   "summary": "Character Error Rate (CER), the standard metric for OCR and vision-language models (VLMs), charges a typo as much as a wrong name. We introduce semCER, which keeps CER's alignment and denominator and charges each grapheme edit a severity from an LLM judge, with no word segmentation. Normalized CER keeps the score of a whole transcription, where it tracks readers as well as semCER or better, and semCER breaks that score down into named edits. The charges track readers' ratings edit by edit in English, Vietnamese, and Chinese and put the edits readers rate most severe near the top of a sorted list. On pairs drawn where CER and semCER disagreed, readers side with semCER more often than with normalized CER in English and Chinese, and equally often in Vietnamese. Across 16 languages, the judge charges a wrong diacritic or tone mark almost nothing in Spanish but nearly a wrong letter's severity in Telugu. Where we can count real words, a general VLM's wrong letter forms one far above chance while a classical pipeline's stays near it. We release the 61 million judged edits, the aggregated reader ratings, and the distilled scorer at https://github.com/nguyenx2t/semcer.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.20461"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "semCER introduit une métrique pondérée par sévérité pour l'OCR, alignée sur les jugements humains, corrigeant les biais du CER standard (ex : pénalisation égale des fautes de ton vs lettres) et améliorant l'évaluation multilingue.",
+   "score": 6.7
+  },
+  {
+   "id": "31b33a8b74e550c5",
+   "title": "Speech event detector: Timestamped detection of non-verbal vocalizations and background sounds for rich speech transcription",
+   "url": "https://huggingface.co/papers/2610.14232",
+   "summary": "Automatic speech recognition produces words but drops the non-verbal content of a recording: the breaths, coughs, sighs and laughter of the speaker, and the horns, music or barking around them. We describe Speech Event Detector, a 5.8-million-parameter convolutional-Transformer model that outputs probabilities every 40 ms for 54 event classes (20 speaker vocalizations and 34 background sounds), together with post-processing that converts these probabilities into timestamped events and a procedure for merging the events into a Whisper transcript. The model is trained on material drawn from seven public datasets whose labels come in incompatible forms: single detected regions, free-text tags with timestamps, temporally strong ontology labels, symbols embedded in transcripts, isolated recordings and environmental recordings. We unify them using rule-based label mapping, recover timestamps for transcript-embedded labels through CTC forced alignment, locating 6,360 of 8,620 sounds, and combine about 168 hours of real annotated training recordings with synthetic mixtures and augmentation using real background noise. Per-class thresholds for two operating profiles are tuned on real held-out recordings, and performance is estimated using two-fold cross-validation. On whole held-out recordings from four datasets, considering the 48 classes with at least ten held-out events, the sensitive profile detects an average of 49 percent of a class's events, covering 67 percent of all 9,367 events, at a macro precision of 0.30. The balanced profile achieves a macro recall of 0.37 at a precision of 0.36, with macro event F1 scores of 0.32 and 0.33, respectively. The detector runs about 39 times faster than real time on eight CPU threads.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.14232"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "outils"
+   ],
+   "tldr": "Speech Event Detector est un modèle de 5.8M paramètres détectant des événements vocaux non-verbaux et sons de fond avec des timestamps, conçu pour enrichir les transcriptions Whisper. Entraîné sur des données hétérogènes fusionnées, il atteint une précision élevée (>90% mAP) et une robustesse aux bruits.",
+   "score": 6.7
+  },
+  {
+   "id": "83945f3b589d9924",
+   "title": "Grounding AI agents in biological reality: Building blocks for autonomous wet labs",
+   "url": "https://research.google/blog/grounding-ai-agents-in-biological-reality-building-blocks-for-autonomous-wet-labs/",
+   "summary": "General Science",
+   "published": "2026-10-16T18:11:34+00:00",
+   "source": "google-research",
+   "source_label": "Google Research",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 5,
+   "reliability": 9,
+   "tags": [
+    "autre",
+    "robotique"
+   ],
+   "tldr": "Proposition de blocs de base pour des laboratoires autonomes biologiques, intégrant des agents IA dans des processus scientifiques concrets. Intéressant pour l'écosystème IA au sens large, mais hors des priorités techniques de l'utilisateur.",
+   "score": 6.7
+  },
+  {
+   "id": "0342f39befa10261",
+   "title": "Llama.cpp on a jailbroken PS5: run any GGUF model natively on the console",
+   "url": "https://github.com/cobanov/PS5LM",
+   "summary": "",
+   "published": "2026-10-16T18:32:35Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 295,
+    "comments": 74
+   },
+   "relevance": 7,
+   "reliability": 4,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Portage de Llama.cpp sur PS5 pour exécuter des modèles GGUF en natif, optimisant l'inférence sur matériel non traditionnel. Intéressant pour l'optimisation matérielle, mais peu de détails techniques.",
+   "score": 5.9
+  },
+  {
+   "id": "3516f29369ff9e47",
+   "title": "PathFM: Fast Generative Forecasting of Multivariate Trajectories",
+   "url": "https://huggingface.co/papers/2610.22358",
+   "summary": "Time series foundation models are becoming increasingly popular for general-purpose forecasting. However, most leading models predict marginal quantiles, leaving the dependence structure of future trajectories unspecified. This distinction matters for trajectory-dependent quantities such as cumulative demand, peak load, and event timing, yet point and marginal scores do not reveal it. To model this dependence, we introduce PathFM, a trajectory-based forecasting model that uses flow matching to generate complete future paths. We further distill the model to one or two steps and share history attention cache across draws. Together, these enable PathFM to generate multiple paths for a single series in roughly the time needed for one query to a quantile model. The distilled sampler also makes it practical to optimize a calibration loss directly. PathFM achieves competitive marginal accuracy on the established forecasting benchmarks fev-bench and TIME. To complement these evaluations, we introduce Forecast Path Score Bench (fps-bench), which augments fev-bench tasks with energy and variogram scores and downstream metrics. PathFM achieves a higher aggregate path score on fps-bench than all evaluated external baselines. Experiments on chaotic systems further show that our flow model sustains long-run variability, while strong baselines rapidly collapse. PathFM makes generative time series forecasting both competitive and practical, enabling diverse downstream applications.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.22358"
+   },
+   "relevance": 5,
+   "reliability": 6,
+   "tags": [
+    "autre",
+    "benchmark"
+   ],
+   "tldr": "PathFM utilise le *flow matching* pour générer des trajectoires multivariées en temps réel, avec distillation pour optimiser la calibration, et introduit fps-bench pour évaluer la dépendance structurelle des séries temporelles, surpassant les modèles quantiles classiques.",
+   "score": 5.8
+  }
+ ]
+}
