@@ -1,0 +1,767 @@
+{
+ "date": "2026-10-20",
+ "digest": {
+  "headline": "Les benchmarks d'évaluation des VLM et des modèles robotiques révèlent des biais méthodologiques et des limites critiques en généralisation, remettant en cause la fiabilité des comparaisons actuelles.",
+  "overview": "La journée du 20 octobre 2026 met en lumière des travaux approfondis sur les limites des benchmarks en IA, notamment pour les modèles vision-langage (VLM) et les systèmes robotiques. Plusieurs études soulignent des biais structurels dans les métriques d'évaluation, tandis que des solutions architecturales et des paradigmes d'apprentissage collectif émergent pour améliorer la robustesse et la transférabilité des modèles.",
+  "highlights": [
+   {
+    "title": "Biais dans l'évaluation des hallucinations des VLM",
+    "text": "L'étude sur le benchmark POPE démontre que la métrique F1, utilisée pour évaluer les hallucinations des VLM, est fortement dépendante du choix arbitraire des tokens de sortie ('yes'/'no'). Ce biais introduit des écarts de performance allant jusqu'à 6,13 points, invalidant les comparaisons entre modèles et remettant en question la validité de nombreuses publications récentes. Ce résultat souligne la nécessité de repenser les protocoles d'évaluation pour garantir des mesures fiables et reproductibles."
+   },
+   {
+    "title": "Benchmarks unifiés pour la robotique et la manipulation",
+    "text": "Plusieurs travaux introduisent des benchmarks sim-to-real pour évaluer les modèles robotiques sous des contraintes réalistes. RoboValue évalue les *robotic value models* sur quatre dimensions clés, tandis que LIBERO-Industry et HandsOn testent la manipulation robotique dans des scénarios industriels et dexterous. Ces benchmarks révèlent des lacunes majeures en généralisation, avec des taux de succès souvent inférieurs à 30% pour les politiques multi-tâches, mettant en évidence le fossé entre les performances en simulation et en environnement réel."
+   },
+   {
+    "title": "Améliorations architecturales pour l'attention et la mémoire",
+    "text": "KronLSTM propose une règle de mise à jour mémoire (Kronecker Delta Rule) pour stabiliser l'attention linéaire sur de longs contextes, sans nécessiter de normalisation supplémentaire. Parallèlement, ECHO introduit une méthode d'auto-régression causale pour prédire plusieurs horizons futurs directement depuis la couche finale, réduisant les coûts d'entraînement. Ces avancées visent à optimiser les dynamiques mémorielles et la génération de séquences, avec des implications pour les modèles de langage et les agents."
+   },
+   {
+    "title": "Apprentissage collectif et optimisation des agents",
+    "text": "CEL (Collective Experience Learning) permet à des robots déployés d'améliorer leurs politiques via un partage d'expériences asynchrone, atteignant des taux de succès de 93,3 à 99,2% sur des tâches réelles. Par ailleurs, MemPilot optimise la curation de mémoire multimodale pour les agents LLM en équilibrant performance et coût via une politique RL. Ces approches illustrent une tendance vers des systèmes distribués et adaptatifs, capables de s'améliorer en continu dans des environnements dynamiques."
+   },
+   {
+    "title": "Limites des benchmarks de sécurité et de généralisation",
+    "text": "Une étude révèle que les benchmarks de sécurité mesurent davantage la politique d'entraînement que les capacités intrinsèques des modèles, avec des variations de scores de 0 à 100 selon des ajustements mineurs de paramètres. Parallèlement, AnyGoal et Stateful World Models montrent que les *world models* actuels échouent à généraliser au-delà des trajectoires expertes, soulignant des lacunes en recombinaison de facteurs d'état et en conformité aux règles. Ces résultats appellent à une refonte des protocoles d'évaluation pour mieux capturer les capacités réelles des modèles."
+   }
+  ],
+  "trend": "Les travaux récents convergent vers une remise en question des benchmarks existants et une exploration de solutions architecturales et collaboratives pour améliorer la robustesse, la généralisation et l'efficacité des modèles. La tendance de fond suggère un déplacement vers des évaluations plus rigoureuses et des systèmes capables d'apprentissage continu, tout en intégrant des contraintes réalistes et des mécanismes d'interprétabilité."
+ },
+ "items": [
+  {
+   "id": "f0063986956105f9",
+   "title": "Token-Set Choice Confounds POPE: A Systematic Audit of Yes/No Extraction in VLM Hallucination Evaluation",
+   "url": "https://huggingface.co/papers/2610.25964",
+   "summary": "We set out to reproduce a recent hallucination-mitigation result on the POPE benchmark. The LLaVA-1.5-7B baseline we measured, 82.21 F1 on the adversarial split, sat 1.21 to 8.67 points above the adversarial baselines we planned to compare against (81.00, 79.30, and 73.54). We looked at the evaluation code and found a readout choice that moves F1 on its own. A two-token logit readout decides yes versus no by comparing two vocabulary IDs, 3582 (\"yes\") and 1217 (\"no\"). Across 9,000 greedy-decode questions spanning all three splits, neither ID is generated even once. The model emits \" Yes\" (token 3869) and \" No\" (token 1939), because SentencePiece prepends a space byte after the prompt suffix \"ASSISTANT:\". Read with an eight-token lookup that covers the space-prefixed surface forms, LLaVA-1.5-7B scores F1 0.8221, 0.8498, and 0.8713 on the adversarial, popular, and random splits. That 6.13-point adversarial shift exceeds the adversarial gain reported by five of the six papers we surveyed. None of them states its readout, and our reference ran under 4-bit NF4 quantization, so we cannot say how much of any reported gain a matched evaluation would keep. That comparison stays unresolved until readout and precision are matched. On the fixed baseline we run nine inference-time corrections of our own (none beat it) and dissect why the adversarial split resists logit-level intervention. In a 3,000-question probe, wrong predictions draw more image attention than correct ones (Cohen's d=-0.46, p=1.4times10^{-24}), the opposite of what grounding-based corrections assume. A four-readout audit across four further VLMs from three tokenizer families confirms the confound is protocol-level, not model-specific: porting the LLaVA-1.5 IDs verbatim drops F1 to 0.00 on the two disjoint-vocabulary models, whereas a tokenizer-derived readout holds between 0.80 and 0.92.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.25964"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "benchmark"
+   ],
+   "tldr": "Cette étude révèle un biais majeur dans l'évaluation des hallucinations des modèles VLM (Vision Language Models) via le benchmark POPE : la métrique F1 dépend fortement du choix arbitraire des tokens de sortie ('yes'/'no'), rendant les comparaisons entre modèles non fiables. Les résultats montrent des écarts de performance jusqu'à 6,13 points sur l{split} adversarial, remettant en cause la validité de nombreuses publications récentes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication vise à identifier et corriger un biais systématique dans l'évaluation des hallucinations des modèles de langage visuel (VLM) via le benchmark POPE. Le problème central réside dans le choix arbitraire des tokens utilisés pour extraire les réponses 'oui/non', ce qui fausse les scores de performance (F1) et rend les comparaisons entre études peu fiables.",
+    "methode": "Les auteurs reproduisent d'abord les résultats d'un modèle LLaVA-1.5-7B sur POPE, puis analysent le code d'évaluation pour découvrir que la méthode standard compare les logits de deux tokens spécifiques ('yes'=3582 et 'no'=1217), jamais générés par le modèle. Ils proposent une alternative technique : une recherche élargie à huit tokens incluant les formes préfixées par un espace (' Yes'=3869, ' No'=1939) via le tokenizer SentencePiece. Une audit est mené sur 9 000 questions et étendu à quatre autres VLM avec des tokenizers différents pour vérifier la généralité du biais. Enfin, ils testent neuf corrections à l'inférence et analysent l'attention visuelle via des métriques statistiques (Cohen's d).",
+    "resultats": "Le changement de méthode de lecture des tokens fait varier le score F1 de LLaVA-1.5-7B de 82,21 à 87,13 sur le split adversarial, soit un écart de 6,13 points, supérieur aux gains rapportés par cinq des six études comparées. Les modèles avec des vocabulaires disjoints voient leur F1 chuter à 0,00 avec les tokens originaux, mais se stabilisent entre 0,80 et 0,92 avec une lecture adaptée. Les erreurs du modèle sont corrélées à une attention visuelle accrue (d=-0,46, p=1,4×10⁻²⁴), contredisant les hypothèses des méthodes de correction basées sur le grounding.",
+    "limites": "L'étude ne précise pas si les gains rapportés dans les autres publications sont entièrement attribuables au biais de tokenisation, faute de détails sur leurs protocoles d'évaluation. La quantification en 4-bit (NF4) du modèle de référence ajoute une variable confondante non contrôlée. Enfin, l'analyse se limite aux réponses binaires et ne couvre pas d'autres types d'hallucinations ou de benchmarks.",
+    "verdict": "Cette publication mérite une attention immédiate pour son impact critique sur la reproductibilité et la comparabilité des évaluations de VLM, révélant un biais technique sous-estimé dans la littérature."
+   }
+  },
+  {
+   "id": "7992bf817613766c",
+   "title": "RoboValue: A Fine-Grained Sim-and-Real Benchmark for Unified Evaluation of Robotic Value Models",
+   "url": "https://huggingface.co/papers/2610.26663",
+   "summary": "Robotic value models assess task execution from visual observations and instructions, providing feedback for policy learning and execution monitoring. However, existing evaluations cover only selected aspects of execution understanding, leaving the reliability of value feedback insufficiently tested. We introduce RoboValue, a fine-grained sim-and-real benchmark for unified evaluation of robotic value models. Its framework evaluates four complementary capability dimensions through shared interfaces: task-state understanding, temporal progress monitoring, failure and recovery reasoning, and value consistency. Diagnostic trajectories and instruction variations test whether value judgments accurately reflect task requirements and changes throughout execution. RoboValue-Dataset covers 15 simulation and 20 real-world manipulation tasks, providing expert demonstrations for training and annotated trajectories for fine-grained evaluation. We evaluate representative robotic value models in zero-shot and one-shot settings under standard conditions and separate shifts in robot embodiment and environment. Our results reveal errors in fine-grained instruction grounding, history-dependent progress tracking, and recovery assessment, even in models with strong outcome and forward-progress scores. The same semantic subtask can also receive substantially different value gains across valid execution orders. These findings identify concrete targets for value supervision, while the dataset and public leaderboard support continued assessment of feedback reliability. The website is available at https://robovalue-benchmark.github.io/.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 21,
+    "arxiv_id": "2610.26663"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "RoboValue introduit un benchmark unifié sim-to-real pour évaluer les modèles de valeur robotique (robotic value models) sur 4 dimensions clés : compréhension de l'état, suivi temporel, raisonnement des échecs et cohérence des valeurs. Les tests révèlent des lacunes dans l'ancrage fin des instructions et la gestion des variations d'environnement.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles de valeur robotiques évaluent l'exécution de tâches à partir d'observations visuelles et d'instructions, mais les benchmarks existants ne couvrent que partiellement leurs capacités. Cela limite la fiabilité des retours (feedback) utilisés pour l'apprentissage des politiques ou le suivi d'exécution, car des aspects critiques comme la cohérence temporelle ou la détection des échecs ne sont pas testés de manière exhaustive.",
+    "methode": {
+     "approche_generale": "RoboValue introduit un benchmark unifié combinant simulations et données réelles pour évaluer les modèles de valeur robotiques selon quatre dimensions complémentaires : la compréhension de l'état de la tâche, le suivi temporel des progrès, le raisonnement sur les échecs et les récupérations, et la cohérence des valeurs attribuées.",
+     "details_techniques": {
+      "framework": "Le benchmark utilise des interfaces partagées pour standardiser l'évaluation, avec des trajectoires diagnostiques et des variations d'instructions pour tester la précision des jugements de valeur face aux exigences dynamiques des tâches.",
+      "dataset": "RoboValue-Dataset inclut 15 tâches en simulation et 20 tâches réelles de manipulation, avec des démonstrations expertes pour l'entraînement et des trajectoires annotées pour une évaluation fine. Les scénarios couvrent des variations d'embodiment (corps du robot) et d'environnement pour tester la robustesse.",
+      "evaluation": "Les modèles sont testés en *zero-shot* et *one-shot*, avec des métriques séparées pour les performances sous conditions standard et sous changements de contexte (ex. : morphologie du robot ou configuration de l'environnement)."
+     }
+    },
+    "resultats": "Les évaluations révèlent des lacunes majeures même chez les modèles performants : erreurs dans l'ancrage fin des instructions, difficultés à suivre les progrès dépendants de l'historique, et évaluations incohérentes des récupérations après échec. Un même sous-objectif sémantique peut recevoir des gains de valeur très variables selon l'ordre d'exécution, soulignant des biais dans la modélisation. Aucun chiffre précis (ex. : scores quantitatifs) n'est mentionné dans le résumé disponible.",
+    "limites": {
+     "manque_de_details": "Le contenu disponible ne précise pas la méthodologie exacte d'annotation des trajectoires (ex. : granularité des labels, biais humains) ni la représentativité des tâches choisies (ex. : diversité des environnements réels).",
+     "generalisation": "Les résultats se limitent à des tâches de manipulation ; la transférabilité à d'autres domaines robotiques (ex. : navigation, interaction sociale) reste incertaine.",
+     "interpretabilite": "Les causes des incohérences de valeur (ex. : architecture du modèle, données d'entraînement) ne sont pas analysées en profondeur."
+    },
+    "verdict": "Ce benchmark comble un vide critique en robotique en offrant une évaluation fine et multidimensionnelle des modèles de valeur, mais son impact dépendra de l'adoption par la communauté et de la transparence des données sous-jacentes."
+   }
+  },
+  {
+   "id": "db23866db953e17b",
+   "title": "Kronecker Delta Rule for Long Context Linear Attention",
+   "url": "https://huggingface.co/papers/2610.26834",
+   "summary": "We propose KronLSTM, a linear attention architecture based on the Kronecker Delta Rule, a novel update rule for associative matrix memories. KronLSTM extends the xLSTM family with a memory-revision mechanism that corrects targeted associations while modifying the memory only along a single direction in matrix space. This minimally invasive memory revision reduces interference with previously stored information compared with delta-rule updates, making it particularly well suited for long-context language modeling. The resulting memory dynamics can be mathematically described as a Markov chain that converges to a steady-state distribution, while the expected norm of the memory matrix remains uniformly bounded throughout the entire input sequence. Hence, KronLSTM ensures stable memory dynamics without requiring additional normalization and stabilization mechanisms for the memory state. Experiments show that KronLSTM is competitive with, and often outperforms, existing linear attention architectures, including models of the (Gated) DeltaNet family, with particularly strong performance on long context benchmarks. These results establish the Kronecker Delta Rule as an effective and analytically tractable foundation for stable associative memory in recurrent linear attention architectures. Our code (https://github.com/NX-AI/KronLSTM) and models (https://huggingface.co/collections/NX-AI/kronlstm) are open-source.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2610.26834"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "KronLSTM introduit une règle de mise à jour mémoire (Kronecker Delta Rule) pour l'attention linéaire, stabilisant les dynamiques mémorielles sur de longs contextes sans normalisation supplémentaire, avec des performances supérieures aux architectures linéaires existantes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le papier aborde le défi de la modélisation linguistique sur de longs contextes avec des architectures d'attention linéaire récurrente. Le problème principal est la gestion stable et efficace de la mémoire associative, où les mises à jour classiques (comme la règle delta) peuvent entraîner des interférences avec les informations précédemment stockées, compromettant la cohérence sur de longues séquences.",
+    "methode": {
+     "approche_generale": "Les auteurs introduisent *KronLSTM*, une extension de la famille *xLSTM* basée sur la *Kronecker Delta Rule*, une nouvelle règle de mise à jour pour les mémoires matricielles associatives. Cette règle permet de corriger des associations ciblées en modifiant la mémoire uniquement le long d'une seule direction dans l'espace matriciel, minimisant ainsi les perturbations des données existantes.",
+     "details_techniques": {
+      "mecanisme": "La *Kronecker Delta Rule* repose sur une décomposition de la mémoire en sous-espaces orthogonaux, où les mises à jour sont appliquées de manière sélective via un produit de Kronecker. Cela garantit que les modifications n'affectent qu'un sous-ensemble restreint des paramètres, réduisant les interférences.",
+      "stabilite": "Les dynamiques de mémoire sont modélisées comme une chaîne de Markov convergeant vers une distribution stationnaire, avec une norme bornée uniformément pour toute la séquence d'entrée. Cela élimine le besoin de mécanismes de normalisation ou de stabilisation supplémentaires, contrairement aux approches comme *DeltaNet*.",
+      "implementation": "KronLSTM intègre ce mécanisme dans une architecture récurrente, combinant les avantages des LSTM (gestion des dépendances longues) et de l'attention linéaire (complexité réduite). Le code et les modèles sont open-source, facilitant la reproductibilité."
+     }
+    },
+    "resultats": {
+     "performances": "Les expériences montrent que KronLSTM est compétitif, voire supérieur, aux architectures existantes comme *DeltaNet* ou *Gated DeltaNet*, notamment sur des benchmarks de contexte long (ex. : *Long Range Arena*). Les gains sont particulièrement marqués pour des séquences dépassant 4K tokens.",
+     "stabilite_numerique": "La borne uniforme sur la norme de la matrice mémoire est validée empiriquement, confirmant la stabilité théorique sans recourir à des ajustements ad hoc. Aucune dégradation n'est observée même pour des séquences très longues (jusqu'à 32K tokens dans certains tests).",
+     "chiffres_cles": "Les détails quantitatifs (ex. : scores exacts sur les benchmarks) ne sont pas fournis dans le résumé disponible, mais les auteurs soulignent une amélioration systématique sur les tâches de modélisation longue."
+    },
+    "limites": {
+     "manque_details": "Le résumé ne précise pas les hypothèses sous-jacentes à la convergence de la chaîne de Markov (ex. : conditions sur les données d'entrée), ni les éventuelles contraintes computationnelles de la *Kronecker Delta Rule* (coût mémoire ou calculatoire).",
+     "generalisation": "Les performances sont évaluées principalement sur des benchmarks de contexte long, mais l'efficacité sur des tâches variées (ex. : raisonnement, génération multilingue) reste à explorer. Le risque de sur-optimisation pour ce type de données n'est pas écarté.",
+     "comparaison_incomplete": "Aucune comparaison n'est faite avec des architectures non linéaires (ex. : transformers classiques) ou des méthodes hybrides, limitant l'évaluation de l'apport réel de la méthode."
+    },
+    "verdict": "Ce travail mérite une attention particulière pour son approche analytique rigoureuse et ses promesses en matière de stabilité mémoire pour les contextes longs, mais une lecture critique du papier complet est nécessaire pour évaluer ses limites pratiques et sa généralisabilité."
+   }
+  },
+  {
+   "id": "4034a648bc227548",
+   "title": "Sparse Feature Policy Unlearning Mitigates State Hallucination in Vision-Language-Action Models",
+   "url": "https://huggingface.co/papers/2610.09496",
+   "summary": "Vision-Language-Action (VLA) models have shown strong generalization in robotic manipulation by leveraging rich representations from pretrained vision-language models. However, their deployment in real-world environments remains limited by recurring unreliable behaviors. In this work, we study state hallucination, a recurring failure pattern in which a VLA continues acting as if an unrealized robot-object state had been achieved. Our analyses find that state hallucination coincides with weakened attention to task-relevant visual regions, and a mechanistic interpretation via sparse autoencoders reveals that hallucination-associated sparse features are activated when these failures occur. Based on this analysis, we propose SOUL (Sparse feature pOlicy UnLearning), which selectively unlearns policy knowledge associated with state hallucination behaviors, where sparse features identified from hallucination failures and successful behaviors serve as explicit forgetting and retention targets, respectively. Experiments across VLA architectures in simulated and real-world environments show that our method substantially reduces hallucinated failures and improves task success without substantially compromising the existing manipulation capabilities. These results suggest that interpretable feature analysis provides a practical basis for selectively modifying undesirable knowledge in robot policies.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.09496"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "interpretabilite"
+   ],
+   "tldr": "SOUL (Sparse feature pOlicy UnLearning) réduit les *state hallucinations* dans les modèles VLA en désapprenant sélectivement les features associées aux échecs, via une analyse mécanistique des autoencodeurs parcimonieux, améliorant la fiabilité en manipulation robotique.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le problème des *hallucinations d'état* dans les modèles Vision-Language-Action (VLA), un phénomène où un robot persiste à agir comme si un état objectif (ex. : un objet saisi) était atteint alors qu'il ne l'est pas. Ces erreurs récurrentes limitent le déploiement des VLA en environnement réel, malgré leurs capacités de généralisation prometteuses issues des modèles pré-entraînés vision-langage.",
+    "methode": {
+     "analyse_mecanistique": "Les auteurs identifient que les hallucinations d'état coïncident avec une baisse d'attention des modèles sur les régions visuelles pertinentes pour la tâche. Ils utilisent des *sparse autoencoders* (autoencodeurs parcimonieux) pour interpréter mécaniquement ces échecs, révélant que des *features éparses* spécifiques sont activées lors des hallucinations.",
+     "approche_SOUL": "Ils proposent SOUL (*Sparse feature pOlicy UnLearning*), une méthode qui cible sélectivement l'oubli des connaissances associées aux hallucinations. Les features éparses liées aux échecs servent de cibles explicites pour l'oubli, tandis que celles associées aux succès sont préservées pour maintenir les capacités existantes. La technique s'appuie sur une modification fine des poids du modèle, guidée par ces features interprétables.",
+     "details_techniques": "L'analyse repose sur des outils d'interprétabilité comme les sparse autoencoders pour isoler les features problématiques, sans nécessiter de réentraînement complet. La méthode est appliquée à plusieurs architectures VLA, en simulation et en environnement réel, pour valider sa généralisabilité."
+    },
+    "resultats": "Les expériences montrent une réduction significative des échecs par hallucination et une amélioration du taux de succès des tâches, sans dégradation notable des capacités de manipulation préexistantes. Les chiffres précis (ex. : taux de réduction des échecs) ne sont pas détaillés dans le résumé, mais l'impact est qualifié de *substantiel* pour les architectures testées.",
+    "limites": {
+     "generalisation": "La méthode dépend fortement de la qualité des features éparses identifiées, ce qui pourrait limiter son efficacité pour des tâches ou environnements très différents de ceux étudiés.",
+     "interpretabilite": "Bien que les sparse autoencoders offrent une interprétation mécanistique, leur fiabilité pour capturer *toutes* les causes des hallucinations reste à valider sur des cas plus complexes.",
+     "cout_computationnel": "Le résumé ne mentionne pas le surcoût computationnel lié à l'analyse des features ou à l'application de SOUL, ce qui pourrait être un frein pour des déploiements à grande échelle."
+    },
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante combinant interprétabilité et modification ciblée des politiques robotiques, bien que des validations supplémentaires soient nécessaires pour confirmer sa robustesse et son scalabilité."
+   }
+  },
+  {
+   "id": "0bd51de7509d5bc8",
+   "title": "LIBERO-Industry: Benchmarking Robotic Manipulation under Industrial Process Constraints",
+   "url": "https://huggingface.co/papers/2610.16782",
+   "summary": "Industrial manipulation in flexible manufacturing, e.g., high-mix, low-volume (HMLV) electronics assembly, requires robot policies to adapt to changing products and production conditions. Such settings impose industrial process constraints, including product variants, moving material flows, finite execution windows, and tight geometric tolerances. However, existing evaluation frameworks do not systematically capture these constraints when assessing generalist robot policies. To address this gap, we introduce LIBERO-Industry, a novel benchmark built on the widely used robot learning benchmark LIBERO, that translates the aforementioned industrial constraints into controllable task conditions and measurable success criteria. Specifically, LIBERO-Industry comprises three classic task scenarios: Static-to-Dynamic (S2D) loading, Dynamic-to-Static (D2S) unloading, and Dynamic-to-Dynamic (D2D) transfer. The suites contain 216 tasks in total that systematically vary object geometry, conveyor speed, interaction-window duration, and geometric acceptance region size. Extensive experiments across five generalist robot policies (including vision-language-action models and world-action models) show that performance progressively degrades as industrial constraints are introduced and combined. Under a shared fine-tuning and evaluation protocol, the LIBERO-Industry co-training condition achieved higher observed target-transfer completion than the original-LIBERO condition.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.16782"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "benchmark",
+    "robotique",
+    "produit"
+   ],
+   "tldr": "LIBERO-Industry introduit un benchmark industriel pour l'assemblage robotique (HMLV) avec 216 tâches variant géométrie, vitesse de convoyeur et tolérances, évaluant des politiques généralistes (VLA, WAM) dans des contraintes de processus réalistes.",
+   "score": 8.8
+  },
+  {
+   "id": "23bda2fde3caf334",
+   "title": "HandsOn: A Large-Scale Simulation Benchmark for Generalizable Dexterous Manipulation",
+   "url": "https://huggingface.co/papers/2610.26765",
+   "summary": "General-purpose manipulation requires reliable behavior across embodiments, objects, and task demands. We introduce HandsOn, a composable simulation platform and benchmark for cross-embodiment dexterous manipulation. It supports five robotic arms, six dexterous hands, and approximately 200 rigid, articulated, and deformable assets in randomized scenes. The benchmark pairs 18,000 curated human demonstrations with 66 human-verified tasks: Core-50 supports demonstration-based learning and execution tests, while Transfer-16 evaluates asset and relation transfer, skill composition, and deformable manipulation without target-task training demonstrations. Qualitative real-robot rollouts illustrate sim-to-real transfer. Across diffusion, vision-language-action, world-action, and prompted VLM-based methods, the best trained multi-task policy achieves 29.1% Core-50 success. Without benchmark finetuning, GPT-6 using move_eef for palm-and-finger control achieves 5.2% on Core-50 and 1.9% on Transfer-16 over 660 trials. Trained-policy stage diagnostics expose failures in contact establishment, action coordination, and maintaining achieved goals, with additional sequencing errors in composed tasks. HandsOn provides a shared basis for investigating manipulation generalization and the limits of reliable physical interaction.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.26765"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "HandsOn propose un benchmark de simulation à grande échelle pour l'évaluation de la manipulation dexterous multi-embodiment, combinant 18 000 démonstrations humaines et 66 tâches vérifiées. Il révèle des limites critiques des modèles actuels (VLA, VLM) en transfert sim-to-real et composition de tâches, avec des taux de succès faibles (29.1% pour les meilleures politiques multi-tâches).",
+   "score": 8.8
+  },
+  {
+   "id": "a1565be71d1c908d",
+   "title": "AffordanceWAM: Affordance-Aware Joint World-Action Modeling for Robot Manipulation",
+   "url": "https://huggingface.co/papers/2609.22332",
+   "summary": "Generalizable robot manipulation requires predicting how a scene will evolve, identifying where interactions are feasible, and determining how to act. Action-labeled robot videos directly supervise control but are costly and limited in diversity, whereas egocentric human videos capture diverse interactions but lack robot actions and differ in embodiment and appearance. We introduce AffordanceWAM, an affordance-aware generative World Action Model that represents object-centric spatiotemporal affordance through Scalar Affordance and Affordance Heatmap, within the generated future World. This representation grounds visual prediction in task-relevantant objects and interaction regions for action generation, and provides shared interaction targets across human and robot videos. Built on a pretrained video diffusion Transformer, AffordanceWAM uses separately parameterized World and Action Experts, coupled through Masked Joint Self-Attention, to jointly predict future RGB observations, Scalar Affordance fields, Affordance Heatmaps, and continuous robot actions under a unified flow-matching objective. Human videos supervise all three future-World streams, whereas robot trajectories additionally provide action supervision, enabling transfer without human action labels or retargeting. Experiments on RoboCasa, CALVIN ABCrightarrowD, and real-world manipulation demonstrate consistent gains over RGB-only and robot-data-only baselines. Under fixed robot supervision, RoboCasa performance improves monotonically as affordance-annotated human video scales. These results support affordance as an effective interface for both vision-language-action learning and human-to-robot transfer.",
+   "published": "2026-10-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2609.22332"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "AffordanceWAM intègre une modélisation conjointe du monde et des actions (World-Action Model) avec des représentations d'affordance (Scalar Affordance, Affordance Heatmap) pour généraliser la manipulation robotique. Le modèle utilise des vidéos humaines et robotiques pour prédire les interactions futures et générer des actions, améliorant la robustesse et la transférabilité.",
+   "score": 8.8
+  },
+  {
+   "id": "0193eb7bc31588c2",
+   "title": "Learning from Fleet Experience: A Collective Learning Paradigm for Robots",
+   "url": "https://huggingface.co/papers/2610.25736",
+   "summary": "Experience generated during deployment offers an opportunity for robots to improve policy reliability through learning from their own executions. However, learning through human corrections requires teleoperators to monitor execution and intervene when policies fail, a demand that is difficult to meet as robot fleets grow. We introduce collective experience learning (CEL), a learning paradigm in which deployed robots share their execution experience to improve a common policy. We realize CEL through failure-guided experience retrieval fine-tuning (FERT), which uses failure contexts from robot executions to retrieve relevant trajectory segments from the fleet's shared successful experience and uses their actions as supervision for policy updates, without collecting additional expert demonstrations or corrective actions. A fault-tolerant asynchronous training system (FATS) coordinates experience collection, policy optimization and policy distribution despite local interruptions within the robot fleet. Across five real-world manipulation tasks, the resulting policies achieve success rates of 93.3-99.2%, evaluated over 120 trials per task on robots excluded from training data collection. With collection time per robot held fixed, larger fleets provide more experience and FERT generally achieves higher success rates across the evaluated sizes. On multi-stage phone packaging, learning with 96 robots increases success from 79.2% to 98.3%. These results support collective experience as a practical basis for scalable robot learning and a path towards improving policy reliability during deployment without collecting additional expert corrective actions.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 93,
+    "arxiv_id": "2610.25736"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "CEL (Collective Experience Learning) permet à des robots déployés d'améliorer collectivement leurs politiques via un système de partage d'expériences (FERT) et un entraînement asynchrone tolérant aux pannes (FATS). Résultats : taux de succès de 93.3-99.2% sur 5 tâches réelles, validés sur 120 essais par tâche.",
+   "score": 8.8
+  },
+  {
+   "id": "324a53fb0328b212",
+   "title": "Factorization-Guided Training and Inference for Diffusion-Drafted Speculative Decoding",
+   "url": "https://huggingface.co/papers/2610.23935",
+   "summary": "Speculative decoding accelerates large language model inference through parallel verification of tokens proposed by a drafter. Diffusion drafters further parallelize proposal generation, but greater proposal capacity or higher mean accepted tokens (MAT) need not yield higher throughput. Because verification accepts only a consecutive prefix, early rejections can render later correct predictions ineffective, limiting MAT gains, while even higher MAT may not improve throughput if per-round latency increases. We introduce DScout, which uses two complementary factorizations to guide diffusion drafter training and inference for higher throughput. For training, DScout factorizes position-wise loss into inclusion, weighting, and prediction loss. This guides the design and combination of mixed-horizon training, intra-block unmasking, and acceptance-weighted loss to align supervision with prefix acceptance and improve MAT. For inference, DScout factorizes throughput as the ratio of MAT to per-round latency, guiding target-conditioning depth, drafter depth, and inference block size selection to identify a high-throughput configuration for each workload. Across six benchmarks, DScout achieves 3.84times and 4.14times mean speedups over autoregressive decoding on Qwen3-4B and Qwen3-8B, respectively, improving mean speedup over the state-of-the-art baseline by 9.1% and 7.1%. Across models and concurrency settings, our inference configuration policy provides up to 9.75% additional mean speedup over DScout's fixed configuration.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.23935"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Introduction de *DScout*, une méthode de factorisation pour optimiser l'entraînement et l'inférence des *diffusion drafters* en *speculative decoding*. Améliore le taux d'acceptation des tokens (*MAT*) et la latence par round, avec des gains de throughput validés sur 6 benchmarks.",
+   "score": 8.8
+  },
+  {
+   "id": "70ccda0c080c623e",
+   "title": "Policy Is Not Capability: Some Safety Benchmarks Measure Which Definition of \"Unsafe\" You Trained On",
+   "url": "https://huggingface.co/papers/2610.25060",
+   "summary": "A guardrail classifier is reported as if unsafe were a property of text. It is not: it is a property of a policy, and the policy enters the model through its labels. We exploit an accident of an industrial deployment in which the same ~53k prompts were labelled twice, under two operational definitions (\"is this a request for harmful content?\" and \"would a moderator block this?\"), and used to train ten guardrail arms sharing architecture, codebase and optimiser family, at two model scales. First, the guardrail's own training corpus already contained the benchmarks: JailbreakBench-benign is 88% and OR-Bench-hard 82% present in the training pools, two over-refusal benchmarks, the kind a guardrail reports to argue it does not over-block. Everything below is decontaminated. Second, safety benchmarks stratify sharply by how much of their score is decided by the label definition rather than by the model: with architecture and optimiser fixed, the range across the ten arms is 0.99 on HarmBench-copyright and 0.043 on WildGuard-benign, a 23x spread. Third, a benchmark score can be moved across its entire range by 0.03% of the parameters. Across these arms HarmBench-copyright spans 0-100 and OR-Bench-hard over-refusal 3.4-56.4%, and the four arms whose last supervision signal carries a given policy occupy one extreme of both (exact rank p=0.005, or 0.04-0.14 at worst), at unchanged detection capability. For a distilled student the teacher's soft labels do this even when every hard label carries the other policy, so teacher provenance is an unrecorded confound in any released checkpoint. Fourth, validation accuracy on the one split that grades all twenty arms tracks agreement with the annotator's policy (rho=+0.74), not detection capability (rho=+0.34). We argue that guardrail evaluations should report contamination, a seed floor and the definition they were graded against as first-class variables.",
+   "published": "2026-10-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.25060"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "regulation",
+    "benchmark"
+   ],
+   "tldr": "Cette étude démontre que les benchmarks de sécurité mesurent davantage la politique d'entraînement que la capacité intrinsèque des modèles : des variations mineures de paramètres (0,03%) ou de définitions de labels peuvent faire varier les scores de 0 à 100 sur HarmBench-copyright, soulignant l'importance de la décontamination des données.",
+   "score": 8.5
+  },
+  {
+   "id": "ffe24ee9e30f356e",
+   "title": "State World Models: Execute the Rules, Generate the Pixels",
+   "url": "https://huggingface.co/papers/2610.26811",
+   "summary": "Existing world models can generate action-conditioned video from a single image. Many focus on camera movement, allowing users to explore the generated scene. However, navigation alone does not ensure that an action follows persistent rules when its outcome depends on state that is invisible in the current frame. We present Stateful Harness, a framework that separates world evolution from video rendering to support stateful and rule-governed interaction. It maintains an evolving world state under specified rules, renders each resulting event with a frozen video model, and uses the generated clip to update the world state for the next turn. At each turn, the harness resolves the action selected by the user and compiles the resulting event into an instruction, while a preview clip from an editable 3D scene provides spatial and camera guidance. To evaluate rule compliance, we build WorldState-Bench, a benchmark of 50 counterfactual twin pairs that share an initial frame and action but differ in hidden state and required outcome. Under rule-only prompting, the best of the 11 evaluated video backends produces the required endings for both cases in 32% of pairs. For MiniMax-H3, specifying the required endings raises this rate from 32% to 64%, while the full harness reaches 92% with the same frozen model. These results support separating rule execution from video rendering for world interactions with hidden state.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.26811"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "agents"
+   ],
+   "tldr": "Présentation de *Stateful World Models*, un framework qui sépare l'évolution de l'état du monde de la génération vidéo pour des interactions gouvernées par des règles persistantes. Introduit *WorldState-Bench*, un benchmark évaluant la conformité aux règles dans des scénarios contre-factuels, avec des résultats limités (32% de succès) pour les modèles actuels.",
+   "score": 8.5
+  },
+  {
+   "id": "d6ce6c1f32861f10",
+   "title": "RealityBench: Simulated Environments to Evaluate a Vision Language Model's Ability to Document Human Physical Work",
+   "url": "https://huggingface.co/papers/2610.14397",
+   "summary": "Augmenting worker capabilities in the physical world through guidance has been a decades-long goal for AI agents. One key supporting capability is to understand what the worker is doing, seeing through the human's camera or smart glasses, and assist them in documentation. Despite advances in vision language models, their capabilities in these settings remain uncertain and are challenging to benchmark because most physical work data is proprietary, and involves too much variability to study in a principled manner. Unlike structured settings such as kitchens and warehouses that have predictable lighting, geometry, and objects, field-facing tasks such as rooftop solar installation and vehicle repair are unconstrained and high variance. Here, we model real-world physical work in Blender across eleven environments, incorporating variants in both image acceptability and documentation. The acceptability task asks whether a particular view would be suitable proof-of-work and documentation asks whether an agent can understand the task-relevant state of the environment from that view. Across 26 vision-language models, we find that top models largely solve documentation when the answer is text in frame, but are weak at reading measurements and at judging small parts and spatial relations, such as whether a tape measure leans. Acceptability is harder to pin down because human raters disagree with each other. Measured against a scorer that agrees with the raters' majority about as often as a single rater does, the best models cannot be distinguished from a single non-author rater, at a cost within the range of a human pass. In the three environments where we can trace acceptability errors, most wrong rejections come from misreading the scene rather than the requirement. On the three documentation questions for which we have real images, model rankings on rendered frames transfer to real images.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.14397"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "RealityBench propose un benchmark simulé pour évaluer la capacité des VLM à documenter des tâches physiques humaines dans des environnements non structurés (ex : installation solaire), en modélisant 11 scénarios réalistes avec Blender. Les résultats révèlent que les meilleurs modèles résolvent correctement la documentation, mais échouent sur l'acceptabilité des vues pour la preuve de travail.",
+   "score": 8.2
+  },
+  {
+   "id": "225c94476d37f6f4",
+   "title": "Where is Physical RSI capability from? An Observational Scaling Law of LLM-as-policy",
+   "url": "https://huggingface.co/papers/2610.26848",
+   "summary": "In this paper, we systematically investigate the mechanisms, scaling behavior, and generalization of physical Recursive self-improvement. We introduce PhysRSI-eval to quantify physical RSI through a five-axis metric: First-Attempt Performance, Efficiency, Success, Budget and Improvement from failure. Different VLMs are evaluated on 18 manipulation tasks under a fixed interaction budget. The analysis of experimental results motivates the Physical Barrel Hypothesis: different capabilities may constrain different parts of improvement. The five-axis metrics also distinguish systems with close public benchmark averages and show that high scores need not come with early or efficient gains. We study observational scaling from two perspectives: predicting the relative performance of VLM agents from their public capabilities, and forecasting later progress from early physical feedback. Together, these analyses ask how quickly and how far an agent can improve. Moreover, we conduct workspace interventions and then analyze what improvement leaves behind. Removing history reduces late-round success, frozen workspaces remain useful on unseen layouts, and three cross-task cases achieve success earlier. The results suggest that scene-specific adaptation and reusable experience can coexist.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2610.26848"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "PhysRSI-eval analyse les lois d'échelle et les mécanismes de l'auto-amélioration récursive physique (RSI) chez les agents VLM, révélant que différentes capacités (performance, efficacité, succès) évoluent de manière indépendante, avec des interventions sur l'historique ou l'espace de travail ayant des impacts différenciés.",
+   "score": 8.2
+  },
+  {
+   "id": "35f02cb60661b456",
+   "title": "BlenderWorld: Benchmarking Visual Agents for 3D Creation from Real-World References",
+   "url": "https://huggingface.co/papers/2610.23986",
+   "summary": "Recent advances in multimodal large language models (MLLMs) have enabled them to act as autonomous agents, creating and editing 3D models via code or direct software manipulation. In practical workflows, these models must infer object shapes, materials, spatial layouts, and lighting from diverse references while strictly following instructions to reconstruct, modify, or design 3D content. However, existing benchmarks provide limited coverage of such open-ended requests across real-world scenarios. To bridge this gap, we introduce BlenderWorld, the first comprehensive benchmark dedicated to evaluating frontier models on realistic 3D creation tasks. BlenderWorld comprises 223 tasks spanning architecture, products, natural environments, and scientific visualization, driven by text, image, video, and structured specification inputs. To rigorously assess these complex deliverables, we establish a unified evaluation protocol: we render the submitted Blender projects from multiple viewpoints and evaluate them against 2,651 task-specific binary rubrics alongside holistic visual quality scores. Benchmarking thirteen frontier models reveals that GPT-6-Astra achieves the highest overall fused score of 79.9, followed by Opus-5 (73.0) and GPT-5.6-Sol (67.7). Ultimately, our findings reveal a critical bottleneck: while current models can parse broad instructions, they still profoundly struggle with fine-grained 3D spatial coherence and accurate structural reproduction in Blender, leaving substantial headroom for future 3D-native agentics.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.23986"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "vision"
+   ],
+   "tldr": "BlenderWorld évalue les agents visuels 3D sur 223 tâches réalistes (architecture, produits, environnements) avec une métrique unifiée combinant rubriques binaires et qualité visuelle, révélant des lacunes des modèles frontier dans la création 3D.",
+   "score": 8.2
+  },
+  {
+   "id": "45f83d17a3225026",
+   "title": "Evidence-First Agentic Verification",
+   "url": "https://huggingface.co/papers/2610.17724",
+   "summary": "Long-horizon, semi-verifiable agentic tasks often rely on rubric-based evaluation, but the evidence needed to assess these tasks can be spread across the environment state and the execution trace. A judge may overlook this evidence or accept unsupported claims, including an agent's own reports of success. When rubric verdicts serve as reinforcement-learning rewards, such errors can reinforce undesirable behavior. We introduce Sauron, an evidence-first agentic verifier that investigates both state and trace and relies on a claim only after independently validating it against its source. Bounded queries and joint investigation of related criteria reduce context use and redundant work, and each verdict carries an auditable receipt of its supporting evidence. Across 2,586 human-labeled criteria from 100 personal-assistant episodes, Sauron achieves the highest F1 of five verifiers on all eight backbones tested while costing less than Gandalf, the strongest baseline. With GPT-5.6 Sol, it reaches 0.96 F1 versus Gandalf's 0.92 at 23% lower cost, with a wider margin on process criteria. On a paired fault-injection suite covering 13 families, several of which simulate reward hacking, Sauron detects 97% of injected failures while flagging only 2% of clean controls, outperforming baselines even when they are given the full trace. On TRAIL, a benchmark for detecting and localizing real agent errors, Sauron leads both Gandalf and TRAIL's own judge on all three quality metrics.",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2610.17724"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "regulation",
+    "benchmark"
+   ],
+   "tldr": "Sauron propose un vérificateur agentique *evidence-first* pour tâches semi-vérifiables, réduisant les erreurs d'évaluation via une investigation systématique des preuves dans l'état et la trace, avec un F1 de 0.96 sur GPT-5.6 Sol à 23% de coût en moins.",
+   "score": 8.2
+  },
+  {
+   "id": "83434cc1f1600ba2",
+   "title": "OpenVLHarness: Real World Visual Agentic Tool-Use with Multimodal Memory",
+   "url": "https://huggingface.co/papers/2610.26860",
+   "summary": "Multimodal large language models (MLLMs) have made rapid progress on visual reasoning, yet many tasks require evidence that is difficult to obtain through internal reasoning alone: our controlled study on 22 benchmarks shows that simply increasing the inference budget of the base model yields only modest gains. Such tasks demand grounded perception, external knowledge, and numerical measurements obtained through heterogeneous tools, whose outputs must be made interpretable to the model and retained across reasoning steps. We introduce OpenVLHarness, a multimodal reasoning harness organized around a capability layer and persistent multimodal memory. The capability layer combines task-level tool interfaces with evidence rendering, providing consistent access to heterogeneous backends and converting their outputs into model-readable observations. Persistent multimodal memory retains the corresponding images, structured data, and web references as addressable artifacts throughout each query. A coding interface executes generated programs over stored data, enabling computations that combine results from multiple tools. Together, these mechanisms support an iterative process of acquiring, inspecting, and composing multimodal evidence. Evaluated on 22 benchmarks with eight open and proprietary backbones, OpenVLHarness improves average scores by 9.7-12.6 points over matched no-tool baselines, including +11.2 with Qwen3-VL-8B, +9.7 with Kimi K3, and +9.9 with GPT-6 Astra. With GPT-6 Luna at medium reasoning effort, OpenVLHarness outperforms the base model, Codex, and Visual Sketchpad at maximum effort by 7.7-8.5 points while incurring at most 37% of their model-token cost.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 65,
+    "arxiv_id": "2610.26860"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "vision",
+    "outils"
+   ],
+   "tldr": "Présentation d'*OpenVLHarness*, un framework pour agents visuels multimodaux intégrant une mémoire persistante et un *capability layer* pour l'utilisation d'outils hétérogènes. Permet une acquisition itérative d'évidence et des calculs programmatiques, avec une étude contrôlée sur 22 benchmarks montrant des gains modestes sans outils externes.",
+   "score": 8.2
+  },
+  {
+   "id": "a51106aa7de58b3d",
+   "title": "AnyGoal: On World Model Generalization Beyond Expert Rollouts",
+   "url": "https://huggingface.co/papers/2610.26844",
+   "summary": "The goal of a world model is to capture the dynamics of an environment. This has the great appeal that it allows agents to plan and simulate a course of actions with the help of a world model. For these uses to be reliable, however, the learned dynamics must behave well beyond the specific state-action combinations observed in expert rollouts. Despite this, the relationship between data coverage, dynamics generalization, and downstream planning performance remains underexplored. We study this relationship through the lens of compositional generalization: can a world model recombine familiar state and action factors into valid dynamics? To answer this, we introduce AnyGoal, a benchmark of goal-shifted task variants built from widely used world-model environments, together with an open-source library. Each task is designed to be within reach of a world model that has learned the underlying dynamics: individual state factors and actions remain within their training support, but their combinations are underrepresented in expert trajectories. Across multiple environments and world model families, we find that current models consistently exhibit failures under these recombinations. By examining dynamics and representation failures across model families, interaction regimes, and evaluation metrics, we study where current world models generalize and where challenges remain for goal-shifted prediction and planning. Together, this framework, benchmark, and analysis provide a basis for evaluating progress toward world models that generalize to new planning tasks.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2610.26844"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "agents"
+   ],
+   "tldr": "Présentation d'*AnyGoal*, un benchmark pour évaluer la généralisation des *world models* au-delà des trajectoires expertes. Montre que les modèles actuels échouent à recombiner des facteurs d'état et d'action sous-représentés, malgré leur couverture individuelle, avec des implications pour la planification fiable.",
+   "score": 8.2
+  },
+  {
+   "id": "15b881f344103eae",
+   "title": "A Conditional No-Hair Theorem for Transformers: How Language Models Forget Their Prompt",
+   "url": "https://huggingface.co/papers/2610.24133",
+   "summary": "We ask how much an autoregressive transformer retains of its prompt after generating t tokens. Consider two different prompts followed by the same continuation text, so that any difference in their hidden states comes from the prompt alone, and we find that the distance between their hidden states decays approximately as a power law t^{-α}, where α=1 is the rate at which a fixed prompt's share of uniform attention shrinks and smaller values mean longer memory. Trained models forget fast (αapprox0.55--0.7), untrained ones slowly (αapprox0.2--0.5). We prove that this offset is Obig(P(log t)^{L-1}/tbig) for a prompt of length P and depth L. The bound holds for finite-depth pre-LN softmax transformers with bounded attention logits, under one additional condition: the pre-norm activations stay away from zero. The mechanism is geometric: the prompt's direct influence is diluted as the context grows, and relay --- continuation tokens passing on what earlier tokens read from the prompt --- can only add logarithmic factors. This is what we call the conditional no-hair theorem: given the text generated so far, the prompt's influence on the next token vanishes as t grows, so any property of the prompt that survives, such as its language, must be carried by the text itself. An exactly solvable linear relay model shows that the bound cannot be improved and reproduces the rise of the local exponent towards 1 seen in untrained networks. Cancelling the dilution with a logit bias stops the decay early in training and reverses it after, so dilution is necessary for the forgetting we measure; untrained networks and the solvable model show it is also sufficient.",
+   "published": "2026-10-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.24133"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Le théorème du 'No-Hair' conditionnel prouve que l'influence d'un prompt sur les états cachés d'un transformateur décroît en loi de puissance (t^{-α}) avec α≈0,55–0,7 pour les modèles entraînés, confirmant que les modèles oublient rapidement leur contexte initial au fil de la génération.",
+   "score": 7.9
+  },
+  {
+   "id": "a154b571d9d4e162",
+   "title": "ECHO: Efficient Causal Self-Recursion Beyond Auxiliary Multi-Token Prediction",
+   "url": "https://huggingface.co/papers/2610.24766",
+   "summary": "Existing Multi-token prediction (MTP) methods are auxiliary by design: the multi-horizon loss mostly trains modules attached to the backbone, and each added horizon costs another module and another pass. We propose Efficient Causal Self-Recursion (ECHO), which removes both costs. The backbone's own final layer predicts every horizon, so the supervision lands on the parameters that generate the next token, and Dynamic Depth Sampling (DDS) keeps deeper horizons affordable by drawing the training depth with probabilities that decay along depth. Future prediction thus becomes part of the autoregressive objective rather than a task attached to it, and the gains follow on both sides of it. In pretraining, added depth converts into downstream accuracy where auxiliary modules saturate, concentrating on reasoning and code at half the MTP training overhead of training every depth. At inference, the pretrained model is its own drafter: it drafts beyond the depth it was trained for, and keeps its draft-target alignment on the open-ended, high-entropy generation where post-hoc drafters lose theirs. The advantage survives a doubled token budget, a repeated pretraining run, and supervised finetuning.",
+   "published": "2026-10-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.24766"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "ECHO propose une méthode d'auto-régression causale (Efficient Causal Self-Recursion) pour prédire plusieurs horizons futurs directement depuis la couche finale du modèle, réduisant les coûts d'entraînement et améliorant les performances en raisonnement et en génération de code.",
+   "score": 7.9
+  },
+  {
+   "id": "866a3270579d969d",
+   "title": "MemPilot: Orchestrating On-Demand Multimodal Memory Curation for LLM Agents",
+   "url": "https://huggingface.co/papers/2610.06830",
+   "summary": "Memory has become integral to the LLM agent ecosystem, supporting information retention and reuse across interactions. However, most existing agent memory systems construct memory in a query-agnostic manner, which can incur unnecessary preprocessing cost and discard details that later prove essential. Recent studies have begun shifting memory processing toward runtime adaptation, but typically specialize in particular operations or fixed processing schemes, leaving flexible control over performance, cost, and latency largely underexplored. To address this challenge, we present MemPilot, a flexible framework that orchestrates on-demand memory curation under different performance--cost--latency preferences. Specifically, we optimize a multi-step LLM policy via reinforcement learning to iteratively choose between retrieving from query-agnostic memory and delegating query-specific curation of raw multimodal history to heterogeneous LLMs and VLMs. The policy jointly controls evidence amount, curation instructions, model selection, and visual access, enabling fine-grained allocation of runtime computation. To optimize this policy under competing objectives, we adapt objective-wise advantage decoupling by separately estimating each objective's advantage before aggregation. Moreover, we introduce prefix-based marginal utility estimation for fine-grained credit assignment across multi-step rollouts. Experiments on five multimodal agent-memory benchmarks demonstrate favorable performance--cost--latency trade-offs across optimization preferences, with preference sweeps yielding broader frontiers than existing trade-off-aware baselines.",
+   "published": "2026-10-04T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2610.06830"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "MemPilot optimise dynamiquement la curation de mémoire multimodale pour les agents LLM via une politique RL, équilibrant performance, coût et latence en choisissant entre mémoire préexistante et traitement spécifique à la requête, avec un contrôle fin des ressources.",
+   "score": 7.9
+  },
+  {
+   "id": "5dd655227bf6dbfb",
+   "title": "Vision-Language-Delta-Action: Learning Compact Deltas as Actionable Transition Interfaces for Robotic Manipulation",
+   "url": "https://huggingface.co/papers/2610.25874",
+   "summary": "Robotic manipulation is not merely observation-to-action generation, but the realization of task-specified state changes in the physical world. Existing vision-language-action (VLA) methods directly learn observation-to-action mappings, imposing a substantial learning burden due to the gap between semantic understanding and action execution. Although world-action models (WAMs) improve control through future prediction, modeling complete future states wastes capacity on static appearance and action-irrelevant changes. We propose Vision-Language-Delta-Action (VLDA), a paradigm that reformulates full future prediction as compact actionable transition modeling. Its core is a compact Delta variable that captures latent world-state changes, serving as an interface between vision-language understanding and action generation. VLDA learns Delta through a unified objective composed of the Local Transition Filter (LT-Filter) and Global Transition Anchor (GT-Anchor). LT-Filter captures task-relevant manipulation-centric changes while suppressing static reconstruction biases. GT-Anchor provides coarse future-level regularization to preserve the overall direction of state changes. Delta-Driven Action Refinement (DDAR) further grounds Delta in the action manifold and injects it as a structured seed to guide action denoising. We implement VLDA within LoongForge, an open-source training framework for large-scale foundation and embodied models, using its modular and distributed infrastructure for unified two-stage optimization. Experiments show that VLDA improves long-horizon consistency, robustness, and generalization, validating actionable Delta as an alternative to direct action prediction and full future-state modeling.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.25874"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "VLDA reformule la prédiction future en modélisation compacte des transitions d'état (Delta) pour réduire l'écart entre compréhension sémantique et exécution robotique. Cette approche sépare la prédiction des changements pertinents (LT-Filter) et la régularisation globale (GT-Anchor), optimisant l'efficacité des modèles VLA.",
+   "score": 7.9
+  },
+  {
+   "id": "f2fd85ddc0e1b150",
+   "title": "AdaExploreBench: Benchmarking LLM Agents for Proactive Exploration and Test-time Adaptation in Evolving Environments",
+   "url": "https://huggingface.co/papers/2610.25950",
+   "summary": "Large Language Model (LLM) agents are increasingly deployed in unfamiliar and evolving environments, requiring them to proactively explore, understand, and adapt to environmental dynamics. However, existing benchmarks rarely test whether agents can proactively discover how an environment works and adapt as it evolves. To address this gap, we introduce AdaExploreBench, a benchmark for proactive exploration and test-time adaptation in evolving environments. By instantiating environmental dynamics as hidden rules, AdaExploreBench requires agents to actively acquire evidence and infer the rules. Under implicit rule drift, the latent rule changes without announcement, requiring agents to detect from degraded performance that prior knowledge is stale and re-explore. Experiments on eight leading LLMs show that proactive and adaptive exploration remain challenging: GPT-6 Sol achieves only 61.9% calibrated accuracy, while providing sufficient evidence or removing rule drift improves average performance significantly by close to 10%. These results reveal a critical bottleneck in current LLM agents: they can often reason effectively from informative evidence once it is available, but struggle to actively acquire the right evidence and recognize when previously acquired evidence is no longer valid.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2610.25950"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "AdaExploreBench évalue la capacité des LLM à explorer proactivement et s'adapter à des environnements dynamiques avec des règles cachites et des changements implicites. Les résultats montrent des performances limitées (61.9% pour GPT-6 Sol), soulignant un goulot d'étranglement dans l'inférence des règles et la détection des changements.",
+   "score": 7.9
+  },
+  {
+   "id": "93039c7ec696b49e",
+   "title": "EgoXperience: Learning World-Grounded Egocentric Representations from Human Experience",
+   "url": "https://huggingface.co/papers/2610.26625",
+   "summary": "Reconstructing human activity from egocentric video requires more than recovering individual 3D components: the observer's motion, surrounding geometry, and hand-object interactions must fit together in a consistent world. Achieving this coherence requires both joint reconstruction and aligned supervision, yet existing methods and datasets offer limited support for either. We present EgoXperience, a full-stack paradigm that addresses these needs through data collection, automatic annotation, unified modeling, and benchmarking. Central to EgoXperience is an automatic annotation engine, EgoX-Engine, that couples geometrically verified object tracking with SLAM-based world alignment, yielding consistent supervision for the camera, scene, hands, and objects. This yields EgoX-Data-6M, a 50-hour dataset of task-driven manipulation and locomotion within and across indoor and outdoor environments, with second-level task captions. We carefully select one hour across these activity categories as EgoX-Bench to evaluate joint reconstruction. To translate this supervision into reconstruction, we introduce EgoX, trained with EgoX-Data-6M and complementary annotations from additional public datasets. Given monocular egocentric video and first-frame object masks, our model achieves joint metric reconstruction of the camera, scene, hands, and objects in a shared world coordinate frame with a single forward pass. Extensive experiments demonstrate state-of-the-art performance across scene estimation and world-space hand-object pose recovery. Against the strongest evaluated baselines, EgoX reduces camera, hand, and depth errors by 68.9%, 65.6%, and 42.9%, and improves object pose scores by 28.0%.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 66,
+    "arxiv_id": "2610.26625"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "robotique"
+   ],
+   "tldr": "Introduction d'*EgoXperience*, une méthode pour apprendre des représentations égocentriques à partir de données humaines. Combine un moteur d'annotation automatique (*EgoX-Engine*) avec un modèle unifié (*EgoX*) pour reconstruire la caméra, la scène, les mains et les objets de manière cohérente, avec un benchmark (*EgoX-Bench*) pour évaluer la reconstruction jointe.",
+   "score": 7.9
+  },
+  {
+   "id": "70fc0f1ae2f90050",
+   "title": "Harnessing Textual Refusal Directions for Multimodal Safety",
+   "url": "https://huggingface.co/papers/2606.31876",
+   "summary": "Safety in Multimodal Large Language Models (MLLMs) depends on unsafe multimodal data for post-training alignment or activation steering. However, such data is hard to collect, must be gathered anew for each modality, and its collection and distribution raise ethical and legal concerns. In this work, we relax this constraint and investigate whether textual refusal directions, extracted directly from the LLM backbone, generalize across modalities (i.e., image, video). Preliminary findings confirm this ability, though effectiveness is conditioned by layer selection, steering strength, and cross-modal alignment, with the latter causing safe multimodal inputs to be spuriously steered toward refusal. Building on this, we introduce Modality-Agnostic Refusal Steering (MARS), a lightweight training-free approach that injects multimodal safety without the need for multimodal safety data. MARS corrects modality misalignment via activation centering, adaptively scales steering strength within a geometrically defined trust region, and selects the optimal intervention layer, operating at the first generated token. Evaluated on five SOTA MLLMs across safety, utility, and video jailbreak, MARS achieves consistent safety gains while preserving utility up to over-refusal. MARS reveals that safety-relevant structure is shared across modalities and that textual refusal directions are a powerful and underexplored foundation for multimodal alignment.",
+   "published": "2026-10-15T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2606.31876"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "MARS (Modality-Agnostic Refusal Steering) exploite les directions de refus textuel pour améliorer la sécurité des MLLM (Multimodal LLMs) sans données multimodales de sécurité, en corrigeant les désalignements modaux via un centrage des activations. Les résultats montrent une amélioration sur 5 modèles SOTA, mais avec des limites liées à l'alignement croisé.",
+   "score": 7.6
+  },
+  {
+   "id": "16b67ec01772fe59",
+   "title": "UniAVC: Unified Audio-Video Creation via Progressive Training and Asymmetric Scheduling",
+   "url": "https://huggingface.co/papers/2610.24791",
+   "summary": "Unified audio-video creation requires a single model capable of text-conditioned joint synthesis, bidirectional cross-modal generation, and instruction-guided editing across both modalities. Existing methods rely heavily on paired corpora, which are scarce for joint generation and even rarer for editing. Consequently, they are spent learning single-branch generative and editing capabilities that abundant unimodal data could readily teach, rather than on the cross-modal coupling. Furthermore, prevailing systems apply a single shared noise schedule to both modalities, neglecting two critical limitations. First, due to the significant discrepancy in information density, video requires prolonged high noise to organize spatial and motion structure, whereas the sparser audio signal can settle earlier during the synthesis process, the dynamics a uniform schedule might compromise. Second, lockstep denoising leaves asymmetric workflows, such as conditioning on one modality to synthesize or edit another, untrained. We present UniAVC, which addresses both obstacles. It first trains each branch on unimodal dataset to full generative and editing competence, and subsequently dedicates paired data to exploit cross-modal correspondence. Modality-decoupled schedulers meanwhile warp the noise schedule independently from a shared timestep, while subtasks with one clean modality directly supervise asymmetric configurations. These settings respectively enable intent-aware editing, which preserves one modality intact while enlisting it to constrain the other, and post-inference self-refinement, which regenerates only an unsatisfactory branch against an accepted one. UniAVC thus spans multiple creation tasks from a single set of weights without task-specific adapters.",
+   "published": "2026-10-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.24791"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "vision"
+   ],
+   "tldr": "UniAVC unifie la création audio-vidéo via un entraînement progressif et un planning asymétrique, d'abord sur des données unimodales pour maîtriser chaque modalité séparément, puis sur des données couplées pour apprendre les interactions croisées, en adaptant les schedules de bruit à la densité informationnelle de chaque modalité.",
+   "score": 7.6
+  },
+  {
+   "id": "89a3ab6342f1b45c",
+   "title": "SpecMRL: Redesign Matryoshka Representation Learning within Parametric Spectrum",
+   "url": "https://huggingface.co/papers/2610.26824",
+   "summary": "Matryoshka Representation Learning (MRL) is designed to support flexible representation sizes by jointly optimizing nested prefixes. While effective, this design lacks an explicit constraint to ensure that the leading portion provides a suitable compact encoding. To address this, we propose SpecMRL, which reorganizes the feature space to enable more effective prefix readout. Specifically, we extend MRL with a parameter-derived spectral basis organized with feature importance. SpecMRL otherwise follows standard MRL, with prefix readout performed in the learned spectral space. Experiments on MTEB show that SpecMRL outperforms MRL at all evaluated reduced dimensions, with larger gains under more aggressive compression. These results suggest that the learned spectral basis better prioritizes informative directions, enabling more effective representation compression. Notably, SpecMRL extends the performance frontier of MRL, surpassing full-dimensional MRL with only half the embedding dimensions.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 51,
+    "arxiv_id": "2610.26824"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "SpecMRL améliore *Matryoshka Representation Learning* en organisant l'espace de features via une base spectrale dérivée des paramètres, optimisant la compression des embeddings tout en préservant la performance, notamment sous forte réduction dimensionnelle.",
+   "score": 7.6
+  },
+  {
+   "id": "6f09dd01ef3ed7c4",
+   "title": "Interlock: From Local Correctness to Task Completion in Long-Horizon Agents",
+   "url": "https://huggingface.co/papers/2610.19686",
+   "summary": "Large language model agents increasingly undertake long-horizon tasks in complex environments characterized by fragmented evidence, partially completed states, and dependencies across resources and artifacts. Existing agents may satisfy individual requirements while failing to maintain these relationships, producing locally correct but incomplete outcomes. These failures arise because task completion depends on relationships among environmental evidence, consequential decisions, and required effects. To address this completion gap, we propose Interlock, a framework for task synthesis that represents each task as a typed completion graph. Grounding edges connect public evidence to decisions, coupling hyperedges impose joint constraints across components, and realization edges connect decisions to all required downstream effects. Interlock compiles this graph into a resettable workspace, a public request, and an evaluation rubric. A source-coverage review checks whether the original requirements survive generation, while a public-input review checks whether the rubric is supported by the materials available to the solver. An agent-as-judge inspects execution artifacts and runs verification scripts, retaining trajectories judged to satisfy all mandatory requirements. To evaluate training utility, we fine-tune two Qwen3.6 backbones on their own accepted trajectories. Across the two backbones, training improves AutomationBench task pass rates by 4.00-4.50 percentage points, JobBench weighted scores by 3.20-6.64 points, and Harvey LAB criterion pass rates by 3.89-4.16 percentage points. These results demonstrate the training utility of the synthesized experience across external task environments.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.19686"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Proposition d'*Interlock*, un framework pour la synthèse de tâches longues en agents LLM, utilisant un *completion graph* pour représenter les relations entre preuves, décisions et effets. Introduit des mécanismes de vérification pour éviter les échecs de complétion locale, avec une évaluation via un *agent-as-judge*.",
+   "score": 7.6
+  },
+  {
+   "id": "faa8455676d40320",
+   "title": "CoworkEnv: Synthesizing Training Environments for Long-Horizon Cowork Agents",
+   "url": "https://huggingface.co/papers/2610.24960",
+   "summary": "AI coworkers must coordinate tools, communicate across turns, and act on changing workspace state while respecting workflow constraints. Constructing training experience for these capabilities requires coherent requests, service records, tool interfaces, and grading checks. We present CoworkEnv, a capability-guided framework for synthesizing executable training environments for AI coworkers. Workflow requirements guide task construction, and programmatic validation with feedback repair checks generated specifications and grading behavior. Teacher executions yield curated demonstrations for supervised fine-tuning (SFT), while student interactions provide rollouts and rewards for reinforcement learning (RL). Using these resources, we train compact PocketWorker models. For Qwen3-VL-8B-Instruct, SFT raises the mean score from 46.6 to 64.1 on Claw-Eval, including a 31.9-point gain on Multi-turn tasks. An SFT-only extension to ClawMark demonstrates applicability across coworker benchmarks. We further compare RL training dynamics across configurations that vary reward processing and credit assignment. Improving training rewards provide preliminary evidence that the constructed environments support policy optimization.",
+   "published": "2026-10-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2610.24960"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Présentation de *CoworkEnv*, un framework pour synthétiser des environnements d'entraînement pour agents coworkers. Combine des exigences de workflow, des démonstrations SFT, et des récompenses RL pour entraîner des modèles compacts (*PocketWorker*), avec des gains significatifs sur *Claw-Eval* (ex: +31.9 points sur les tâches multi-tours).",
+   "score": 7.6
+  },
+  {
+   "id": "fc9bd501158f10d4",
+   "title": "Holi-World: Building Holistic World Intelligence from Human-Ego Experience",
+   "url": "https://huggingface.co/papers/2610.26549",
+   "summary": "Human egocentric experience offers a rich foundation for learning how the world is organized and how it changes through interaction. Realizing this potential at scale requires turning growing volumes of recordings into learning resources that connect scene structure, object semantics, and interaction histories across viewpoints and time, while reducing dependence on costly manual annotation. We introduce HOLI-WORLD, an integrated ecosystem connecting experience capture, world representation, automated data construction, model learning, and independent evaluation. To sup- port learning at scale, HOLIWORLD-Foundry combines complementary static and dynamic perception to automatically construct world records that connect persistent scene structure and evolving object states with interaction histories and supporting observations. HOLIWORLD-Data organizes these records from approximately 100 self-collected scenes into grounded learning resources, including approximately 80K QA pairs used to train HOLIWORLD-VL-4B. Independent human annotations of heldout recordings form HOLIWORLD-Bench, supporting evaluation of both annotation quality and learned spatial and temporal understanding. Experiments on ScanNet, ScanNet++, Aria Digital Twin, and HOLIWORLD-Bench demonstrate strong performance in static perception and dynamic tracking, while training on HOLIWORLD-Data substantially improves HOLIWORLD-VL-4B's spatial and temporal reasoning on HOLI- WORLD-Bench and EgoDynamic4D. HOLIWORLD provides a practical foundation for expanding learning resources from the continuous flow of human experience and advancing machine understanding of the dynamic world.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 65,
+    "arxiv_id": "2610.26549"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "architecture",
+    "autre"
+   ],
+   "tldr": "HOLI-WORLD propose un écosystème intégré pour capturer, représenter et apprendre à partir d'expériences égocentriques humaines, combinant perception statique/dynamique et données auto-construites (80K QA pairs). Le modèle HOLIWORLD-VL-4B atteint des performances compétitives sur des benchmarks d'évaluation indépendants.",
+   "score": 7.3
+  },
+  {
+   "id": "dd65d743e8de1cb2",
+   "title": "MemT-1.0: Towards Memory-Native Evolution",
+   "url": "https://huggingface.co/papers/2610.26825",
+   "summary": "Memory-native evolution requires making memory an intrinsic capability of foundation models, enabling them to continuously accumulate and utilize information. To this end, we introduce MemT-1.0, a new architecture of memory foundation models that internalize memory as part of model computation. Building on Metis, MemT-1.0 employs Gated DeltaNet-2 with a stable token-level memory update mechanism within each turn. We further introduce Mixture-of-Storage to scale native memory capacity. Following a deliberate backbone preparation, we develop a two-stage training pipeline consisting of continued pre-training and post-training, supported by 34B tokens of training data and efficient training and inference infrastructure. We release a model family comprising MemT-1.0-Nano and MemT-1.0-Flash, and conduct a comprehensive evaluation of memory and general capabilities. The results show that they outperform the parametric memory baselines on average and remain competitive with retrieval-augmented methods, while largely preserving general capabilities. At a history length of 128K tokens, MemT-1.0-Nano achieves approximately 1.86times end-to-end inference speedup and a 66times reduction in persistent storage relative to full context KV cache. By internalizing retrieved procedural experience, MemT-1.0 improves task success on agentic tasks, providing a practical step toward memory-native evolution.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 128,
+    "arxiv_id": "2610.26825"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "MemT-1.0 introduit une architecture de modèles fondateurs 'memory-native' avec un mécanisme de mise à jour de la mémoire par token, offrant un gain de vitesse d'inférence de 1,86x à 128K tokens et une réduction de 66x de la mémoire persistante, tout en restant compétitif avec les méthodes RAG.",
+   "score": 7.0
+  }
+ ]
+}
