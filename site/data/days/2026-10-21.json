@@ -1,0 +1,747 @@
+{
+ "date": "2026-10-21",
+ "digest": {
+  "headline": "Les lois de scaling des VLMs remises en cause par des phénomènes d'inverse scaling systématiques",
+  "overview": "La journée du 21 octobre 2026 marque un tournant dans la compréhension des architectures d'IA, avec des travaux remettant en question les hypothèses fondamentales sur le scaling des modèles. Les avancées portent sur l'optimisation des agents autonomes, l'évolution des interfaces et des modèles de monde, ainsi que sur des méthodes d'inférence accélérée pour les architectures spécialisées.",
+  "highlights": [
+   {
+    "title": "Inverse scaling dans les VLMs : limites des lois classiques",
+    "text": "Une étude systématique sur 19 modèles et 558k évaluations révèle que certaines tâches, notamment le raisonnement spatial multi-images, voient leurs performances décliner avec l'augmentation de la taille des VLMs. Ce phénomène d'inverse scaling remet en cause les lois de scaling traditionnelles et souligne la nécessité de repenser les architectures pour des capacités spécifiques, au-delà de la simple augmentation des paramètres."
+   },
+   {
+    "title": "Agents autonomes : mémoire persistante et interfaces évolutives",
+    "text": "Deux travaux majeurs illustrent les progrès des agents autonomes. *Épi* combine mémoire hiérarchique et apprentissage par expérience pour la recherche mathématique, atteignant 120 records. Parallèlement, *Agent S4* optimise dynamiquement les interfaces des agents via méta-apprentissage, améliorant de 3.8x les performances sur OSWorld V2. Ces approches montrent l'importance de l'adaptabilité et de la persistance dans les architectures agentiques."
+   },
+   {
+    "title": "Optimisation des MoE et des modèles de monde",
+    "text": "*Specter* accélère l'inférence des MoE jusqu'à 1.88x via quantification et speculative decoding multi-étapes, optimisant les transferts PCIe. *OverSeer* et *Ropedia W0* proposent des modèles de monde multi-agents et incarnés, améliorant la cohérence temporelle et la généralisation cross-embodiment. Ces innovations répondent aux défis de l'efficacité computationnelle et de la simulation réaliste."
+   },
+   {
+    "title": "Généralisation en longueur et reproduction d'erreurs dans les LLM",
+    "text": "PAR améliore la généralisation en longueur des modèles récurrents pour le suivi d'état séquentiel, avec un Qwen2.5-0.5B atteignant 95.5% de précision sur des séquences 16x plus longues que l'entraînement. À l'inverse, une étude identifie un mécanisme de reproduction d'erreurs dans les agents LLM utilisant une mémoire externe, prolongeant la persistance des abstractions erronées. Ces travaux soulignent les défis de la robustesse et de l'extrapolation dans les architectures actuelles."
+   },
+   {
+    "title": "Benchmarking rigoureux et évaluation des capacités agentiques",
+    "text": "EvaOmni introduit un benchmark exigeant pour le raisonnement audio-visuel, avec des preuves multimodales et des procédures strictes pour éviter les raccourcis unimodaux. ASAP propose un cadre léger pour évaluer les capacités agentiques des LLM en pré-entraînement, via des tâches end-to-end. Ces outils sont essentiels pour mesurer objectivement les progrès et identifier les limites des modèles."
+   }
+  ],
+  "trend": "Les architectures d'IA évoluent vers une spécialisation accrue, avec des modèles optimisés pour des tâches spécifiques plutôt que pour un scaling générique. La tendance est à l'intégration de mécanismes de mémoire persistante, d'interfaces adaptatives et de modèles de monde pour améliorer l'autonomie et l'efficacité des agents, tout en remettant en question les hypothèses traditionnelles sur le scaling."
+ },
+ "items": [
+  {
+   "id": "d84fcc1cac825e62",
+   "title": "On the Limits of Scale: Inverse Scaling in Vision-Language Models",
+   "url": "https://huggingface.co/papers/2610.27360",
+   "summary": "Scaling laws suggest that increasing model size, training data, and compute generally yields monotonic performance improvements. While this often holds at the aggregate level, we present systematic evidence that vision-language models (VLMs) exhibit inverse scaling at the subtask level: specific question categories on which larger models perform worse than smaller counterparts within the same model family. We evaluate 19 models from four distinct model families across eight multimodal benchmarks (nine evaluation splits), answering 29,386 questions per model, 558,334 model-question evaluations in total. Using per-question pairwise analysis across all model pairs in each family, we identify 375 subtask-model-pair combinations exhibiting inverse scaling, spanning 4,342 unique queries where a smaller model answers correctly but a larger model fails, and we find that these patterns replicate across independently developed architectures. We identify 13 subtask-dataset pairs that show inverse scaling across multiple families, consistent with the phenomenon being task-driven rather than model-specific. The most affected domains in our study include multi-image spatial reasoning, visual perception, and university-level STEM knowledge, with accuracy gaps exceeding 20 percentage points in several cases, while diagram understanding appears comparatively resistant. These findings challenge the assumption that increasing model size uniformly improves multimodal capabilities and suggest that model selection should be task-aware.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.27360"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Étude systématique révélant des phénomènes d'*inverse scaling* dans les VLMs (19 modèles, 558k évaluations) : certaines tâches voient leurs performances décliner avec l'augmentation de taille, notamment en raisonnement spatial multi-images, remettant en cause les lois de scaling classiques.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication remet en question l'hypothèse dominante selon laquelle l'augmentation de la taille des modèles, des données d'entraînement et de la puissance de calcul améliore systématiquement les performances des modèles de langage visuel (VLM). Elle cherche à identifier et caractériser des cas où des modèles plus grands échouent sur des sous-tâches spécifiques alors que des versions plus petites réussissent, un phénomène appelé *inverse scaling*.",
+    "methode": "Les auteurs ont évalué 19 modèles issus de quatre familles distinctes (dont les détails architecturaux ne sont pas précisés dans le résumé) sur huit benchmarks multimodaux, couvrant neuf splits d'évaluation. Chaque modèle a été testé sur 29 386 questions, totalisant 558 334 évaluations modèle-question. Une analyse par paires (*pairwise*) a été menée pour chaque combinaison de modèles au sein d'une même famille, afin d'identifier les cas d'*inverse scaling*. Les sous-tâches concernées ont été catégorisées par domaine (raisonnement spatial multi-images, perception visuelle, connaissances STEM, etc.) et leur reproductibilité a été vérifiée sur des architectures indépendantes.",
+    "resultats": "L'étude révèle 375 combinaisons modèle-paire-sous-tâche présentant un *inverse scaling*, couvrant 4 342 requêtes uniques où un modèle plus petit réussit alors qu'un modèle plus grand échoue. Treize paires sous-tâche-dataset montrent ce phénomène de manière cohérente sur plusieurs familles de modèles, suggérant une origine liée à la tâche plutôt qu'à l'architecture. Les domaines les plus touchés incluent le raisonnement spatial multi-images, la perception visuelle et les connaissances STEM universitaires, avec des écarts de précision dépassant 20 points de pourcentage dans certains cas. La compréhension de diagrammes semble moins affectée.",
+    "limites": "Le résumé ne précise pas les architectures exactes des modèles testés ni les détails des benchmarks utilisés, ce qui limite la reproductibilité fine des résultats. De plus, l'analyse se concentre sur des sous-tâches spécifiques sans explorer les causes profondes (biais d'entraînement, déséquilibres de données, etc.), laissant des zones d'ombre sur les mécanismes sous-jacents. Enfin, l'impact pratique de ces écarts reste à quantifier dans des applications réelles.",
+    "verdict": "Cette étude mérite une attention particulière car elle ébranle un paradigme central du *scaling* en IA multimodale et souligne l'importance d'une sélection de modèles adaptée aux tâches, plutôt que basée uniquement sur la taille."
+   }
+  },
+  {
+   "id": "29c820c4703d0679",
+   "title": "Epi: Towards a Persistent, Self-Improving Agent for Autonomous Research",
+   "url": "https://huggingface.co/papers/2610.24944",
+   "summary": "We present Épi, an autonomous research agent that sustains investigations across model sessions and evolves its methods through accumulated experience. Épi combines persistent research history, hierarchical memory, branching and independent review to maintain research continuity, learn from experiments, and explore and revisit alternative approaches. Its experiments run across session boundaries, and a fixed verifier evaluates their outputs. Épi produced 120 record-setting results, comprising 20 numerical bound records across 12 families and 100 construction records across eight families. These include an approximately 84-fold narrower interval for the n-queens constant and a more than 3.6-million-fold narrower rigorous interval for the quartic Feigenbaum attractor dimension. Exact dual certificates establish that the Cohn-Elkies linear-programming bound cannot be sharp in dimensions 10 and 11. Beyond numerical improvements, Épi gives a computer-assisted proof of Tuza's conjecture for split graphs with an eight-vertex clique part and at most three triangle-active neighborhood types, with arbitrary multiplicities. We extend this research process to algorithmic coding with Épi-turbo, a lightweight configuration that develops executable solvers for tasks including vehicle routing, scheduling and production planning. On 30 FrontierOR tasks, Épi-turbo achieves a 5.4% higher total benchmark score than Codex at 64% of its model cost, using the same underlying model and reasoning effort. Épi is designed to support human understanding by connecting computational results to explicit methods and mathematical arguments that researchers can examine and build upon.",
+   "published": "2026-10-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.24944"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Agent autonome *Épi* pour la recherche mathématique, combinant mémoire hiérarchique, évaluation persistante et apprentissage par expérience, atteignant 120 records (dont des preuves assistées par ordinateur et des améliorations de bornes numériques).",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Épi vise à résoudre le défi de la continuité et de l'auto-amélioration dans la recherche autonome, un domaine où les agents existants sont souvent limités par des sessions éphémères et une incapacité à capitaliser sur l'expérience accumulée. Le système cherche également à combler le fossé entre les résultats computationnels et leur compréhension par les humains, en rendant les méthodes et arguments mathématiques sous-jacents explicites et vérifiables.",
+    "methode": "Épi repose sur une architecture combinant plusieurs composants clés : une mémoire hiérarchique pour structurer l'expérience accumulée, un historique persistant des recherches permettant de maintenir la continuité entre les sessions, et un mécanisme de branchement pour explorer et réévaluer des approches alternatives. Un vérificateur fixe évalue les sorties des expériences, garantissant une cohérence dans l'analyse des résultats. Le système utilise également des certificats duaux exacts pour valider des bornes théoriques, comme celles de Cohn-Elkies. Pour les tâches algorithmiques, Épi-turbo, une configuration légère d'Épi, génère des solveurs exécutables en optimisant les coûts computationnels tout en maintenant des performances élevées.",
+    "resultats": "Épi a produit 120 résultats record, incluant 20 records de bornes numériques sur 12 familles de problèmes et 100 records de constructions sur 8 familles. Parmi les avancées notables, on compte une réduction d'un facteur 84 de l'intervalle pour la constante des n-reines et une réduction de plus de 3,6 millions de fois de l'intervalle rigoureux pour la dimension de l'attracteur de Feigenbaum quartique. Épi a également fourni une preuve assistée par ordinateur de la conjecture de Tuza pour des graphes split spécifiques. Sur 30 tâches FrontierOR, Épi-turbo a surpassé Codex avec un score total supérieur de 5,4 %, tout en utilisant seulement 64 % de son coût modèle.",
+    "limites": "Les détails techniques sur la manière dont la mémoire hiérarchique et le mécanisme de branchement sont implémentés restent flous, ce qui rend difficile une évaluation précise de leur robustesse. De plus, bien que les résultats soient impressionnants, la reproductibilité et la généralisabilité d'Épi à d'autres domaines de recherche non couverts par l'étude ne sont pas clairement démontrées. Enfin, la dépendance à un vérificateur fixe pourrait introduire des biais ou des limitations dans l'évaluation des résultats.",
+    "verdict": "Épi représente une avancée significative dans le domaine des agents de recherche autonomes, méritant une attention particulière pour son approche innovante de la persistance et de l'auto-amélioration, bien que des questions subsistent sur sa robustesse et son applicabilité à grande échelle."
+   }
+  },
+  {
+   "id": "5eed28971135ed28",
+   "title": "Evolving Agent Interfaces",
+   "url": "https://huggingface.co/papers/2610.28601",
+   "summary": "Computer-use agents are limited by the interfaces humans give them. An agent may type a spreadsheet cell by cell when a single line of code would do, or print all two thousand lines of a file through a shell to find one function. Both the interfaces and the knowledge of when to use each are built by hand, which cannot keep pace with new applications, workflows, and models. We argue that interface design should itself be an agent capability. We introduce Agent S4, an autonomous computer-use scientist that builds Evolving Agent Interfaces from task experience. A meta-agent examines task agents' trajectories on synthetic training tasks, without success labels, and constructs and revises interfaces and usage knowledge in a repository. Population-based evolution then selects which repositories to develop further by their performance on validation tasks the meta-agent never sees, favoring changes that generalize beyond the seen tasks. On OSWorld V2, Agent S4, with Qwen3.8-27B and the evolved repository of interfaces, sets a new state of the art in open-source computer-use agents, reaching 21.3% binary score, 3.8 times the same model with fixed interfaces. This is above both GPT-5.5 (13.0%) and Claude Opus 4.8 (20.6%), at about 4.3% and 1.5% of their respective costs. On ScienceBoard, the evolved interfaces improve the success rate from 41.4% to 58.6% with the same model. These results suggest that useful interfaces can be evolved from experience, making autonomous interface design a source of improvement complementary to advances in models and harnesses. We open-source our code at https://github.com/simular-ai/agent-s.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2610.28601"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils",
+    "architecture"
+   ],
+   "tldr": "Système *Agent S4* évoluant dynamiquement les interfaces des agents (via méta-apprentissage et évolution de population) pour optimiser leur interaction avec des outils, améliorant de 3.8x les performances sur OSWorld V2 par rapport à des interfaces fixes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents autonomes utilisant des ordinateurs sont actuellement limités par des interfaces conçues manuellement, inefficaces pour exploiter pleinement les capacités des modèles sous-jacents. Ces interfaces, ainsi que les connaissances sur leur utilisation optimale, ne peuvent pas évoluer assez rapidement pour s'adapter aux nouvelles applications, workflows ou modèles, ce qui entraîne des solutions sous-optimales comme des actions redondantes ou inefficaces.",
+    "methode": {
+     "approche_generale": "L'article propose de transformer la conception d'interfaces en une capacité autonome des agents, via un système nommé Agent S4. Ce système repose sur un méta-agent qui analyse les trajectoires d'agents exécutant des tâches synthétiques (sans étiquettes de succès) pour construire et réviser dynamiquement des interfaces et des connaissances d'utilisation dans un dépôt.",
+     "details_techniques": {
+      "meta_agent": "Le méta-agent observe les actions des agents sur des tâches d'entraînement pour identifier des motifs récurrents ou des inefficacités, puis génère ou modifie des interfaces (ex. : scripts, commandes optimisées) et des règles d'utilisation associées.",
+      "evolution_populationnelle": "Les dépôts d'interfaces sont soumis à une sélection évolutive basée sur leur performance sur des tâches de validation *inédites* pour le méta-agent, favorisant ainsi les modifications généralisables au-delà des tâches observées.",
+      "architecture": "Agent S4 utilise le modèle Qwen3.8-27B comme base et intègre un dépôt d'interfaces évolutives, combinant apprentissage par l'expérience et optimisation hors ligne."
+     }
+    },
+    "resultats": {
+     "performance_osworld_v2": "Agent S4 atteint un score binaire de 21,3 %, soit 3,8 fois supérieur à la même architecture avec des interfaces fixes. Ce résultat dépasse GPT-5.5 (13,0 %) et Claude Opus 4.8 (20,6 %), tout en coûtant respectivement 4,3 % et 1,5 % de leur coût opérationnel.",
+     "performance_scienceboard": "Sur ce benchmark, les interfaces évolutives améliorent le taux de succès de 41,4 % à 58,6 % avec le même modèle de base, démontrant une généralisation à des tâches scientifiques complexes.",
+     "conclusion_partielle": "Ces résultats suggèrent que l'évolution autonome d'interfaces peut compléter les progrès des modèles et des infrastructures, offrant des gains significatifs sans nécessiter d'améliorations architecturales coûteuses."
+    },
+    "limites": {
+     "dependance_taches_synthetiques": "La méthode repose sur des tâches d'entraînement synthétiques, dont la représentativité des cas réels n'est pas garantie. Les interfaces évoluées pourraient ne pas généraliser à des workflows imprévus ou très spécifiques.",
+     "cout_computationnel": "Bien que moins coûteux que les modèles fermés, le processus d'évolution et de validation des interfaces nécessite des ressources computationnelles non négligeables, dont l'optimisation n'est pas détaillée.",
+     "transparence": "Le mécanisme exact de génération et de sélection des interfaces par le méta-agent reste opaque, ce qui limite la reproductibilité fine ou l'audit des décisions."
+    },
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et ses résultats convaincants, mais son adoption à grande échelle dépendra de sa capacité à surmonter ses limites de généralisation et de transparence."
+   }
+  },
+  {
+   "id": "c8f1f4a8e61032d7",
+   "title": "Specter: Fast MoE Inference via Quantization-Enabled Multi-Step Speculative Offloading",
+   "url": "https://huggingface.co/papers/2511.14102",
+   "summary": "Mixture-of-experts (MoE) models often exceed a single accelerator's memory capacity. Offloading experts to host memory creates a severe PCIe I/O bottleneck because data-dependent routing keeps transfers on the critical path. We present Specter, an inference system that uses quantization to combine speculative decoding with expert offloading. Its lightweight quantized draft model runs efficiently on device while preserving high-fidelity expert activation patterns. This provides accurate multi-step lookahead over future expert usage, allowing the runtime to organize expert movement and execution ahead of verification and improve both communication and execution efficiency. Under single-request inference, Specter achieves an average 1.50x (up to 1.88x) speedup in time per output token (TPOT) over the state-of-the-art system. Specter makes memory-constrained, single-GPU MoE inference more practical on commodity hardware. Our code is available at https://github.com/wwwwwf/specter_asplos.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2511.14102"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Système *Specter* accélérant l'inférence des MoE (jusqu'à 1.88x) via quantification et *speculative decoding* multi-étapes, optimisant les transferts PCIe et l'exécution des experts en anticipant les besoins futurs.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles Mixture-of-Experts (MoE) dépassent souvent la capacité mémoire d'un seul accélérateur (GPU/TPU). Le déchargement des experts vers la mémoire hôte (CPU) crée un goulot d'étranglement critique au niveau du bus PCIe, car le routage dépendant des données maintient les transferts sur le chemin critique, ralentissant significativement l'inférence.",
+    "methode": "Specter combine la quantification et le décodage spéculatif pour optimiser l'inférence des modèles MoE. Un modèle de brouillon quantifié et léger s'exécute efficacement sur l'accélérateur, tout en préservant les motifs d'activation des experts avec une haute fidélité. Cela permet une prédiction multi-étapes des experts futurs nécessaires, autorisant le système à anticiper les mouvements et l'exécution des experts avant leur vérification. Cette approche améliore à la fois l'efficacité des transferts PCIe et l'exécution des calculs, réduisant ainsi la latence globale.",
+    "resultats": "En inférence mono-requête, Specter obtient en moyenne un accélération de 1,50x (jusqu'à 1,88x) du temps par token généré (TPOT) par rapport au système état-de-l'art. Ces résultats rendent l'inférence MoE sur un seul GPU plus pratique sur du matériel standard, même avec des contraintes mémoire sévères.",
+    "limites": "Le contenu disponible ne précise pas les compromis exacts entre la précision de la quantification et les gains de performance, ni l'impact potentiel sur la qualité des sorties du modèle. De plus, l'efficacité de Specter en contexte multi-requêtes ou sur des architectures matérielles variées reste à évaluer.",
+    "verdict": "Specter mérite une attention particulière pour son approche innovante combinant quantification et décodage spéculatif, offrant des gains significatifs en inférence MoE sur matériel contraint."
+   }
+  },
+  {
+   "id": "a557cc61d4f95304",
+   "title": "CoEvo-RSI: When Harnesses Evolve, Which Models Should Follow?",
+   "url": "https://huggingface.co/papers/2610.25078",
+   "summary": "Model--harness co-evolution has emerged as a prominent paradigm for recursive self-improving (RSI) agents, jointly evolving their execution scaffolds and intrinsic capabilities. We study the persistent yet often overlooked brain--body mismatch problem in this paradigm, where an evolving harness (body) demands behaviors its model (brain) has not learned or restricts capabilities it already possesses. We introduce CoEvo-RSI, a RSI framework that advances model--harness co-evolution through agent-driven, bidirectional historical inheritance. Drawing on a shared evolutionary archive and execution feedback, a meta-agent coordinates harness development from historical designs with model checkpoint selection or merging and subsequent adaptation under the selected harness, aligning inherited capabilities with evolving execution requirements to reduce brain--body mismatch. Using only supervised fine-tuning (SFT) on its own rejection-sampled trajectories, CoEvo-RSI makes Qwen3.5-9B competitive with larger models across diverse vertical applications, including multi-agent failure attribution, role-aware text-to-SQL, and smart-home instruction following. It surpasses DeepSeek-V4-Pro on TraceElephant (+14.16 agent accuracy) and GLM-5.3 on HomeBench VM (+4.90 success rate), underscoring the need for brain--body alignment and the potential of bidirectional historical inheritance to advance agent co-evolution.",
+   "published": "2026-10-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 55,
+    "arxiv_id": "2610.25078"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "CoEvo-RSI propose un cadre d'évolution conjointe des modèles (cerveau) et de leurs scaffolds d'exécution (corps) pour réduire les déséquilibres persistants entre capacités intrinsèques et exigences externes. Le framework utilise un méta-agent pour coordonner l'héritage historique et l'adaptation des checkpoints, permettant à un modèle de taille moyenne (Qwen3.5-9B) de rivaliser avec des modèles plus grands sur des tâches complexes comme l'attribution d'échecs multi-agents ou le suivi d'instructions domotiques.",
+   "score": 9.1
+  },
+  {
+   "id": "8aa655ef69a90564",
+   "title": "PAR: Progress-Aligned Recurrence for Length Generalization in State Tracking",
+   "url": "https://huggingface.co/papers/2610.27628",
+   "summary": "Looped language models can run more iterations at test time, but additional iterations need not help them solve longer problems. For sequential state tracking, final-answer supervision does not specify how far each iteration should advance, and repeated updates can change the scale of the recurrent state. We introduce Progress-Aligned Recurrence (PAR), which trains the prediction at iteration k to match the state after the first k operations and rescales recurrent states to their first-iteration norms. On swap-S_5, a Qwen2.5-0.5B model trained on at most 32 moves achieves 95.5\\% mean full-state accuracy at 512 moves, or 16times the training length, compared with 55.7\\% reported for RLT and 0.8\\% for explicit chain of thought on the same backbone. Controlled S_5 ablations show that removing norm anchoring reduces the extrapolation factor from 16times to below 2.2times, and replacing progress-aligned targets with final-answer supervision reduces it to at most 8times. A learned completion readout selects when to answer without a supplied stopping depth. When intermediate labels are unavailable, prefix self-distillation induces the correspondence from shorter problem prefixes using only final answers. The gains apply across sequential state-tracking tasks, establishing the task structure required for depth extrapolation. These findings support training intermediate predictions and state scale together to make additional recurrent depth useful for longer problems.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 136,
+    "arxiv_id": "2610.27628"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "PAR (Progress-Aligned Recurrence) améliore la généralisation en longueur des modèles récurrents pour le suivi d'état séquentiel en alignant les prédictions intermédiaires sur l'état après k opérations. Sur swap-S_5, un Qwen2.5-0.5B atteint 95.5% de précision à 512 moves (16x la longueur d'entraînement), contre 55.7% pour RLT et 0.8% pour le chain-of-thought explicite.",
+   "score": 9.1
+  },
+  {
+   "id": "2aa423d116912f57",
+   "title": "OverSeer: Multi-Agent World Models Beyond What Agents See",
+   "url": "https://huggingface.co/papers/2610.28554",
+   "summary": "Despite the success of video world models, extending them to multiple agents is difficult because it requires generating several agent-specific video streams that are consistent in time and between agents. To address this gap, we introduce OverSeer, a multi-agent world model that augments egocentric agent views with auxiliary camera views. We suggest that, by fixing the auxiliary views in space, they act as a proxy for a world-centric representation: Unlike the agents' views, which can change entirely due to a simple change in agent position, changes in the auxiliary views directly map to localized changes in the world state. We show that these fixed views substantially help the model to maintain consistency. We also show that, due to their redundant and semi-static nature, the auxiliary views can be efficiently compressed with a delta-VAE that encodes only the changes relative to a static reference image, reducing the number of tokens required to process them. Experiments in Minecraft and Doom demonstrate improved world and agent consistency, with qualitative results on real-world multi-camera captures indicating that the approach is not tied to game engines. Our compression analysis further shows that delta-VAE substantially reduces the computational overhead of auxiliary-view generation. We conclude that these fixed views provide a simple and efficient way to improve multi-agent world models.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.28554"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "OverSeer propose un modèle de monde multi-agents utilisant des vues auxiliaires fixes pour améliorer la cohérence temporelle et spatiale entre agents, avec une compression efficace des données via un delta-VAE. Intéressant pour les architectures de simulation multi-agents et l'optimisation des entrées visuelles.",
+   "score": 8.8
+  },
+  {
+   "id": "4874fb274ac0e311",
+   "title": "FlowState: Execution State as Memory for Long-Horizon LLM Agents",
+   "url": "https://huggingface.co/papers/2609.34565",
+   "summary": "Long-horizon tasks require LLM agents to continually draw on information from earlier interactions. However, retaining the full history increases context costs, while compressing it risks losing details needed later, and the relevance of historical information often becomes apparent as the task progresses. To address these challenges, we propose FlowState, which treats execution state as memory that can be retained and revisited across requests, unifying current decision-making with the reuse of historical information. FlowState preserves semantically typed state nodes, their relations, and references to raw tool observations, separating persistent retention from on-demand access. Within a single execution loop, Incremental State Update (ISU) maintains the current state based on new inputs and feedback, while Progressive State Access (PSA) progressively reveals historical states and supporting evidence as needed during reasoning. Together, these mechanisms enable agents to reassess prior decisions in light of new information and guide subsequent actions. Compared with a full-context baseline using the same DeepSeek-V4-Flash model, FlowState improves the average success rate on MemoryArena and the average pass rate on τ^3-Bench by 4.55 and 13.95 percentage points, respectively, while reducing total token consumption by 43.2% and 40.6%. These results demonstrate the performance and efficiency advantages of FlowState on long-horizon tasks.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2609.34565"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "FlowState utilise l'état d'exécution comme mémoire persistante pour les agents LLM, améliorant la réussite sur des tâches à long terme via une gestion dynamique des états historiques. Approche innovante pour l'efficacité des agents.",
+   "score": 8.8
+  },
+  {
+   "id": "4129faaab6318c53",
+   "title": "Learning the 4D World through Point Trajectory Forecasting",
+   "url": "https://huggingface.co/papers/2610.28594",
+   "summary": "Reliable multi-view forecasting requires videos from different cameras to describe the same evolving 3D scene. To this end, we introduce Video-Point Model (VPM), a world model that conditions on multi-view video histories and a language instruction to jointly forecast future videos from arbitrary viewpoints and the 3D trajectories of persistent scene points. We extend a pretrained world model with camera-conditioned multi-view processing that integrates complementary observations across cameras, and add a trajectory head that predicts how physical points move through time. Each trajectory tracks a single point across all views, and supervising these trajectories alongside video generation therefore anchors appearance changes in every camera to a shared description of 3D motion. To support training and evaluation, we build VPM-Data, a simulation corpus pairing synchronized multi-view videos with persistent point trajectories, and VP-WorldBench, a forecasting benchmark spanning simulated and real environments. We further extend VPM to robot control by adding robot actions as a token modality in the generator. Action tokens share the point-supervised backbone and are denoised jointly with future videos, thereby grounding the policy in the same 3D-aware representation. On VP-WorldBench and existing 4D generation benchmarks, point supervision improves both video fidelity and 3D motion accuracy over a video-only counterpart, and in simulated and real-robot experiments, it also raises the manipulation success of the action-enabled model.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 39,
+    "arxiv_id": "2610.28594"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "VPM (Video-Point Model) est un modèle de monde 4D qui prédit simultanément des vidéos multi-vues et les trajectoires 3D de points persistants à partir d'instructions textuelles, en intégrant des données multi-caméras et en étendant le modèle à un contrôle robotique via des tokens d'action partagés.",
+   "score": 8.8
+  },
+  {
+   "id": "5f646ad387afaa62",
+   "title": "Ropedia W0: Scaling Loco-Manipulation World Models across Embodiments with Human Experience",
+   "url": "https://huggingface.co/papers/2610.26855",
+   "summary": "World models enable embodied agents to anticipate action consequences, yet jointly modeling locomotion and manipulation across diverse embodiments remains challenging due to heterogeneous action spaces and limited multimodal supervision. We present Ropedia W0, the first egocentric loco-manipulation world foundation model spanning humans and robots with diverse embodiments. We curate Xp-Data, comprising 10k hours of egocentric human data and 3k hours of robot data with unified multimodal annotations and systematic quality control. A unified kinematic representation encodes locomotion through camera poses and manipulation through projected skeletons, with robot skeletons combining embodiment-specific forward kinematics with extensive manual keypoint annotation and correction. We also introduce Xp-Teleop, a long-horizon loco-manipulation benchmark based on high-quality dexterous humanoid teleoperation data. Evaluations demonstrate state-of-the-art performance across five cross-embodiment benchmarks (DreamDojo, Ψ_0, ω-HOME, Xp-Teleop, and AgiBot) and on held-out human egocentric video, from zero-shot inference to few-shot and full-data post-training. Scaling human pre-training data improves performance on both human and robot evaluations. After distillation, our model supports real-time, minute-long rollouts, enabling live VR interaction. Applications in policy evaluation, model-based planning, and world-action modeling further demonstrate the model's utility for embodied decision-making.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 76,
+    "arxiv_id": "2610.26855"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "Ropedia W0 est un modèle de monde pour l'IA incarnée (locomotion + manipulation) couvrant humains et robots via une représentation unifiée. Entraîné sur 13k heures de données multimodales, il atteint des performances SOTA sur 5 benchmarks cross-embodiment, y compris en zero-shot.",
+   "score": 8.8
+  },
+  {
+   "id": "4338d9c3cee698d2",
+   "title": "VLA-Rolling: Fewer Denoising Steps, Better Control via Adaptive Action Reuse",
+   "url": "https://huggingface.co/papers/2610.25043",
+   "summary": "Flow-matching vision-language-action (VLA) models generate an action chunk by iteratively denoising Gaussian noise, but typically execute only a short prefix before replanning with updated observations. Under this receding-horizon paradigm, the unexecuted remainder---the action tail---is discarded, and the next chunk is regenerated from fresh noise. We show that this discarded tail retains transferable denoising progress: action-tail initialization can match or outperform a native 10-step Gaussian baseline using fewer denoising steps. However, the optimal denoising budget varies substantially across samples, indicating that tail reuse should be adapted to the updated environment. Based on this observation, we introduce VLA-Rolling, a lightweight inference framework that reuses action tails through three stages: action-tail inheritance, per-action confidence estimation, and confidence-guided refinement through renoising and denoising budget allocation, while the underlying VLA remains frozen. Across π_{0.5}, SmolVLA, X-VLA, and MolmoAct2 on LIBERO, MetaWorld, LIBERO-Plus, and RoboTwin 2.0, VLA-Rolling reduces action-chunk inference cost in all 16 model--benchmark pairs, achieving up to a 1.48times speedup, while improving success rate in 14 pairs by up to 15.08 percentage points. These results show that action tails are not merely discarded predictions, but reusable intermediate states that enable more efficient and accurate VLA inference. These results demonstrate that the action tail can support the generation of better actions with fewer denoising steps. Our project is available at https://chenbao123ww.github.io/VLA-Rolling/.",
+   "published": "2026-10-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 58,
+    "arxiv_id": "2610.25043"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "optimisation"
+   ],
+   "tldr": "VLA-Rolling réduit le coût d'inférence des modèles VLA (Vision-Language-Action) en réutilisant les queues d'actions (action tails) et en adaptant dynamiquement le budget de débruitage. Sur 16 paires modèle-benchmark, il diminue les coûts sans perte de performance.",
+   "score": 8.8
+  },
+  {
+   "id": "97cc309e41f97191",
+   "title": "SpecKCast: Spectral Kalman Forecasting for Diffusion Acceleration",
+   "url": "https://huggingface.co/papers/2610.26837",
+   "summary": "Diffusion Transformers (DiTs) achieve high-fidelity image and video generation, but they suffer from substantial inference costs due to repeated transformer evaluations across many denoising steps. Feature caching reduces this cost by reusing features across denoising steps. Recent forecasting methods extend this idea by extrapolating features to skipped steps instead of reusing them. However, existing forecasting methods extrapolate the features they predict uniformly, even though the spatial-frequency components of these features change most at different stages of denoising. They also overlook that denoising progresses nonuniformly, so equal step intervals can correspond to very different amounts of change. These mismatches amplify forecast errors as more steps are skipped, limiting the achievable acceleration. We propose SpecKCast, a training-free method that forecasts the model output in the frequency domain. SpecKCast applies a 2D discrete cosine transform (DCT) to the output and tracks each coefficient with a lightweight Kalman filter along a band-specific time coordinate derived from the noise schedule. The filter tracks each coefficient's value and rate of change, and the transformer is evaluated only when the filter's forecast uncertainty exceeds a threshold. Experiments on FLUX.1-dev, Qwen-Image, Wan2.1-14B, and HunyuanVideo show that SpecKCast achieves a better trade-off between acceleration and fidelity than existing caching and forecasting methods, reaching up to 6x speedup with less than 0.05 GiB of additional memory.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.26837"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Méthode *SpecKCast* accélérant l'inférence des DiTs (jusqu'à 4x) via un filtrage de Kalman dans le domaine fréquentiel, exploitant les variations non uniformes des composantes spatiales et temporelles pendant le débruitage.",
+   "score": 8.2
+  },
+  {
+   "id": "fdf00154cf93131f",
+   "title": "λ_0: Scaling Open-World Egocentric Human Data for Humanoid Loco-Manipulation",
+   "url": "https://huggingface.co/papers/2610.18950",
+   "summary": "Humanoid loco-manipulation requires coordinated whole-body interaction with the physical world, yet collecting robot demonstrations at scale remains costly. Human demonstrations offer a scalable alternative, but existing egocentric human supervision often omits locomotion and posture, while embodiment differences and controller dynamics hinder accurate end-effector execution. We introduce HumanVerse, a 500-hour dataset of open-world human loco-manipulation pairing egocentric video with synchronized body and hand motion. Our human-to-humanoid pipeline aligns camera viewpoints and arm appearance, and refines motion references and controller inputs offline to reduce end-effector errors while preserving whole-body coordination. We validate the pipeline through zero-shot transfer to Unitree G1 on representative whole-body manipulation and long-range loco-manipulation tasks, without target-task robot demonstrations. Building on this pipeline, we develop λ_0, a humanoid foundation model for whole-body loco-manipulation, with robot-aligned human demonstrations providing supervision for mid-training. Increasing whole-body human data consistently improves downstream task progress. λ_0 achieves 90.0% success on SIMPLE and 62.5% across real-world loco-manipulation tasks. We expect this study to guide scalable whole-body human data collection toward humanoid foundation models for richer interaction with the physical world. Homepage: https://lambdahumanoid.github.io/",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.18950"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Modèle *λ_0* pour la loco-manipulation humanoïde, entraîné sur *HumanVerse* (500h de données humaines synchronisées), démontrant un transfert zero-shot vers un robot physique (Unitree G1) et améliorant les performances avec plus de données.",
+   "score": 8.2
+  },
+  {
+   "id": "9944359777bad2e6",
+   "title": "More Memory, Worse Agents: Error Reproduction and Anti-Persistence in LLM Agents",
+   "url": "https://huggingface.co/papers/2610.27406",
+   "summary": "LLM agents can improve across tasks without updating model parameters by storing experience from their own executions in external memory and reusing it to guide later decisions. A central design question is whether to retain only observed trajectories and outcomes or also the rules, summaries, and skills inferred from them. Retaining these abstractions allows agents to reuse strategies without repeatedly deriving them from raw trajectories. However, errors in stored abstractions can propagate to subsequent decisions through retrieval and reuse. They can also shape execution trajectories, which then become the basis for new abstractions that reproduce the original errors. We term this feedback mechanism error reproduction: errors are regenerated through a cycle of abstraction, execution, and re-abstraction, extending their persistence beyond direct reuse of the original faulty knowledge. We propose Anti-Persistence, a memory design that accumulates trajectories and outcomes while reconstructing task-specific guidance on demand. An adaptive selector uses prior outcomes to decide whether and how to synthesize guidance, which is discarded after execution. This prevents its direct reuse as a stored object, although indirect feedback through retained trajectories remains possible. Across different benchmarks and backbones, Anti-Persistence achieves higher overall held-out success and the lowest average LLM-call cost among the evaluated memory designs. These results support separating experience accumulation from abstraction persistence in memorybased self-improvement.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.27406"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "L'article identifie un mécanisme de reproduction d'erreurs dans les agents LLM utilisant une mémoire externe : les abstractions erronées se propagent via un cycle de récupération, exécution et ré-abstraction, prolongeant leur persistance. Anti-Persistence propose une solution en reconstruisant les guidances à la demande pour éviter leur réutilisation directe.",
+   "score": 8.2
+  },
+  {
+   "id": "521f0639d354235c",
+   "title": "S-Agent 2.0: Spatial Reasoning with a General Coding Agent",
+   "url": "https://huggingface.co/papers/2610.28354",
+   "summary": "Spatial reasoning asks a model to work out where objects are in 3D space, how they relate to one another, and how they move. Agentic VLMs have recently brought large improvements on such tasks by letting the model actively gather evidence with 3D perception tools instead of answering in a single pass. Even so, on many questions the tools return the right evidence and the model still does not arrive at the correct answer: the gap between model and tools, where raw readings become usable conclusions, is left unfilled. We present S-Agent 2.0, a spatial reasoning agent that equips an off-the-shelf general coding agent with a command-line perception toolkit, and we design the interface around one principle: help the VLM close the evidence loop: acquire scene evidence, remember it in a persistent scene memory, and interpret each reading in plain spatial language. This design keeps the full flexibility of a coding agent, and every reading it acts on stays grounded in the tools' geometry. On MMSI-Bench and ReVSI, the toolkit improves a strong open-source model, Qwen3.8-27B, by +13.9 and +20.5 points over the same agent without tools, and a strong closed-source model, Gemini-3.8-Flash, by +11.2 and +9.6 points. With the open backbone S-Agent 2.0 reaches 66.5 on MMSI-Bench and 82.3 on ReVSI, ahead of the specialized system SpatialClaw on the same backbone (62.6 and 74.5), and with Gemini-3.8-Flash it reaches 74.1 and 90.5 against its 67.0 and 79.7. Both tool gains shrink as the backbone grows more capable, but SpatialClaw's shrinks far more on ReVSI, from +13.2 to +2.7, while ours stays at +9.6. S-Agent 2.0 also works across different general coding agent harnesses, such as Codex and Claude Code.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 68,
+    "arxiv_id": "2610.28354"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "S-Agent 2.0 améliore le raisonnement spatial des VLMs en équipant un agent généraliste d'un toolkit de perception 3D, permettant une mémoire persistante et une interprétation géométrique des lectures, avec des gains de +13.9 à +20.5 points sur MMSI-Bench et ReVSI pour des modèles open et closed-source.",
+   "score": 8.2
+  },
+  {
+   "id": "c3c375455b4762ce",
+   "title": "EvaOmni: An Evidence-Grounded Benchmark for Audio-Visual Reasoning",
+   "url": "https://huggingface.co/papers/2610.28444",
+   "summary": "Omni LLMs can naturally locate key audio and visual evidence and integrate information across modalities for audiovisual reasoning. Existing audio-visual reasoning benchmarks that mainly rely on multiple-choice questions usually score models solely based on answer correctness, making it difficult to assess whether a model truly forms a reasoning chain from evidence to the correct answer. In addition, textual or unimodal shortcuts may allow models to answer correctly without analyzing the necessary audio-visual evidence, further weakening the reliability of evaluation benchmarks. To address these issues, we introduce EvaOmni, an evidence-grounded benchmark containing 392 videos and 1,027 purely human-annotated question-answer pairs, covering 15 capabilities and three levels: retrieval and localization, basic understanding, and complex reasoning. We design a series of rigorous annotation procedures in which experts annotate audio and visual evidence and construct video-based distractors; humans review whether questions meet strict inspection criteria, and finally models filter textual and unimodal shortcuts. Beyond high-quality question-answer pairs, we require models to simultaneously return the answer and supporting evidence intervals in order to evaluate the complete reasoning chain. We propose the Coverage Grounded Score (C.G.) to measure how much annotated evidence a model identifies, and the Bottleneck Grounded Score (B.G.) to penalize poor temporal localization in either modality; both are incorporated into answer correctness. Across 7 open-weight and 17 proprietary Omni LLMs, Gemini3.7-Flash achieved the highest overall accuracy (79.4%), C.G. (70.8%), and B.G. (35.1%). At Level 3, it reached 79.1% accuracy, but its B.G. was only 12.3%. These results show that even the most advanced models still have room for development in grounded audio-visual reasoning.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2610.28444"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "benchmark"
+   ],
+   "tldr": "EvaOmni est un benchmark d'évaluation rigoureux pour le raisonnement audio-visuel, exigeant des modèles qu'ils justifient leurs réponses par des preuves multimodales. Il couvre 15 capacités via 1027 paires Q-A annotées manuellement sur 392 vidéos, avec des procédures strictes pour éviter les raccourcis unimodaux.",
+   "score": 8.2
+  },
+  {
+   "id": "5c3ada646adc91d0",
+   "title": "StartLuxLabs/StartLux-Decision",
+   "url": "https://github.com/StartLuxLabs/StartLux-Decision",
+   "summary": "Open decision models from 0.8B to 27B: a calibrated probability for every option in one pass, and a short thought only when unsure. Engine for vLLM, llama.cpp and MLX.",
+   "published": "2026-09-29T11:53:37Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1072,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Modèles de décision open-source (0.8B à 27B) optimisés pour des probabilités calibrées en un passage et des raisonnements courts en cas d'incertitude. Idéal pour des inférences efficaces et des architectures légères.",
+   "score": 8.0
+  },
+  {
+   "id": "141e7f8200116e72",
+   "title": "On the Fragility of Tasks under Composition: Implicit Budgeting in Language Models",
+   "url": "https://huggingface.co/papers/2610.27190",
+   "summary": "Modern language models are increasingly asked to handle several tasks within a single prompt. Doing so requires solving each task correctly while integrating the resulting answers into a coherent response. In this paper, we identify a fundamental limitation in this process, where models make substantially more errors when tasks are composed, even when they can solve every constituent task reliably in isolation. This degradation cannot be fully explained by the accumulation of independent errors. Across both open-weight models and the frontier model Claude Opus 5, our findings instead point to an implicit thinking budget underlying this effect. In particular, under composition, models use substantially fewer tokens per task than in isolation, even when the full sequence remains well within the context window. Tasks that require longer solution traces in isolation are consequently more fragile under composition, i.e., models make more errors on prompts containing these tasks. In isolation, non-fragile tasks receive more reasoning than they need and waste compute. However, by grouping tasks according to their fragility, the implicit budgeting can be manipulated to reduce token usage by 43\\% across a range of math and linguistic tasks while also preserving accuracy.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.27190"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude révèle une fragilité des LLM lors de la composition de tâches, due à une réduction implicite du budget de tokens par tâche. Met en lumière des limites fondamentales dans l'allocation des ressources computationnelles et l'intégration des réponses.",
+   "score": 7.9
+  },
+  {
+   "id": "6d1bb128741b68c8",
+   "title": "Evaluating Agentic Capabilities Before Post-Training: An End-to-End Approach",
+   "url": "https://huggingface.co/papers/2610.19425",
+   "summary": "Agentic capabilities are increasingly important for modern LLMs, yet remain difficult to evaluate during pretraining. Existing approaches typically rely on static trajectory-derived tasks or likelihood-based proxies, which are lightweight but provide limited visibility into how base models behave in interactive environments. We introduce ASAP (Agent Scaffold Adaptation for Pretraining Evaluation), a lightweight framework for eliciting and evaluating agentic behavior from pretrained base models on end-to-end tasks. Rather than converting base models into chat-style agents, ASAP preserves the completion interface and adapts existing agent scaffolds through structured trajectory continuation, short reference prefixes, and minimal recovery mechanisms. Across software-engineering and deep-research benchmarks, ASAP yields discriminative end-to-end performance across base models and pretraining checkpoints. Beyond aggregate scores, ASAP exposes model-generated execution trajectories, enabling analysis of exploration, editing, testing, recovery, and task completion across training stages. These trajectories provide a behavioral view of how agent-relevant capabilities change during pretraining and how execution patterns differ after post-training. Our results suggest that end-to-end agent evaluation can complement conventional pretraining benchmarks by providing a practical diagnostic of interactive model behavior.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.19425"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "ASAP propose un cadre léger pour évaluer les capacités agentiques des LLM en pré-entraînement, via des tâches end-to-end et des trajectoires générées. Permet d'analyser l'évolution des compétences agentiques pendant l'entraînement.",
+   "score": 7.9
+  },
+  {
+   "id": "5a146159e9606b8a",
+   "title": "Unsupervised Tool Evolution for Coding Agents in Data-Lake Analytics",
+   "url": "https://huggingface.co/papers/2610.27327",
+   "summary": "Coding agents can answer analytical questions over a data lake by discovering, cleaning, and joining the relevant data. However, they discard this work after each question and redo it from scratch for the next one. Tool evolution, which automatically builds and refines reusable tools across tasks, is a natural fit for this repetition. Since a ground-truth label for a data-lake question requires an expert to solve it first, we consider the unsupervised setting. We propose TEAL (Tool Evolution for Analytics over data Lakes), which evolves a library of tools and usage skills for a given Worker agent without labels. Two agents propose tools from complementary evidence, an Explorer from the data lake itself and a Critic from Worker trajectories. A proposed change is kept only if the Worker adopts the tool on a rerun without extra steps and any changed answer is supported by trajectory evidence. We also introduce TEAL-Q, which generates synthetic questions for tool evolution when real ones are unavailable. We evaluate on KramaBench and LakeQA with four Worker LLMs under step budgets, which cap the number of steps the Worker may take per question. With a tight budget of 10 or 15 steps, TEAL improves every Worker on both benchmarks, lifting Sonnet-5 at 15 steps by 9.3 points on KramaBench and 21.7 points on LakeQA. A tighter budget also yields better feedback for evolution. For example, Sonnet-5's LakeQA library evolved at 20 steps and deployed unchanged at 30 steps scores 68.3, above both the baseline (59.6) and a library evolved directly at 30 steps (64.2). Additionally, a library evolved on synthetic questions performs comparably to one evolved on real questions. These results show that useful tools can be evolved without labels, and hopefully inspire future work on what to evolve and how to obtain feedback in unsupervised agent evolution.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.27327"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "TEAL automatise l'évolution d'outils pour les agents de codage en analyse de données, sans supervision, via un mécanisme de proposition/critique et adoption par les agents. Pertinent pour l'optimisation des workflows d'agents dans des environnements complexes.",
+   "score": 7.9
+  },
+  {
+   "id": "cd3e6601c2d3227d",
+   "title": "Good Judgment, Bad Advice: Decision-Model Controllers Raise Agent Cost Without Improving Success",
+   "url": "https://huggingface.co/papers/2610.24649",
+   "summary": "Agent scaffolds increasingly delegate small decisions (whether to stop, verify, or change approach) to cheaper models. We ask whether a typed decision model, Jev 1.13, consulted only at deterministic decision points, makes a Claude Sonnet 5.5 terminal agent cheaper without making it worse. In a pre-specified study on Terminal-Bench 2.1, we hold one agent loop fixed and vary only the controller: none, deterministic rules, a small LLM (Claude Haiku 5.5) answering the same questions, Jev, and a placebo that samples Jev's development-phase choice frequencies at the same moments. On 21 held-out tasks (315 trials), Jev raised cost per attempt by 19% (geometric-mean ratio 1.19, 95% CI 1.02-1.36) at an identical pass rate (73.0% vs. 73.0%). Jev was cheaper than the small-LLM controller (ratio 0.81) but 22% more expensive than the placebo, and no pass-rate difference between arms was detectable. Offline, Jev ranked finish requests better than the alternatives (AUROC 0.78 vs. 0.62 for rules and 0.60 for the small LLM) but was poorly calibrated: its mean probability that a run was complete was 0.50 when 87% of those runs passed, so it asked the agent to verify work that was already correct. No controller ever chose to abandon a run. Informative decision signals did not become useful interventions; we discuss what that would require.",
+   "published": "2026-10-16T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.24649"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "L'étude démontre que l'intégration d'un modèle de décision (Jev 1.13) dans un agent terminal (Claude Sonnet 5.5) augmente les coûts de 19% sans améliorer les performances (73% de réussite), révélant des limites dans les approches de contrôle par modèles externes pour les décisions intermédiaires.",
+   "score": 7.9
+  },
+  {
+   "id": "2411bf25f97f4555",
+   "title": "Large Flow Language Models",
+   "url": "https://huggingface.co/papers/2610.28559",
+   "summary": "Continuous flow language models offer a path to parallel generation with tools for control and acceleration unavailable to discrete diffusion, yet effective techniques for building them at the billion-parameter scale remain less established. We present Lafa (Large flow language model), a fast, high-performing flow language model scaled to 8B parameters in a data-efficient manner. Lafa is a blockwise flow model with causal attention on the prefix and bidirectional, asynchronous flow within each block. This design enables efficient training by adapting pretrained autoregressive (AR) models and fast inference via prefix caching and blockwise parallel decoding. We train Lafa at 0.5B, 7B, and 8B scales with fewer than 30B tokens, more efficient than previous diffusion models, and evaluate it on instruction following, reasoning, and coding, where the learned flow matches or surpasses the quality of AR and can be distilled into flow maps for one- and few-step generation. Notably, flow training preserves or even improves pretrained AR capabilities via a multi-token prediction effect, which we leverage in a self-speculative decoding scheme that verifies flow-based drafts autoregressively within a single model. This yields 2.54x the throughput of an AR model at comparable quality, outperforming multi-token prediction and discrete diffusion methods. Our findings show that continuous flows can serve as a scalable foundation for language modeling.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.28559"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Lafa (Large Flow Language Model) est un modèle de flux (8B paramètres) permettant une génération parallèle efficace via des blocs asynchrones et un entraînement data-efficient (30B tokens). Il surpasse ou égale les modèles AR en qualité, avec une distillation possible en 1-2 étapes de génération.",
+   "score": 7.9
+  },
+  {
+   "id": "835e678b11faca39",
+   "title": "Voxtral 3",
+   "url": "https://mistral.ai/news/voxtral-3/",
+   "summary": "Voxtral 3: Mistral's voice agent SDK for real-time speech in 50+ languages — accurate transcription, emotional TTS, deep tool use. EU-hosted or self-deployed.",
+   "published": "2026-10-20T12:00:22+00:00",
+   "source": "mistral-blog",
+   "source_label": "Mistral AI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "audio"
+   ],
+   "tldr": "SDK d'agent vocal de Mistral (Voxtral 3) supportant 50+ langues, avec transcription en temps réel, synthèse vocale émotionnelle et intégration d'outils, déployable en UE ou en local.",
+   "score": 7.9
+  },
+  {
+   "id": "3467a501034d570a",
+   "title": "PhysLDM: Latent Diffusion for High-Fidelity Deformable Simulation",
+   "url": "https://huggingface.co/papers/2610.07609",
+   "summary": "Neural simulation of high-fidelity deformable bodies is a foundational challenge in computer graphics and physical AI. Long-horizon prediction for high-resolution 3D volumetric meshes is hard: autoregressive methods are prone to error accumulation, while direct multi-frame prediction at native resolution is computationally prohibitive. This motivates a compact spatiotemporal latent representation, which is largely unexplored for mesh-based volumetric physics. Meanwhile, it remains unclear whether deterministic regression or generative diffusion is the more suitable predictive paradigm. To address these coupled challenges, we introduce PhysLDM, a unified latent-diffusion paradigm for one-shot deformable simulation. Its core is a holistic spatiotemporal VAE that avoids the \"staircase\" artifacts of standard temporal compression (e.g., video VAEs), achieving ~2.48 mm reconstruction precision on meter-scale scenes at up to 78x token compression. Based on this reliable latent space, we systematically compare regression and diffusion methods. Our experiments uncover a key modeling insight: complex deformable dynamics are often chaotic, and in this regime deterministic regression tends to produce non-physical averages, whereas diffusion better models their distribution. Accordingly, we employ a latent diffusion model that effectively learns from chaotic data to generate physically plausible trajectories. Trained purely kinematically on an Objaverse-scale dataset, a single PhysLDM generalizes zero-shot to unseen OOD datasets. Its differentiability further enables efficient solution of inverse problems and higher-order design optimization. To our knowledge, PhysLDM is the first high-fidelity spatiotemporal autoencoder and latent-diffusion paradigm for volumetric deformable dynamics, offering a scalable and robust approach to neural simulation. Project Page: https://yucrazing.github.io/physldm/",
+   "published": "2026-10-17T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2610.07609"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "PhysLDM introduit un paradigme latent-diffusion pour simuler des déformations 3D avec haute fidélité, combinant compression spatiotemporelle et comparaison entre régression déterministe et diffusion générative. Pertinent pour la modélisation physique en IA et la compression de données.",
+   "score": 7.6
+  },
+  {
+   "id": "7db8c94265a209a4",
+   "title": "Event-STVG: Spatio-Temporal Video Grounding for Long-Form Event Reasoning",
+   "url": "https://huggingface.co/papers/2610.22444",
+   "summary": "Spatio-Temporal Video Grounding (STVG) aims to jointly localize a target in space and time given a natural-language query. Despite continued advances, existing STVG benchmarks remain largely centered on localizing targets through instance-specific descriptions, leaving them largely decoupled from long-form reasoning increasingly emphasized in multimodal large language models (MLLMs). In this paper, we introduce Event-STVG, a task that shifts STVG from locating what is described toward event-level reasoning by unifying long-form context, repeated-event reasoning, event localization, role inference, and multi-target grounding. To facilitate research on Event-STVG, we construct a large-scale benchmark comprising 4,016 annotated event occurrences across soccer and seven additional domains. Experiments with state-of-the-art MLLMs reveal substantial difficulty, with the strongest model achieving only 5.4% m-vIoU at the 10-minute horizon. Across domains, we consistently observe confusion among repeated same-type events, spatial grounding bottlenecks, and rare success in jointly grounding all required roles. Event-STVG establishes a new challenge for visual understanding in MLLMs, calling for future models that can jointly reason about complex events across space and time. Code and annotations are available at https://github.com/THU-KEG/EventSTVG",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.22444"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Event-STVG étend le grounding spatio-temporel vidéo à des raisonnements événementiels complexes, avec un benchmark de 4 016 annotations couvrant 8 domaines. Challenge pour les MLLMs dans la compréhension d'événements longs et multi-cibles.",
+   "score": 7.6
+  },
+  {
+   "id": "0b5d601806832f3f",
+   "title": "OmniCam: Omni-Camera Trajectory Generation via Geometry-Grounded Pose Token Learning",
+   "url": "https://huggingface.co/papers/2610.09513",
+   "summary": "Camera trajectories control viewpoint changes in video generation, scene reconstruction, and robotic perception. Generating them from language requires both scene geometry and target-aware framing. We introduce OmniCam, an autoregressive model that generates camera pose sequences from a single panorama and textual trajectory descriptions. Its geometry-grounded pose token learning combines three components: a panoramic point-cloud encoder for omnidirectional geometric context; hybrid absolute-rotation and relative-translation tokenization with temporally consistent quaternion signs; and separate geometric and semantic conditioning streams with an explicit 3D target anchor. We also construct OmniCaT, containing 267,700 trajectories across four camera behaviors. On the reported OmniCaT evaluation, OmniCam reduces trajectory errors by 28--47% and collision rate by 65.8% relative to GenDoP retrained on OmniCaT. Against the best baseline for each metric, the ATE and collision reductions are 43.0% and 62.3%, respectively. Component ablations support the use of geometric and target-aware conditioning, while downstream experiments examine camera-controlled video generation and robotic active perception.",
+   "published": "2026-10-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.09513"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Modèle *OmniCam* générant des trajectoires de caméra à partir de panoramas et descriptions textuelles, réduisant les erreurs de pose de 28-47% et les collisions de 65.8% grâce à un encodage géométrique et une tokenisation hybride (rotation/translation).",
+   "score": 7.6
+  },
+  {
+   "id": "22414224151422c2",
+   "title": "Multimodal Reranking Is a System One Decision",
+   "url": "https://huggingface.co/papers/2610.28435",
+   "summary": "Multimodal rerankers are usually dedicated models: a vision-language model (VLM) is trained on retrieval data to score the candidates of a query. Scoring options is not specific to reranking. System One decision models such as Jev map a state and a typed question to one probability per option without generating text, and general models can make such decisions with little or no training. Reranking is one such decision, with the query and its candidates as the state and the candidates as the options. We therefore argue that a general VLM can serve as a multimodal reranker through System One decisions, and that decision tuning can improve its reranking. We ask a VLM one choice question over the top 16 candidates of a first-stage retriever and rank the candidates by the probabilities of their labels, read from one forward pass. On MMEB-V2 image retrieval, this choice scores 5.4 to 7.3 hit@1 above a yes/no question per candidate, and the yes/no question falls below the first stage. With the choice, zero-shot Qwen3.8-27B beats the supervised Qwen3-VL-Reranker-2B on all three benchmarks and comes within 1.6 points of Reranker-8B on each. It matches Reranker-8B on MMEB-V2 visual documents (84.79 vs. 84.78 nDCG@5), at 1.1 to 1.5 times its latency. JEV-27B-VL, the same backbone tuned on text decisions only, improves page reranking by 0.6 to 1.1 points, with gains on most tasks (sign test, p <= 0.017), and leaves natural images unchanged. The zero-shot model is larger than the supervised rerankers and of a newer generation, so these comparisons are confounded; we discuss this and other alternative views, and the experiments that would test the position.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.28435"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "rag",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Approche *System One* pour le réordonnancement multimodal : un VLM général évalue les candidats en une passe via une question de choix, surpassant des modèles dédiés (jusqu'à +7.3 hit@1) sans entraînement spécifique, avec une généralisation supérieure.",
+   "score": 7.6
+  },
+  {
+   "id": "6d7a347d77ac3b84",
+   "title": "HarnessRL: Co-Evolving Policies with a Just-in-Time Training Harness for Open-Ended RL",
+   "url": "https://huggingface.co/papers/2610.26426",
+   "summary": "Rubric-based reinforcement learning (RL) trains policies for open-ended generation with natural-language criteria as rewards, but these rewards can become ineffective as training progresses. We identify two failure modes. Under non-discriminative rewards, scores collapse to uniformly low or high values due to insufficient exploration or a mismatch between task difficulty and policy capability. Under spurious rewards, higher scores do not correspond to better responses. Both reflect a training configuration whose task sampling, exploration, and evaluation stay fixed as the policy evolves. We introduce HarnessRL, a training-time harness that co-evolves with the policy through three interfaces for task sampling, rollout guidance, and rubric criteria. HarnessRL maintains a training-time memory from which a harness evolver retrieves within-task history and cross-task evidence. Using this evidence, the evolver attributes each reward failure to the interface whose update can address it. It then runs a proposer and just-in-time critic loop in which the critic accepts a candidate update only after measuring its effect on the current frozen policy, returning rejected candidates for revision. We also curate Rubric-Mix-10k, a five-domain training and evaluation suite for open-ended RL across medical, science, writing, role-play, and instruction-following tasks. On Rubric-Mix-10k, HarnessRL outperforms the strongest baselines by 2.8 to 3.1 points across both 4B and 9B model scales and nearly halves the training steps to its best checkpoint. Code and data are available at https://github.com/Tongyi-ConvAI/Qwen-Character/tree/main/HarnessRL.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.26426"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "HarnessRL introduit un mécanisme d'évolution dynamique des scaffolds d'entraînement (harness) pour l'RL ouverte, corrigeant les échecs de récompense non discriminatifs ou spéculaires en adaptant en temps réel les interfaces de sampling, de rollout et de critères. Le framework maintient une mémoire évolutive pour guider ces ajustements.",
+   "score": 7.6
+  },
+  {
+   "id": "d2b6da55f226bc59",
+   "title": "Harness Self-Evolution for Long-Horizon Terminal Agents",
+   "url": "https://huggingface.co/papers/2610.27435",
+   "summary": "Long-horizon terminal agents may solve a task in one run yet fail across repeated runs. Stochastic errors can propagate through actions and context, creating a gap between capability and reliable execution. We present RiseHarness, a framework for iteratively improving agent harnesses with model weights fixed. It focuses on flipping tasks with both successful and failed runs under the same configuration, using successful runs as references for failure analysis. RiseHarness combines agent trajectories with internal harness traces from a runtime monitor to examine how model actions interact with command execution, feedback, context management, and completion decisions. A Harness Handbook links this evidence to harness behaviors and source code, helping identify recurring problems in mechanisms shared across tasks. RiseHarness then searches other harness frameworks for relevant implementations and adapts them as design references to the current model and execution protocol. Candidate changes undergo behavioral checks and repeated task evaluation; versions with measured gains seed the next iteration. This loop integrates suitable mechanisms from different frameworks into a single harness and uses new execution evidence to guide further changes. We evaluate task success and reliability across models, ablate harness execution evidence and external research, and test transfer to unseen benchmarks with the same model. RiseHarness treats a specific model as the unit of harness adaptation, studying how changes to shared interaction mechanisms can make existing capabilities more reliable across tasks.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.27435"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "RiseHarness améliore les scaffolds d'agents terminaux à long terme en analysant les succès et échecs sous une même configuration, puis en adaptant des mécanismes issus d'autres frameworks via un processus itératif de diagnostic et de validation comportementale, avec des gains mesurés.",
+   "score": 7.6
+  },
+  {
+   "id": "ab1cb79345839532",
+   "title": "Correction Training for Diffusion Models",
+   "url": "https://huggingface.co/papers/2610.14136",
+   "summary": "Iterative sampling in diffusion models can lead to error accumulation due to exposure bias. The denoiser is trained on real images interpolated with noise, but at inference its inputs are constructed from its own imperfect predictions from the earlier steps, something it has never seen at training time. This might be one reason diffusion models often struggle without additional help, such as CFG. We introduce a correction step for diffusion models which attempts to reduce this training-inference gap. The corrector takes the base model's prediction as input and is trained against the same ground-truth target. This makes correction an explicit learning task, with training inputs provided by the base model. During sampling, at each denoising step, we iteratively refine the denoiser's clean-sample prediction. This allows us to correct predictions at intermediate denoising steps, preventing early artifacts from persisting into the final sample. Although the corrector is trained only on predictions from the base denoiser, it can be applied repeatedly to its own outputs at inference for better results. This simple framework leads to substantial improvement in sample quality while largely preserving diversity. We evaluate our method across DiT, SiT, and JiT. Our method substantially improves upon previously reported FID scores for unguided generation and, notably, unconditional generation, where producing high-quality samples without guidance has been particularly challenging. Our method achieves performance competitive with classifier-free guidance (CFG), and combining correction with CFG further improves diversity and reduces oversaturation typical of CFG. Finally, we show that the additional inference cost of correction can be amortized by distilling the refined predictions back into the base diffusion model, retaining the quality gains without additional inference-time overhead.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 25,
+    "arxiv_id": "2610.14136"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Correction Training pour modèles de diffusion réduit l'accumulation d'erreurs en ajoutant un correcteur entraîné sur les prédictions du modèle de base. Cela améliore significativement la qualité des échantillons sans surcoût d'inférence majeur.",
+   "score": 7.6
+  }
+ ]
+}
