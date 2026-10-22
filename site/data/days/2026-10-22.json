@@ -1,0 +1,745 @@
+{
+ "date": "2026-10-22",
+ "digest": {
+  "headline": "Les limites de la compositionnalité en RAG et les avancées en quantification 4-bit redéfinissent les compromis performance-fidélité des LLM",
+  "overview": "La veille du 22 octobre 2026 met en lumière des travaux structurants sur l'optimisation des architectures d'agents et de modèles, avec une attention particulière aux trade-offs entre efficacité computationnelle et robustesse des réponses. Les approches systématiques pour évaluer les composants des systèmes (RAG, quantification, grounding spatial) révèlent des interactions complexes, tandis que les frameworks pour agents polyvalents ou robotiques gagnent en maturité.",
+  "highlights": [
+   {
+    "title": "RAG : les gains isolés ne s'additionnent pas",
+    "text": "L'étude LASAGNA démontre que l'optimisation individuelle des composants RAG (retrieval, reranking, compression) peut dégrader la fidélité globale des réponses, notamment pour les grands corpus. Les résultats soulignent la nécessité d'une approche holistique pour concevoir des pipelines RAG, où les interactions entre modules priment sur les performances locales. Ce travail fournit un cadre d'évaluation systématique pour guider les choix architecturaux en fonction de l'échelle et du domaine d'application."
+   },
+   {
+    "title": "Quantification 4-bit compétitive pour les états récurrents",
+    "text": "PACE propose une méthode de quantification post-hoc 4-bit pour les modèles à attention linéaire, réduisant l'erreur d'accumulation via un arrondi périodique et un alignement par canal. Cette approche atteint des performances comparables à une quantification 8-bit, tout en offrant des gains significatifs en mémoire et en latence. Elle ouvre la voie à des déploiements plus efficaces des architectures récurrentes dans des environnements contraints."
+   },
+   {
+    "title": "Agents polyvalents : vers des environnements synthétiques contrôlables",
+    "text": "WildAWM et AW-0 introduisent des pipelines open-source pour générer des environnements d'entraînement d'agents multi-interfaces (GUI, CLI, robotique), avec des mécanismes de vérification d'exécution. Ces frameworks permettent de créer des tâches solvables et reproductibles, essentielles pour évaluer la généralisation des agents. Ils comblent un manque critique en fournissant des benchmarks standardisés pour les compétences transversales, comme la planification ou l'interaction avec des outils."
+   },
+   {
+    "title": "Optimisation des caches KV pour les agents LLM",
+    "text": "Cache Engineering propose des opérations directes sur le cache KV (drop/repos) pour contrôler sa croissance sans altérer la trajectoire des agents ni nécessiter de re-prefilling. Cette méthode réduit les coûts I/O et améliore l'efficacité des agents en production, tout en préservant la cohérence des réponses. Elle répond à un défi pratique majeur pour les déploiements à grande échelle, où la gestion dynamique de la mémoire est cruciale."
+   },
+   {
+    "title": "Évaluation des limites des VLM en exploration 3D",
+    "text": "Le benchmark SpatialScout révèle que les agents VLM peinent à construire des cartes métriques précises en 3D, avec un score de chevauchement moyen de 41.7% pour le meilleur modèle. Ces résultats mettent en évidence des lacunes dans la modélisation spatiale et la planification sous contraintes budgétaires, soulignant la nécessité de nouvelles architectures ou de mécanismes de mémoire adaptés pour les tâches d'exploration active."
+   },
+   {
+    "title": "Qwen-Audio-3.1-ASR : transcription multilingue et diarisation avancée",
+    "text": "La nouvelle version de Qwen-Audio étend ses capacités à 30 langues et 16 dialectes chinois, intégrant la diarisation et la reconnaissance d'événements sonores. Le modèle supporte également la personnalisation hiérarchique des mots-clés, ce qui le rend adapté aux déploiements temps réel et asynchrones. Ces améliorations répondent à des besoins concrets en traitement audio, notamment pour les applications médicales ou industrielles."
+   }
+  ],
+  "trend": "Les recherches actuelles convergent vers une optimisation systémique des architectures, où l'évaluation des interactions entre composants (RAG, quantification, mémoire) devient aussi critique que l'amélioration individuelle de chaque module. Parallèlement, les frameworks pour agents polyvalents ou robotiques se standardisent, avec un accent croissant sur la reproductibilité et la vérification des tâches."
+ },
+ "items": [
+  {
+   "id": "5bc547459da2cdad",
+   "title": "Retrieval Augmented Generation Compositionality",
+   "url": "https://huggingface.co/papers/2610.29722",
+   "summary": "Retrieval Augmented Generation (RAG) grounds large language models in external knowledge. Modern pipelines combine embedding, chunking, retrieval, reranking, query augmentation, context compression, and agentic verification, yet these techniques are typically evaluated one at a time. It remains unclear whether their isolated gains survive composition, whether retrieval quality and answer faithfulness favor the same design choices, and whether conclusions from small corpora hold at large scale. We pre-declare three hypotheses and introduce LASAGNA, an open-source framework for controlled RAG evaluation. We test 450 configurations across eight benchmarks and corpora ranging from 5K to 200K documents. Three findings emerge. First, individually strong techniques from different phases of a RAG pipeline do not necessarily compose: three retrieval techniques predict a +47% combined improvement but deliver only +17% when used together. Second, component gains stack differently for retrieval and faithfulness, and optimizing one can hurt the other. Third, the best composition changes as the corpus grows: the combination that wins on a small corpus may not remain best at large scale. These findings show that gains measured in isolation are not reliable predictors of realistic performance, and that new RAG techniques should be tested with the full surrounding stack. We call on researchers to do so and supply LASAGNA to simplify these experiments.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2610.29722"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "rag"
+   ],
+   "tldr": "Étude systématique de la compositionnalité des techniques RAG (retrieval, reranking, compression, vérification) via le framework LASAGNA, révélant que les gains isolés ne s'additionnent pas nécessairement et que l'optimisation d'un composant peut dégrader la fidélité des réponses, avec des conclusions dépendantes de l'échelle du corpus.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne l'évaluation fragmentée des techniques de Retrieval Augmented Generation (RAG). Actuellement, les composants des pipelines RAG (comme l'embedding, le chunking, ou le reranking) sont testés isolément, sans garantie que leurs performances individuelles se cumulent une fois combinés. De plus, on ignore si les choix optimaux pour la qualité de la récupération (retrieval) sont compatibles avec ceux favorisant la fidélité des réponses générées, ou si les conclusions tirées de petits corpus restent valables à grande échelle.",
+    "methode": "Les auteurs proposent LASAGNA, un framework open-source conçu pour évaluer de manière contrôlée et systématique les pipelines RAG. Ils formulent trois hypothèses pré-déclarées et testent 450 configurations différentes, couvrant huit benchmarks et des corpus variant de 5 000 à 200 000 documents. Les configurations incluent des combinaisons de techniques d'embedding, de chunking, de récupération, de reranking, d'augmentation de requêtes, de compression de contexte et de vérification agentique. L'objectif est d'analyser l'impact de ces combinaisons sur la qualité globale du RAG, en mesurant à la fois la performance de récupération et la fidélité des réponses générées.",
+    "resultats": "Trois conclusions majeures émergent des expérimentations. Premièrement, les techniques performantes individuellement ne se composent pas nécessairement bien : trois méthodes de récupération promettant une amélioration combinée de +47 % n'apportent en réalité qu'une amélioration de +17 % lorsqu'elles sont utilisées ensemble. Deuxièmement, les gains des composants n'impactent pas de la même manière la qualité de récupération et la fidélité des réponses, et optimiser l'un peut nuire à l'autre. Troisièmement, la combinaison optimale varie avec la taille du corpus : une configuration performante sur un petit corpus peut ne plus l'être à grande échelle.",
+    "limites": "Les résultats reposent sur des benchmarks et des corpus spécifiques, ce qui peut limiter leur généralisation à d'autres contextes ou types de données. De plus, l'étude ne couvre pas exhaustivement toutes les combinaisons possibles de techniques RAG, laissant des zones d'ombre sur d'autres interactions potentielles. Enfin, l'impact des coûts computationnels et des latences induites par ces combinaisons n'est pas abordé.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche rigoureuse et ses conclusions contre-intuitives, remettant en question les pratiques actuelles d'évaluation des pipelines RAG."
+   }
+  },
+  {
+   "id": "d7316c3d518be35d",
+   "title": "PACE: Periodic and Channel-Aligned Encoding of Four-Bit Recurrent States",
+   "url": "https://huggingface.co/papers/2610.29545",
+   "summary": "Linear-attention language models keep their context in a recurrent state of fixed size, where an inference system stores one copy of this state for every sequence it decodes at the same time. Storing the state at lower precision therefore lets more sequences share an accelerator. Existing state quantizers round the state after every generated token and report that four bits lose accuracy unless the bit width is raised or the model is fine-tuned.\\par We introduce PACE, a post-hoc four-bit state quantizer. PACE rounds the state only once every few generated tokens, as chunked kernels already do once per chunk during prefill, and keeps the tokens generated in between in a small buffer. Rounding less often reduces the error that accumulates in the state. Additionally, we find that the large entries of the gated-delta state gather in columns, because some channels of the update written at each token remain large across many tokens. PACE therefore shares each quantization scale within one column. It also keeps the heads that retain rounding error longest at eight bits. On four hybrid models from 4B to 35B parameters, PACE with mixed four- and eight-bit heads is competitive with eight-bit DAMP on the three larger models at about two thirds of its memory, PACE with four-bit heads throughout scores higher than Q-Mamba at equal memory, and rounding every few tokens preserves the decoding speedup of the buffer.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.29545"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "PACE, un quantificateur post-hoc 4-bit pour les états récurrents des modèles à attention linéaire, réduisant l'erreur d'accumulation via un arrondi périodique et une quantification alignée par canal, compétitif avec une quantification 8-bit.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage basés sur l'attention linéaire (comme les architectures récurrentes modernes) stockent leur contexte sous forme d'un état récurrent de taille fixe, ce qui consomme une mémoire importante lors du décodage parallèle de plusieurs séquences. Réduire la précision de cet état (quantification) permet d'économiser de la mémoire, mais les solutions existantes à 4 bits entraînent une perte de précision, sauf si la largeur de bit est augmentée ou si le modèle est réajusté (fine-tuning).",
+    "methode": "PACE (Periodic and Channel-Aligned Encoding) est un quantificateur d'état post-hoc à 4 bits qui réduit la fréquence des arrondis : au lieu d'arrondir l'état après chaque token généré, il le fait périodiquement (tous les quelques tokens), comme le font déjà les noyaux chunkés lors de la phase de préremplissage. Les tokens générés entre deux arrondis sont conservés dans un petit buffer. De plus, PACE exploite une observation clé : les grandes valeurs de l'état *gated-delta* se concentrent dans des colonnes spécifiques, car certains canaux de mise à jour restent actifs sur plusieurs tokens. Il applique donc une échelle de quantification partagée par colonne. Enfin, il maintient en 8 bits les têtes (heads) qui accumulent le plus d'erreurs d'arrondi, tout en optimisant la vitesse de décodage grâce au buffer.",
+    "resultats": "Sur quatre modèles hybrides allant de 4B à 35B paramètres, PACE avec des têtes mixtes (4 et 8 bits) obtient des performances comparables à DAMP (8 bits) sur les trois plus grands modèles, tout en utilisant seulement deux tiers de sa mémoire. Avec des têtes entièrement en 4 bits, PACE surpasse Q-Mamba à mémoire égale. La quantification périodique préserve également l'accélération du décodage apportée par le buffer.",
+    "limites": "Le document ne précise pas clairement l'impact de la taille du buffer sur la latence ou la mémoire supplémentaire requise. De plus, l'efficacité de PACE dépend fortement de la structure des données (concentration des valeurs dans des colonnes), ce qui pourrait varier selon les architectures ou les tâches. Enfin, l'absence de fine-tuning post-quantification pourrait limiter son adoption pour des cas d'usage critiques.",
+    "verdict": "PACE mérite une attention particulière pour son approche innovante de quantification périodique et alignée sur les canaux, offrant un compromis mémoire/précision prometteur sans nécessiter de réentraînement."
+   }
+  },
+  {
+   "id": "098ea7e11367a537",
+   "title": "Agent World Model in the Wild: Computer-Use Agent Environment Synthesis",
+   "url": "https://huggingface.co/papers/2610.26828",
+   "summary": "Agent learning is shifting from learning from human data toward learning through interaction with the world. However, scaling such learning directly in real-world computer systems is challenging and can introduce substantial security risks. We therefore propose Agent World Model in the Wild (WildAWM), a scalable pipeline for synthesizing controllable environments and tasks for training general computer-use agents (CUAs). Whereas existing approaches typically specialize in a single agent interaction interface, we construct executable environments that jointly support graphical user interfaces, model context protocol services, and command-line interfaces, allowing agents to flexibly combine visual interaction, tool use, and code execution. WildAWM is entirely powered by open-source models, demonstrating that high-quality computer-use environments can be generated without proprietary frontier models. Beyond environments, we address three recurring challenges in task synthesis: ensuring solvability, maintaining sufficient difficulty, and producing reliable verifiers, by introducing execution-based quality gates that combine heterogeneous agent rollouts, cross-judge consistency checks, and counterfactual probes of judgment robustness. The resulting pipeline synthesizes 341 long-horizon environment-task pairs that can require over 100 agent steps to solve and remain challenging even for frontier models, with GPT-6-Astra solving only 60% of them. We train two Qwen models of different sizes exclusively in these synthetic worlds. Both models achieve substantial gains across 8 out-of-distribution benchmarks spanning web, claw, and computer-use agents, demonstrating that learning in WildAWM's synthesized worlds generalizes broadly to unseen computer-use tasks. The code is publicly available at https://github.com/MSR-Orchard/WildAWM.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 60,
+    "arxiv_id": "2610.26828"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Proposition d'un pipeline open-source (WildAWM) pour générer des environnements d'interaction contrôlables et multi-interfaces (GUI, CLI, outils) afin d'entraîner des agents polyvalents d'utilisation d'ordinateur, avec des mécanismes de vérification d'exécution pour garantir solvabilité et difficulté des tâches.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de l'apprentissage des agents d'IA par interaction directe avec des systèmes informatiques réels, une approche difficile à mettre à l'échelle et potentiellement risquée en termes de sécurité. Il propose une alternative pour entraîner des agents capables d'utiliser des ordinateurs (CUAs) sans dépendre de données humaines ou d'environnements réels non contrôlés.",
+    "methode": {
+     "approche_generale": "WildAWM est une pipeline scalable pour synthétiser des environnements et tâches contrôlables destinés à l'entraînement d'agents d'utilisation d'ordinateurs. Contrairement aux méthodes existantes qui se limitent souvent à une seule interface d'interaction (GUI, CLI, etc.), WildAWM génère des environnements exécutables supportant simultanément les interfaces graphiques, les protocoles de contexte de modèle (MCP) et les interfaces en ligne de commande. Cela permet aux agents de combiner interaction visuelle, utilisation d'outils et exécution de code.",
+     "details_techniques": {
+      "modeles_utilises": "La solution repose entièrement sur des modèles open-source, évitant ainsi l'utilisation de modèles propriétaires de pointe.",
+      "synthese_de_taches": "Pour résoudre les défis récurrents de la synthèse de tâches (solvabilité, difficulté adaptée, vérificateurs fiables), WildAWM intègre des *quality gates* basés sur l'exécution. Ceux-ci combinent des déroulements d'agents hétérogènes, des vérifications de cohérence inter-juges et des sondes contrefactuelles pour évaluer la robustesse des jugements.",
+      "environnements_long_horizon": "La pipeline génère 341 paires environnement-tâche nécessitant plus de 100 étapes pour être résolues, testant ainsi la capacité des agents à gérer des séquences d'actions complexes."
+     }
+    },
+    "resultats": {
+     "performance_agents": "Les environnements synthétisés par WildAWM restent difficiles même pour des modèles de pointe, comme GPT-6-Astra, qui ne résout que 60 % des tâches proposées.",
+     "generalisation": "Deux modèles Qwen de tailles différentes, entraînés exclusivement dans ces environnements synthétiques, montrent des gains substantiels sur 8 benchmarks hors distribution couvrant des agents web, *claw* (manipulation d'interfaces) et d'utilisation d'ordinateurs. Cela démontre une généralisation efficace à des tâches non vues auparavant.",
+     "disponibilite": "Le code de WildAWM est open-source et accessible publiquement sur GitHub."
+    },
+    "limites": {
+     "dependance_aux_modeles_open_source": "Bien que l'approche évite les modèles propriétaires, la qualité des environnements et tâches générés dépend fortement des capacités des modèles open-source utilisés, qui peuvent être moins performants que les alternatives fermées.",
+     "evaluation_partielle": "Les résultats se concentrent sur des benchmarks spécifiques et des modèles particuliers (Qwen, GPT-6-Astra). La robustesse de la méthode face à d'autres architectures ou cas d'usage reste à explorer.",
+     "risque_de_biais": "Les *quality gates* et les vérificateurs pourraient introduire des biais dans la sélection des tâches, limitant la diversité des scénarios d'apprentissage."
+    },
+    "verdict": "WildAWM représente une avancée significative pour l'entraînement d'agents d'utilisation d'ordinateurs en environnement synthétique, avec des résultats prometteurs en généralisation, mais son adoption à grande échelle nécessitera une validation plus large et une amélioration continue des modèles open-source sous-jacents."
+   }
+  },
+  {
+   "id": "f9000d20a35e613e",
+   "title": "Agentic World Action Models",
+   "url": "https://huggingface.co/papers/2610.30136",
+   "summary": "Recent world action models provide visual foresight and future prediction for robot manipulation, but lack explicit mechanisms for compositional skill reuse. Agentic robotics combines code-based planning and reasoning with reusable skills, but often lacks predictive grounding in physical dynamics. We introduce AW-0, an agentic world action model framework that integrates code-based planning with joint video and action prediction. We jointly model code, future video, and robot actions as three coupled generative streams within a unified mixture-of-transformers architecture. Within this architecture a code expert generates parameterized skill routines and control logic while video and action experts generate future visual states and low-level motor commands. Code serves two complementary roles: it structures multi-step prediction and control within the world model and represents skills as reusable programs for subsequent agentic execution. We further introduce an automated curation pipeline that labels robot and human video trajectories with aligned programs and consolidates recurring routines into reusable skill libraries. Evaluations on RoboTwin 2.0 and physical bimanual manipulation tasks show improved task performance over VLA and WAM baselines, alongside gains in language following, semantic reasoning and robustness, demonstrating that agentic code enables connection between planning, prediction and execution within WAMs.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.30136"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "Framework AW-0 intégrant planification par code, prédiction vidéo et actions robotiques dans un modèle unifié (Mixture-of-Transformers) pour des compétences réutilisables en robotique, avec un pipeline de curation automatique pour extraire des routines à partir de trajectoires vidéo.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles d'action mondiaux récents en robotique offrent une capacité de prédiction visuelle et de prévision pour la manipulation d'objets, mais manquent de mécanismes explicites pour la réutilisation compositionnelle de compétences. Parallèlement, les approches agentiques en robotique combinent planification et raisonnement basés sur du code avec des compétences réutilisables, mais souffrent souvent d'un ancrage prédictif insuffisant dans les dynamiques physiques réelles.",
+    "methode": "Le cadre AW-0 (Agentic World Action Models) intègre la planification basée sur du code avec une prédiction conjointe de vidéos et d'actions. Il modélise simultanément le code, les futures séquences vidéo et les actions robotiques comme trois flux génératifs couplés au sein d'une architecture unifiée de type *mixture-of-transformers*. Un expert en code génère des routines de compétences paramétrées et une logique de contrôle, tandis que des experts dédiés aux vidéos et aux actions prédisent respectivement les états visuels futurs et les commandes motrices de bas niveau. Le code joue un double rôle : structurer la prédiction et le contrôle multi-étapes dans le modèle mondial, et représenter les compétences sous forme de programmes réutilisables pour une exécution agentique ultérieure. Un pipeline automatisé de curation étiquette des trajectoires vidéo de robots et d'humains avec des programmes alignés, consolidant les routines récurrentes en bibliothèques de compétences réutilisables.",
+    "resultats": "Les évaluations sur RoboTwin 2.0 et des tâches de manipulation bimanuelle physique montrent une amélioration des performances par rapport aux baselines VLA (Vision-Language-Action) et WAM (World Action Models). Les gains incluent une meilleure adhérence aux instructions langagières, un raisonnement sémantique accru et une robustesse améliorée. Les chiffres précis ne sont pas détaillés dans le résumé disponible, mais les résultats suggèrent une avancée significative dans l'intégration de la planification, de la prédiction et de l'exécution.",
+    "limites": "Le résumé ne précise pas les limites techniques ou conceptuelles du cadre AW-0, telles que la scalabilité de l'architecture *mixture-of-transformers* ou la généralisation à des environnements non contrôlés. L'absence de détails sur les coûts computationnels ou les biais potentiels dans la génération de code et de prédictions visuelles mérite également un examen critique. Enfin, la dépendance à un pipeline de curation automatisé pourrait introduire des erreurs systématiques dans l'étiquetage des compétences.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante combinant planification agentique, prédiction multimodale et réutilisation de compétences, mais nécessite une analyse plus approfondie des limites pratiques et théoriques."
+   }
+  },
+  {
+   "id": "b47fa45e8ff13cd4",
+   "title": "AgenticRoboRL: Bringing Coding-Agent Post-Training to Agentic Robotics",
+   "url": "https://huggingface.co/papers/2610.28589",
+   "summary": "Agentic robotics systems combine planners with robot harnesses to perform complex manipulation tasks. Recent work improves these systems through better harnesses and external memory, but relies on powerful closed-source models as planners and does not improve the planners' own capabilities. In contrast, coding agents have improved substantially by post-training the model itself. We therefore investigate whether post-training can also improve robot planners. However, applying it across robot harnesses requires accommodating different execution mechanisms, including VLA skill invocation and control-code generation. To this end, we introduce AgenticRoboRL, a framework for post-training robot planners across different harnesses. The training recipe combines supervised fine-tuning with multi-turn reinforcement learning. To accommodate different execution mechanisms, harness-specific adapters connect recorded planner interactions with task outcomes, enabling a common RL training pipeline while keeping execution components fixed. On LIBERO-PRO, AgenticRoboRL raises the success rate of a 9B-parameter planner from 18.1% to 71.0% without external memory, approaching the 72.1% achieved by Codex (GPT-5.5) with external memory. These results demonstrate post-training as an effective approach for improving robot planners. We will release the framework and trained planner checkpoints.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2610.28589"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "AgenticRoboRL propose un cadre de post-entraînement pour les planificateurs robotiques (LLM) via un mélange de fine-tuning supervisé et de RL multi-tours, améliorant significativement les performances (ex: +52.9% de succès sur LIBERO-PRO) sans dépendre de modèles fermés ou de mémoire externe.",
+   "score": 8.8
+  },
+  {
+   "id": "c931af3845e23367",
+   "title": "Cache Engineering for Agents",
+   "url": "https://huggingface.co/papers/2610.28577",
+   "summary": "Large Language Model (LLM) agents can handle increasingly complex tasks, navigating long trajectories of observations and actions. As these trajectories grow, key-value (KV) cache I/O and storage become the dominant cost. Trajectories can also exceed the LLM's maximum context length, requiring control over active cache growth. Prior work uses context engineering to reduce cache size by trimming or summarizing history. However, modifying the trajectory prefix invalidates subsequent cached states and triggers costly re-prefilling of retained context. Task accuracy can also suffer when too little context is retained to limit re-prefill costs. We propose cache engineering as a new scheme. It allows agents to directly control their active KV cache without modifying the trajectory or re-prefilling retained context. Specifically, agents can proactively use drop to exclude selected cache from future attention and repos to adjust retained keys' position encodings. We formalize these cache operations and identify history dependence as a serving challenge: identical token sequences can yield different cache states under different cache operation sequences, making prefix matching insufficient for correct cache reuse. Thus, we co-design the AKV serving engine. It provides a stateless interface compatible with existing serving APIs, while internally managing stateful cache reuse, eviction, and restoration. Experiments show that a tool-response rolling-drop cache policy improves average benchmark scores by 1.7 points and reduces average cost by 27.7%, compared with conventional threshold-triggered summarization. With AKV, it achieves up to 1.2x the output throughput and a 1.5x speedup in P95 request latency. Recursive self-improvement of cache policies further reduces cost by 7.1% over expert design. Our code is at https://github.com/thu-nics/AKV.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 76,
+    "arxiv_id": "2610.28577"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Cache Engineering propose des opérations directes sur le cache KV des agents LLM (drop/repos) pour contrôler la croissance du cache sans modifier la trajectoire ni déclencher de re-prefilling, réduisant les coûts I/O et améliorant l'efficacité.",
+   "score": 8.8
+  },
+  {
+   "id": "b13df1ce33e7cbe5",
+   "title": "SpatialScout: Can VLM Agents Actively Explore and Map 3D Scenes?",
+   "url": "https://huggingface.co/papers/2610.26659",
+   "summary": "Spatial intelligence requires agents to actively acquire visual evidence and integrate observations into a coherent representation of the three-dimensional world. Yet spatial question answering offers limited evidence of whether models can construct accurate metric maps through autonomous exploration. We introduce SpatialScout, a benchmark for evaluating vision-language model (VLM) agents on active object-level 3D mapping. SpatialScout comprises 80 diverse indoor scenes containing 3,140 target objects. Given an object inventory, RGB observations, camera calibration, and camera poses, agents control a camera to explore each scene and estimate object centers in a shared coordinate frame. The task requires coordinating viewpoint selection, cross-view association, geometric estimation, and map revision under bounded interaction budgets. Evaluation jointly measures localization accuracy and target coverage through object-scale overlap scores that penalize missing predictions. Experiments with frontier VLMs reveal substantial limitations: the strongest evaluated model, Claude Opus 5.5, achieves a mean overlap score of 41.71%, with 47.23% of targets exceeding an intersection-over-union (IoU) threshold of 0.5 and only 3.25% exceeding 0.9. These results reveal a substantial gap between recovering coarse object layouts and constructing complete, precise metric maps. SpatialScout provides a quantitative testbed for developing agents that build reliable 3D spatial representations through active perception. Code is available at https://github.com/JesseZZZZZ/SpatialScout.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 93,
+    "arxiv_id": "2610.26659"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "agents"
+   ],
+   "tldr": "Benchmark SpatialScout évaluant les capacités d'exploration 3D des agents VLM, révélant des limites majeures (score de chevauchement moyen de 41.7% pour le meilleur modèle) dans la construction de cartes métriques sous contraintes budgétaires.",
+   "score": 8.2
+  },
+  {
+   "id": "8e3c35566577ef78",
+   "title": "Qwen-Audio-3.1-ASR Technical Report",
+   "url": "https://huggingface.co/papers/2610.28711",
+   "summary": "We present Qwen-Audio-3.1-ASR, a family of audio-language models that builds upon its predecesor Qwen-Audio-3.0-ASR with improved speech recognition and expanded capabilities in speaker-diarized transcription and general audio understanding. The family retains support for 30 languages and 16 Chinese dialects, together with instruction-controlled capabilities including historical-context conditioning, hierarchical hotword customization, and native transcription polishing. Speaker-diarized ASR produces structured outputs containing speaker labels, timestamps, and recognized text, maintaining consistent speaker labels across turns and the representation of overlapping speech. The general audio understanding capabilities cover audio-, speech-, and music-captioning, temporal grounding and sound event detection, as well as audio question answering and multiple-choice reasoning. These tasks broaden the application scope from recognizing spoken words to interpreting speakers, acoustic events, and their temporal relations. To accommodate different deployment requirements, the family includes variants for asynchronous file transcription, low-latency streaming, interactive voice input, and non-streaming recognition, with speaker-diarized transcription and general audio understanding available in certain variants. Evaluations span conventional ASR, multilingual and dialectal speech, speaker-diarized transcription, and general audio understanding, demonstrating the capabilities of the Qwen-Audio-3.1-ASR family across transcription and broader audio analysis tasks.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.28711"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "outils"
+   ],
+   "tldr": "Nouvelle version de Qwen-Audio-3.1-ASR étendant les capacités de transcription multi-langues (30 langues + 16 dialectes chinois) avec diarisation, reconnaissance d'événements sonores et personnalisation hiérarchique des mots-clés, adaptée aux déploiements temps réel et asynchrones.",
+   "score": 8.2
+  },
+  {
+   "id": "f45077ed81c7a2ff",
+   "title": "Socratic Skill Learning: Interleaving Teaching and Practice for Transferable Agent Skills",
+   "url": "https://huggingface.co/papers/2610.17860",
+   "summary": "Agent Skills improve LLM agents by making task knowledge reusable across sessions. Learning transferable Skills requires evidence about a procedure and its conditions of use, which a successful task attempt can leave untested. We introduce Socratic Skill Learning (SSL), which interleaves expert teaching with Student practice. An Educator guides investigation while the Student remains the sole environment operator and Skill author, able to question, test, and adapt advice. To test reuse beyond the learning task, we construct SkillTransferBench, with 35 task families and 408 executable cases, pairing public variation specifications with held-out evaluation in fresh solver sessions. On the main 22-family, 155-case cohort, Fixed-Window SSL reaches 0.801 utility, versus 0.723 without a Skill, 0.761 for adapted Trace2Skill (trajectory distillation), and 0.751 for adapted SKILL-KD (contrastive distillation). Across three model pairs on shared families, interleaved guidance outperforms expert authoring and post-hoc teaching. Process analysis links guidance to Student writing and package revision; a case study shows the Student testing and refining a proposed procedure for later reuse. As demand for new lessons falls, the cost of fixed-window review grows. Issue-Guided SSL tracks unresolved questions across Skill revisions to select and focus review, reaching 0.805 utility with 61.7% fewer Educator tokens and 16.9% fewer total acquisition tokens than Fixed-Window SSL on the main cohort.",
+   "published": "2026-10-12T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2610.17860"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Méthode Socratic Skill Learning (SSL) pour l'apprentissage de compétences transférables chez les agents, combinant enseignement interactif et pratique autonome, surpassant les approches existantes (0.801 vs 0.723-0.761 en utilité) sur SkillTransferBench (22 familles de tâches, 155 cas).",
+   "score": 8.2
+  },
+  {
+   "id": "a640884e19746881",
+   "title": "ALPS: Visual State Encoders for World Models",
+   "url": "https://huggingface.co/papers/2610.30120",
+   "summary": "World models turn visual representations into predictions and actions. We argue that their visual foundation should combine physical-state information, native language alignment, and pixel reconstruction, so that a single representation can support prediction, instruction, and inspection. However, existing encoders typically specialize in only one or two of these capabilities; we therefore introduce ALPS, a pretrained visual state encoder that unifies all three in a single set of patch tokens. Using only still images and text, we pretrain a ViT-B/16 from scratch with language, reconstruction, and spatial correspondence objectives, and then refine it via cross-view self-distillation. In a unified evaluation across fifteen public encoders, ALPS achieves the lowest aggregate LIBERO state-probe error among ViT-B models (matching the 3.5x larger V-JEPA 2-L) while maintaining strong language alignment and accurate pixel reconstruction. Downstream, frozen ALPS tokens reach the highest mean policy success on LIBERO (85.5%) when paired with our native text tower, match or exceed leading encoders on world-model planning across PushT, Wall, and Granular, and allow predicted future tokens to be decoded directly into pixels for visual inspection. We hope this work helps establish visual pretraining as a shared foundation for understanding, prediction, and action in world models.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2610.30120"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "ALPS unifie la reconstruction pixelique, l'alignement linguistique et l'encodage d'état physique dans un seul encodeur visuel (ViT-B/16), atteignant des performances compétitives sur LIBERO et des tâches de modélisation du monde, avec une évaluation unifiée de 15 encodeurs.",
+   "score": 8.2
+  },
+  {
+   "id": "4c5892041ccfe586",
+   "title": "Memory-Centric Continual Learning for AI Agents",
+   "url": "https://huggingface.co/papers/2610.29357",
+   "summary": "Autonomous agents powered by foundation models can reason, plan, and use tools, but their fixed weights and context limits hinder sustained learning from experience over long-term deployment. While external memory systems attempt to bridge this gap, they mostly act as passive retrieval caches, evaluated primarily by whether they can recall stored facts or past interactions. Whether memory can drive genuine continual learning remains an open question. In this paper, we introduce Memory-Centric Continual Learning (MCCL), arguing that memory should be judged by whether it improves future actions, not merely what it retrieves. MCCL has three main parts. First, a three-axis taxonomy organizes memory by where state is stored (substrates), what form it takes (assets), and how it is managed (policies). This defines a two-loop lifecycle that updates memory state in an inner loop while refining management policies in an outer loop based on task feedback. Second, an evaluation protocol measures retention under interference, adaptation to change, and task transfer to isolate genuine behavioral gains from simple context expansion. Third, a memory scaling framework models how agent performance scales with experience, storage capacity, and compute budgets across non-parametric and parametric memory. Together, these components reframe agent memory from passive lookup to continuous learning, offering a principled route toward self-improving autonomous agents.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 17,
+    "arxiv_id": "2610.29357"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "MCCL introduit un cadre théorique et pratique pour l'apprentissage continu centré sur la mémoire des agents IA, évaluant son impact sur les actions futures plutôt que sur la simple récupération, avec une taxonomie 3 axes et un protocole d'évaluation rigoureux.",
+   "score": 7.9
+  },
+  {
+   "id": "3590389264f1fb8c",
+   "title": "From VLM Planners to Robotic Agents: Self-Evolving Harnesses for History-Dependent Manipulation",
+   "url": "https://huggingface.co/papers/2610.29560",
+   "summary": "Vision-language-action (VLA) models achieve strong performance across embodied manipulation tasks by unifying visual understanding, language conditioning, and action generation. However, long-horizon tasks can involve non-Markovian dependencies: successful decisions may require retaining task progress and past interaction outcomes, while partial observability and execution errors compound over time. Existing work has begun to address these challenges by augmenting foundation-model policies with memory and by introducing hierarchical architectures that separate high-level planning from low-level execution. We organize the high-level VLM as a robotic agent through an editable harness to maintain task context and improve planning through execution experience. We instantiate this approach as SERA (Self-Evolving Robotic Agent), with a fixed VLA executor providing low-level control. The harness maintains and updates task context using observations and execution feedback to guide subsequent planning. Self-evolution uses environment rollouts to propose and evaluate harness revisions, with the selected configuration fixed before held-out testing. On RoboMME, SERA achieves 51.38% overall success with autonomous selection, compared with 44.38% without self-evolution. Our exploration suggests that agentic planning is a promising direction for history-dependent robotic manipulation.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.29560"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "SERA, un agent robotique auto-évolutif utilisant un harnais modifiable pour gérer les dépendances non-Markoviennes, améliorant les performances en manipulation à long terme (51.38% de succès sur RoboMME) via un apprentissage par expérience.",
+   "score": 7.6
+  },
+  {
+   "id": "6778064cfa907b07",
+   "title": "Right Screen, Wrong Transition: World Models as Verifiers for GUI Agents",
+   "url": "https://huggingface.co/papers/2610.11942",
+   "summary": "A login screen that appears after a tap on Sign in is expected; the same screen after a tap on View order is an attack. For GUI agents, safety is therefore a property of the transition rather than of the screen, and a monitor that inspects only screens can be defeated by reusing a legitimate one. Judging a transition requires an expectation of what should have followed the action. Existing GUI world models provide one, but they output it as text, code, or images, so checking it against the observed screen requires a second model to judge the two. We argue that a world model meant for verification should instead predict in the space in which observations are encoded, and present LGWM, a decoder-free, action-conditioned world model that predicts the representation of the next screen directly, trained without semantic annotation on 1.85M real GUI transitions. Verification reduces to a vector comparison, and the same signal reveals whether a mismatch is harmful. We evaluate on RSWT-BENCH, a diagnostic where each credential screen appears under both a legitimate and a hijacked transition, so detectors that see only the screen are at chance by construction. The training-free score reaches 0.987 AUC at 17 ms per decision, on par with the strongest closed-source VLMs and about ten AUC points above generative GUI world models at over three orders of magnitude lower latency. The residual direction reaches 0.953 AUC at separating harmful from benign violations, where prompted VLMs are near chance. Further analyses show that the prediction is a usable future state rather than an anomaly score. World models have mostly served as simulators or planners; our results point to a third role, verification, for which predicting in representation space is the natural design.",
+   "published": "2026-10-07T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2610.11942"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "LGWM, un modèle de monde GUI prédisant directement la représentation de l'écran suivant, permettant une vérification par comparaison vectorielle pour détecter les transitions malveillantes, avec une évaluation sur RSWT-BENCH.",
+   "score": 7.6
+  },
+  {
+   "id": "3fea02db7c6e396c",
+   "title": "Spectral-Spatial Interpretation",
+   "url": "https://huggingface.co/papers/2610.21114",
+   "summary": "Post-hoc image explanations usually show where a model looks using spatial heatmaps or indicate which channels matter using global channel scores. These separate views are limiting for multispectral data because channel relevance is often spatially localized and physically meaningful. We introduce Spectral-Spatial Interpretation (SSI), a full-grid attribution method over position-channel players (g,c). For each spatial position, SSI fixes the observed surrounding context, defines a conditional game over the channels at that position, and applies the Shapley value to this local game. The result is a full spectral-spatial attribution matrix rather than a single heatmap or a global channel ranking. SSI has a clear local interpretation. It satisfies Shapley fairness within each position, and aggregating its channel attributions exactly recovers the position-level contextual contrast obtained by replacing that position with the baseline. SSI also differs from context-averaged Owen-style hierarchical accounting, which uses the same position-channel grouping but averages over external spatial coalitions. On HLS Burn Scar, SSI outperforms an MC-Owen estimator across retained attribution metrics while using only about 6% of its evaluation budget. Across CUB-200, EuroSAT, and HLS Burn Scar under both per-channel mean and zero baselines, SSI achieves the best joint deletion and insertion AUC over dense, flat, and rank-1 baselines, yields the strongest spectral hit rates and channel deletion, and leads spatial localization on both annotated datasets. Code is available at https://github.com/AtheavenMa/Spectral-Spatial-Interpretation.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 52,
+    "arxiv_id": "2610.21114"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "vision"
+   ],
+   "tldr": "Méthode SSI (Spectral-Spatial Interpretation) pour l'interprétabilité des modèles multispectraux, fournissant une matrice d'attribution complète (position + canal) basée sur les valeurs de Shapley, surpassant les approches existantes en précision et cohérence physique.",
+   "score": 7.6
+  },
+  {
+   "id": "0f7eabbb925dfe6c",
+   "title": "Looking Ahead: Modeling Future Evolution in Autoregressive Video Generation",
+   "url": "https://huggingface.co/papers/2610.29989",
+   "summary": "Autoregressive video diffusion models generate videos chunk by chunk, yet producing plausible continuations does not guarantee that they capture how scenes evolve. Under teacher forcing, strong temporal redundancy may allow local visual continuity to serve as a shortcut for current-chunk denoising, reducing the pressure to model visual evolution. We introduce Future Chunk Prediction (FCP), an auxiliary objective jointly optimized with teacher-forced denoising that predicts temporally separated chunks without access to the intervening visual context. Drawing supervision directly from training videos, FCP requires no additional pretrained visual encoder and leaves autoregressive inference unchanged. Our method achieves superior physical plausibility over standard teacher-forced autoregressive training with a lower overall training compute budget, highlighting the effectiveness and efficiency of future-chunk supervision for modeling visual evolution. Intriguingly, our visualizations suggest that FCP fosters a more structured representation space, which may be valuable for building autoregressive world models.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 79,
+    "arxiv_id": "2610.29989"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "FCP ajoute un objectif auxiliaire de prédiction de chunks futurs pour les modèles vidéo autoregressifs, améliorant la plausibilité physique et l'efficacité d'entraînement sans surcoût d'inférence, tout en structurant l'espace latent.",
+   "score": 7.6
+  },
+  {
+   "id": "a1685d600ecdec4b",
+   "title": "Building AI Research Teams for Autonomous Discovery of Linear Attention Architectures",
+   "url": "https://huggingface.co/papers/2610.28887",
+   "summary": "Autonomous agents can increasingly propose ideas, modify code, and run experiments, creating an opportunity to accelerate scientific discovery using teams of collaborative AI researchers. To escape local minima in the discovery, we propose to encourage orthogonal exploration by constructing the team using agents with varying expertise. However, realizing this design requires more than diverse backgrounds. When experiments are costly, a team can test only a limited number of ideas, thereby creating the need to balance exploration and exploitation when selecting a subset of researchers to propose and execute new experiments. Furthermore, each result should shape what the team tries next. We therefore ask how AI researchers with different scientific backgrounds can build on one another's findings and sustain progress under a limited experimental budget. To address these challenges, we build a team of persistent AI researchers, each grounded in a different discipline, who keep private research histories, share experimental evidence, and receive research opportunities through adaptive allocation. We demonstrate the effectiveness of this design by deploying the team to search for linear attention architectures, where it outperforms GDN2 at 1.3B scale on language modeling, common-sense reasoning, and synthetic and real-world retrieval tasks. In controlled comparisons, removing any single organizational component from our design yields markedly weaker discoveries: without disciplinary backgrounds, the search plateaus early; without private histories, researchers make less progress despite identical shared evidence; and uniform selection falls short of adaptive allocation within the same budget. These results suggest that sustained autonomous discovery depends not only on stronger agents, but also on who explores, what they remember, and how research effort is allocated.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2610.28887"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "autre"
+   ],
+   "tldr": "Approche d'autonomie scientifique via une équipe d'agents IA spécialisés (linéaire attention) collaborant sous contraintes budgétaires expérimentales, avec partage adaptatif des connaissances et exploration orthogonale pour éviter les minima locaux.",
+   "score": 7.3
+  },
+  {
+   "id": "dde0db52320cdf69",
+   "title": "ACE-Brain-0.6: Scaling Spatial Grounding for Physical Foundation Models",
+   "url": "https://huggingface.co/papers/2610.27040",
+   "summary": "General-purpose multimodal models, including GPT-6 Astra and Claude Opus 5.5, demonstrate broad capabilities in embodied manipulation. Our analysis indicates that this generality is accompanied by strong spatial perception, as Astra can determine where to interact with task-relevant entities amid visual distractors. Because spatial perception connects high-level reasoning to the physical scene, we investigate scaling visual grounding to strengthen the perceptual foundation of general embodied operation. We develop a unified data pipeline that combines robot manipulation recordings with complementary visual data from diverse sources. After automatically annotating the robot recordings, the pipeline converts the collected data into verifiable grounding supervision. Fine-tuning Qwen3.5-9B on approximately 1.5 million samples produced by this pipeline yields ACE-Brain-0.6. The model outperforms GPT-6 Astra on four of seven public grounding benchmarks, with an overall average score of 75.41 compared with Astra's 73.68. Under a fixed Qwen3.5-9B fine-tuning setup, aggregate grounding performance improves steadily as successive data releases expand the training collection to cover a broader range of grounding scenarios. These results show that scaling verifiable grounding supervision from diverse sources can strengthen the spatial perception of an open 9B model for general embodied operation.",
+   "published": "2026-10-18T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.27040"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "ACE-Brain-0.6 améliore le grounding spatial pour les modèles de fondation physiques en fine-tunant Qwen3.5-9B sur 1.5M d'échantillons, surpassant GPT-6 Astra sur 4/7 benchmarks de grounding avec une approche unifiée combinant données robotiques et visuelles.",
+   "score": 7.3
+  },
+  {
+   "id": "2de1f3f85cd444cf",
+   "title": "Empowering frontline maternal care with AI-assisted ultrasound",
+   "url": "https://research.google/blog/empowering-frontline-maternal-care-with-ai-assisted-ultrasound/",
+   "summary": "Health & Bioscience",
+   "published": "2026-10-21T16:23:53+00:00",
+   "source": "google-research",
+   "source_label": "Google Research",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 6,
+   "reliability": 9,
+   "tags": [
+    "vision",
+    "produit"
+   ],
+   "tldr": "Google Research propose un outil d'IA pour assister les échographies en soins maternels, combinant vision par ordinateur et application médicale concrète avec un impact potentiel fort.",
+   "score": 7.3
+  },
+  {
+   "id": "44512f6af4ef55d2",
+   "title": "StreamEval: Evaluating Interactive Streaming Video Generation Models",
+   "url": "https://huggingface.co/papers/2610.28402",
+   "summary": "As streaming video generation advances, enabling real-time interaction with generated video is becoming increasingly important. We introduce StreamEval, a unified benchmark for interactive streaming video generation spanning five tasks: avatar dialogue, avatar performance, world generation, instruction editing, and reference editing. StreamEval comprises 300 scripted test cases lasting 15-300s, each specifying initial assets, incrementally arriving multimodal requests, and explicit requirements for state changes and content preservation. Performance is assessed along four evaluation dimensions: task execution, state consistency, visual fidelity, and audiovisual coordination, instantiated through ten task-specific metrics on a 0-100 scale. Evaluating 37 distinct models across 300 test cases, we find that high visual quality and identity retention do not necessarily coincide with reliable request execution or sustained state consistency. In particular, request execution remains challenging: the highest task-specific scores are 36.90 for Following among seven avatar-performance models, 25.93 for Following in text-conditioned world generation, and 15.00 for Edit Success among three reported reference-editing models. These findings identify reliable request execution under timing and preservation constraints as a central challenge for advancing omni-modal real-time interactive systems. The leaderboard is available at https://streameval.ai",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 105,
+    "arxiv_id": "2610.28402"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "benchmark",
+    "vision"
+   ],
+   "tldr": "Benchmark StreamEval pour l'évaluation unifiée de modèles de génération vidéo interactive en streaming (5 tâches, 300 cas tests), mettant en lumière des écarts entre qualité visuelle, cohérence d'état et exécution fiable des requêtes, avec des scores maximaux ≤36.9/100.",
+   "score": 7.0
+  },
+  {
+   "id": "26f0f0ed39ed7512",
+   "title": "Sparsity Should Be ALLOTted by Output: Training-Free Allocation of Block-Sparse Attention for Video Diffusion Transformers",
+   "url": "https://huggingface.co/papers/2610.29441",
+   "summary": "Full 3D attention is costly in video Diffusion Transformers. Block-sparse attention reduces this cost by computing only selected attention blocks. However, existing methods either overlook the potential to optimize sparsity allocation or rely on heuristic rules or local metrics to guide it. In this work, we observe that sparsifying attention in different layers and at different denoising steps affects final-video fidelity to substantially different degrees. Yet the identities of the most sensitive layer-step pairs remain nearly unchanged across inputs. Building on these findings, we propose Allocating Layer-step Latency by Output Tests (ALLOT), a training-free sparsity allocation method. Treating each layer-step pair as a cell, ALLOT estimates each cell's contribution to final-video error through (i) cell probing and (ii) trajectory calibration, then jointly optimizes cell densities under a measured-latency budget. It preserves existing selection strategies and kernels, replacing only the allocation component. At equal or shorter wall-clock time, ALLOT outperforms every compared allocation strategy with XAttention, with an 11.8 dB PSNR gain on HunyuanVideo. Extensive experiments across four additional published pipelines on Wan2.1, Wan2.2, and HunyuanVideo show that ALLOT outperforms or ties the default in all nine settings.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2610.29441"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "ALLOT optimise dynamiquement l'allocation de sparsité dans les couches d'attention des Video Diffusion Transformers via des tests de contribution (cell probing/trajectory calibration), réduisant le coût de calcul tout en améliorant la qualité vidéo (ex: +11.8 dB PSNR sur HunyuanVideo).",
+   "score": 7.0
+  },
+  {
+   "id": "0eb922c15e371356",
+   "title": "From RL Papers to Framework Code: Inclusion and Review in Seven Open-Source Training Frameworks",
+   "url": "https://huggingface.co/papers/2610.28027",
+   "summary": "Practitioners use reinforcement learning methods for language models through training frameworks, so a method that a framework includes is one configuration change away for its users. We measure how often this happens. We trace seven open-source frameworks for RL post-training through their commit histories and link them to 6,939 screened arXiv papers from January 2025 to June 2026. Of 1,598 papers that propose a general RL training method, 37 reached at least one framework. Across five quarterly cohorts of papers, the number included within 180 days stayed between 5 and 7 while the cohorts grew from 72 to 386 papers. Compared with papers from the same quarters, included papers more often trained policies of 30B parameters or more, at 41 against 10 percent, and more often changed a coefficient, clip, mask or weight in the existing loss, at 29 against 9 percent. Both gaps hold without papers from the companies that maintain the frameworks, while code release was equally common in both groups. The frameworks' issues and pull requests show that few methods are turned away in public. More than nine in ten of the general methods no framework included have no thread there that cites or names them, and many proposals that do appear stay open without a reply. Two further records, the frameworks' issues and the technical reports of 13 large open-weight models, show that users rarely report training failures in public and that the reports state 8 of the 13 widely included methods. We release the data as a tracker that links training failures to framework implementations and lists each framework's contribution rules and earlier proposals.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.28027"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "outils",
+    "benchmark"
+   ],
+   "tldr": "Analyse de l'inclusion des méthodes RL dans 7 frameworks open-source, montrant un taux d'adoption faible (37/1598 papers) et une tendance à privilégier les méthodes modifiant des hyperparamètres, avec des biais vers les modèles de grande taille.",
+   "score": 6.7
+  },
+  {
+   "id": "8ebd56a45027325e",
+   "title": "PrismaCoder: Pushing the Boundaries of Open Multimodal Code Intelligence through Decomposed Rubric Synthesis",
+   "url": "https://huggingface.co/papers/2610.20538",
+   "summary": "Multimodal code intelligence connects the symbolic world of programs with the visual world their execution creates. Interest in this capability is burgeoning, as models are increasingly asked to produce charts, webpages, animations, and semi-structured documents. Recently, proprietary models have pushed far ahead, producing interactive artifacts even from a text description or a screenshot alone. Yet their data and training remain closed, and open progress is held back by the quantity and quality of available data and by the pipelines and methods for producing it. Quality is the harder of the two, since a sample must be correct as a program, well built, and above all visually right once rendered. No existing signal covers all three. Execution often returns just a pass or fail, code similarity does not map to the visual output, and task-specific verifiers do not generalize. To push open progress further, we start from the data side with PrismaForge, a hierarchical data pipeline centered on a synthesized rubric that decomposes these factors into checkable criteria. The same rubric serves as both filter and reward: it curates the supervised corpus, then drives reinforcement learning on visual-coding tasks. Leveraging PrismaForge for data synthesis and filtering, we build PrismaCoder-2M, the most diverse open dataset for multimodal code intelligence and the largest to date. On the model side, we train PrismaCoder-9B and PrismaCoder-35B on this data and release both. They lead the open state of the art by a wide margin and rival leading proprietary systems. Our analyses further show that the proposed rubric-based pipeline improves multimodal coding performance across model backbones. We release our code and data at https://qiushisun.github.io/PrismaCoder-Home/.",
+   "published": "2026-10-13T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 48,
+    "arxiv_id": "2610.20538"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "outils"
+   ],
+   "tldr": "PrismaCoder introduit PrismaForge, un pipeline de données hiérarchique pour l'intelligence de code multimodal, combinant une rubrique synthétique pour filtrer et entraîner des modèles, mais avec une complexité méthodologique élevée.",
+   "score": 6.7
+  },
+  {
+   "id": "954ff8844f6eab54",
+   "title": "Evolving with Open Worlds: Towards Recursive Self-Improvement for Future Forecasting",
+   "url": "https://huggingface.co/papers/2610.29784",
+   "summary": "Most contemporary artificial intelligence (AI) systems are released with frozen parameters and improve through external updates, whereas an ideal system would keep improving from its own experience, a capacity we call recursive self-improvement (RSI). Yet studying RSI requires an environment that is continuously changing, objectively verifiable, and naturally grounded, posing a fundamental challenge for agent evolution. Here we introduce DeepEvolve, a sustainable evolution agent system grounded in future event prediction, in which agents continuously interact with a dynamically evolving environment and improve by internalizing and externalizing the experience gained through these interactions. A living environment synthesizes verifiable tasks, and a recursive-evolution engine turns the reasoning trajectory behind each prediction back into capability: decoupling search from prediction adapts parameter-level evolution to the contamination-prone live environment, while distilling reusable skills lets the agent evolve from the limited live trajectories such an environment affords. On the external FutureX leaderboard, which evaluates predictions against real-world outcomes and is updated weekly, our self-improved forecaster ranked first across all systems over three consecutive weeks, achieving up to a 195% improvement in rating. On our synthesized evaluation, it ranked among the top three across four base LLMs, outperforming the strongest baseline by up to 10.7 Bradley--Terry points. More broadly, these results suggest that a system built for self-improvement is best understood as an agent that co-evolves with a genuinely living, open-ended environment, pointing to a shift in AI from training static models on fixed data toward cultivating agents that grow stronger from their own experience, with such an open world as the indispensable basis of that growth.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.29784"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Système DeepEvolve permettant une amélioration récursive d'agents via prédiction d'événements futurs dans un environnement dynamique, combinant distillation de compétences et évolution paramétrique pour une adaptation continue sans mise à jour externe.",
+   "score": 6.7
+  },
+  {
+   "id": "2e5d17c0491a9462",
+   "title": "CulturalRiddles: A Multicultural Benchmark of Riddles",
+   "url": "https://huggingface.co/papers/2610.29968",
+   "summary": "As LLMs expand their language coverage, evaluating how well they understand and represent diverse cultures becomes increasingly important. However, many benchmarks remain English-centric, with limited cultural coverage and a focus on factual knowledge over its application in real-world cultural contexts. We propose CulturalRiddles, a benchmark of original, culturally grounded riddles created entirely by humans through a participatory community effort, spanning 62 cultures (45 countries, 51 languages). These riddles are deeply rooted in their respective cultures and require abductive and compositional reasoning, alongside detailed factual and social knowledge, language skills, and an understanding of culturally specific associations. We benchmark 28 LLM configurations using both automatic and large-scale human evaluation. Even frontier models achieve at most 22% accuracy in some communities. We publicly release all artifacts alongside an open contribution process to expand the benchmark's linguistic and cultural coverage.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.29968"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "Benchmark CulturalRiddles évaluant les LLMs sur 62 cultures (51 langues) via des énigmes culturellement ancrées nécessitant raisonnement abductif et connaissances sociales, révélant des lacunes majeures même pour les modèles frontier (≤22% de précision dans certaines communautés).",
+   "score": 6.7
+  },
+  {
+   "id": "be10b8adbed01f64",
+   "title": "RubatoCodec: Budgeted Adaptive Speech Tokenization with Streaming Decoding",
+   "url": "https://huggingface.co/papers/2610.29434",
+   "summary": "Neural speech codecs provide discrete tokens for speech generation. Lower frame rates shorten token sequences, but each token must then carry more linguistic and acoustic information. Variable-frame-rate codecs address this trade-off by adapting token allocation to speech content, but threshold-based allocation lets content determine the token count, so the sequence length a speech generator must produce varies across utterances and datasets at a fixed setting. We present RubatoCodec, a variable-frame-rate speech codec built on X-Codec-2 with an exact utterance-level event budget and streaming decoding. Its Adaptive Firing mechanism uses changes in codec features and waveform spectra to divide speech into variable-duration events without a learned boundary predictor. Discrete codes and an explicit duration represent each event, allowing a speech generator to predict and decode one event at a time. Controlled experiments show that adaptive allocation outperforms fixed-rate coding in reconstruction fidelity and intelligibility at low event rates. A model trained on large-scale multilingual speech achieves competitive reconstruction quality across English, Japanese, and Mandarin, with the best intelligibility preservation among the compared codecs on the evaluated English and Japanese benchmarks at comparable bitrates. In a matched text-to-speech comparison, the adaptive representation yields lower WER and higher UTMOS and UTMOSv2 with comparable speaker similarity. The speech generator also learns the codec's utterance-level event budget without an explicit generation-time rate constraint. These results demonstrate that budgeted adaptive speech representations support both high-quality reconstruction and streaming text-to-speech generation. Code and weights are available at https://github.com/third-intelligence/RubatoCodec and https://huggingface.co/third-intelligence/RubatoCodec.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.29434"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "RubatoCodec introduit un mécanisme adaptatif de tokenisation variable pour les codecs vocaux (Adaptive Firing), réduisant les taux d'événements tout en améliorant la fidélité et l'intelligibilité, avec un décodage streaming et un budget contrôlé.",
+   "score": 6.7
+  },
+  {
+   "id": "706ba610e92c224e",
+   "title": "CompactSplat: Spatially Adaptive Gaussian Distribution for Feedforward Scene Reconstruction",
+   "url": "https://huggingface.co/papers/2610.13177",
+   "summary": "Reconstructing 3D scenes from sparse views without per-scene optimization remains highly challenging, especially for recovering accurate geometry and fine textures. While recent feedforward approaches leverage generalizable 3D Gaussian Splatting (3DGS) for scene generation, they typically assign one or multiple Gaussians to each pixel. Such uniform allocation not only produces highly redundant representations by wasting primitives in homogeneous areas, but also fails to exploit the inherent geometric priors of planar surfaces, often resulting in sub-optimal structural modeling. To address these limitations, we present CompactSplat, a novel feedforward framework that enables a content-aware allocation of 3D Gaussians. By integrating texture-guided spatial partitioning with hierarchical sampling, CompactSplat adaptively distributes primitives - concentrating dense Gaussians in complex regions while tiling flat areas with expanded, scale-modulated primitives. Moreover, our framework inherently supports dynamic sparsity control at inference time, enabling seamless trade-offs between rendering fidelity and memory footprint without requiring network retraining. Extensive experiments on RealEstate10K, DL3DV, and ScanNet demonstrate that CompactSplat consistently outperforms prior methods on both standard metrics and high-resolution rendering consistency, achieving high-fidelity reconstructions with significantly fewer primitives.",
+   "published": "2026-10-08T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.13177"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "CompactSplat propose une allocation adaptative des Gaussiens 3D pour la reconstruction de scènes à partir de vues éparses, réduisant la redondance et améliorant la fidélité géométrique, avec un contrôle dynamique de la sparsité en inférence.",
+   "score": 6.4
+  },
+  {
+   "id": "e3212a9c9359a209",
+   "title": "Using thousands of AI agents to uncover new leads in biological data",
+   "url": "https://openai.com/index/scaling-ai-research-for-complex-biological-data/",
+   "summary": "",
+   "published": "2026-10-21T13:37:00Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 146,
+    "comments": 97
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Utilisation de milliers d'agents IA pour explorer des jeux de données biologiques et générer de nouvelles pistes de recherche, combinant multi-agents et RAG appliqué à la biologie.",
+   "score": 6.2
+  },
+  {
+   "id": "b328ea6101ebd166",
+   "title": "Show HN: Omnara – Open-source alternative to Claude Managed Agents",
+   "url": "https://github.com/omnara-ai/omnara",
+   "summary": "",
+   "published": "2026-10-21T16:44:53Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 87,
+    "comments": 26
+   },
+   "relevance": 8,
+   "reliability": 3,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Alternative open-source à Claude Managed Agents, axée sur les agents IA. Intéressant pour l'écosystème agents, mais fiabilité limitée (source HN, projet émergent).",
+   "score": 6.2
+  },
+  {
+   "id": "e145ffdd059e9797",
+   "title": "WorldStream: Streaming Interactive 3D Worlds with Hierarchical Planning and Persistent State",
+   "url": "https://huggingface.co/papers/2610.28827",
+   "summary": "We present WorldStream, an open-ended 3D world model with three simultaneous capabilities: it extends playable terrain beyond any pre-specified map, acts on open-ended language in the running world, and restores visited places with their edits. A hierarchical planner over a typed decision model emits structured decision state: Macro fixes settlement, ecology, transport, and hydrological structure across a group of tiles; Micro specializes that contract into tile semantics under measured terrain and accepted neighbor commitments. Deterministic local code compiles accepted plans into terrain, roads, settlements, vegetation, and entities. Streaming separates their reach: plans run ahead along the predicted corridor, compilation only where movement will soon need it, geometry behind the user released. One world record retains plans, seeds, object identities and mutable state, boundary commitments, and edits by attribute, revised as the user advances and edits; returning tiles recompile from it. The same record grounds interaction: the model acts on existing entities, including stateful NPCs that update as they act, edits the present region, or attaches intent to unplanned regions. Together they yield a world expanding under bounded budgets, connected across independently planned tiles, and interactive.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.28827"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "Proposition de WorldStream, un modèle de monde 3D interactif avec planification hiérarchique et état persistant, permettant une génération dynamique de terrains et une restauration des modifications utilisateur, mais avec une complexité architecturale élevée.",
+   "score": 6.1
+  },
+  {
+   "id": "e24c9ea8bf25ad9a",
+   "title": "Real In, Real Out: What If We Only Use Real Data for Scene Text Editing?",
+   "url": "https://huggingface.co/papers/2610.27592",
+   "summary": "Aiming to modify textual content while preserving the original style, Scene Text Editing (STE) has significant practical value in many applications. STE typically requires paired images before and after editing for training. However, recent approaches rely heavily on synthetic paired data and complex disentanglement strategies. They struggle to faithfully capture the diversity and complexity of natural scenes, often producing artifacts or hallucinations. In this work, we challenge the common practice and investigate whether STE can be driven by turning each real sample into its own paired supervision. Concretely, we explore multiple ways to disrupt the original image (e.g., Crop, Shuffle, Mask) to construct self-paired training data, and build a strong baseline (TextRIRO}) upon a conditional diffusion architecture. Our experiments show that combining character-column shuffling with image cropping (Shuffle&Crop) effectively destroys text semantics while preserving key style cues, enabling the model to learn editing behaviors directly from the real text image. With this concise yet real-oriented design, TextRIRO achieves promising performance in both accuracy and visual realism across real-world benchmarks, substantially mitigating the synthetic-to-real domain gap. Furthermore, we leverage TextRIRO to build TextRIRO-3M, a large-scale realistic dataset for long-text recognition by concatenating edited and original images. Experimental results show that training recognition models with TextRIRO-3M significantly improves recognition accuracy, demonstrating that TextRIRO provides highly useful training resources for downstream tasks. Overall, TextRIRO lifts STE to realistic, reliable, and widely applicable new levels. Code is available at https://github.com/YesianRohn/TextRIRO.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2610.27592"
+   },
+   "relevance": 5,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "autre"
+   ],
+   "tldr": "Approche TextRIRO pour l'édition de texte dans des scènes réelles (STE) utilisant uniquement des données non synthétiques, via des transformations auto-supervisées (Crop, Shuffle, Mask) pour préserver le style tout en modifiant le contenu, avec des résultats compétitifs en réalisme visuel.",
+   "score": 6.1
+  }
+ ]
+}
