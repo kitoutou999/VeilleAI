@@ -1,0 +1,719 @@
+{
+ "date": "2026-10-27",
+ "digest": {
+  "headline": "Benchmarking et optimisation des agents LLM dominent la recherche IA avec des avancées majeures en vérification, auto-amélioration et manipulation robotique.",
+  "overview": "La veille du 2026-10-27 met en lumière des progrès significatifs dans l'évaluation et l'optimisation des systèmes d'agents, avec des benchmarks innovants et des méthodes d'apprentissage par renforcement adaptées aux LLM. Les travaux sur la robotique et la compression extrême des modèles complètent un panorama axé sur l'efficacité, la généralisation et la fiabilité des architectures.",
+  "highlights": [
+   {
+    "title": "AgentProofBench et EmbodiedLab : des benchmarks pour évaluer la robustesse des agents",
+    "text": "AgentProofBench teste la réutilisabilité des vérificateurs d'agents web sur 97 tâches, révélant une rétention élevée des programmes sources (82-96%) et des corrélations entre erreurs de déploiement et problèmes de panels. EmbodiedLab, quant à lui, évalue des robots devant agir pour acquérir des connaissances via 30 expériences simulées, couvrant 5 disciplines scientifiques. Ces benchmarks fournissent des cadres concrets pour mesurer la fiabilité et l'adaptabilité des agents dans des environnements complexes."
+   },
+   {
+    "title": "ProAS et S3AC : optimisation du *credit assignment* et du raisonnement LLM",
+    "text": "ProAS introduit un cadre de *credit assignment* pour l'apprentissage par renforcement des agents LLM, utilisant un graphe de référence agentique (ARG) et des mécanismes de masquage/pénalisation asymétrique. Il améliore les performances de Qwen2.5 jusqu'à 94.3% sur ALFWorld et accélère la convergence. S3AC propose un système Actor-Critic stabilisé pour le raisonnement LLM, combinant des avantages token-spécifiques et des baselines prompt-spécifiques, avec des gains significatifs même en single-rollout pour des modèles de 1.5B à 397B paramètres."
+   },
+   {
+    "title": "Compression extrême et généralisation en robotique",
+    "text": "OPTIC permet une quantification extrême des embeddings par couche (PLE) via des codes latents partagés, réduisant leur taille de 100x à 1000x avec une perte de performance minimale (97.8% à 100x). En robotique, RynnVLA-Latent exploite des actions latentes 3D pour entraîner des modèles de manipulation généralisables à travers différents embodiments, atteignant 98.8% de succès sur LIBERO sans adaptation spécifique. Ces travaux adressent des défis clés en efficacité et en généralisation."
+   },
+   {
+    "title": "Auto-amélioration récursive et évaluation des risques des LLM",
+    "text": "Skill^∞ et AutoTavern explorent l'auto-amélioration récursive des agents, avec des cadres permettant une optimisation continue des compétences et des applications concrètes, comme le développement d'un agent IA pour *Hearthstone Battlegrounds* rivalisant avec les meilleurs joueurs humains. Parallèlement, une évaluation indépendante de DeepSeek V4.1 Flash-1017 sur 34 benchmarks montre des améliorations majeures en sécurité et en capacités agentiques, soulignant l'importance de la régulation des modèles open-weight."
+   },
+   {
+    "title": "Nouvelles approches pour le RAG et les workflows multi-agents",
+    "text": "DecisionRAG propose une méthode de RAG sans retriever dédié, utilisant des modèles de décision pour évaluer conjointement des branches candidates dans un même passage, améliorant les performances de récupération jusqu'à +17.4 points Hit@1. DynaFlow, de son côté, permet à un agent principal de générer dynamiquement des workflows multi-agents exécutables, atteignant 88.08% de précision globale sur 6 benchmarks. Ces innovations simplifient et optimisent des architectures complexes."
+   }
+  ],
+  "trend": "Les avancées récentes confirment une tendance vers des systèmes d'agents plus robustes, auto-améliorants et généralisables, avec une attention croissante portée à l'évaluation rigoureuse et à l'optimisation des architectures pour des environnements ouverts et variés."
+ },
+ "items": [
+  {
+   "id": "4848e0177b27a7af",
+   "title": "AgentProofBench: Benchmarking Reusable Verifiers for Web Agents",
+   "url": "https://huggingface.co/papers/2610.34634",
+   "summary": "Reusable Web-agent verification requires a rule to follow changing requirements and support subsequent execution. We introduce AgentProofBench, which connects paired tests of a frozen acceptance rule to execution from identical saved openings. The resource spans 97 tasks, 79 families, and four Web services. Experiments with DeepSeek Flash/Pro establish two linked measurements. Across 48 families, complete-panel and decision-replay tests retain 82/96 Flash and 79/96 Pro source programs; paired reuse-rebuild BA intervals are [-5.47, 1.57] and [-10.16, 0.00] percentage points. Across 22 execution families, deployment-state panel correctness separates program assignments whose two saved openings are both delivered correctly: 32/33 assignments with error-free panels, versus 1/11 with panel errors. All reference-defined program-gate regressions and withheld deliveries occur in the latter group. Neutral continuation attains the highest correct delivery under the tested generic feedback, providing a concrete baseline for measuring the value added by a gate. Released instructions, states, programs, reference rules, and trajectories connect each test failure to its execution consequences. AgentProofBench makes reusable verification assessable at both the requirement and policy levels.",
+   "published": "2026-10-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.34634"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "AgentProofBench est un benchmark innovant pour évaluer la réutilisation de vérificateurs d'agents web, en testant la cohérence des règles d'acceptation et des exécutions sur 97 tâches et 79 familles de services web. Les résultats montrent une forte rétention des programmes sources (82-96%) et révèlent que les erreurs de déploiement sont corrélées à des problèmes de panels, offrant une base concrète pour mesurer l'impact des vérificateurs.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de la vérification réutilisable des agents web, où les règles d'acceptation doivent évoluer pour suivre des exigences changeantes tout en garantissant une exécution cohérente. Actuellement, il manque un cadre standardisé pour évaluer la capacité des vérificateurs à maintenir cette réutilisabilité face à des modifications dynamiques des tâches ou des environnements web.",
+    "methode": "AgentProofBench propose un benchmark structuré autour de 97 tâches réparties en 79 familles, couvrant quatre services web. La méthode repose sur des tests appariés : une règle d'acceptation figée est évaluée via des exécutions à partir d'états initiaux identiques sauvegardés. Deux mesures clés sont introduites : (1) la rétention des programmes sources (complète ou par replay de décision) et (2) la séparation des performances selon l'état du panneau de déploiement (correct ou erroné). Les expériences utilisent des modèles comme DeepSeek Flash/Pro pour quantifier l'impact des modifications sur la réutilisabilité. Le benchmark fournit aussi des ressources détaillées (instructions, états, programmes, règles de référence et trajectoires) pour relier chaque échec à ses conséquences concrètes.",
+    "resultats": "Les expériences montrent que 82% (Flash) et 79% (Pro) des programmes sources sont conservés pour les tests complets, contre 96% pour les tests de replay de décision. Les intervalles de variation des performances (BA) entre réutilisation et reconstruction sont de [-5.47, 1.57] points de pourcentage pour Flash et [-10.16, 0.00] pour Pro. Sur 22 familles d'exécution, 32/33 affectations avec des panneaux sans erreur livrent correctement les deux états initiaux sauvegardés, contre seulement 1/11 en cas d'erreur de panneau. Les régressions et échecs de livraison se concentrent exclusivement dans ce dernier groupe.",
+    "limites": "Les données disponibles ne permettent pas d'évaluer la généralisabilité du benchmark au-delà des quatre services web testés. La dépendance à des modèles spécifiques (DeepSeek) pourrait biaiser les résultats, et l'absence de détails sur la nature des erreurs de panneau limite l'analyse des causes profondes. Enfin, la méthodologie ne précise pas si les tâches couvrent des scénarios suffisamment variés pour représenter des cas d'usage réels complexes.",
+    "verdict": "Ce benchmark représente une avancée notable pour évaluer la réutilisabilité des vérificateurs d'agents web, mais son applicabilité à grande échelle et sa robustesse face à des environnements plus diversifiés restent à démontrer."
+   }
+  },
+  {
+   "id": "1a3ba6740772fb7d",
+   "title": "ProAS: A Progress-Aware Advantage Shaping Framework for Multi-Turn Agentic Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2610.18683",
+   "summary": "Reinforcement learning (RL) has emerged as the primary paradigm for optimizing Large Language Model (LLM) agents, yet efficient critic-free algorithms (e.g., GRPO) suffer from a fundamental uniform credit assignment dilemma that broadcasts trajectory-level advantages equally to all actions. Our analysis reveals that this uniformity inherently reinforces structurally unreasonable actions in preferred trajectories and ignores each action's downstream deviations in unpreferred ones. To resolve this without introducing critic overhead, we propose Progress-Aware Advantage Shaping (ProAS), a plug-and-play framework that leverages a dynamically evolving Agentic Reference Graph (ARG) to achieve fine-grained credit assignment via Masking Unreasonable Incentives (MUI) and Asymmetric Penalty Redistribution (APR). Extensive experiments across Qwen2.5-1.5B-Instruct and Qwen2.5-7B-Instruct demonstrate that ProAS universally elevates mainstream group-based baselines to new state-of-the-art performance, achieving peak success rates of 91.9% and 94.3% on ALFWorld, alongside 66.7% and 70.8% on WebShop, respectively. Furthermore, it accelerates training convergence by up to 2.44times while maintaining strong robustness against imperfect or distilled ARGs. Codes: https://github.com/LINs-lab/ProAS",
+   "published": "2026-10-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.18683"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "ProAS propose un cadre de *credit assignment* pour l'apprentissage par renforcement des agents LLM, résolvant le problème de distribution uniforme des récompenses via un graphe de référence agentique (ARG) et des mécanismes de masquage/pénalisation asymétrique. Il améliore les performances de Qwen2.5 (jusqu'à 94.3% sur ALFWorld) et accélère la convergence (jusqu'à 2.44x).",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème central abordé par ProAS est l'attribution uniforme des récompenses dans les algorithmes de reinforcement learning (RL) sans critique, comme GRPO, pour les agents basés sur les LLM. Cette uniformité entraîne un renforcement d'actions structurellement irrationnelles dans les trajectoires préférées et ignore les écarts en aval dans les trajectoires non préférées, limitant l'efficacité de l'apprentissage multi-tours.",
+    "methode": "ProAS introduit un cadre plug-and-play nommé *Progress-Aware Advantage Shaping* qui contourne le besoin d'un critique en utilisant un *Agentic Reference Graph* (ARG) dynamique. Ce graphe évolue pour affiner l'attribution des récompenses via deux mécanismes : *Masking Unreasonable Incentives* (MUI), qui filtre les incitations non pertinentes, et *Asymmetric Penalty Redistribution* (APR), qui redistribue les pénalités de manière asymétrique pour corriger les écarts. L'ARG permet une granularité fine dans l'évaluation des actions sans surcoût computationnel significatif, en s'appuyant sur des références agentiques pour guider l'apprentissage.",
+    "resultats": "Les expériences menées sur les modèles Qwen2.5-1.5B-Instruct et Qwen2.5-7B-Instruct montrent des améliorations significatives. ProAS atteint des taux de succès de 91,9 % et 94,3 % sur ALFWorld, et de 66,7 % et 70,8 % sur WebShop, respectivement. De plus, le framework accélère la convergence de l'entraînement jusqu'à 2,44 fois tout en maintenant une robustesse face à des ARGs imparfaits ou distillés.",
+    "limites": "Le contenu disponible ne précise pas les hypothèses sous-jacentes à la construction de l'ARG ni son coût potentiel en termes de complexité ou de données nécessaires. De plus, la robustesse face aux ARGs imparfaits est mentionnée, mais sans détails sur les scénarios d'échec ou les limites de généralisation à d'autres environnements ou tâches.",
+    "verdict": "ProAS mérite une attention particulière pour son approche innovante et ses résultats convaincants, surtout pour les applications multi-tours en RL agentique, mais une analyse plus approfondie de ses limites et de sa scalabilité serait nécessaire avant une adoption large."
+   }
+  },
+  {
+   "id": "88a4f596d4e4c6bb",
+   "title": "Extreme Compression of Per-Layer Embeddings via Cross-Layer Latent Vector Quantization",
+   "url": "https://huggingface.co/papers/2610.31309",
+   "summary": "Scaling embedding capacity alongside Transformer computation is an emerging trend in language models. This trend makes high compression rates increasingly useful. Hence, we study extreme compression of Per-Layer Embeddings (PLE), which follow this trend and account for 35.2% of the parameters of Gemma 4 E4B. At such rates, conventional quantizers give each token-layer vector its own code of only a few bytes. We instead develop OPTIC (Output-Path-fitted, Token-shared Indexed Codes), which stores one quantized code tuple per token and decodes it at every layer with a layer-specific affine decoder. Codes and decoders are fitted to the PLE output path rather than to the stored vectors. At about 100times PLE compression of bfloat16 (BF16) E4B, OPTIC retains an aggregate 97.8% of the uncompressed model's performance across seven benchmarks, whereas product quantization, the strongest of six conventional baselines, retains 66.3%. At 594times and 1,002times PLE compression of BF16 E4B, OPTIC retains 90.5% and 84.1%. On the official E4B release with 4-bit linear weights and 16-bit activations (W4A16), OPTIC retains 96.9% at about 100times PLE compression. During inference at about 100times PLE compression, BF16 E4B uses 29.7% less GPU memory than with uncompressed PLE at the same key-value cache size, while running at most 0.40% slower.",
+   "published": "2026-10-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.31309"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "OPTIC introduit une méthode de quantification extrême des embeddings par couche (PLE) via des codes latents partagés et des décodeurs spécifiques aux couches, réduisant leur taille de 100x à 1000x avec une perte de performance minimale (97.8% à 100x, 84.1% à 1000x). Applicable à Gemma 4 E4B en W4A16.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le défi croissant de la compression extrême des embeddings par couche (Per-Layer Embeddings, PLE) dans les modèles de langage de grande taille. Avec l'augmentation de la capacité des embeddings parallèlement à la puissance de calcul des Transformers, les PLE représentent une part significative des paramètres (ex. 35,2 % pour Gemma 4 E4B), rendant leur compression critique pour réduire l'empreinte mémoire et les coûts computationnels sans dégradation majeure des performances.",
+    "methode": "Les auteurs proposent OPTIC (Output-Path-fitted, Token-shared Indexed Codes), une méthode innovante de quantification vectorielle. Contrairement aux quantificateurs classiques qui attribuent un code individuel à chaque vecteur token-couche, OPTIC stocke un seul tuple de codes quantifiés par token et le décode à chaque couche via un décodeur affine spécifique à la couche. Les codes et décodeurs sont optimisés pour s'adapter au *chemin de sortie* des PLE plutôt qu'aux vecteurs stockés eux-mêmes. Cette approche exploite les redondances inter-couches et permet une compression extrême en partageant l'information entre les couches pour un même token.",
+    "resultats": "OPTIC atteint des taux de compression remarquables tout en préservant les performances du modèle. À environ 100× compression des PLE en BF16 pour le modèle E4B, OPTIC conserve 97,8 % des performances du modèle non compressé sur sept benchmarks, contre seulement 66,3 % pour la quantification produit (meilleure baseline conventionnelle). À 594× et 1 002× compression, OPTIC maintient respectivement 90,5 % et 84,1 % des performances. En configuration W4A16 (poids linéaires en 4 bits, activations en 16 bits), OPTIC conserve 96,9 % des performances à ~100× compression. En termes d'inférence, la compression réduit la mémoire GPU de 29,7 % avec un ralentissement maximal de 0,40 %.",
+    "limites": "Les détails sur la généralisation d'OPTIC à d'autres architectures que Gemma ou à des tâches hors des benchmarks évalués restent flous. La robustesse face à des distributions de données très différentes de celles utilisées pour l'entraînement des décodeurs affines n'est pas explicitement abordée. Enfin, l'impact potentiel sur la latence en cas de scaling à des modèles encore plus grands ou sur des hardware spécifiques (ex. TPU) n'est pas documenté.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche novatrice et ses résultats impressionnants en compression extrême, offrant une piste concrète pour réduire les coûts mémoire des grands modèles de langage sans sacrifier significativement leurs performances."
+   }
+  },
+  {
+   "id": "c225d55aa1c20b9e",
+   "title": "RoboJev: An Open Vision-Language Judge for Robot Success Detection",
+   "url": "https://huggingface.co/papers/2610.33718",
+   "summary": "Many robot manipulation videos do not indicate whether the task was successfully completed. RoboJev-27B is an open-weight vision-language model that takes a task instruction, 10 frames of a manipulation attempt, and (if available) final frames from auxiliary cameras and predicts whether the robot accomplished the task. RoboJev-27B is a variant of JEV-27B-VL, trained with a rank-32 LoRA adapter on the language model only (keeping the vision encoder frozen) using 52,598 episode records. It also uses a source-specific KL penalty that applies only to research data, anchoring predictions closer to the original model on those sources. It uses a calibrated two-token readout that outputs success/failure probabilities in a single forward pass. On 268 held-out episodes of the same robot model (SO-101), RoboJev-27B attains 95.2% balanced accuracy and 0.993 AUROC. It also generalises to episodes collected by unseen labs/robots (AUROC = 0.890 over 459 episodes) as well as to clearly labelled community-collected episodes (accuracy = 93.3% over 135 episodes), where the base model attains an AUROC = 0.900 on the unseen-lab/robot subset with the same inputs. It takes 0.26 seconds per episode (median, serial) to infer on a single H100, which is about \\0.19 per 1,000 success predictions at 2.69 per GPU-hour (not including media processing and serving costs). RoboJev-27B is released together with its inference code, along with a transparent evaluation: 20,628 predictions organized into 29 model/protocol entries are made available to facilitate browsing and to enable reproducible benchmarking of success detection. We also compare against strong API-based frontier VLMs, which take in fewer input frames (4 images from the primary camera only); note that this comparison is not strictly like-for-like because RoboJev-27B is given more frames at inference.",
+   "published": "2026-10-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.33718"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Modèle RoboJev-27B (basé sur JEV-27B-VL) évaluant la réussite de tâches robotiques à partir de vidéos de manipulation, avec une précision de 95.2% et une généralisation à des robots non vus. Optimisé pour l'inférence rapide (0.26s/épisode) et l'abstention calibrée.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le problème principal que RoboJev vise à résoudre est l'absence fréquente d'indication claire sur la réussite ou l'échec d'une tâche dans les vidéos de manipulation robotique. Cela complique l'évaluation et l'amélioration des modèles de robots, car il est difficile de déterminer automatiquement si une tâche a été accomplie avec succès sans annotation humaine explicite.",
+    "methode": "RoboJev-27B est un modèle vision-language (VLM) open-weight basé sur JEV-27B-VL, adapté spécifiquement pour la détection de succès dans les tâches robotiques. Il utilise un adaptateur LoRA de rang 32, entraîné uniquement sur la partie langage du modèle (l'encodeur visuel reste figé). Le modèle prend en entrée une instruction de tâche, 10 images d'une tentative de manipulation, et éventuellement des images supplémentaires provenant de caméras auxiliaires. Une pénalité KL spécifique aux sources de données de recherche est appliquée pour ancrer les prédictions près des sorties du modèle original sur ces données. RoboJev utilise une lecture calibrée à deux tokens pour produire des probabilités de succès/échec en un seul passage avant (forward pass). L'entraînement a été effectué sur 52 598 enregistrements d'épisodes.",
+    "resultats": "Sur un ensemble de 268 épisodes de test issus du même modèle de robot (SO-101), RoboJev-27B atteint une précision équilibrée de 95,2 % et un AUROC de 0,993. Il généralise bien à des épisodes collectés par des laboratoires ou robots non vus lors de l'entraînement, avec un AUROC de 0,890 sur 459 épisodes. Sur des épisodes clairement étiquetés par la communauté, il obtient une précision de 93,3 % sur 135 épisodes. Le temps d'inférence médian est de 0,26 seconde par épisode sur un GPU H100, ce qui équivaut à environ 0,19 $ pour 1 000 prédictions de succès.",
+    "limites": "La comparaison avec d'autres VLMs frontaliers n'est pas strictement équitable, car RoboJev-27B utilise plus d'images en entrée (10 frames contre 4 pour les autres modèles). De plus, les performances sur des robots ou environnements radicalement différents de ceux de l'entraînement pourraient être moins robustes. Enfin, les coûts de traitement et de service des médias ne sont pas inclus dans l'estimation des coûts d'inférence.",
+    "verdict": "RoboJev-27B mérite une attention particulière pour son approche open-weight et ses performances solides en détection de succès robotique, bien que ses limites en généralisation et en comparaison équitable avec d'autres modèles doivent être prises en compte."
+   }
+  },
+  {
+   "id": "7d30838ffd4e99d3",
+   "title": "EmbodiedLab: Benchmarking Embodied Agents That Act to Know",
+   "url": "https://huggingface.co/papers/2610.35385",
+   "summary": "Embodied agents are expected to accomplish real-world goals by deciding for themselves how and when to interact with their surroundings. For many such goals, changing the physical state of the world is the means rather than the end: the agent changes the state of a system through interaction, observes the feedback, and explores until it either achieves the goal itself (e.g., discovering physical laws) or learns what the goal requires; it acts to know. Manipulation benchmarks stop at acting to change, with the target state given; scientific discovery benchmarks evaluate knowing but replace physical experimentation with symbolic actions or numerical queries. We introduce EmbodiedLab, a benchmark in which a robot must act to know. Quantitative science experiments make this setting controllable: the parameters of the system are resampled for every instance, so the result cannot be known in advance, yet it can be scored exactly. Across 30 experiments in five disciplines on 14 apparatus platforms, the agent receives an objective and the apparatus, chooses its own procedure, and operates a physics-based simulated laboratory, reading the instruments through its cameras. Evaluation checks what the agent came to know, grounded in readings recorded during the episode, as well as the physical state the task requires; every experiment is verified to be solvable. We evaluate six frontier models in their developers' coding agents with native observation and control, with added perception and motion planning, and with manipulation skills distilled from the strongest agents. With native control, even the strongest agent succeeds less than half the time; for every agent, most failures arise in interacting with the apparatus, and manipulation skills help weaker agents more than perception and planning. The benchmark and its evaluation code are available at https://github.com/HexaFuture/EmbodiedLab.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.35385"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "EmbodiedLab introduit un benchmark où des robots doivent agir pour acquérir des connaissances (ex: découvrir des lois physiques) via des expériences contrôlables et évaluables. Les agents doivent choisir leurs procédures et interagir avec des appareils simulés, avec 30 expériences couvrant 5 disciplines.",
+   "score": 8.8
+  },
+  {
+   "id": "18bddb5f2f255e59",
+   "title": "S3AC: Stabilized, Selective, and Scalable Actor-Critic for LLM Reasoning",
+   "url": "https://huggingface.co/papers/2610.35518",
+   "summary": "Critic-free methods are widely used in reinforcement learning with verifiable rewards (RLVR) for long chain-of-thought (CoT) reasoning, avoiding difficult and costly critic training. Common alternatives lack token-level credit assignment and typically rely on grouped rollouts to estimate prompt-specific baselines. A critic can address both limitations, but long-CoT critic training is hindered by insufficient coverage of trajectories with diverse lengths and early gradients dominated by the newly initialized value head. We introduce S3AC (Stabilized, Selective, and Scalable Actor-Critic) for LLM reasoning, built around a practical critic-training recipe. The trained critic provides token-specific advantages and prompt-specific baselines. Using the prompt-level baseline to estimate difficulty, we propose Difficulty-Aware Prompt Sampling (DAPS). DAPS combines this estimate with outcome history to select prompts before generation, reducing rollout waste without offline difficulty initialization. S3AC improves group-rollout performance across dense and mixture-of-experts models from 1.5B to 397B parameters, outperforming a modern GRPO variant (GRPO-X). At 35B, it sustains single-rollout training while tested critic-free baselines deteriorate after initial gains.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2610.35518"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "S3AC introduit un système Actor-Critic stabilisé pour le raisonnement LLM, combinant des avantages token-spécifiques et des baselines prompt-spécifiques. La méthode DAPS réduit le gaspillage de rollouts et améliore les performances sur des modèles de 1.5B à 397B paramètres, avec un gain significatif même en single-rollout.",
+   "score": 8.8
+  },
+  {
+   "id": "45b1ac357c2bc842",
+   "title": "RynnVLA-Latent: Scaling Robotic Manipulation Foundation Models with 3D-Grounded Latent Actions",
+   "url": "https://huggingface.co/papers/2610.34356",
+   "summary": "Scaling vision-language-action (VLA) models is constrained by scarce action-labeled demonstrations and incompatible control spaces across robot embodiments. We present RynnVLA-Latent, a framework that turns heterogeneous interaction videos into scalable supervision for robot policy pretraining. At its core, RynnLAM learns continuous, 3D-grounded latent actions from visual transitions without requiring native robot controls. By combining residual future-feature prediction, camera-compensated 3D-flow supervision, and camera-motion decoupling, RynnLAM encourages representations that capture control-relevant motion rather than appearance changes alone. We apply RynnLAM to 30.1K hours of human, robot, and simulation videos, producing 745.52M latent-action descriptors. RynnVLA-Latent then learns to predict latent-action chunks from visual observations and language through flow matching, before adapting its pretrained backbone and action expert to embodiment-specific robot actions. The resulting 4B policy achieves 98.8% success on LIBERO, 84.7% on LIBERO-Plus without benchmark-specific adaptation, 51.9% average success across five VLABench tracks, and 88.6% average success on the RoboTwin 2.0 bimanual benchmark. It also achieves the highest observed success rates among the compared methods on six real-world manipulation tasks across dexterous-hand and mobile-gripper platforms. Together with representation ablations and data-scaling results, these findings demonstrate the potential of latent-action supervision for scaling robot policy learning beyond native action-labeled data.",
+   "published": "2026-10-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.34356"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "RynnVLA-Latent exploite des vidéos hétérogènes pour entraîner des modèles de manipulation robotique (VLA) via des *actions latentes 3D*, permettant une généralisation à travers des embodiments variés avec 98.8% de succès sur LIBERO sans adaptation spécifique.",
+   "score": 8.8
+  },
+  {
+   "id": "1f073770cb65bec5",
+   "title": "miniTE: Diagnosing and Bridging the Execution Gap in Native NVFP4 Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2610.23928",
+   "summary": "Native NVFP4 promises to accelerate reinforcement learning (RL) for large language models (LLMs), but achieving stable learning across separate training and sampling engines remains challenging. We show that matching model weights and numerical formats is insufficient to ensure consistent policy evaluation, highlighting the importance of cross-engine numerical execution. We introduce miniTE, a lightweight framework that combines execution diagnostics, cross-engine numerical alignment, and efficient native W4A4 (4-bit weights and activations) GEMM computation for LLM RL. It improves numerical execution consistency without modifying the RL objective, while reducing implementation overhead to realize the benefits of native low-bit computation. Long-horizon RL experiments on Qwen3-30B-A3B demonstrate stable training and benchmark performance close to BF16, outperforming naive Transformer Engine (TE) NVFP4 in evaluation quality. On single NVIDIA B300 GPU node, the optimized learner reaches 33,540 tokens/s, yielding 1.39x and 1.47x the throughput of BF16 and TE NVFP4, respectively, for complete learner updates. We released the framework, kernels, diagnostics, and training configurations to make native low-bit RL easier.",
+   "published": "2026-10-06T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.23928"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "miniTE résout les problèmes de cohérence numérique entre moteurs d'entraînement et d'inférence pour le RL avec NVFP4 (W4A4), améliorant la stabilité et la performance (33,540 tokens/s) sans modifier l'objectif RL, avec des gains de throughput significatifs.",
+   "score": 8.8
+  },
+  {
+   "id": "5cecdf24f2f3f5c2",
+   "title": "DynaFlow: Learning Free-Form Multi-Agent Orchestration",
+   "url": "https://huggingface.co/papers/2610.34467",
+   "summary": "Multi-agent systems often rely on predefined collaboration structures, limiting their ability to adapt to diverse task requirements. We introduce DynaFlow, a framework that integrates free-form executable workflow synthesis into the action space of the main agent. The agent decides when collaboration is needed and generates task-specific programs that coordinate sub-agents through sequential or parallel execution, structured information exchange, and verification. Execution results and traces inform subsequent actions, enabling the agent to adapt collaboration as reasoning progresses. We train only the main agent through supervised fine-tuning on distilled trajectories, followed by refinement on examples filtered for unsupported premises, biased verification, and information-flow defects. All sub-agents remain fixed, separating orchestration learning from executor capability improvement. Across six benchmarks spanning mathematical reasoning, scientific question answering, and multi-hop retrieval, DynaFlow achieves 88.08% overall accuracy in Forced mode, outperforming the strongest evaluated baseline by 10.90 percentage points with the same Qwen3.5-27B backbone. Workflow analysis finds more explicit use, verification, and refinement of upstream outputs after training, highlighting cross-stage information flow as a key dimension of multi-agent orchestration.",
+   "published": "2026-10-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 155,
+    "arxiv_id": "2610.34467"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "DynaFlow permet à un agent principal de générer dynamiquement des workflows multi-agents exécutables (séquentiels/parallèles) pour s'adapter à des tâches variées, atteignant 88.08% de précision globale sur 6 benchmarks avec un gain de 10.9 points vs. le meilleur baseline.",
+   "score": 8.8
+  },
+  {
+   "id": "7c20d74e27b710b0",
+   "title": "Evaluating DeepSeek V4.1 Flash-1017 for loss of control and harmful manipulation risks",
+   "url": "https://arxiv.org/abs/2610.35671v1",
+   "summary": "As frontier language models grow increasingly capable and autonomous, independent third-party evaluations are critical for characterizing their systemic safety risks. While closed-source releases are routinely accompanied by comprehensive system cards, open-weight models receive less scrutiny regarding frontier risks. To address this gap, we present an independent safety evaluation of DeepSeek V4.1 Flash-1017, the latest version of V4.1 Flash that departs from V4 with a new architecture, scaled-up training, and strong agentic capabilities. Drawing on the EU General-Purpose AI Code of Practice, we evaluate the model across 34 benchmarks, including 5 in-house suites, spanning evaluation integrity, loss of control, and harmful manipulation. Conforming to the AEF-1 standard, we compare V4.1 Flash-1017 against V4.1 Flash, earlier DeepSeek V4 models, and leading closed-source systems (GPT-6 Astra, GPT-5.6 Sol, and Gemini 3.8 Flash). Overall, V4.1 Flash-1017 shows substantial safety improvements over the V4 generation and approaches or matches leading closed-source baselines on several dimensions, while still exhibiting notable behaviors that warrant continued attention. Building on our findings, we highlight three key observations and recommendations. First, because safety can shift and even regress across minor updates, developers should integrate safety evaluation into incremental releases. Second, as final-turn outputs and end-state checks alone cannot reliably detect loss-of-control behaviors, deployments require process-level observability across both reasoning traces and action logs. Third, because public benchmarks elicit strong evaluation awareness and face data contamination risks, developing private benchmarks is essential for trustworthy frontier evaluation.",
+   "published": "2026-10-26T16:14:17+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yao Huang, Zhiyuan Zeng, Yu Wang, Zhitong Zhu, Dingcheng Duan, Hao Li"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "regulation"
+   ],
+   "tldr": "Évaluation indépendante de DeepSeek V4.1 Flash-1017 (nouvelle architecture, capacités agentiques) sur 34 benchmarks (perte de contrôle, manipulation nuisible) selon l'AEF-1, montrant des améliorations majeures vs. V4 et des performances comparables aux modèles fermés. Critique pour la sécurité des LLM open-weight et la régulation IA.",
+   "score": 8.6
+  },
+  {
+   "id": "b0ed7ab3eca71940",
+   "title": "Evolving to Match Capabilities: Improving Harness Self-Evolution via Skill Adaptation",
+   "url": "https://huggingface.co/papers/2610.33024",
+   "summary": "Harness self-evolution offers a practical route for LLM agents to improve from execution experience without updating model parameters. Its effectiveness depends on whether models can successfully act on the guidance provided by their harnesses. However, we find that harness benefits are not uniform across model capabilities: skills that improve stronger models can provide little benefit or even degrade performance for weaker ones. Across seven models and three benchmarks, we identify 103 task-skill pairs where skills improve GPT-5.6-luna by 31.1 points but degrade Gemma-4-E4B by 8.8 points. In 86% of failed weak-model runs, the violated requirement is already stated in the skill. This motivates skill adaptation: reformulating existing skills to match the executor's capabilities and make their guidance easier to execute. To achieve this, we diagnose failures in tool execution, context management, instruction following, and verification, and distill these diagnoses into a fixed meta-skill that guides adaptation during harness self-evolution. Guided by the meta-skill, a capable external rewriter, Kimi-K3, adapts skills without execution evidence, improving the three weak executors by 5.1-14.1 points over the original skills. We then incorporate this adaptation into a five-round self-evolution loop, where each model revises its own skill from execution trajectories and verifier feedback. Across seven executors, from Gemma-4-E4B to Kimi-K2.5, the meta-skill consistently improves final scores by 2.0-5.1 points over the same loop without the meta-skill. Our findings provide practical design guidance for developing more effective harness self-evolution methods.",
+   "published": "2026-10-09T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.33024"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Étude sur l'auto-évolution des agents LLM via des *harnesses*, montrant que les compétences adaptées aux modèles faibles améliorent leur performance (jusqu'à +31.1 points) tandis que les modèles forts bénéficient moins. Introduction d'une méta-compétence pour reformuler les compétences existantes.",
+   "score": 8.5
+  },
+  {
+   "id": "55ecec65c1071b6f",
+   "title": "Thinking-in-Bets at Test Time Reduces Sycophantic Revisions in LLM Agents",
+   "url": "https://huggingface.co/papers/2610.34654",
+   "summary": "Language model agents often abandon correct work when a user challenges it, yet simply telling them to stand firm makes them ignore real mistakes. Once an agent reads a complaint, it tends to discount its own earlier checks in order to agree with the user. We introduce Thinking-in-Bets, a training-free method in which an agent writes a short private record of its main claims, the checks supporting them, and its confidence before reading user feedback. When challenged, the agent consults this Claim Checklist to keep verified work intact while investigating uncertain or newly challenged parts. We evaluate five Gemini models (3.5 Flash-Lite, 3.5 Flash, 3.6 Flash, 3.8 Flash, and 4.0 Argon) across eight benchmarks: SWE-Together, SWE-Interact, and DeepSWE for software engineering, Agents' Last Exam for professional reports, Humanity's Last Exam and SycEval for academic reasoning, Vals Finance for financial analysis, and Terminal-Bench for command-line tasks. Recording claims before criticism nearly eliminates false reversals in patch review and protects passing report drafts under mistaken pushback, whereas writing the same record after reading the complaint recovers very little of the gain. In multi-turn coding, pre-reply claim records substantially reduce unnecessary file edits after mistaken complaints, and gating the record so it is written only when the agent is uncertain lowers token overhead while fixing more real bugs than the baseline. Even in non-interactive tasks without user feedback, listing the key claims in a draft and re-checking the weakest one before submission improves both answer accuracy and confidence estimates across all tested models.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.34654"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Thinking-in-Bets est une méthode sans entraînement qui réduit les révisions sycophantiques des agents LLM en enregistrant leurs affirmations et vérifications avant toute critique utilisateur. Évaluée sur 8 benchmarks (SWE-Together, Terminal-Bench, etc.), elle limite fortement les abandons de solutions correctes face à des feedbacks erronés.",
+   "score": 8.5
+  },
+  {
+   "id": "8cbb5257e6ba951d",
+   "title": "Nested Sparsity for Scalable Pretraining and Continual Learning",
+   "url": "https://huggingface.co/papers/2610.31818",
+   "summary": "Mixture-of-experts (MoE) transformers, the standard backbone for modern large-scale deep learning, employ conditional computation: only a sparse subset of model weights is used in each forward pass. In MoE transformers, this sparsity arises in the MoE operator, which generalizes the multi-layer perceptron in the classical transformer. In this work, we explore an alternative mechanism for conditional computation that analogously generalizes the attention operator. The sparsity induced by this mechanism naturally nests (i.e., hierarchically composes) with the sparsity induced by the MoE operator. We show that a transformer employing this nested sparsity mechanism, which we call Nestor, performs better than a conventional MoE transformer at equal compute and equal sparsity in language model pretraining. We also show that Nestor is well-suited for continual pretraining: it can be adapted to longer contexts more effectively than conventional MoEs, as well as adapt more efficiently to new domains while forgetting less on old domains. Furthermore, we demonstrate that these benefits persist as model size, dataset size, and context length grow. Our results demonstrate the potential of alternative conditional computation mechanisms for deep neural network architectures. Code and checkpoints are available on GitHub at https://github.com/Ma-Lab-Berkeley/Nestor .",
+   "published": "2026-10-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.31818"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Nestor introduit une sparsité imbriquée (nested sparsity) généralisant à la fois l'opérateur MoE et l'attention, améliorant l'efficacité en prétraining et continual learning. Les résultats montrent des gains en performance et adaptabilité par rapport aux MoE classiques, avec une généralisation à grande échelle.",
+   "score": 8.5
+  },
+  {
+   "id": "659d4a6c23e905c5",
+   "title": "Skill^{infty}: Recursive Self-Improvement for Agent Skill Optimization",
+   "url": "https://huggingface.co/papers/2610.35434",
+   "summary": "Recursive self-improvement (RSI), in which a system also improves the way it improves, is a long-standing aspiration on the path to AGI. Language agents increasingly store procedural knowledge in reusable skills. Optimizing skills offers a direct way to achieve RSI, because the optimization procedure itself can be encoded as a skill. Existing skill optimizers, however, follow a hand-designed procedure. Even methods that evolve a meta-skill confine it to a fixed pipeline and relearn it for each task. We present Skill^{infty}, which makes skill optimization recursively self-improving: a meta agent follows a meta-skill to optimize task skills and optimizes the meta-skill itself using the same procedure. The optimization is agent-led. The meta agent diagnoses execution traces, proposes candidates, requests independent reviews, and allocates the search budget. The meta-skill defines these steps, allowing self-improvement to rewrite them. This meta-skill is also decoupled from task skills, refined on multiple skill optimization tasks and then reused to optimize task skills across diverse domains. As in deployment, skills at both levels are standard packages loaded through native skill discovery. On 83 SkillsBench tasks, Skill^{infty} reaches a pass rate of 60.7%, compared with 56.4% for human-curated skills and 54.5% for SkillEvolver.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.35434"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Skill^∞ introduit un cadre de *recursive self-improvement* pour optimiser les compétences d'agents via un méta-agent qui améliore à la fois les compétences et son propre processus d'optimisation, permettant une auto-amélioration récursive et réutilisable.",
+   "score": 8.5
+  },
+  {
+   "id": "5a80235ed7913f13",
+   "title": "Build, Don't Play: Self-Improving LLM Research Agents Develop a Hearthstone Battlegrounds AI That Rivals Top Players",
+   "url": "https://huggingface.co/papers/2610.33845",
+   "summary": "Can LLM agents carry a hard real-world problem from raw data to a system that holds its own against people? We study this in Hearthstone Battlegrounds, an eight-player auto-battler with stochastic shops and battles, hidden information and nearly a thousand interacting cards. We present AutoTavern, a self-improving research system: specialised LLM research agents share a typed research memory, every claim passes verification gates, and live games close the loop, so the agents improve the simulator, opponents and policy and, from the same feedback, their own research process; a human sets goals and rules on ambiguous mechanics. In 20 days AutoTavern built TavernGym, the first faithful, full-content reproduction of the live game, and delivered 23 versions of TavernAgent, trained with PPO against opponents calibrated to real games. TavernAgent plays complete games on the live ladder by itself: its rating rose from 6,000 to about 15,000 and, on the public leaderboard's measure, its last 20 records average a placement of 1.60 with 80% first places, better than the server's ten highest-rated players on every statistic (2.34, 59%). TavernBench, 960 tasks in 40 scenarios, shows that the system the agents built is the strongest player: TavernAgent answers 91% of the play tasks against at most 63% for frontier LLMs, and decides in 0.03 s where they need up to 26 s; within the second a live turn allows, it keeps 90% and no LLM more than 26%. LLM agents build far better than they play. We will open-source TavernBench and TavernGym at https://github.com/MCG-NJU/AutoTavern.",
+   "published": "2026-10-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.33845"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "AutoTavern démontre un système d'agents LLM auto-améliorants capable de développer un agent IA pour *Hearthstone Battlegrounds* rivalisant avec les meilleurs joueurs humains, en 20 jours, via un cadre de recherche spécialisé et un simulateur fidèle.",
+   "score": 8.5
+  },
+  {
+   "id": "843d007a5379c696",
+   "title": "Trustworthy Recursive Self-Improvement in the Era of Large Models: Foundation, Risks, Evaluation and Open Challenges",
+   "url": "https://huggingface.co/papers/2610.35193",
+   "summary": "AI systems built around large models increasingly use experience and feedback to make persistent changes to models, prompts, memories, tools, and workflows. Recursive self-improvement (RSI) extends this process to inductive biases and to the mechanisms that govern future updates, which can themselves be revised and reused across improvement cycles. Yet self-modification alone does not guarantee trustworthy improvement. Reported gains may reflect flawed evaluations, previously acquired capabilities may deteriorate, and compliance with behavioral constraints may weaken. Compromised artifacts or sensitive information may also persist in successor systems. Changes to improvement mechanisms may invalidate earlier verification results and make human oversight less effective. This survey presents an operational definition and process framework for RSI and organizes the requirements for trustworthy RSI into four interconnected themes: genuine and sustained improvement; behavioral constraints, alignment, and fairness; system security and privacy; and transparency and controllability. We examine these themes from three perspectives: Improvement Validity, Constraint Preservation, and Effective Oversight. This analysis covers improvement diagnosis, proposal generation, proposal evaluation, and update implementation (S1--S4), including the recursive application of these stages to improvement mechanisms (RI). We review risks, safeguards, and evaluation evidence for individual updates, effects inherited by successor systems, and revisions to improvement mechanisms, while distinguishing direct RSI findings from evidence in related systems. Finally, we examine evaluation settings, identify requirements for independent and longitudinal assessment, and discuss applications and open research problems.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 16,
+    "arxiv_id": "2610.35193"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "Ce survey définit un cadre opérationnel pour l'*auto-amélioration récursive* (RSI) dans les grands modèles, en identifiant les risques (détérioration des capacités, contournement des contraintes) et les exigences pour une RSI fiable (validité, préservation des contraintes, sécurité, transparence).",
+   "score": 8.5
+  },
+  {
+   "id": "d5c7832cddd307c5",
+   "title": "Trajectory2Gym: Decision-Grounded Compositional Interaction Synthesis for Tool-Use Agents",
+   "url": "https://huggingface.co/papers/2610.33568",
+   "summary": "Successful tool-use trajectories are not necessarily useful supervision. Even successful interactions may underrepresent multi-step dependencies or contain actions that are unjustified by the information visible to the agent at decision time. We identify two coupled requirements for effective trajectory supervision: compositional coverage, so that important observation-action dependencies are represented, and decision grounding, so that each supervised action is supported by the learner-visible interaction history. We introduce Trajectory2Gym, which constructs executable interactions around under-supported compositional structures and derives supervision only from grounded decisions in their realized executions. Structural-support selection allocates the resulting experience, while parent-normalized supervised fine-tuning preserves the semantic interaction as the unit of training weight. This reframes trajectory generation as the deliberate construction of learnable interaction experience, rather than the collection of successful trajectories. Across five Qwen3 scales, Trajectory2Gym improves Tau1, Tau2, and BFCL at every tested scale, increasing the equal-weight three-benchmark mean by 16.9-29.8 percentage points. The gains are strongest in stateful and multi-turn interaction, where later decisions depend on earlier observations and feedback. Our results suggest that scaling tool-use agents depends not only on collecting more successful trajectories, but on constructing interactions whose dependencies are represented and whose decisions are learnable from the agent's visible history.",
+   "published": "2026-10-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 324,
+    "arxiv_id": "2610.33568"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Trajectory2Gym génère des trajectoires d'agents outillés en ciblant des dépendances compositionnelles et des décisions ancrées dans l'historique observable. La méthode améliore les performances de Qwen3 sur trois benchmarks (jusqu'à +14 points sur Tau1) en structurant l'expérience d'entraînement pour une supervision efficace.",
+   "score": 8.5
+  },
+  {
+   "id": "f16aefe89a6e3f3b",
+   "title": "Working with academic communities to build scientific understanding",
+   "url": "https://openai.com/index/building-scientific-understanding-with-academic-communities",
+   "summary": "OpenAI shares model results on the Kakeya conjecture, Exponential Time Hypothesis, and quantum chromodynamics—and how researchers can verify and build on them.",
+   "published": "2026-10-26T14:30:00+00:00",
+   "source": "openai-blog",
+   "source_label": "OpenAI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "OpenAI partage des résultats de modèles sur des conjectures mathématiques et physiques (Kakeya, ETH, QCD) pour encourager la recherche académique, avec une approche transparente et vérifiable.",
+   "score": 8.5
+  },
+  {
+   "id": "9f7a5172026e7d6c",
+   "title": "Retriever-Free Retrieval: Navigating Documents with Decision Models",
+   "url": "https://arxiv.org/abs/2610.35868v1",
+   "summary": "While language models have become dramatically more capable, retrieval still largely relies on lexical matching or similarity in fixed embedding spaces. This creates a capability asymmetry: what the retriever fails to find, even the strongest generator cannot recover. We propose DecisionRAG, which brings the capabilities of pretrained language models to retrieval using decision models that jointly evaluate candidate branches in a single forward pass, without generating any tokens, and show that judging candidates in a shared context makes their relevance estimates comparable. Like a person browsing a library, DecisionRAG navigates the corpus's inherent structure from broad topics down to individual passages, deciding at each level which branches are worth exploring. Without task-specific training or a first-stage retriever, DecisionRAG outperforms dense retrieval with an 8B reranker by 13.8 R@1 points on MultiDoc2Dial and 17.4 Hit@1 points on Natural Questions. Across four benchmarks, including a corpus of 2.68 million Wikipedia paragraphs, retrieval takes just 0.7-1.8 seconds per query.",
+   "published": "2026-10-26T17:59:44+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Chao Wan, Paul Jünger, Beixi Du, Bodong Liu, Navaneetha Krishnan, Kilian Q. Weinberger"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "rag",
+    "architecture"
+   ],
+   "tldr": "DecisionRAG propose une approche innovante pour le RAG sans retriever dédié, utilisant des modèles de décision pour évaluer conjointement des branches candidates dans un même passage, améliorant significativement les performances de récupération (jusqu'à +17.4 points Hit@1) sans entraînement spécifique ni générateur de tokens.",
+   "score": 8.3
+  },
+  {
+   "id": "92ada99230b64538",
+   "title": "Work Agents: Systems, Capabilities, and Optimization",
+   "url": "https://arxiv.org/abs/2610.35845v1",
+   "summary": "As foundation models evolve from information generation to digital work execution, agents are increasingly capable of completing complex tasks across tools, applications, and workflows. However, existing research lacks a unified perspective on how agents reliably accomplish delegated work. To address this gap, we present a work-centric, system-level perspective that views work agents as systems combining foundation models and runtime harnesses to execute tasks in stateful workspaces and deliver verifiable outcomes. We introduce two complementary dimensions, work persistence and work openness, to characterize working conditions, and classify digital work into five forms according to task scope and organization. Building on this framework, we identify five core capability families required for reliable work execution and examine approaches to model optimization, harness optimization, and their joint optimization. We further analyze existing evaluation methods and metrics from the perspective of work outcomes. Finally, we discuss future research directions, including sustained work delegation, adaptation to open environments, and the interaction between work execution and capability improvement. This paper provides a unified framework for understanding, optimizing, and evaluating work agents, supporting the development of systems capable of delivering reliable, verifiable, and practically valuable work outcomes.",
+   "published": "2026-10-26T17:56:21+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zishan Xu, Enjun Du, Mingqi Gao, Cheng Yang, Junhao Shen, Zirong Chen"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Work Agents propose un cadre systémique pour évaluer et optimiser les agents capables d'exécuter des tâches complexes dans des environnements ouverts, définissant des dimensions clés (persistance, ouverture) et identifiant cinq familles de capacités critiques pour une exécution fiable.",
+   "score": 8.3
+  },
+  {
+   "id": "68026174e4154a2d",
+   "title": "Profiling a Frontier Agent with EBench: From Direct Control to Harness with Policy",
+   "url": "https://arxiv.org/abs/2610.35832v1",
+   "summary": "Frontier multimodal large language models (MLLMs) can control robots without robot-specific training, but how their capabilities compare and interact with post-trained vision-language-action (VLA) and world action model (WAM) policies across manipulation demands remains to be thoroughly evaluated. In this report, we evaluate GPT-6-Astra on EBench as the core of an agent that controls a robot through an agent harness under the same visual and proprioceptive observation protocol as post-trained policies. We study two agent configurations: direct control, in which the agent generates waypoint commands directly, and harness with policy, in which it can also invoke a post-trained VLA or WAM policy for action execution. Under direct control, the agent achieves competitive overall performance relative to post-trained policies. It leads on short-horizon tasks and exhibits the least performance variation across generalization dimensions, whereas it underperforms post-trained policies on long-horizon tasks, tabletop manipulation, and high-precision contact-rich tasks. In the harness with policy, invoking a post-trained VLA or WAM combines the complementary strengths of both components, raising overall task success to the level of the strongest compared post-trained policies while substantially reducing token cost. However, performance remains below the per-task upper bound of the standalone components due to suboptimal policy invocation, fixed-instruction execution without subgoals, and grasp disruption when the agent resumes control. Overall, our study characterizes the capability boundary of a frontier MLLM agent and suggests directions for improving future agent harness design. Project page: https://internrobotics.github.io/EBench-Astra-Tech-Report/",
+   "published": "2026-10-26T17:51:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yifei Yao, Yude Zou, Guanbo Jiao, Xing Gao, Ning Gao, Yukai Wang"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Évaluation comparative de GPT-6-Astra comme agent robotique sur EBench, montrant ses forces en contrôle direct (tâches courtes, généralisation) et ses limites face aux politiques post-entraînées (VLA/WAM) sur des tâches longues ou de précision. Intéressant pour l'analyse des capacités des MLLM en manipulation robotique sans entraînement spécifique.",
+   "score": 8.3
+  },
+  {
+   "id": "dc258134722cba30",
+   "title": "Pretraining Knows What, Simulation Teaches How: Compositional Generalization in a Sim-Trained Robot Agent",
+   "url": "https://arxiv.org/abs/2610.35817v1",
+   "summary": "A robot policy needs to understand what a task is asking for in a scene, and how to move the robot to accomplish that task. To achieve these two skills, we introduce Zero-real Agent Policy (ZAP), a recipe that teaches a small off-the-shelf vision-language model to control a robot via a simple tool harness. We use a pretrained 27B parameter model to bootstrap world understanding and reasoning, followed by supervised fine-tuning and GRPO on simple simulated tasks to teach it how to move the robot. Without any real-world robot data during training, ZAP reaches 96.7% success on real-world tasks, matching GPT-6 Astra in our harness and outperforming the MolmoAct2 VLA (33.3%), while running 3x faster and 17x cheaper than GPT-6 Astra. We demonstrate that ZAP also generalizes to completely new objects, goals, strategies, and language by seating a test tube in a rack (and choosing a different hole in the rack when prompted), handing a test tube between arms mid-air, drawing an X on a tic-tac-toe board, and playing chess. These goals and types of manipulation don't appear in our training data. Furthermore, ZAP also transfers to an unseen embodiment. On a single-arm Franka, ZAP reaches 55.9% on RoboLab-120, 4.9 percentage points ahead of the leading VLA/WAM baseline.",
+   "published": "2026-10-26T17:44:34+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Benjamin Pikus, Daniel Saunders, Mircea Mironenco, Salman Mohammadi, Mathew Mathew, Sirou Zhu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "ZAP, un agent robotique simulé, combine un modèle 27B pré-entraîné et un fine-tuning léger pour atteindre 96.7% de succès en monde réel sans données robotiques, avec généralisation à de nouvelles tâches et transferts d'embodiment. Démontre l'efficacité des approches sim-to-real pour les agents.",
+   "score": 8.3
+  },
+  {
+   "id": "92f84c8c580c360d",
+   "title": "A Unified Arena for LLM Agents across Diverse Eurogame",
+   "url": "https://arxiv.org/abs/2610.35773v1",
+   "summary": "Interactive environments offer a practical way to evaluate large language model (LLM) agents, and competitive games extend this evaluation to decisions shaped by competing goals and other agents' choices. Yet existing evaluations confined to individual games or execution frameworks leave unclear which competitive advantages persist across settings. We introduce DECE (Diverse Eurogame Competitive Environments), a unified arena spanning ten Eurogames with shared interfaces and evaluation protocols. These games combine lasting strategic commitments, competition over shared resources, and multiple routes to victory. Our primary study evaluates 12 model-harness configurations, spanning nine models and four execution harnesses, in 480 three-player matches across ten games. The main and supplementary studies comprise 1,032 completed matches in total. These comparisons reveal broad cross-game ranking agreement alongside game-specific strengths. Matched studies show that the same model can perform differently across execution harnesses, adding another source of variation to these profiles. These performance advantages do not consistently translate into better token or cost efficiency, making resource use an additional consideration when comparing configurations. Together, the findings support evaluating complete agent configurations by both their competitive performance across games and the resources needed to achieve it.",
+   "published": "2026-10-26T17:14:22+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Fengrui Zhang, Xiang Li, Ruomeng Ding, Jiayi Yuan, Yuchen Huang, Zhaoyang Han"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Création d'une arène unifiée (DECE) pour évaluer les agents LLM sur 10 jeux Eurogames, révélant des tendances de performance croisées et l'impact des frameworks d'exécution. Essentiel pour benchmarker les capacités multi-agents et la généralisation des modèles.",
+   "score": 8.3
+  },
+  {
+   "id": "20b4cd27ff6d423f",
+   "title": "Triage: Skip, Skim, or Refine Attention Tiles in Video Diffusion Transformers",
+   "url": "https://arxiv.org/abs/2610.35706v1",
+   "summary": "Attention over tens of thousands of visual tokens dominates the inference of video diffusion transformers (DiTs). Existing methods reduce this cost through sparsity, low precision, or both, but use a single precision for all kept tiles. We observe that the output error introduced by approximation varies widely across tiles. Many tiles can be skipped with little error, others must be computed but gain little beyond low precision, and a few retain substantial error even at low precision. We present Triage, a training-free attention method that assigns each tile one of three approximation tiers: skipping it by replacing it with its block means, skimming it in NVFP4, or refining it with NVFP4 residual correction. A lightweight router predicts each tile's error under each tier from block statistics and moves a tile to a more accurate tier only when the predicted error reduction justifies the extra compute, with a single price setting this trade-off. A fused kernel executes all three tiers in a single pass on the FP4 tensor cores of RTX Blackwell GPUs. Across Wan2.2, HunyuanVideo, and LTX-2.5, Triage accelerates end-to-end generation by up to 2.32x over dense FlashAttention, and in each of five settings it runs faster than every baseline while reaching 0.3-3.0 dB higher PSNR than the highest-PSNR baseline.",
+   "published": "2026-10-26T16:29:36+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yeonjae Kim, Omin Kwon, Seong Hoon Seo, Jae W. Lee"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Méthode *Triage* pour accélérer l'inférence des transformers vidéo en assignant dynamiquement des niveaux de précision (skip, skim, refine) aux tuiles d'attention, réduisant les coûts de calcul jusqu'à 2.32x sans perte de qualité.",
+   "score": 8.3
+  },
+  {
+   "id": "181bc2b30a23edbf",
+   "title": "Eat Your Precision: Precision Objective Mitigates Reward Hacking in Rubric-based RL",
+   "url": "https://huggingface.co/papers/2610.33512",
+   "summary": "Rubric-based rewards enable effective reinforcement learning on non-verifiable tasks. However, because these rewards are typically defined as a weighted measure of rubric coverage, models are trained primarily to maximize a recall objective. As a result, RL-trained models produce responses that are more complete but also more verbose and contain more unnecessary or factually incorrect content, leading them to be less preferred than responses from the base model. To address this issue, we present the FORK reward, which jointly optimizes recall and a novel precision objective, which requires each unit of a model response to be both necessary and factually correct, as measured by rubric-driven necessity credits and a factual-correctness grader, respectively. Our experimental results show that FORK outperforms existing rubric-based RL methods and achieves Pareto-optimal performance that balances rubric coverage and overall response quality. Compared to the original recall-based reward, FORK substantially improves precision and reduces response length while achieving similar rubric coverage, which leads to significantly higher win rate compared to the base policy (e.g., from 10.6% to 68.0% on RubricHub-Medical and from 22.1% to 74.1% on HealthBench).",
+   "published": "2026-10-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2610.33512"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "FORK introduit une récompense combinant *recall* et *precision* pour RL basé sur des rubriques, réduisant la verbosité et les erreurs factuelles tout en maintenant une couverture élevée des critères, améliorant significativement les taux de victoire.",
+   "score": 8.2
+  },
+  {
+   "id": "697aff00a0b25ac8",
+   "title": "Novel or Not? PatEx-Gym: Agentic Prior-Art Search for Novelty Assessment in Patent Examination",
+   "url": "https://huggingface.co/papers/2610.33503",
+   "summary": "Patent examination is a challenging real-world task that requires agents to discover sparse prior art, iteratively refine queries, inspect technical evidence, and produce novelty assessments documented in Office Actions (OAs) across heterogeneous scientific and technical domains. However, existing benchmarks largely focus on static and limited candidate sets, leaving the full search--reasoning--assessment process underexplored. We present PatEx-Gym, the first framework for developing and evaluating agents for patent examination, which integrates three components. First, PatEx-Bench provides 1K realistic examination tasks, two large-scale retrieval corpora containing over 1M patents and 52K scientific papers, and a harness runtime supporting iterative search, document visits, reasoning, and OA generation. Second, we introduce PASS, an annotation-free Prior-Art Agentic Search Trajectory Synthesis framework. Specifically, it exploits document visits as implicit relevance signals and evidence-acquisition anchors to model intra-turn query behavior, inter-turn search progression, and trajectory-level evidence and outcome quality, yielding PatEx-SynData. Third, we train PatEx-Agent at the 4B scale via supervised fine-tuning on the curated trajectories, establishing a lightweight baseline. Extensive experiments show that final decision accuracy alone does not fully reflect examination quality, while prior-art discovery remains difficult even for strong frontier models. Our PatEx-Agent achieves competitive performance against substantially larger general-purpose agents. These results show that training on PatEx-SynData enables a compact 4B model to serve as a competitive baseline for prior-art search and patent examination. We view patent examination as a demanding testbed for agentic search and deep research agents.",
+   "published": "2026-10-23T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.33503"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "PatEx-Gym introduit un cadre complet pour évaluer des agents dans l'examen de brevets, combinant un benchmark de 1K tâches, des corpus de 1M+ brevets et 52K articles scientifiques, et un système d'agents itératifs pour la recherche de prior art et l'évaluation de nouveauté. PASS génère des trajectoires synthétiques sans annotation pour entraîner PatEx-Agent.",
+   "score": 8.2
+  },
+  {
+   "id": "28198522dcb796c1",
+   "title": "Work Agents: Systems, Capabilities, and Optimization",
+   "url": "https://huggingface.co/papers/2610.35845",
+   "summary": "As foundation models evolve from information generation to digital work execution, agents are increasingly capable of completing complex tasks across tools, applications, and workflows. However, existing research lacks a unified perspective on how agents reliably accomplish delegated work. To address this gap, we present a work-centric, system-level perspective that views work agents as systems combining foundation models and runtime harnesses to execute tasks in stateful workspaces and deliver verifiable outcomes. We introduce two complementary dimensions, work persistence and work openness, to characterize working conditions, and classify digital work into five forms according to task scope and organization. Building on this framework, we identify five core capability families required for reliable work execution and examine approaches to model optimization, harness optimization, and their joint optimization. We further analyze existing evaluation methods and metrics from the perspective of work outcomes. Finally, we discuss future research directions, including sustained work delegation, adaptation to open environments, and the interaction between work execution and capability improvement. This paper provides a unified framework for understanding, optimizing, and evaluating work agents, supporting the development of systems capable of delivering reliable, verifiable, and practically valuable work outcomes.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 83,
+    "arxiv_id": "2610.35845"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Work Agents propose une taxonomie systémique des agents de travail, définissant des dimensions clés (persistance, ouverture) et cinq familles de capacités pour l'exécution fiable de tâches complexes. Le travail identifie des axes d'optimisation conjointe (modèle/harness) et discute des métriques d'évaluation centrées sur les résultats.",
+   "score": 8.2
+  },
+  {
+   "id": "e281511812abce93",
+   "title": "A theory of noisy linear recurrent neural network learning dynamics",
+   "url": "https://arxiv.org/abs/2610.35785v1",
+   "summary": "Biological neural networks are noisy: their dynamics involve difficult-to-predict fluctuations which are likely due not just to chaos, but also to a variety of low-level biophysical processes. Despite the omnipresence of intrinsic noise, its theoretical consequences are incompletely understood, especially in the context of learning. For example, does noise meaningfully shape representation learning, or is it better viewed as a nuisance factor whose presence or absence changes little about what solution is found and when? Here, we argue that intrinsic noise can significantly modulate representation learning in recurrent neural networks (RNNs), since it can strongly break solution-space degeneracies and in some cases control whether a non-degenerate solution exists at all. We show that this is true for an analytically tractable model of noisy RNN learning with a linear activation function and white noise inputs. We find that, in the so-called rich regime (where weights are initialized with small values), noise strongly modulates the directions in which the read-in, readout, and recurrent weights align. Moreover, we find that noise produces a kind of phase transition: for sufficiently high noise, a non-degenerate solution is not even optimal if parameter scales are limited (e.g., via regularization). These results extend recent analytic work on RNN representation learning and show that noise can act as a fundamental determinant of representations.",
+   "published": "2026-10-26T17:25:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "John J. Vastola, Kanaka Rajan"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Ce papier théorique explore l'impact du bruit intrinsèque dans les RNN linéaires sur l'apprentissage des représentations, démontrant que le bruit peut briser des dégénérescences dans l'espace des solutions et influencer l'alignement des poids. Intéressant pour comprendre les limites fondamentales des modèles récurrents et leur robustesse au bruit biologique.",
+   "score": 8.0
+  },
+  {
+   "id": "20b8144d0cdca703",
+   "title": "The Watchtower Imperative: Lifespan-Calibrated Evaluation for Frontier AI",
+   "url": "https://arxiv.org/abs/2610.35725v1",
+   "summary": "The gap between AI capability deployment and safety assurance is structural and cannot be closed through internal evaluations alone. Analyzing documented harms (2017-2026) across the human lifespan reveals that disparate incidents --- from voice assistants endangering children to AI companions implicated in adolescent suicide and automated care denials for the elderly --- reflect a single failure: evaluating systems against an implicit adult user model. We introduce five developmental moderators structured into a Lifespan Vulnerability Matrix across six life stages. The matrix reveals a nonmonotonic risk distribution: vulnerability peaks at both ends of the lifespan, governance coverage is asymmetrical, and authority to convert model errors into real-world impact is scrutinized least. We then propose a set of lifespan design principles generalizing existing child-protective instruments, and an institution-agnostic, three-tier external evaluation framework --- comprising automated simulation, expert red teaming, and post-deployment monitoring --- indexed directly to matrix risk cells.",
+   "published": "2026-10-26T16:44:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Casey M. Williams, Jennifer Victoria Scurrell"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "regulation",
+    "produit"
+   ],
+   "tldr": "L'article propose un cadre d'évaluation externe pour les IA de pointe (*frontier AI*) basé sur une matrice de vulnérabilité lifespan, intégrant des principes de conception et des tests automatisés/red teaming adaptés aux risques non monotones (enfants, personnes âgées). Essentiel pour la régulation des LLM.",
+   "score": 8.0
+  },
+  {
+   "id": "837e95a69323fee1",
+   "title": "EvoRouter: Cost-Efficient Multi-Agent Routing via Insight-Guided On-Policy Distillation",
+   "url": "https://arxiv.org/abs/2610.35690v1",
+   "summary": "Serving web queries at scale with multi-agent systems requires jointly configuring large language models, collaboration modes, agent counts, interaction rounds, and skills. However, the resulting configuration space grows combinatorially, while sparse execution rewards provide limited fine-grained supervision for interdependent planning decisions. We propose EvoRouter, a self-evolving multi-agent routing framework driven by insight-guided on-policy distillation. A dedicated expert periodically synthesizes performance-cost feedback from configuration trajectories across tasks into reusable conditional routing insights about capability requirements, returns from resource scaling, and interactions among configuration choices. A privileged teacher combines these evolving insights with current execution feedback to provide dense token-level supervision for the router's own planning trajectories through on-policy distillation. Cost-aware reinforcement learning jointly optimizes task performance and computational cost. Together, these training signals internalize execution insights into the routing policy. The updated policy generates new trajectories that support subsequent insight extraction, forming an execution-driven self-improvement loop. We evaluate EvoRouter on 19 in-domain datasets spanning five domains and two out-of-domain benchmarks. EvoRouter achieves an average in-domain accuracy of 68.69%, outperforming the strongest routing baseline by 7.23 percentage points while reducing inference compute cost by 50.95%. Our code is open-sourced at https://github.com/CenYangtze/EvoRouter.",
+   "published": "2026-10-26T16:21:00+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yitao Xiao, Xu Zhang, Ye Cheng, Shaoyong Guo, Yan Sun, Ziyue Zhu"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Cadre *EvoRouter* pour optimiser le routage multi-agents via distillation on-policy guidée par insights, réduisant les coûts de calcul tout en améliorant les performances, avec une boucle d'auto-évolution.",
+   "score": 8.0
+  }
+ ]
+}
