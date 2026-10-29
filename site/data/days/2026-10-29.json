@@ -1,0 +1,732 @@
+{
+ "date": "2026-10-29",
+ "digest": {
+  "headline": "Gemini 4 Carbon et RealCLI marquent des avancées majeures en efficacité énergétique des LLM et en évaluation des agents CLI",
+  "overview": "La journée du 2026-10-29 met en lumière des progrès significatifs dans l'évaluation des agents autonomes, l'optimisation des architectures de langage, et l'intégration de contraintes environnementales dans les modèles. Les travaux sur la robotique et les systèmes embodied continuent de gagner en maturité, avec des approches innovantes pour la généralisation et l'interprétabilité.",
+  "highlights": [
+   {
+    "title": "Nouveaux benchmarks pour l'évaluation des agents CLI et la collaboration humain-IA",
+    "text": "RealCLI introduit un benchmark pour évaluer la collaboration humain-agent dans les tâches en ligne de commande, révélant un écart notable entre performance technique (49.2%) et qualité d'interaction (37.6%). Ce travail souligne l'importance de l'alignement entre les capacités des agents et les besoins utilisateurs, un enjeu critique pour les systèmes autonomes. Parallèlement, OSMA-Bench évalue la sécurité des robots domestiques face à des obstacles sémantiques, exposant des lacunes dans l'intégration des contraintes de sécurité."
+   },
+   {
+    "title": "Optimisation des modèles de langage et architectures multimodales",
+    "text": "DTCA propose une méthode pour améliorer l'attribution de crédit dans les modèles de langage par diffusion via le renforcement, avec des gains en raisonnement mathématique sur LLaDA-8B-Instruct. EmbeddingGemma 2 établit une nouvelle référence pour les embeddings multimodaux (texte, image, audio, vidéo), combinant efficacité et qualité grâce à des techniques comme la quantification. Ces avancées illustrent une tendance vers des architectures plus spécialisées et optimisées pour des tâches spécifiques."
+   },
+   {
+    "title": "Gemini 4 Carbon et l'efficacité énergétique des LLM",
+    "text": "DeepMind annonce Gemini 4 Carbon, un modèle de la série Gemini probablement axé sur la réduction de l'empreinte carbone. Cette initiative reflète une préoccupation croissante pour l'impact environnemental des grands modèles de langage, un enjeu technique et éthique pour les déploiements à grande échelle. Les détails techniques restent limités, mais cette annonce pourrait influencer les futures architectures LLM."
+   },
+   {
+    "title": "Robotique et modèles embodied : généralisation et interprétabilité",
+    "text": "RynnWorld-Latent introduit un modèle de monde latent universel pour l'apprentissage croisé entre humains, robots et simulations, utilisant des actions latentes 3D comme interface commune. HuGe pré-entraîne des VLAs humanoïdes sur 2000h de données égo-centrées, améliorant le transfert de compétences motrices. Sensorimotor Alignment (S²) propose une métrique hors-ligne pour prédire la performance des politiques embodied, corrélée avec le succès en boucle fermée. Ces travaux adressent des défis clés en généralisation et évaluation des systèmes robotiques."
+   },
+   {
+    "title": "Amélioration du raisonnement et de la fiabilité des agents via le RL",
+    "text": "Self-Assessment Reinforcement Learning (SARL) améliore la prise de conscience des agents de recherche, réduisant les hallucinations et boostant les performances sur des benchmarks multi-sauts. AlphaBet utilise le RL pour la prévision d'événements, réduisant significativement les scores de Brier. Ces méthodes montrent que le renforcement peut optimiser des aspects critiques comme la fiabilité et la précision, sans nécessiter de données externes coûteuses."
+   }
+  ],
+  "trend": "Les avancées récentes convergent vers une spécialisation accrue des architectures (LLM, embodied, multimodales) et une intégration systématique des contraintes opérationnelles (sécurité, efficacité énergétique, conformité). L'évaluation des agents et leur alignement avec les besoins utilisateurs deviennent des axes de recherche prioritaires, tandis que le RL se confirme comme un outil clé pour améliorer la fiabilité et l'autonomie des systèmes."
+ },
+ "items": [
+  {
+   "id": "21518626117371ec",
+   "title": "RealCLI: Toward a Unified Evaluation of Human-Agent Collaboration for CLI Agents",
+   "url": "https://huggingface.co/papers/2610.22507",
+   "summary": "Command-line interface (CLI) agents increasingly execute longer-horizon tasks, yet existing benchmarks either assume that user instructions remain fixed throughout execution or evaluate task outcomes without capturing runtime collaboration quality. In this paper, we present REALCLI, a paired benchmark that unifies the evaluation of task execution and human-agent collaboration quality on realistic CLI tasks. To comprehensively measure collaboration, REALCLI builds a five-dimensional framework, operationalized into 22 sub-dimensions and 51 interaction scenario templates. REALCLI provides two modes for paired comparison: REALCLI-EXEC supplies complete specifications upfront, whereas REALCLI-COLLAB introduces a scripted user that delivers progressive information, corrections, constraint revisions, and authorization decisions. Evaluations reveal profound capability gaps in frontier agents: the best configuration attains an average score of only 49.2%, and when evaluated by the joint collaboration score (J_{collab}), the peak performance reaches merely 37.6%. These results show that task effectiveness diverges sharply from collaboration quality, with models consistently struggling in steerability, trust calibration, and safety boundary management. REALCLI provides a rigorous, reproducible foundation for measuring and advancing collaborative CLI agents.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.22507"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "REALCLI propose un benchmark pair pour évaluer la collaboration humain-agent dans les tâches CLI, révélant des écarts majeurs entre performance de tâche et qualité d'interaction (49.2% vs 37.6% en score joint). Pertinent pour l'évaluation des agents autonomes et leur alignement avec les besoins utilisateurs.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les agents CLI (Command-Line Interface) actuels sont évalués soit sur leur capacité à exécuter des tâches longues avec des instructions fixes, soit uniquement sur le résultat final, sans mesurer la qualité de la collaboration en temps réel avec l'utilisateur. Cela ignore des aspects critiques comme l'adaptabilité aux corrections, la gestion des contraintes dynamiques ou la calibration de la confiance entre l'humain et l'agent.",
+    "methode": "REALCLI propose un benchmark unifié pour évaluer à la fois l'exécution des tâches et la qualité de la collaboration humain-agent. Il repose sur un cadre d'évaluation à cinq dimensions (ex. : *steerability*, *trust calibration*), décomposées en 22 sous-dimensions et 51 scénarios d'interaction pré-définis. Deux modes de test sont offerts : REALCLI-EXEC (instructions complètes dès le départ) et REALCLI-COLLAB (utilisateur scripté fournissant des informations progressives, corrections, révisions de contraintes et décisions d'autorisation). Les scénarios couvrent des tâches réalistes en CLI, avec une métrique composite (*J_collab*) pour quantifier la collaboration.",
+    "resultats": "Les évaluations révèlent des lacunes majeures chez les agents de pointe : le meilleur modèle atteint seulement 49,2 % en score moyen d'exécution, et 37,6 % pour le score de collaboration (*J_collab*). Les modèles peinent particulièrement en *steerability* (capacité à suivre des ajustements dynamiques), en calibration de la confiance (ex. : demander des confirmations appropriées) et en gestion des limites de sécurité (ex. : éviter des actions dangereuses). Ces résultats montrent un écart marqué entre l'efficacité technique et la qualité collaborative.",
+    "limites": "Le contenu disponible ne précise pas la représentativité des 51 scénarios ni leur couverture des cas d'usage réels en CLI. De plus, l'évaluation repose sur un 'utilisateur scripté', ce qui peut introduire des biais par rapport à des interactions humaines authentiques. Enfin, la métrique *J_collab* n'est pas détaillée, laissant planer des doutes sur sa robustesse ou sa généralisabilité.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique de l'évaluation collaborative, mais ses limites méthodologiques (scénarios, métriques) appellent à une validation complémentaire avant adoption large."
+   }
+  },
+  {
+   "id": "d2493f9c725f4d1f",
+   "title": "DTCA: Denoising Token Credit Assignment for Reinforcement Learning in Diffusion Language Models",
+   "url": "https://huggingface.co/papers/2610.35201",
+   "summary": "Diffusion language models (DLMs) generate text through iterative denoising, enabling bidirectional context modeling and parallel token refinement. Recent studies have applied reinforcement learning (RL) to DLMs and improved their reasoning performance. However, the iterative denoising process makes credit assignment more challenging, as final outcome rewards provide limited information about how different tokens contribute to the final output. In this paper, we propose Denoising Token Credit Assignment (DTCA), a framework for token-level credit assignment in reinforcement learning for diffusion language models. DTCA estimates token contributions by measuring the improvement in prediction confidence of remaining masked positions after token commitment and groups these signals according to part-of-speech (POS) categories. These contribution weights are used to select informative denoising timesteps and assign token-level learning signals during RL training. DTCA further calibrates these learning signals according to token-level entropy changes induced by policy updates. Experiments on LLaDA-8B-Instruct show that DTCA consistently improves mathematical reasoning performance across different generation budgets, with gains of up to 9.0 points on MATH500 and 5.3 points on GSM8K over the base model.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 256,
+    "arxiv_id": "2610.35201"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Proposition d'un cadre (DTCA) pour améliorer l'attribution de crédit dans les modèles de langage par diffusion (DLMs) via RL, en estimant les contributions des tokens via la confiance prédictive et en optimisant les timesteps de débruitage. Résultats sur LLaDA-8B-Instruct montrant des gains en raisonnement mathématique.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage à diffusion (DLMs) génèrent du texte via un processus itératif de débruitage, ce qui complique l'attribution des récompenses en apprentissage par renforcement (RL). En effet, les récompenses finales ne fournissent qu'une information limitée sur la contribution individuelle des tokens au résultat final, rendant difficile l'optimisation ciblée des étapes de génération.",
+    "methode": "La méthode DTCA (Denoising Token Credit Assignment) propose un cadre pour l'attribution de crédits au niveau des tokens dans les DLMs. Elle estime les contributions des tokens en mesurant l'amélioration de la confiance prédictive des positions masquées restantes après l'engagement d'un token. Ces signaux sont ensuite regroupés par catégories grammaticales (POS). DTCA utilise ces poids de contribution pour sélectionner les étapes de débruitage informatives et attribuer des signaux d'apprentissage au niveau des tokens pendant l'entraînement RL. De plus, elle calibre ces signaux en fonction des changements d'entropie induits par les mises à jour de la politique.",
+    "resultats": "Les expériences menées sur le modèle LLaDA-8B-Instruct montrent que DTCA améliore significativement les performances en raisonnement mathématique, avec des gains allant jusqu'à 9,0 points sur le benchmark MATH500 et 5,3 points sur GSM8K par rapport au modèle de base. Ces améliorations sont observées pour différents budgets de génération.",
+    "limites": "Le contenu disponible ne permet pas d'identifier clairement les limites de l'approche DTCA. On peut cependant s'interroger sur la généralisabilité de la méthode à d'autres tâches que le raisonnement mathématique, ainsi que sur le coût computationnel supplémentaire induit par l'estimation des contributions et le calibrage des signaux d'apprentissage.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante de l'attribution de crédits dans les modèles de langage à diffusion, avec des résultats prometteurs en raisonnement mathématique."
+   }
+  },
+  {
+   "id": "b0da25ea6c1a2967",
+   "title": "Gemini 4 Carbon: Our next frontier model",
+   "url": "https://deepmind.google/blog/gemini-4-carbon-our-next-frontier-model/",
+   "summary": "",
+   "published": "2026-10-28T17:00:58+00:00",
+   "source": "deepmind-blog",
+   "source_label": "DeepMind",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "llm"
+   ],
+   "tldr": "Annonce de DeepMind sur un nouveau modèle de la série Gemini (Gemini 4 Carbon), probablement axé sur l'efficacité énergétique ou la réduction de l'empreinte carbone. Pertinent pour les avancées en architectures LLM et leur impact environnemental.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Gemini 4 Carbon vise à répondre au défi croissant de l'empreinte environnementale des grands modèles de langage (LLM). Les centres de données et l'entraînement des IA consomment une quantité massive d'énergie, contribuant significativement aux émissions de CO₂. Ce modèle cherche à optimiser l'efficacité énergétique sans sacrifier les performances, un enjeu critique pour une IA durable.",
+    "methode": "Les détails techniques précis ne sont pas encore disponibles dans l'annonce, mais on peut supposer que DeepMind combine plusieurs approches. Cela pourrait inclure des optimisations matérielles (comme l'utilisation de TPU ou GPU plus efficaces), des architectures neuronales allégées (par exemple, des modèles sparsifiés ou quantifiés), ou des algorithmes d'entraînement moins gourmands en énergie (comme le *curriculum learning* ou le *federated learning*). Une piste probable est l'intégration de techniques de *carbon-aware computing*, où les calculs sont effectués en fonction de la disponibilité d'énergies renouvelables.",
+    "resultats": "L'annonce ne fournit pas de chiffres concrets pour l'instant. Cependant, DeepMind pourrait mettre en avant des métriques comme une réduction de X% de la consommation énergétique par rapport à Gemini 1.5, ou une amélioration du ratio performance/énergie (par exemple, en FLOPs par watt). Des comparaisons avec des modèles concurrents (comme Llama ou Mistral) pourraient également être présentées pour démontrer l'efficacité du modèle.",
+    "limites": "L'absence de détails techniques précis dans l'annonce rend difficile une évaluation rigoureuse. Les promesses d'efficacité énergétique doivent être vérifiées par des audits indépendants ou des benchmarks standardisés, ce qui n'est pas encore le cas. De plus, l'impact réel dépendra de l'adoption du modèle : une IA plus efficace mais largement utilisée pourrait paradoxalement augmenter la consommation globale d'énergie (*effet rebond*).",
+    "verdict": "À suivre de près pour son approche innovante sur l'IA durable, mais il faudra attendre des données techniques et des validations externes pour en mesurer l'impact réel."
+   }
+  },
+  {
+   "id": "9cff5b58647673f4",
+   "title": "Self-Assessment Reinforcement Learning for Search-State Awareness in Retrieval-Augmented Large Language Models",
+   "url": "https://huggingface.co/papers/2610.30435",
+   "summary": "Recent advances in search agents have enabled large language models to tackle complex tasks by retrieving and synthesizing external information. However, existing search agents often lack search-state awareness, i.e., the ability to recognize what information has been obtained and what remains missing, leading to hallucinated reasoning and prematurely terminated search. To address this limitation, we propose Self-Assessment Reinforcement Learning (SARL), a reinforcement learning framework in which models learn to recognize their own search state during training and improve their search behavior accordingly, without requiring additional assessment at test time. SARL achieves this through a dual reward design that captures the corrective effect of each assessment while penalizing excessive reliance on it, jointly encouraging effective and efficient search trajectories. Under this setup, SARL achieves a 24.3% relative improvement over the strongest baseline, with average gains of 35.9% on multi-hop reasoning and 27.9% on deep research benchmarks against the strongest per-benchmark baselines. SARL further surpasses methods built on auxiliary supervision or multi-agent coordination, despite operating as a standalone RL framework with no inference-time scaffolding. Beyond final performance, SARL maintains training stability under extended search horizons, a regime where existing methods consistently degrade, enabling sustained gains as task complexity grows.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.30435"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "Cadre SARL pour agents de recherche avec auto-évaluation via RL, améliorant la prise de conscience de l'état de recherche et réduisant les hallucinations. Gains de 24.3% à 35.9% sur des benchmarks de raisonnement multi-sauts et recherche approfondie.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles de langage augmentés par la recherche (Retrieval-Augmented Large Language Models) souffrent d'un manque de *conscience de l'état de recherche* (*search-state awareness*). Cela signifie qu'ils ne parviennent pas à évaluer dynamiquement quelles informations ont déjà été récupérées et quelles lacunes persistent, ce qui entraîne des hallucinations, des raisonnements erronés ou une terminaison prématurée de la recherche, notamment dans des tâches complexes comme le raisonnement multi-sauts ou la recherche approfondie.",
+    "methode": "La méthode proposée, *Self-Assessment Reinforcement Learning* (SARL), est un cadre d'apprentissage par renforcement où le modèle apprend à auto-évaluer son état de recherche pendant l'entraînement. SARL utilise une *double récompense* : (1) une récompense qui capture l'effet correctif de chaque auto-évaluation (par exemple, identifier une lacune et ajuster la recherche), et (2) une pénalité pour éviter une dépendance excessive à ces auto-évaluations, favorisant ainsi des trajectoires de recherche à la fois efficaces et parcimonieuses. Contrairement aux approches existantes, SARL n'a pas besoin de supervision auxiliaire ou de coordination multi-agents à l'inférence, fonctionnant comme un cadre RL autonome. Le modèle optimise ses trajectoires de recherche en temps réel, sans recourir à des échafaudages externes pendant le test.",
+    "resultats": "SARL obtient une amélioration relative de 24,3 % par rapport au meilleur baseline global, avec des gains moyens de 35,9 % sur les benchmarks de raisonnement multi-sauts et de 27,9 % sur les tâches de recherche approfondie, comparé aux meilleurs baselines spécifiques à chaque benchmark. Le cadre surpasse également des méthodes reposant sur une supervision auxiliaire ou une coordination multi-agents, tout en maintenant une stabilité d'entraînement même pour des horizons de recherche étendus, un régime où les méthodes existantes voient leurs performances se dégrader.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques critiques comme l'architecture exacte du modèle utilisé pour l'auto-évaluation, ni les mécanismes concrets de la double récompense (par exemple, comment les poids des pénalités sont calibrés). De plus, l'absence de comparaison avec des approches hybrides (RL + supervision symbolique) ou de discussion sur la généralisation à des domaines hors du champ des benchmarks testés laisse des zones d'ombre. Enfin, la robustesse face à des données bruitées ou adversariales n'est pas abordée.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante et ses résultats solides, mais son adoption nécessitera des validations supplémentaires sur des cas d'usage réels et une transparence accrue sur les détails techniques sous-jacents."
+   }
+  },
+  {
+   "id": "e01cd416b82fc63a",
+   "title": "RynnWorld-Latent: A Cross-Embodiment World Model Conditioned on Universal Latent Actions",
+   "url": "https://huggingface.co/papers/2610.36791",
+   "summary": "Learning controllable world dynamics from heterogeneous interaction videos is challenging because robot embodiments use incompatible action spaces, while human videos lack native control labels. We present RynnWorld-Latent, a cross-embodiment video world model that uses the 3D-grounded latent actions introduced by RynnLAM as a shared conditioning interface. This representation enables joint pretraining on human interaction videos, robot demonstrations, and simulation rollouts without requiring a common native action space. Built on a pretrained video transformer, RynnWorld-Latent combines global action tokens with an identity-initialized local pathway that aligns actions with future video latents. We pretrain on 23 datasets comprising approximately 553.5M frames and adapt the model to target robots through post-training. The framework supports two data-generation routes: digital teleoperation uses target robot commands to generate action-video demonstrations, while latent-action synthesis transfers source motion to an edited initial frame and pairs the resulting rollout with retargeted pseudo robot actions. Experiments show improved video prediction metrics on public benchmarks and two real-robot platforms, alongside qualitative action following when different action sequences share the same initial observation. Synthetic mid-training improves policy success rates on LIBERO and LIBERO-Plus, and both generation routes improve real-world policy success rates over real-demonstration-only training in the evaluated settings. These results support universal latent actions as a scalable interface for learning controllable visual dynamics across heterogeneous embodiments.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.36791"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "RynnWorld-Latent introduit un modèle de monde latent universel pour l'apprentissage de dynamiques contrôlables à partir de vidéos hétérogènes (humains, robots, simulations), utilisant des actions latentes 3D comme interface commune pour le pré-entraînement croisé.",
+   "score": 8.8
+  },
+  {
+   "id": "857d6aa958a2dc3e",
+   "title": "PhysEvolve: Verifier-grounded Self-evolution for Physical Reasoning with Executable Worlds",
+   "url": "https://huggingface.co/papers/2610.34921",
+   "summary": "Physical reasoning underpins how embodied systems understand and act in the physical world, yet vision-language models (VLMs) remain unreliable on questions about dynamics and physical causality. Progress is critically constrained by the scarcity of grounded counterfactual training data, as observational videos capture only the factual trajectory that occurred. The self-evolving paradigm offers a route beyond fixed datasets by enabling models to construct their own training problems. Extending this paradigm to physics, however, requires an external source of truth that can both validate model-proposed environments and verify alternative physical outcomes under intervention. We introduce , a verifier-grounded self-evolving framework that trains VLMs for causal physical reasoning from model-proposed executable worlds and simulation-authored tasks. At each round, a shared VLM proposes executable world programs and evidence schemas; a deterministic physics engine freezes each valid world, simulates matched baseline and body-elided counterfactual branches, and synthesizes discrete, answer-bound visual tasks. Exact verifier feedback from task solving updates both the shared policy via GRPO and an adaptive curriculum over physical intents. Starting from Qwen3-VL-8B-Instruct, achieves targeted gains across PhysBench, CausalPhys, and ContPhy without human intervention data, improving PhysBench Throwing by 8.8 points and ContPhy Counterfactual Removal and Goal-Pit by 7.4 and 24.4 points. These gains concentrate on interaction-sensitive and altered-world questions, demonstrating zero-shot transfer of causal principles to unseen complex dynamics (cloth, fluid, soft bodies) and real-world video.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.34921"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "robotique"
+   ],
+   "tldr": "PhysEvolve propose un cadre d'auto-évolution vérifié par simulation pour améliorer le raisonnement physique des VLMs, générant des mondes exécutables et des tâches contre-factuelles validées par un moteur physique pour un apprentissage itératif.",
+   "score": 8.8
+  },
+  {
+   "id": "223d6b1fea328920",
+   "title": "CausGround: Causal Interaction Grounding for Adaptive Embodied Planning",
+   "url": "https://huggingface.co/papers/2610.29702",
+   "summary": "Multimodal large language models (MLLMs) show promising reasoning capabilities, but reliable physical interaction requires planning that accounts for when actions are executable and how they change the world. These preconditions and effects are environment-dependent and often not captured by MLLMs, making adaptation challenging. Yet existing approaches either require costly environment-specific training or rely on unstructured interaction experience that is difficult to reuse. Therefore, we introduce CausGround, a non-parametric causal interaction grounding framework that distills interaction experience into reusable action-centered causal knowledge. CausGround identifies action preconditions and effects and organizes them in a factorized world-state representation capturing object attributes and inter-object relations. At planning time, task-relevant causal dependencies are grounded in current observations to support backward reasoning over preconditions and forward reasoning over effects for action selection and multi-step planning. We evaluate CausGround on simulated high-level planning, interaction reasoning, and real-world robot manipulation. On adapted VirtualHome and RoboCasa benchmarks, CausGround improves vision-based high-level planning across MLLM backbones, increasing average task success from 24.9% to 53.3% on VirtualHome and closed-loop planning success from 43.0% to 57.0% on RoboCasa. On SWITCH, average interaction reasoning accuracy increases from 25.8% to 31.9%, indicating improved action selection, recovery, and verification. Moreover, real-world experiments show that CausGround reasons backward from MLLM-interpreted goals to derive executable high-level action sequences for sequential manipulation. These results demonstrate that reusable action preconditions and effects support long-horizon embodied planning across diverse environments without parameter updates.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.29702"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "CausGround introduit un cadre non-paramétrique pour l'ancrage causal des interactions robotiques, structurant les préconditions/effets en états factorisés pour un planification adaptative. Approche innovante pour la généralisation des politiques embodied.",
+   "score": 8.5
+  },
+  {
+   "id": "2508f126d44e5371",
+   "title": "HuGe: Scaling Humanoid Generalist Vision-Language-Action Models with Egocentric Experience",
+   "url": "https://huggingface.co/papers/2610.34186",
+   "summary": "Extending Vision-Language-Action models (VLAs) to humanoid robots requires coordinated whole-body control and diverse demonstrations that are costly to collect in real-world scenarios. Although egocentric human demonstrations provide a complementary source of task experience, differences in visual embodiment and missing robot proprioception complicate transfer to humanoid policies. To address these challenges, we introduce HuGe, a family of Humanoid Generalist VLAs pre-trained on over 2,000 hours of egocentric human and robot data. Specifically, HuGe employs three existing representative VLA architectures to predict latent motion tokens for a pretrained whole-body controller, together with hand-control signals. Based on this, we introduce a three-stage training pipeline that combines egocentric pre-training, humanoid adaptation, and downstream fine-tuning. To facilitate transfer across embodiments, we construct pseudo-proprioceptive states through simulation playback during pre-training and modify arm appearance in egocentric observations through re-rendering during downstream fine-tuning. With this pipeline, HuGe achieves the state-of-the-art on simulation benchmark HumanoidArena. Furthermore, real-world experiments on the Unitree G1 indicate that augmenting robot demonstrations with visually adapted egocentric demonstrations significantly increases success on a pick-and-drop task.",
+   "published": "2026-10-24T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.34186"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "HuGe pré-entraîne des VLAs humanoïdes sur 2000h de données égo-centrées (humaines/robotiques) avec un pipeline en 3 étapes pour transférer les compétences motrices. État de l'art sur HumanoidArena, malgré des limites liées aux différences d'incarnation.",
+   "score": 8.5
+  },
+  {
+   "id": "c6362bf7135f3723",
+   "title": "Sensorimotor Alignment: A Platonic Proxy for Embodied Policy Success",
+   "url": "https://huggingface.co/papers/2610.31670",
+   "summary": "Robot foundation models are typically evaluated through costly closed-loop rollouts, motivating low-cost offline proxies for model capability. The Platonic Representation Hypothesis (PRH) suggests that as representations improve, modalities such as vision and language converge toward a shared statistical model of reality. We ask whether motion trajectories form another such modality: as embodied models become more capable, should their sensory representations converge toward the structure of physical motion? To test this, we propose Sensorimotor Alignment (S^2), a training-free offline metric that measures how well a model's sensory representation aligns with the geometry of physical motion. We find that S^2 correlates positively with downstream robot task success across model families, making it a low-cost offline proxy for prioritizing models before closed-loop evaluation. S^2 can also identify promising vision-language model (VLM) backbones before costly fine-tuning into vision-language-action models (VLAs). Beyond this correlation, S^2 offers representation-level explanations for phenomena observed in VLAs and world action models (WAMs). With S^2, we extend PRH to robotics and make sensorimotor alignment measurable, offering a low-cost, representation-level view of robot foundation models that closed-loop success rates alone cannot reveal.",
+   "published": "2026-10-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 33,
+    "arxiv_id": "2610.31670"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "interpretabilite",
+    "benchmark"
+   ],
+   "tldr": "Sensorimotor Alignment (S²) propose une métrique hors-ligne sans entraînement pour prédire la performance des politiques embodied via l'alignement des représentations sensori-motrices avec la géométrie physique. Corrélation forte avec le succès en boucle fermée.",
+   "score": 8.5
+  },
+  {
+   "id": "293c4dc8eb9bad3d",
+   "title": "EmbeddingGemma 2: Unified and Efficient Multimodal Representations",
+   "url": "https://huggingface.co/papers/2610.37364",
+   "summary": "We present EmbeddingGemma 2, an open multimodal embedding model which natively represents text, images, audio, video, and combinations thereof in a unified space. Our approach introduces improvements such as simplified per-layer embeddings and a multi-stage curriculum with modality and objective progression which ensure strong quality across unimodal, cross-modal, and mixed-modal evaluations. Notably, in comprehensive embedding benchmarks across all modalities, EmbeddingGemma 2 establishes a new Pareto frontier, outperforming both specialist models and models two to twelve times larger. Furthermore, our design offers flexibility for resource-constrained environments, supporting selective modality encoder loading, adjustable vision token budgets, truncatable embedding dimensions, and quantized weights. We present ablations analyzing key decisions and release EmbeddingGemma 2 to promote further research.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2610.37364"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "EmbeddingGemma 2 est un modèle d'embeddings multimodaux unifié (texte, image, audio, vidéo) optimisé pour l'efficacité et la qualité, établissant une nouvelle frontière Pareto sur des benchmarks multi-modaux tout en supportant des environnements contraints via des techniques comme la quantification et le pruning.",
+   "score": 8.5
+  },
+  {
+   "id": "0ed74c9c2cfdcf29",
+   "title": "Your Policy Is Secretly a Harness: The Decision Geometry of Agent Interfaces",
+   "url": "https://huggingface.co/papers/2610.37255",
+   "summary": "Language model agents are post-trained and deployed through a harness, the prompts, tools, and control logic that present a task to the model and execute its outputs. Harnesses are often revised and judged by how an already trained model performs under them, which assumes that what the model learned under one harness carries over to the next. We ask what a policy learns from its harness and what survives when the harness changes. Under KL-regularized control, we show that the log odds of an optimal policy recover how strongly its harness favors each action over the others, so a trained policy carries the preferences of its harness. Deployed return then equals the ceiling of the harness, the best return it offers, minus the mismatch of the policy, the return lost to its own suboptimal decisions. Training changes only the mismatch, while changing the harness moves both terms. Comparing harnesses with a fixed model therefore mixes what each harness offers with how well that model uses it. In MiniWoB++, post-training makes a model's preferences specific to its training harness. Reversing the order of the observation fields leaves every optimal decision unchanged yet lowers a trained model's success from 85.0% to 19.2%. Conversely, every new harness that a fixed-model comparison rejects but that raises the ceiling outperforms the original agent after further training under it, and ceiling and mismatch measured beforehand predict these gains. For coding-agent harnesses on Terminal-Bench Lite, ceiling minus mismatch estimated with a stronger model as a stand-in for the optimum reproduces the accuracy ranking, while either term alone does not. Code is available at https://github.com/2020-qqtcg/HRP.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.37255"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Cette analyse montre que les politiques des agents IA héritent des préférences de leur 'harness' (interface de déploiement), et que modifier cette interface impacte à la fois les performances maximales et l'adéquation du modèle, soulignant les limites de la généralisation des politiques.",
+   "score": 8.5
+  },
+  {
+   "id": "febfb3f21da3836c",
+   "title": "LongZero: Enhancing Long-Context Reasoning in LLMs from Zero Data",
+   "url": "https://huggingface.co/papers/2610.30132",
+   "summary": "Reinforcement learning (RL) is an effective way to strengthen the long-context reasoning of large language models (LLMs), but it needs training data that are long, diverse, challenging, and verifiable. Human annotation of such data is expensive, naturally occurring data are too scarce to sustain RL, and existing synthesis methods depend on external corpora or stronger teacher models, which become harder to obtain as the trained models get stronger. Recently, RL from zero data, in which a model learns from tasks it proposes itself, has achieved excellent performance, but existing methods target short-context tasks. Therefore, we propose LongZero, a method that lets an LLM improve its own long-context reasoning without any external data. Instead of writing questions and answers over existing documents, LongZero first has the model synthesize the question and answer with its supporting evidence in a compact structured form, and only then separately expands the evidence into a long multi-document context. LongZero combines these self-written multi-hop reasoning tasks with self-written multi-round retrieval tasks and trains the model with GRPO. We evaluate LongZero on two LLMs across five long-context reasoning benchmarks and compare it with RL on data synthesized from external corpora. Experimental results show that LongZero can generalize to real tasks, and outperforms both baselines, suggesting a viable and promising path to improving long-context reasoning of LLMs.",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.30132"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "LongZero utilise l'apprentissage par renforcement sans données externes pour améliorer le raisonnement en contexte long des LLM, combinant tâches auto-générées multi-sauts et multi-tours avec GRPO. Méthode prometteuse pour réduire la dépendance aux données annotées coûteuses.",
+   "score": 8.2
+  },
+  {
+   "id": "805a0d38d194613e",
+   "title": "AlphaBet: Reinforcement Learning for LLM Event Forecasting Agents",
+   "url": "https://huggingface.co/papers/2610.22684",
+   "summary": "Forecasting an unresolved event requires finding relevant evidence and deciding how strongly it supports each outcome. Yet outcome-based training of Large Language Model (LLM) forecasters often begins with preassembled evidence at a single prediction date, leaving evidence acquisition outside the learning loop. We introduce AlphaBet, an agentic reinforcement learning (RL) framework that trains a single LLM policy to search, reason, and report probabilities across multiple pre-resolution dates. Each dated forecast is scored by a proper scoring rule against the eventual outcome, allowing one resolved event to supervise decisions under different information states. We decompose forecasting regret into an evidence-acquisition gap and a probability-reporting gap, and show that Group Relative Policy Optimization (GRPO)'s standard-deviation normalization can distort the reporting target under multi-class proper scores. On GLM-4.5-Air, AlphaBet reduces the Brier score from 0.731 to 0.626 on Forecast-Dojo and from 0.612 to 0.528 on FutureX. Controlled ablations attribute these gains to multi-date training and show that they come from improvements in both information acquisition and probability reporting. Our empirical results validate that GRPO's std normalization degrades proper-scoring-rule performance while leaving top-outcome accuracy largely unchanged.",
+   "published": "2026-10-14T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.22684"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "AlphaBet, un cadre RL pour agents de prévision d'événements utilisant des dates multiples et des scores de regret décomposés. Réduction du score de Brier de 0.731 à 0.626 sur Forecast-Dojo et de 0.612 à 0.528 sur FutureX, avec gains en acquisition d'informations et reporting probabiliste.",
+   "score": 8.2
+  },
+  {
+   "id": "3419f858036dbb02",
+   "title": "Benchmarking Obstacle-Conditioned Safety in Household Robot Navigation",
+   "url": "https://huggingface.co/papers/2610.34674",
+   "summary": "Safe household navigation requires robots to regulate clearance and speed according to what an obstacle is and how close it is, without unnecessary conservatism. Yet existing evaluations do not test whether semantic safety distinctions are reflected in continuous motion. To that end, we introduce OSMA-Bench, an Obstacle-Conditioned Safe Motion Adaptation Benchmark built on spatially matched scenario sets that differ only in obstacle type. We also propose the Semantic Sensitivity Index (SSI), which measures whether clearance and distance-dependent speed and smoothness follow the caution ordering of obstacles. Evaluating VLM-based and vision-language-action (VLA) policies on the benchmark, we find that neither consistently adapts its motion to obstacle safety, even with explicit safety prompts. Our analysis shows that the policies can correctly distinguish obstacles by safety relevance but fail to reflect this distinction in the motion parameters or actions they produce. For VLM-based policies, which recognize the obstacle and then generate a navigation program, adding an explicit parameter-inference step between these two stages improves adaptation. These findings expose a gap in semantic-to-motion grounding, highlighting the need to translate semantic caution into appropriately safe motion.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.34674"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "OSMA-Bench évalue la capacité des politiques robotiques (VLM/VLA) à adapter leur mouvement en fonction de la dangerosité sémantique des obstacles, révélant des lacunes dans l'intégration des contraintes de sécurité dans les actions continues.",
+   "score": 8.2
+  },
+  {
+   "id": "bb556b5b80861f2e",
+   "title": "AdaPRA: Process Reward Agents with Adaptive Rubrics for Data Science",
+   "url": "https://huggingface.co/papers/2610.33245",
+   "summary": "Data science agents can automate end-to-end machine learning workflows, yet they remain far from competitive on human leaderboards. Agents make process errors such as insufficient exploration, unsound validation, coding bugs, and poor use of a fixed budget (re-running the same exploratory data analysis and baseline models in every attempt). We propose AdaPRA to address these issues: a persistent coding agent harness that accumulates knowledge across attempts on the same task, with rubric-guided process supervision that identifies and corrects errors. Our process reward agent audits the agent's trajectory and workspace by executing checks, and adapts its rubrics to each task. We find that rubrics seeded from easier tasks generalize to harder tasks, with rubric adaptation further improving performance. With five attempts per task, AdaPRA improves an 80B Qwen model's leaderboard percentile by 24.5 points on DSPredict-Easy and 14.8 points on DSPredict-Hard while reducing process errors. We also show that supervision with rubrics mined from one base model's runs improves another (DeepSeek-V3.2), and that AdaPRA beats DataPRM, a competitive PRM for data science. We also share our code for reproducibility.",
+   "published": "2026-10-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.33245"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "outils"
+   ],
+   "tldr": "Méthode AdaPRA pour agents de data science utilisant des rubriques adaptatives et une supervision de processus persistante, réduisant les erreurs de processus et améliorant les performances de 14.8 à 24.5 points sur DSPredict. Validation sur Qwen 80B et DeepSeek-V3.2.",
+   "score": 7.9
+  },
+  {
+   "id": "6491aedb295f487d",
+   "title": "TauIndianBankBench: Procedure-Aware, Action-Oriented Evaluation of Tool-Using Conversational Agents",
+   "url": "https://huggingface.co/papers/2610.30161",
+   "summary": "Many Indian banks serve customers through FAQ pages and scripted chatbots. Assistants based on language models could respond faster and carry out requests such as blocking a card, but only if they give correct information and follow the bank's rules. These rules prescribe a procedure, a set of required steps, such as obtaining a closure quote before closing a deposit. Adapting models to this domain requires measuring how well they follow the procedure, before and after training. Benchmarks usually judge only the records left at the end of a conversation. Many required steps, however, leave the records unchanged, so an assistant that skips them can still be judged successful. We present TauIndianBankBench, an action-oriented benchmark of 1,000 Indian retail-banking tasks where an assistant helps a simulated customer. Besides the final records, it checks that the assistant took every required step and made no unrequested change. For every model, 6.5-12.0% of sessions are judged successful when only the final records are checked, although the assistant skipped a required step or made an unrequested change. Scoring both procedure and outcome shows more accurately how well language models perform in Indian retail banking.",
+   "published": "2026-09-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.30161"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "TauIndianBankBench évalue la conformité procédurale des agents outils dans le secteur bancaire indien, révélant que 6.5-12% des sessions réussies ignorent des étapes obligatoires. Benchmark critique pour les systèmes critiques où la conformité est essentielle.",
+   "score": 7.6
+  },
+  {
+   "id": "d039e7322fab508c",
+   "title": "TAO: Tool-Aware Joint Scheduling for LLM-Based Agentic Serving",
+   "url": "https://huggingface.co/papers/2610.37230",
+   "summary": "Agentic services alternate between model inference on clustered GPUs and external tools on distributed CPUs. In this scenario, existing systems (1) overlook tool-return readiness in service evaluation, wasting limited resources, and (2) use heuristic strategies to decide admission and placement on GPUs, resulting in suboptimal scheduling decisions. To bridge this gap, we present TAO, a tool-aware joint scheduling framework for LLM-based agentic serving. Its value interface combines near-term tool readiness, node-specific cache credit with time-aware decay, and token footprint; a dynamic program jointly selects and places waiting sessions under capacity constraints. Across the 12 reported model-workload-concurrency settings, TAO reduces latency by up to 26.8%, reduces mean time to first token (TTFT) by up to 36.3%, and increases decode throughput by up to 29.5% relative to the best evaluated state-of-the-art baseline for each metric.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 14,
+    "arxiv_id": "2610.37230"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "TAO optimise l'ordonnancement des services agentiques LLM en intégrant la disponibilité des outils et la crédibilité des caches, réduisant la latence jusqu'à 26.8% et augmentant le débit de décodage de 29.5%. Solution système critique pour le déploiement à grande échelle.",
+   "score": 7.6
+  },
+  {
+   "id": "a85ae40a50205c87",
+   "title": "Efficient Streaming Audio-Visual Target Speaker Extraction for Real-World Acoustic Scenes",
+   "url": "https://huggingface.co/papers/2610.32749",
+   "summary": "Streaming audio-visual target speaker extraction (AVTSE) is essential for latency-sensitive applications. However, current causal systems face two coupled gaps. First, standard benchmarks fix the number of speakers at two and ignore the near-/far-field interference, reverberation, and sudden noise of real scenes. Second, high-performance causal architectures are too heavy for edge deployment. Lightweight alternatives try to reclaim capacity by repeatedly invoking a small separator, which offsets the savings. To address the first gap, we release RealSSA, a realistic AVTSE benchmark consisting of RealSSA-Sim and RealSSA-Real. RealSSA-Sim provides controllable simulated scenes with 1--5 dynamic near-field interfering speakers; scenes with far-field interference additionally include 10--15 far-field interfering speakers. RealSSA-Real provides a held-out real-recorded evaluation set. To address the second gap, we propose Falcon, a causal AVTSE method. Its Separator performs multi-scale time-frequency separation in a single encoder--decoder pass. We train Falcon with an encoder-space speaker contrastive loss. This loss suppresses near-field leakage at zero inference cost and transfers across backbones. Falcon achieves state-of-the-art extraction quality on RealSSA-Sim, LRS2-2Mix, LRS3-2Mix, and VoxCeleb2-2Mix. Compared with the causal AV-TFGridNet baseline, it cuts parameters by 91.9%, computation by 20.2 times, and GPU inference latency by 11.1 times. Code and demo are available at https://cslikai.cn/Falcon/.",
+   "published": "2026-10-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 146,
+    "arxiv_id": "2610.32749"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "audio",
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Falcon propose une méthode causale légère pour l'extraction de locuteur cible en audio-visuel, avec un séparateur multi-échelle et une perte de contraste pour réduire les fuites. Benchmark RealSSA (simulé/réel) pour évaluer les systèmes en conditions réalistes (1-15 locuteurs).",
+   "score": 7.6
+  },
+  {
+   "id": "21ef3c830a716861",
+   "title": "What Outcome RL Buys: Finishing, Reliability, Rarely Reach",
+   "url": "https://huggingface.co/papers/2610.34894",
+   "summary": "Outcome RL raises pass@1 but not pass@k at large k (Yue et al., 2025). But every pass@1 is scored under a token budget. Every recipe also trains under one. On physics and math problems at fixed token budgets, we compare the pass@1 of 20 released RL models (1.5B to 32B) with that of the thinking models they started from. We ask whether each pass@1 gain is changed behaviour or new knowledge. We divide each change in pass@1 into three parts. Finishing measures answering before the budget runs out. Reliability measures being right once finished. Reach measures problems RL solves that its base answered wrongly in all eight tries, minus problems the base solves that RL answered wrongly in all eight. We find four things. (1) Where the base often hits the token budget before answering, most of the change, gain or loss, is finishing (82% at 4k and 8k). Given more tokens, the base closes most of the finishing gap itself. (2) Where the base has enough tokens, the gain is reliability: the RL model is graded right more often, even on problems both finish. (3) By our definition, RL rarely solves what its base cannot. Reach adds at most 2.1 percentage points on any of our four physics and math sets. We checked 144 physics problems that only the RL model solved. Of these, 3.5% hold up when resampled or read. In a random sample, nine of ten new RL steps a human confirmed also appear in the base's samples. (4) In a small-scale RL run on an 8B model, the gain on new problems is finishing, with reliability flat. Supplying each problem's physical setup was not shown to improve on plain RL.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.34894"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "optimisation"
+   ],
+   "tldr": "Analyse des gains de l'RL par outcome sur des modèles de 1.5B à 32B, montrant que les améliorations proviennent principalement de la finition (finishing) et de la fiabilité (reliability), avec un impact marginal sur la résolution de problèmes inédits (reach).",
+   "score": 7.6
+  },
+  {
+   "id": "51d8a262aec9339a",
+   "title": "The Lexical Imprint of Pre-training Data",
+   "url": "https://huggingface.co/papers/2602.10657",
+   "summary": "How much of zero-shot benchmark accuracy is captured by word-level alignment between a pre-training corpus and the benchmark target? We study this question through word-level unigram cross-entropy (UCE), a tokenizer-agnostic, model-free measure of lexical alignment between a reference corpus and a target benchmark. Likelihood training shapes the model's predictive distribution from the pre-training corpus, and zero-shot scores under likelihood-based evaluation depend in part on the lexical alignment between that corpus and the benchmark target. Cleanly tracing how the lexical imprint of pre-training data scales with corpus--benchmark alignment requires controlled from-scratch pre-training that varies corpus identity while holding the training recipe fixed. Across this controlled sweep, spanning 10 zero-shot benchmarks, 4 pre-training corpora, and 3 model scales, we find that corpus--benchmark lexical alignment, UCE, consistently tracks zero-shot accuracy on every benchmark, with corpora more aligned with the benchmark (lower UCE) achieving higher accuracy. The same signal extends from measurement to control at finer scopes. At the document level, strengthening the imprint by selecting training documents to maximize lexical alignment with the benchmark produces the accuracy gains predicted by the mechanism. At the prompt level, matching the imprint per prompt by routing each prompt to the drafter whose domain corpus is most lexically aligned with it produces measurable throughput gains over a generalist-drafter baseline. Taken together, pre-training corpora leave a measurable lexical imprint on base-model zero-shot behavior, and UCE provides a model-free probe of lexical alignment between reference and target data.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2602.10657"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Cette étude démontre que l'alignement lexical entre les données de pré-entraînement et les benchmarks influence fortement les performances en zero-shot, révélant un lien direct entre la distribution des mots dans les corpus et l'efficacité des modèles.",
+   "score": 7.6
+  },
+  {
+   "id": "2efbece755b2bd14",
+   "title": "MLE-World: Predicting Machine Learning Experiment Outcomes with a Learned World Model",
+   "url": "https://huggingface.co/papers/2610.37175",
+   "summary": "AI research agents can propose, execute, and improve programs that solve machine learning tasks. However, executing each candidate program requires training and evaluating ML models, limiting how many candidates an agent can explore at each step. We introduce MLE-World, a world model finetuned from Qwen3.5-4B that predicts a program's terminal output (error traces, training logs, and validation scores) from its code and data description without executing it, together with a confidence score estimating the prediction's correctness. Because a prediction costs one inference call rather than a training run, MLE-World makes test time scaling (TTS) affordable for these agents. We build five TTS policies, guided by MLE-World, that compare several candidates per step by their predicted outputs: Sequential revision, Best-of-N, Pairwise judging, Fusion, and a UCB style rule that also adds an exploration bonus from this confidence score. Since predictions can be wrong, we run a candidate for real only when its confidence score is low. On 17 MLE-bench Lite tasks, MLE-World matches the real terminal output on 77.9% of held out programs, versus 41.1% for much larger prompted models. MLE-World guided TTS achieves up to 22.1% higher observed mean performance than the agent without a world model, with less real execution. Project webpage: https://mle-world.github.io/.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.37175"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "MLE-World est un modèle de monde prédictif pour les expériences ML, permettant d'estimer les résultats de programmes (logs, scores) sans exécution, réduisant ainsi le coût computationnel des agents de recherche et optimisant les politiques de test-time scaling.",
+   "score": 7.6
+  },
+  {
+   "id": "fb7c5de423ac8271",
+   "title": "OmniSpectra: A Unified Foundation Model for Universal Spectra Representation Learning",
+   "url": "https://huggingface.co/papers/2601.15351",
+   "summary": "Standard sequence models encode position by token rank rather than physical coordinate, typically forcing practitioners to destructively resample continuous physical signals such as spectra observed across heterogeneous instruments. We identify this coordinate mismatch as a structural limitation in cross-instrument representation learning, and propose OmniSpectra, a wavelength-native foundation model for spectral representation learning: a continuous-coordinate masked autoencoder that discards the integer pixel indexing of sequence modeling. Mapping physical coordinates to a logarithmic basis turns the multiplicative scaling induced by cosmological redshift into a uniform additive shift. In continuous rotary position embeddings, this shared shift cancels from relative token distances rather than producing grid-dependent positional distortion. We further counter the spectral bias inherent to implicit neural decoders with a physics-grounded, resolution-gated Fourier decoder that provides anti-aliasing. Pretrained on eight surveys and benchmarked against seven baselines, our model reaches state-of-the-art performance with only 12.2M parameters while outperforming substantially larger models, indicating that encoding physical structure can substitute for parameter scale.",
+   "published": "2026-10-22T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2601.15351"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "autre"
+   ],
+   "tldr": "OmniSpectra modélise les spectres en coordonnées physiques (logarithmiques) pour éviter les distorsions de positionnement, avec un décodeur Fourier anti-aliasing. Modèle léger (12.2M params) surpassant des baselines plus grandes sur 7 benchmarks spectraux.",
+   "score": 7.0
+  },
+  {
+   "id": "e9c275cd829ff993",
+   "title": "Quaternion Approximate Networks for Enhanced Image Classification and Oriented Object Detection",
+   "url": "https://huggingface.co/papers/2509.05512",
+   "summary": "This paper introduces Quaternion Approximate Networks (QUAN), a novel deep learning framework that leverages quaternion algebra for rotation equivariant image classification and object detection. Unlike conventional quaternion neural networks attempting to operate entirely in the quaternion domain, QUAN approximates quaternion convolution through Hamilton product decomposition using real-valued operations. This approach preserves geometric properties while enabling efficient implementation with custom CUDA kernels. We introduce Independent Quaternion Batch Normalization (IQBN) for training stability and extend quaternion operations to spatial attention mechanisms. QUAN is evaluated on image classification (CIFAR-10/100, ImageNet), object detection (COCO, DOTA), and robotic perception tasks. In classification tasks, QUAN achieves higher accuracy with fewer parameters and faster convergence compared to existing convolution and quaternion-based models. For objection detection, QUAN demonstrates improved parameter efficiency and rotation handling over standard Convolutional Neural Networks (CNNs) while establishing the SOTA for quaternion CNNs in this downstream task. These results highlight its potential for deployment in resource-constrained robotic systems requiring rotation-aware perception and application in other domains. Code: https://cwru-aism.github.io/ QUANpaper/",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2509.05512"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "QUAN, un réseau utilisant l'algèbre quaternionique pour la classification d'images et la détection d'objets orientés, avec des gains en précision et efficacité paramétrique. Approche basée sur des convolutions quaternioniques approximées pour préserver les propriétés géométriques.",
+   "score": 7.0
+  },
+  {
+   "id": "99ae58ea94faefa9",
+   "title": "Timestral",
+   "url": "https://huggingface.co/papers/2610.37585",
+   "summary": "We introduce Timestral, a family of four time series foundation models for probabilistic forecasting, with 5M, 28M, 123M, and 209M parameters. Timestral sets a new state of the art on GIFT-Eval, TIME, and fev-bench, where Timestral-209M and Timestral-123M take the top two places on every metric. We achieve this with three ingredients: Decoupled Horizon Forecasting (DHF), which separates prediction tokens from the causally encoded context, so that longer horizons are trained without masking context and each observed value is both a forecast target and context for later forecasts; a covariate framework that natively supports known-future covariates within a causal architecture; and a two-stage pipeline that pretrains exclusively on a diverse, large-scale synthetic corpus before post-training on a mix of real and synthetic data with extended context. This report describes the model design and its benchmark results. Weights for all four models are available on Hugging Face and inference code on GitHub.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.37585"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "autre",
+    "benchmark"
+   ],
+   "tldr": "Timestral est une famille de modèles de séries temporelles pour la prévision probabiliste, établissant de nouveaux SOTA sur plusieurs benchmarks grâce à une architecture causale et une approche de pré-entraînement synthétique en deux étapes.",
+   "score": 7.0
+  },
+  {
+   "id": "3a76d6e598998b5c",
+   "title": "Lipi-Ghor: A Large-Scale, Diarized, Multi-Domain Bengali Speech Corpus and a Scalable Pipeline for Building It",
+   "url": "https://huggingface.co/papers/2610.36184",
+   "summary": "Bengali, spoken by over 230 million people, remains severely under-resourced in spoken language research. Existing open Bengali ASR corpora are confined to short, read or crowd-sourced speech and lack speaker diarization and long-form audio. We present Lipi-Ghor, a large-scale weakly-supervised Bengali speech corpus comprising 885 hours of audio sourced from 998 YouTube videos across 596 unique channels, spanning 17 diverse domains including audiobooks, drama, religious sermons, news, and regional dialects. Each recording is annotated in SSTT format (Speaker, Speech, Transcription, Timestamp), which combines automated diarization with Bengali YouTube caption tracks. To our knowledge, Lipi-Ghor is the first Bengali speech corpus to pair large-scale coverage with speaker-diarized, long-form audio annotations, both of which are absent from existing open Bengali resources. We also present the construction methodology as a replicable pipeline for any language with a sufficient captioned YouTube presence. Targeted channel curation across a handful of rich domains yields corpus scales that were previously out of reach for low-resource languages. We benchmark four widely-used ASR models under zero-shot and fine-tuned conditions. All four degrade consistently on emotive, dialectal, and long-form content. Because caption targets are noisy, we also release a human-annotated gold evaluation split, verified by 17 volunteer annotators over 30 hours of human-in-the-loop correction and stratified across all 17 domains. We release our original contributions (video-ID lists, diarization output, pipeline code, and the gold annotations) under CC-BY-4.0, and distribute caption-derived transcripts for research use only; no raw audio is redistributed.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.36184"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "audio",
+    "produit",
+    "outils"
+   ],
+   "tldr": "Corpus Lipi-Ghor, un jeu de données audio bengali de 885h avec diarisation et transcriptions, couvrant 17 domaines. Benchmark de 4 modèles ASR et pipeline réplicable pour langues sous-ressources via YouTube captions.",
+   "score": 6.7
+  },
+  {
+   "id": "9a781cfc239e267f",
+   "title": "How Much Does the Hint Matter? Scope Conditions for Hindsight Self-Distillation in Financial Reasoning",
+   "url": "https://huggingface.co/papers/2610.36082",
+   "summary": "Financial institutions operating under data-residency constraints are restricted to open-weight models small enough to locally host, which trail frontier systems on multi-step quantitative reasoning. On-policy distillation narrows such gaps by supervising a student on its own rollouts, but traditional OPD requires a strong external teacher, and on-policy self-distillation (OPSD) conditions on a full reference solution. We ask how much of that signal is necessary. We present Fin-SD, a localized hindsight self-distillation recipe for multi-step reasoning. Given a problem the student fails, the student itself identifies the first incorrect reasoning step and writes a short critique of that step. We truncate the student's trajectory immediately before the error (aiming to obtain a correct prefix), condition a frozen copy of the student on the same prefix plus the hint, and distill that hint-conditioned teacher into the student over a short rollout under reverse KL. No external model contributes a gradient. We apply Fin-SD to GPT-OSS-20B on a custom multi-step financial reasoning benchmark that requires deriving formula inputs from realistic scenarios via accounting conventions. We find: (i) replacing the critique with a generic-feedback control matches Fin-SD's entire 3.03 pp accuracy gain over the base model on the FinanceReasoning Hard subset, suggesting the gain comes from where supervision is applied, not hint content; (ii) the model writing the hint does not need to be stronger than the model receiving it: hints from same-family GPT-OSS-120B, at roughly 6x the parameters, yield no materially greater benefits than self-written hints; and (iii) Fin-SD matches on-policy self-distillation from full reference solutions on accuracy while generating 9.5% fewer tokens. With Fin-SD, general reasoning on MMLU-Pro and a fourteen-metric compliance audit on FinTrust show no material regression.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.36082"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Fin-SD, une méthode de distillation auto-supervisée pour le raisonnement financier multi-étapes, utilisant des critiques générées par le modèle lui-même pour améliorer les performances locales. Application sur GPT-OSS-20B avec gains sur un benchmark financier personnalisé.",
+   "score": 6.7
+  },
+  {
+   "id": "518eae96c69534ee",
+   "title": "T-DIG: Text-Conditioned Diversity for Image Generation",
+   "url": "https://huggingface.co/papers/2610.29003",
+   "summary": "Text-to-image (T2I) platforms typically return several images per prompt so users can explore different visual interpretations and choose one that matches their intent. However, T2I models are usually optimized for single-image quality which comes at a cost of multi-image diversity, limiting this exploration. Diversity is also contextual: one user wants variations in background, while another wants them in artistic style, and the same user may later want variations in clothing. The generated images should differ along whatever axis the user cares about. In this paper, we introduce T-DIG, a text-conditioned diversity framework for image generation and editing. T-DIG is an iterative framework comprising multiple modules that lets users type prompts, inspect default generations, request variations using natural language, and continue refining outputs until they're satisfied. At its core, T-DIG uses an LLM policy that produces K axis-conditioned prompts or edit instructions for a frozen generator or editor. We train this policy with GRPO using a text-conditioned diversity reward and alignment penalties. Because the image generator remains frozen, T-DIG applies to open-weight, distilled, and proprietary models. We also release the first dataset for text-conditioned prompt diversity in image generation, with the training and validation splits built from human-written axes and a test set drawn from real user interactions with T-DIG. T-DIG far exceeds baselines in improving text-conditioned diversity, while preserving base-prompt alignment across a variety of metrics and human judgements. We show that user-directed diversity exploration can be added to a wide range of image generation models, open and closed, without the need to access their weights. Website: https://image-study.org/t-dig/",
+   "published": "2026-10-20T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.29003"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "outils"
+   ],
+   "tldr": "T-DIG propose un cadre itératif pour générer des variations d'images conditionnées par du texte, permettant aux utilisateurs de spécifier des axes de diversité (style, fond, etc.) via des instructions naturelles, tout en conservant un générateur figé pour une utilisation avec des poids ouverts.",
+   "score": 6.7
+  },
+  {
+   "id": "75e2017ed4c5a2ec",
+   "title": "OpenAI and ServiceNow expand partnership across enterprise workflows",
+   "url": "https://openai.com/index/openai-servicenow-partnership-expansion",
+   "summary": "OpenAI and ServiceNow expand their partnership to bring OpenAI models and agents into ServiceNow and ServiceNow workflows into ChatGPT and Codex.",
+   "published": "2026-10-28T13:15:00+00:00",
+   "source": "openai-blog",
+   "source_label": "OpenAI",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 5,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "produit"
+   ],
+   "tldr": "Partenariat OpenAI-ServiceNow visant à intégrer les modèles et agents OpenAI dans les workflows ServiceNow, et réciproquement, pour optimiser les processus métiers. Intéressant pour l'écosystème LLM en entreprise mais peu de détails techniques.",
+   "score": 6.7
+  },
+  {
+   "id": "1761b5e1580d1470",
+   "title": "Beyond the Estimate: Wiener-Informed Decoding for Easier Training of Pixel-Space Flow Models",
+   "url": "https://huggingface.co/papers/2610.36192",
+   "summary": "Learning velocity fields directly in pixel space is difficult and slow. We show that coarse second-order image statistics can ease this task: frozen Wiener estimates improve velocity learning, with gains extending beyond the linear predictions they explicitly provide. Moreover, we observe similar but complementary gains from frozen bases and pixel decoding. These observations motivate Wiener-informed Decoding (WiD), which uses statistical knowledge both for direct prediction and to organize decoder computation without modifying native blocks. WiD combines a trainable Wiener prediction path with coefficient interfaces that inject features into the native decoder and return its predicted coefficient corrections, with these components initialized with data statistics. All introduced parameters, including the spectrum and coordinate transforms, are trained jointly under the original pixel-space velocity objective. Across model scales and decoder architectures, WiD accelerates training and improves generation quality with modest parameter overhead. It also yields smoother gradient trajectories and remains effective with representation alignment. WiD improves class-conditional and text-to-image generation across different resolutions. On ImageNet 256 x 256, PixelDiT-XL with WiD reaches FID 1.53 after 500 epochs, achieving comparable quality to PixelDiT with 37.5% fewer training epochs. Statistical denoisers contribute beyond the estimate: their computational structure can also ease pixel-space training.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2610.36192"
+   },
+   "relevance": 5,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "WiD, une méthode de décodage informée par Wiener pour accélérer l'entraînement des modèles de flux en espace pixel. Utilisation de statistiques de second ordre pour améliorer la qualité de génération et la stabilité des gradients, avec gains sur des modèles text-to-image et class-conditional.",
+   "score": 6.4
+  },
+  {
+   "id": "97373eedda74b8cd",
+   "title": "Dayjob: Tax – evaluating AI agents on 50 professional tax assignments",
+   "url": "https://surgehq.ai/blog/dayjob-tax",
+   "summary": "",
+   "published": "2026-10-28T15:46:30Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 247,
+    "comments": 155
+   },
+   "relevance": 8,
+   "reliability": 3,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Évaluation d'agents IA sur 50 tâches fiscales professionnelles (Dayjob: Tax), suggérant une approche de benchmarking pour les agents spécialisés. Potentiellement intéressant mais manque de détails méthodologiques et source peu fiable.",
+   "score": 6.2
+  }
+ ]
+}
