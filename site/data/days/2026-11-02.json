@@ -1,0 +1,738 @@
+{
+ "date": "2026-11-02",
+ "digest": {
+  "headline": "Les biais d'entraînement-inférence en RL pour LLM et l'optimisation des systèmes hybrides System-1/System-2 dominent la veille IA du 2026-11-02.",
+  "overview": "La journée met en lumière des avancées théoriques et pratiques sur les architectures de LLM et d'agents, avec une attention particulière aux décalages entre phases d'entraînement et d'inférence, ainsi qu'aux stratégies d'optimisation des coûts computationnels. Les travaux en robotique et en évaluation d'agents révèlent aussi des progrès méthodologiques pour améliorer la robustesse et la contrôlabilité.",
+  "highlights": [
+   {
+    "title": "Décalage entraînement-inférence en RL pour LLM",
+    "text": "L'étude identifie deux sources majeures de biais (numérique et retard de politique) dans l'entraînement par renforcement des LLM, proposant des corrections ciblées pour stabiliser l'alignement. Ces résultats ont des implications directes pour les méthodes d'optimisation comme PPO ou DPO, où les décalages peuvent dégrader les performances en inférence."
+   },
+   {
+    "title": "Optimisation System-1/System-2 pour les LLM",
+    "text": "Un cadre théorique propose de combiner un système léger (System-1) pour filtrer les interactions avant exécution par un système lourd (System-2), réduisant les coûts de calcul jusqu'à un facteur 1/ρ_u. Cette approche soulève des questions sur les compromis entre erreurs de prédiction et efficacité, cruciales pour les déploiements à grande échelle."
+   },
+   {
+    "title": "Progrès en agents robotiques et vocaux",
+    "text": "OSWAM et QCP améliorent respectivement la génération d'actions en robotique (via *imagination tokens*) et le contrôle de la qualité des politiques (via relabeling itératif). Parallèlement, Apriel Voice 27B intègre raisonnement, outils et parole dans un modèle open-source, marquant une étape vers des assistants vocaux plus polyvalents."
+   },
+   {
+    "title": "Évaluation et sécurité des LLM et agents",
+    "text": "SciGame et HALO introduisent des benchmarks pour évaluer la découverte scientifique et la proactivité des agents, révélant des limites liées aux priors pré-entraînés et à la sur-proactivité. SimpleLoRIF, quant à lui, utilise les gradients pour identifier et filtrer les données de fine-tuning dégradant la sécurité des modèles."
+   },
+   {
+    "title": "Architectures unifiées et interprétabilité",
+    "text": "REA et LARC proposent des architectures pour agents incarnés et modèles multimodaux, combinant raisonnement lent et réactif ou remplaçant le raisonnement discret par des états continus. Ces travaux visent à améliorer la contrôlabilité et l'efficacité des systèmes, tout en facilitant l'analyse des représentations internes (ex: persistance spatiale dans les VFMs)."
+   }
+  ],
+  "trend": "Les recherches convergent vers une optimisation conjointe des architectures (hybridation System-1/System-2, raisonnement latent) et des méthodes d'entraînement (correction des biais, relabeling, RL), tout en renforçant les outils d'évaluation et de sécurité pour des systèmes plus robustes et interprétables."
+ },
+ "items": [
+  {
+   "id": "9d39a70532241632",
+   "title": "On the Origin and Evolution of Training-Inference Mismatch in LLM Reinforcement Learning",
+   "url": "https://huggingface.co/papers/2610.40945",
+   "summary": "On-policy reinforcement learning for large language models assumes that training responses are sampled from the current policy. In practice, an inference engine samples the responses and a separate trainer computes the gradients, and the training-inference mismatch between the two makes the training data off-policy. The mismatch has two sources, the numerics of the engine and the stale weights of asynchronous sampling, and a correction that stabilizes training under one source can fail under the other. We ask which property of a mismatch source decides the correction it needs. Evaluating the trainer at the sampler's weights splits each sampled-token error exactly into a numerical discrepancy of the engine and a policy lag of the trainer, and we follow both through training. The numerical discrepancy stays approximately constant, so it biases the updates by a nearly fixed amount, and centering the score at each prefix removes its leading bias. The policy lag is produced by the trainer's own updates: the bias it leaves enters the next update, which enlarges the next lag and closes a feedback loop. Importance weighting cuts this loop only while the lag ratio stays concentrated, and on Qwen3-1.7B it fails at the step where the effective sample size of the ratio falls below one half. From this account we derive the discrepancy-lag correction (DLC), which centers the numerical discrepancy, clips the lag ratio against the sampler's weights and resynchronizes the sampler when this effective sample size falls below one half. Under a stale sampler, DLC keeps the KL divergence from on-policy training within twice the KL between two independent on-policy trainings on Qwen3-0.6B and Qwen3-1.7B, and its resynchronization prevents collapses that the per-token corrections leave and that a KL measured on the sampler's prefixes does not detect.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2610.40945"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Analyse théorique et empirique du décalage entre entraînement et inférence en RL pour les LLM, identifiant deux sources de biais (numérique et retard de politique) et proposant des corrections ciblées pour stabiliser l'entraînement, avec des implications majeures pour les méthodes d'alignement.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le problème du *mismatch* (décalage) entre la phase d'entraînement et d'inférence dans l'apprentissage par renforcement (RL) des grands modèles de langage (LLM). En théorie, le RL *on-policy* suppose que les réponses utilisées pour l'entraînement sont échantillonnées depuis la politique courante du modèle. En pratique, un moteur d'inférence distinct génère les réponses, créant un décalage dû aux différences numériques (implémentation) et aux poids obsolètes (asynchronisme), ce qui rend les données d'entraînement *off-policy* et déstabilise l'apprentissage.",
+    "methode": "Les auteurs analysent les deux sources de *mismatch* : (1) les différences numériques du moteur d'inférence (ex. : précision, optimisations logicielles) et (2) le *policy lag* (retard de la politique) causé par l'échantillonnage asynchrone avec des poids obsolètes. Ils proposent une décomposition exacte de l'erreur par token en *discrepancy* numérique et *lag* de politique, en évaluant le *trainer* aux poids du *sampler*. Pour corriger ces biais, ils introduisent la méthode *Discrepancy-Lag Correction* (DLC) : centrage de la *discrepancy* numérique, *clipping* du ratio de *lag* par rapport aux poids du *sampler*, et resynchronisation du *sampler* lorsque la taille d'échantillon effective du ratio tombe sous 0,5. La méthode vise à stabiliser l'entraînement en coupant les boucles de rétroaction induites par le *policy lag*.",
+    "resultats": "Sur les modèles Qwen3-0.6B et Qwen3-1.7B, la méthode DLC maintient la divergence KL par rapport à un entraînement *on-policy* dans un facteur de 2 par rapport à la divergence entre deux entraînements *on-policy* indépendants. Elle évite aussi les effondrements (*collapses*) non détectés par les mesures de KL classiques, qui surviennent avec les corrections *per-token* traditionnelles. Les expériences montrent que l'*importance weighting* échoue lorsque la taille d'échantillon effective du ratio de *lag* chute sous 0,5, un seuil où DLC intervient via la resynchronisation.",
+    "limites": "L'étude se limite à des architectures spécifiques (Qwen3) et ne teste pas systématiquement d'autres familles de LLM (ex. : Llama, Mistral). La généralisation des résultats à des modèles plus grands ou des tâches variées reste incertaine. De plus, la méthode DLC introduit des hyperparamètres (ex. : seuil de resynchronisation) dont la sensibilité n'est pas pleinement explorée. Enfin, le coût computationnel de la resynchronisation fréquente pourrait devenir prohibitif pour des modèles à l'échelle industrielle.",
+    "verdict": "Cette publication mérite une attention particulière pour son analyse fine des sources de *mismatch* en RL pour LLM et sa solution pragmatique, bien que des validations supplémentaires sur d'autres architectures et échelles soient nécessaires pour en confirmer la robustesse."
+   }
+  },
+  {
+   "id": "60aa245493dd6bad",
+   "title": "Does Scaling Toward AGI Depend on What System-1 Lets System-2 Execute?",
+   "url": "https://huggingface.co/papers/2610.39497",
+   "summary": "Progress toward artificial general intelligence (AGI) has largely relied on scaling a resource-intensive executive, System-2, through larger models, more data and compute, longer reasoning, and more agents. We ask whether the next stage may come instead from co-designing it with System-1, a lightweight, semantically aware predictor that evaluates candidate interactions before execution, so that System-2 acts only on those worth their cost. Our answer is a qualified yes. We study conditional interaction, a predict--gate--execute--update loop: System-1 estimates each candidate's utility, System-2 executes those admitted by an adaptive threshold, and the outcomes update System-1. The loop spans training, test-time reasoning, adaptive decision-making, and agentic tool use, with utility and cost defined by the application. Under ideal screening and equal execution costs, execution compute falls by a factor approaching 1/ρ_u, where ρ_u is the density of utility-relevant interactions (cost-weighted when costs differ); prediction errors, exploration, and distribution shift reduce the saving. We bound selection regret by predictor error and the utility margin. These results motivate our central hypothesis: ρ_u is a measurable coordinate of scaling efficiency and makes informative compute a better description of scaling than total compute.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 58,
+    "arxiv_id": "2610.39497"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Proposition d'un cadre théorique pour optimiser l'efficacité des LLM en combinant un système léger (System-1) pour filtrer les interactions pertinentes avant exécution par un système lourd (System-2), réduisant ainsi les coûts de calcul jusqu'à un facteur 1/ρ_u. Analyse des gains théoriques et des limites liées aux erreurs de prédiction et aux coûts différenciés.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un défi central dans la progression vers l'intelligence artificielle générale (AGI) : l'inefficacité des approches actuelles basées sur le *scaling* massif de modèles exécutifs (System-2), coûteux en ressources. Elle questionne si une co-conception avec un système prédictif léger (System-1), capable d'évaluer a priori l'utilité des interactions avant exécution, pourrait optimiser l'allocation des ressources computationnelles et accélérer l'atteinte de l'AGI.",
+    "methode": "Les auteurs proposent un cadre nommé *conditional interaction*, structuré en une boucle *predict--gate--execute--update* : 1) System-1, un prédicteur sémantiquement conscient, estime l'utilité et le coût des interactions candidates ; 2) un seuil adaptatif filtre celles jugées pertinentes pour exécution par System-2 ; 3) les résultats obtenus mettent à jour System-1. Ce mécanisme s'applique à l'entraînement, au raisonnement à l'inférence, à la prise de décision adaptative et à l'utilisation d'outils par des agents. La densité d'interactions utiles (ρ_u), pondérée par leur coût, devient une métrique clé pour évaluer l'efficacité du *scaling*. Les auteurs dérivent des bornes théoriques sur le *regret de sélection* en fonction des erreurs de prédiction et des marges d'utilité.",
+    "resultats": "Sous des hypothèses idéales (filtrage parfait et coûts d'exécution égaux), le *compute* nécessaire à l'exécution est réduit d'un facteur approchant 1/ρ_u. Par exemple, si seulement 10 % des interactions sont utiles (ρ_u = 0.1), le gain théorique est de 10x. Cependant, les erreurs de prédiction, l'exploration nécessaire et les *distribution shifts* réduisent ce gain. Les bornes sur le regret montrent que la performance dépend de la précision de System-1 et de la marge entre utilité et coût des interactions.",
+    "limites": "Les résultats reposent sur des hypothèses fortes (ex. : prédicteur idéal, coûts homogènes) rarement vérifiées en pratique. La métrique ρ_u, bien que théorique, est difficile à mesurer précisément dans des scénarios réels. De plus, l'impact des *distribution shifts* et de l'exploration sur les gains reste flou, sans quantification empirique fournie. Enfin, la faisabilité d'un System-1 à la fois léger et sémantiquement robuste n'est pas démontrée.",
+    "verdict": "Cette publication mérite l'attention pour son cadre théorique novateur liant *scaling* et efficacité computationnelle, mais son applicabilité pratique reste à valider par des expérimentations concrètes."
+   }
+  },
+  {
+   "id": "eb44dd639d4f5ddd",
+   "title": "OSWAM: An Effective World Action Model with One-Step Action Generation",
+   "url": "https://huggingface.co/papers/2610.35850",
+   "summary": "Direct-policy World Action Models (WAM) have demonstrated the benefits of decoupling action generation from explicit future visual prediction for efficient inference in autonomous driving and embodied control. However, they still require tens of denoising steps to achieve competitive action quality, incurring substantial latency and hindering real-time deployment. Simply reducing the number of denoising steps will collapse the nonlinear multi-step denoising trajectory into coarse updates, substantially degrading action quality. To reduce the denoising steps while enabling real-time action generation, we present an effective world action model with one-step action generation, namely OSWAM, for autonomous driving and embodied control. We argue that it is the absence of structured action priors in random noise initialization that forces direct-policy WAMs to recover coherent action sequences through iterative denoising. Hence, we construct imagination tokens to initialize the diffusion process, providing physical priors and action-conditioned representations. We further introduce privileged information distillation with future conditioning to enhance future-aware action generation. As a result, OSWAM can efficiently and effectively generate high quality actions in just one diffusion step. Our experiments demonstrate that OSWAM achieves comparable or even better results in both autonomous driving and embodied control than direct-policy WAM and Joint-WAM that require tens of steps. It obtains approximately 3times speedup over direct-policy WAM baselines and supports real-time compiled inference with latency as low as 40ms on an NVIDIA RTX 5090 GPU. The project page is available at https://gwenzhang.github.io/OSWAM/",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2610.35850"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "OSWAM génère des actions en un seul pas pour les modèles d'action (WAM) en robotique/voiture autonome via des *imagination tokens* et distillation d'information privilégiée, réduisant la latence tout en maintenant la qualité des séquences d'actions.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les modèles d'action mondiaux (World Action Models, WAM) à politique directe améliorent l'efficacité de la génération d'actions en découplant cette dernière de la prédiction visuelle explicite des états futurs, notamment dans les domaines de la conduite autonome et du contrôle incarné. Cependant, ils nécessitent encore des dizaines d'étapes de débruitage pour produire des actions de qualité compétitive, ce qui introduit une latence importante et empêche un déploiement en temps réel.",
+    "methode": "OSWAM (One-Step World Action Model) propose une génération d'actions en une seule étape de diffusion pour résoudre ce problème de latence. L'approche repose sur l'introduction de *imagination tokens*, qui initialisent le processus de diffusion avec des priors physiques et des représentations conditionnées par l'action, évitant ainsi la nécessité d'un débruitage itératif. De plus, OSWAM utilise une *distillation d'informations privilégiées* avec un conditionnement futur pour améliorer la génération d'actions conscientes des états à venir. Ces innovations permettent de réduire le processus à une seule étape tout en maintenant la qualité des actions générées.",
+    "resultats": "Les expériences montrent qu'OSWAM obtient des performances comparables, voire supérieures, à celles des WAM à politique directe et des Joint-WAM, qui nécessitent des dizaines d'étapes de débruitage. Le modèle atteint un accélération d'environ 3 fois par rapport aux baselines WAM à politique directe, avec une latence aussi faible que 40 ms sur une carte NVIDIA RTX 5090, rendant possible une inférence compilée en temps réel.",
+    "limites": "Le contenu disponible ne précise pas les hypothèses sous-jacentes aux *imagination tokens* ni leur généralisabilité à des environnements dynamiques ou inconnus. De plus, l'absence de détails sur les données d'entraînement ou les scénarios de test limite l'évaluation de la robustesse du modèle face à des cas extrêmes ou des distributions hors domaine.",
+    "verdict": "OSWAM mérite une attention particulière pour son innovation dans la réduction drastique de la latence tout en préservant la qualité des actions, mais son applicabilité réelle nécessite une validation plus approfondie sur des benchmarks variés et des environnements non contrôlés."
+   }
+  },
+  {
+   "id": "eb345b73f71c4909",
+   "title": "Learning Quality-Controllable Robot Policies with Iterative Hindsight Relabeling",
+   "url": "https://huggingface.co/papers/2610.37393",
+   "summary": "Robot policy evaluation often relies on a binary success signal for task completion. In real-world deployment, however, desired execution behaviors are also defined by quality attributes such as execution speed and motion smoothness, which need to be dynamically controlled according to task requirements. To address this, we introduce Quality-Controllable Policy (QCP), a robot policy that enables inference-time control over both individual quality attributes and their combinations. To extend the controllable quality range beyond initial demonstrations, we further propose an iterative hindsight relabeling loop: QCP collects online rollouts under target quality labels, adds successful trajectories to the dataset, relabels the accumulated trajectories in hindsight according to their measured quality, and fine-tunes the policy. Experiments on Robomimic and RoboEval demonstrate that QCP consistently improves both task execution quality and success rates across iterations, producing successful rollouts that exceed the quality of the initial demonstrations. Finally, we validate QCP on real-world manipulation tasks, where controlling speed increases throughput in conveyor operations and controlling transport stability improves success when carrying wine glasses, demonstrating that quality-controllable policies yield practical gains in physical deployment.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.37393"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "outils"
+   ],
+   "tldr": "QCP permet de contrôler dynamiquement la qualité des politiques robotiques (vitesse, fluidité) via un mécanisme de relabeling itératif en hindsight, améliorant succès et qualité sur Robomimic/RoboEval et en conditions réelles.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les méthodes actuelles d'évaluation des politiques robotiques reposent principalement sur un signal binaire de succès pour la complétion de tâches. Cependant, en déploiement réel, les comportements d'exécution souhaités incluent aussi des attributs de qualité comme la vitesse d'exécution ou la fluidité du mouvement, qui doivent être contrôlés dynamiquement selon les exigences de la tâche.",
+    "methode": "Les auteurs introduisent *Quality-Controllable Policy* (QCP), une politique robotique permettant un contrôle à l'inférence des attributs de qualité individuels ou combinés. Pour étendre la plage de qualité contrôlable au-delà des démonstrations initiales, ils proposent une boucle itérative de *hindsight relabeling* : QCP collecte des déroulements en ligne sous des labels de qualité cibles, ajoute les trajectoires réussies au jeu de données, recalibre rétrospectivement les trajectoires accumulées selon leur qualité mesurée, puis affine la politique. Cette approche s'appuie sur des techniques d'apprentissage par renforcement et d'imitation, avec un mécanisme de réétiquetage inspiré des méthodes comme *Hindsight Experience Replay* (HER).",
+    "resultats": "Les expériences menées sur les benchmarks *Robomimic* et *RoboEval* montrent que QCP améliore à la fois la qualité d'exécution des tâches et les taux de succès au fil des itérations. Les déroulements réussis dépassent même la qualité des démonstrations initiales. En validation réelle, le contrôle de la vitesse a augmenté le débit dans des opérations sur convoyeur, tandis que le contrôle de la stabilité a amélioré le succès lors du transport de verres à vin.",
+    "limites": "Le contenu disponible ne précise pas les hypothèses sous-jacentes (ex : qualité des démonstrations initiales, complexité des tâches). L'approche itérative pourrait aussi souffrir de coûts computationnels élevés ou de dépendances à des métriques de qualité bien définies, ce qui n'est pas toujours trivial en pratique. Enfin, la généralisation à des tâches très variées ou à des environnements non structurés reste à démontrer.",
+    "verdict": "Cette publication mérite une attention particulière pour son approche innovante combinant contrôle de qualité et apprentissage itératif, avec des validations prometteuses en simulation et en réel, bien que des questions sur sa robustesse et son scalabilité persistent."
+   }
+  },
+  {
+   "id": "81f317c3090387c1",
+   "title": "SciGame: Let Agents Play the Scientific Discovery Games in the Real and Counterfactual World",
+   "url": "https://huggingface.co/papers/2610.37919",
+   "summary": "Large language model agents are increasingly used for scientific discovery. However, existing benchmarks mix law inference with programming, score data fitting instead of prediction on unseen inputs, and do not separate empirical evidence from pretrained priors. We introduce SciGame, a controlled benchmark that converts scientific literature into structured scientific cards. Each card yields a pair of Original and dimensionally consistent Counterfactual environments with the same task interface. SciGame contains a Historical collection of canonical laws and a live Temporal collection curated from papers published after model knowledge cutoffs. It evaluates agents in candidate-guided Identification and open-ended Discovery settings. Each setting runs under Prior-only, Fixed, and Adaptive protocols. Experiments on five frontier models yield three findings. First, familiar priors hurt performance once the governing relation is altered. Second, adaptive experimentation helps the strongest models but harms weaker ones under limited budgets. Third, good explanations can hide quantitative failures. Recovering the exact symbolic form remains the main bottleneck, even when agents interpret evidence correctly. Current agents can investigate systems actively, but inducing exact laws in unfamiliar settings remains an open challenge.",
+   "published": "2026-10-27T16:02:47.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.37919"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "SciGame introduit un benchmark contrôlé pour évaluer les agents LLM en découverte scientifique, séparant empirie et priors pré-entraînés via des environnements originaux et contrefactuels. Les résultats révèlent que les priors familiers nuisent aux performances lors de changements de relations gouvernantes, et que l'expérimentation adaptative améliore les modèles forts mais pénalise les plus faibles.",
+   "score": 8.8
+  },
+  {
+   "id": "7d6ca3e8110725cf",
+   "title": "REA: A Routed Embodied Agent Runtime for Asynchronous Brain-Cerebellum Control",
+   "url": "https://huggingface.co/papers/2610.42053",
+   "summary": "Foundation models are becoming remarkably reliable at high-level reasoning, yet they remain too slow and costly to serve as fine-grained controllers. Conversely, fast policies like VLAs and whole-body controllers offer more efficient reflexes, but struggle to generalize. While pairing a deliberative brain (foundation models) with a reactive cerebellum (fast policies) seems natural for embodied systems, two obstacles remain: methods are built and scored on incompatible stacks, and their asynchronous coordination is difficult. For example, an agent that calls the VLA in the agentic loop can stall the fast execution, while a VLA that calls the agent on errors tends to re-trigger fallbacks repeatedly or completely miss silent failures. To address this, we propose REA (Routed Embodied Agent), a unified runtime where a deliberative System 2, an embodied router System 1 and reactive System 0 policies cooperate under a single golden rule - no running policy waits on the brain. Instead of querying the brain at each failure, REA employs a route memory that stores each policy's measured success ahead of time, a boundary-triggered judge gate that consults the brain on policy execution, and a shared-budget escalation ladder for bounded recovery. Evaluated on 3,000 test episodes across 60 LIBERO-Pro tasks, REA reaches 95.9% success and beats the best single-agent baseline in its own policy pool (94.7%) while reducing control steps by 25% and control time by 17%. In a separate 100-episode RoboTwin 2.0 study, REA achieves 84% success with VLA policies and 86% with VLA+code, compared with 80% for the strongest single VLA baseline MEDex. These results demonstrate learned and programmatic policies operating within the same runtime. REA also transfers to BEHAVIOR-1K and a real Unitree G1 humanoid, achieving the highest observed success among the compared methods.",
+   "published": "2026-10-30T13:18:13.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2610.42053"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "REA propose un runtime unifié pour agents incarnés, combinant un *System 2* (raisonnement lent) et un *System 0* (politiques réactives) via une mémoire de routage et une porte de jugement asynchrone. L'approche évite les blocages en ne faisant pas attendre les politiques réactives sur le cerveau, avec une règle d'or : 'pas de politique en attente'.",
+   "score": 8.8
+  },
+  {
+   "id": "eb44481387680a8d",
+   "title": "Apriel Voice 27B Preview: An Open Model for Speech, Reasoning, and Tool Use",
+   "url": "https://huggingface.co/papers/2610.40738",
+   "summary": "A capable voice assistant must do more than recognize words; it must understand requests, reason over context, sustain conversations, and act through tools. We present Apriel Voice 27B Preview, an open speech-language model that unifies these capabilities within a shared reasoning backbone while retaining text and image input modalities. Built on the post-trained Gemma 4 26B-A4B checkpoint, Apriel Voice directly processes speech and generates both responses and tool calls without requiring a separate dialogue model. We introduce a two-stage training procedure to adapt the model to speech. The first stage establishes the speech interface, while the second jointly adapts the projector and backbone through supervised fine-tuning, text replay, and source-dependent cross-entropy and forward Kullback--Leibler divergence supervision. Automatically constructed speech-conditioned dialogues provide conversational training data, while local teacher serving, overlapping teacher and student computation, and fused full-vocabulary losses enable efficient online distillation. In thinking mode, Apriel Voice achieves a score of 98.90 on Big Bench Audio, 81.13 on Speech-BFCL, and a task success rate of 65.51% on τ-Voice, with a mean latency of 1.91 seconds. It also achieves 51.27% English EVA accuracy and 74.13% experience pass@1. Finally, we deploy Apriel Voice 27B Preview on a custom serving platform to support interactive voice interactions.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 26,
+    "arxiv_id": "2610.40738"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Apriel Voice 27B est un modèle vocal open-source de 27B paramètres intégrant raisonnement, utilisation d'outils et traitement de la parole/multimodal à partir d'un backbone Gemma 4 26B-A4B. Son approche en deux étapes (adaptation du speech interface puis fine-tuning conjoint avec distillation en ligne) et ses performances élevées sur des benchmarks audio (98.90 sur Big Bench Audio) en font un candidat prometteur pour les assistants vocaux avancés.",
+   "score": 8.8
+  },
+  {
+   "id": "97605e4207d463d1",
+   "title": "CaPtain: A Pipeline for Post-Training Code-as-Policy Robot Agents",
+   "url": "https://huggingface.co/papers/2610.40799",
+   "summary": "Across coding, web, and tool-use tasks, language-model agents are now routinely trained with the same recipe: supervised fine-tuning (SFT) to learn the interface, then multi-turn reinforcement learning (RL) to master it. Code-as-policy (CaP) casts robot manipulation in the same form, as the policy writes code against robot APIs and reads back the results, so the same recipe should apply. Yet existing CaP agents sidestep training: they either prompt closed frontier models or delegate manipulation to pre-trained vision-language-action models (VLAs) and high-level skills, while small open vision-language models (VLMs) fail outright. We present CaPtain, an open post-training pipeline that turns a small open VLM into a capable CaP agent, with no VLA, frontier model, or privileged state at test time. CaPtain trains and deploys the policy inside CaPtain-Harness, which exposes low-level perception, geometry, and guarded-motion primitives across simulation and real hardware. We first align the base model via SFT on synthetic trajectories generated with GPT-6 Astra, then apply multi-turn RL. Multi-turn RL must credit tens of agent requests, whose physical effects often surface turns later, from a single end-of-episode outcome. We therefore introduce a physical critic that reads privileged simulator state, never seen by the policy, and credits each request by how much it changes the predicted chance of success. Starting from Qwen3.5-4B (0% zero-shot), CaPtain-4B reaches 55.4% held-out LIBERO success after SFT and 73.8% after RL. On LIBERO-PRO, it reaches 78.5%, surpassing several frontier-model agents, and its RL gains persist across three perturbation suites (+17.6 to +21.2 points). Without target-domain training, it attains 83.3% on SimplerEnv WidowX, exceeds frontier models on CaP-Bench, and runs on a real robot after simulation-only adaptation. We release all code, data, and model weights.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2610.40799"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "CaPtain présente un pipeline post-entraînement transformant un petit VLM open-source en agent robotique 'Code-as-Policy' (CaP) sans dépendre de modèles fermés ou de VLAs, via SFT sur trajectoires synthétiques puis RL multi-tours, atteignant des gains significatifs en simulation et sur matériel réel.",
+   "score": 8.8
+  },
+  {
+   "id": "92d72bc56ae65413",
+   "title": "Follow the Gradient: Tracing Safety Degradation Back to Training Data",
+   "url": "https://huggingface.co/papers/2610.37481",
+   "summary": "Fine-tuning Large Language Models (LLMs) on instruction data can quietly erode their safety, even when no training example looks harmful. Because this safety-degrading data looks benign, standard content filters struggle to catch it. We tackle this problem by developing SimpleLoRIF, a scalable gradient embedding method that identifies fine-tuning examples whose gradients align with unsafe behavior. By simplifying a low-rank attribution method and restricting backpropagation to the final four transformer blocks, SimpleLoRIF can embed datasets on the order of a million examples, boosting gradient attribution from a small-scale analysis tool into a practical filter for full post-training datasets. We first validate it on emergent misalignment, where we find that gradients can connect insecure-code training data to the broadly harmful behaviors that appear after fine-tuning, with AUC as high as 0.865 in the gradient space of misaligned models. We then use SimpleLoRIF to build SafeTulu, a version of Tulu 3 with the 20% of examples most gradient-aligned with unsafe responses removed. Training on SafeTulu reduces GCG attack success rate by up to 22% across Qwen, Llama, and Olmo, outperforming both LLM-as-a-judge and prior gradient-based filtering, while largely preserving or even improving capability. Finally, we analyzed the removed data and identify possibly under-studied sources of safety degradation, such as tool-execution failures and narrative arithmetic. We release SafeTulu along with a Hugging Face Space that lets researchers build their own customized versions of SafeTulu to fine-tune on, such as by changing the removal fraction or filtering only certain subsets.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.37481"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Méthode SimpleLoRIF identifie via gradients les données de fine-tuning dégradant la sécurité des LLM, permettant de filtrer 20% des exemples les plus dangereux (ex: code non sécurisé) et réduisant jusqu'à 22% le taux de succès d'attaques GCG sur plusieurs modèles (Qwen, Llama, Olmo).",
+   "score": 8.5
+  },
+  {
+   "id": "2ac65ca10a13a8cc",
+   "title": "No Channels Left Behind: Understanding Diffusion Acceleration through Residual Gates",
+   "url": "https://huggingface.co/papers/2610.40914",
+   "summary": "Training acceleration methods for diffusion transformers, such as REPA and dispersive regularization, are commonly explained by additional supervision, spatial-structure priors, or improved feature geometry. We revisit this view and uncover a striking internal change: the AdaLN-Zero residual gate α, which directly controls how conditioned updates enter the residual stream, is substantially reorganized by these methods. This observation motivates our hypothesis that acceleration arises, at least in part, from reshaping the residual gating pathway rather than solely from the feature structures explicitly imposed by auxiliary objectives. Supporting this view, accelerated models are markedly more sensitive to perturbations of α, and their gate geometry reflects semantic relationships among classes. We further introduce the normalized participation ratio (nPR) to characterize the channel-wise organization of the gates and find that, across REPA teachers, projector architectures, and radial-objective targets, broader gate participation accompanies better generation quality. Guided by this insight, we propose a simple teacher-free radial objective that promotes broader gate participation through feature-norm regularization, without pairwise feature comparisons. On ImageNet 256times256 with SiT-B/2, our method improves FID over dispersive loss while increasing mean gate participation over timesteps and classes, further supporting the link between gate organization and training acceleration. Our results identify residual-gate reorganization as a measurable axis of diffusion training acceleration and suggest a simple direction for further acceleration.",
+   "published": "2026-10-29T15:35:11.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 18,
+    "arxiv_id": "2610.40914"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite",
+    "optimisation"
+   ],
+   "tldr": "Cette étude démontre que l'accélération des modèles de diffusion (via REPA ou régularisation dispersive) repose sur une réorganisation des *residual gates* (AdaLN-Zero), plutôt que sur des objectifs auxiliaires. Un nouvel indicateur (nPR) montre que la participation élargie des canaux améliore la qualité de génération, menant à un objectif radial sans enseignant.",
+   "score": 8.5
+  },
+  {
+   "id": "bb09e058628988a6",
+   "title": "Latent Reasoning in Continuous Space for Unified Multimodal Models",
+   "url": "https://huggingface.co/papers/2610.42149",
+   "summary": "Unified Multimodal Models (UMMs) achieve remarkable success on diverse multimodal understanding and generation tasks, yet they still struggle to effectively leverage language-based chain-of-thought reasoning for image generation. As a result, existing reasoning-augmented UMMs often fail to inherit the test-time scaling and fine-grained controllability observed in large language models. We attribute this failure to a fundamental modality mismatch: reasoning is performed in a discrete token space, whereas image generation operates in a continuous space. To bridge this gap, we introduce a Latent Reasoning framework in Continuous space (LARC), which alleviates the token-level bottleneck by reasoning over continuous hidden states. Specifically, the training framework consists of two stages: (i) curriculum supervised fine-tuning (SFT), and (ii) information-gain reinforcement learning (RL). First, the curriculum SFT stage gradually converts token-level reasoning into latent reasoning. Subsequently, the information-gain RL stage self-evolves latent reasoning without ground truth supervision. Experiments across diverse text-to-image generation benchmarks show that LARC consistently improves generation quality, prompt following, and compositional fidelity. Notably, LARC achieves state-of-the-art performance on GenEval with a 7%p gain over BAGEL and demonstrates clear test-time scaling behavior, outperforming token-based generation under both parallel and sequential test-time scaling strategies.",
+   "published": "2026-10-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2610.42149"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "LARC propose un cadre de raisonnement latent en espace continu pour les modèles multimodaux unifiés (UMMs), remplaçant le raisonnement discret par des états cachés continus. En deux étapes (SFT curriculaire + RL par gain d'information), il améliore la contrôlabilité fine et l'héritage des capacités de *test-time scaling* des LLM pour la génération d'images.",
+   "score": 8.5
+  },
+  {
+   "id": "8188e62d153589ff",
+   "title": "HALO: Human-Grounded Granular Evaluation of Proactive Agents",
+   "url": "https://huggingface.co/papers/2610.39086",
+   "summary": "Proactive agents must decide whether, when, and how far to assist without an explicit request. Existing evaluations often rely on automated scores or binary verdicts, offering limited human diagnosis of evidence use and intervention quality. To address these gaps, we introduce HALO, Human-Grounded GrAnular EvaLuation of PrOactive Agents. HALO-Arena covers 4 proactive need types, Dependency, Blockage, Risk, and Opportunity, across 10 everyday domains and 50 personal environments. Scenarios require agents to retrieve evidence from structured databases or unstructured documents before judging whether assistance is warranted and choosing its scope. On HALO-Arena, we construct HALO-8K, a dataset of 8,000 responses from 10 models across 400 scenarios, annotated by 20 experts for action level, acceptability verdicts, and human diagnosis. For rejected responses, human diagnosis covers timing, intensity, and other issues. Recorded reasoning tokens and retrieval rounds measure the effort behind these responses. The best proprietary and open-source models achieve 72.88% and 56.63% acceptability, respectively. Our central finding is that over-proactivity is the dominant observed failure mode, with Premature timing or Excessive intensity accounting for 61.20% of rejected responses. Further analyses yield complementary findings on the balance between intervention and restraint, evidence acquisition, and the calibration of timing and intensity.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.39086"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark",
+    "interpretabilite"
+   ],
+   "tldr": "HALO introduit une évaluation granulaire et humaine des agents proactifs, couvrant 4 types de besoins (dépendance, blocage, risque, opportunité) sur 50 environnements personnels. HALO-8K (8 000 réponses annotées) révèle que la sur-proactivité est le principal échec, avec des diagnostics détaillés sur le timing, l'intensité et l'effort de raisonnement.",
+   "score": 8.5
+  },
+  {
+   "id": "8ad3be969fce747c",
+   "title": "When Requirements Interact: Scaling Long-Horizon Coding via Interdependent Specifications",
+   "url": "https://huggingface.co/papers/2610.40256",
+   "summary": "To succeed in real-world long-horizon software development, coding agents must satisfy multi-dimensional task specifications, such as interface compatibility and error handling, and do so without breaking existing dependencies. However, current works lack specification in both quantity and diversity, often emphasizing primary goals while ignoring complex constraints. Synthesizing tasks to bridge this gap presents two challenges: naively adding specifications risks reducing tasks to trivial checklists rather than compelling joint reasoning, and verifying these subtle interactions risks overlooking hidden flaws or rejecting valid alternatives. To address these challenges, we introduce CodeSpecWeave, a framework for synthesizing tasks with rich, interdependent specifications. Grounded in real developer seeds, a synthesis agent iteratively develops both coupled task requirements and executable tests, while a review agent audits solution trajectories from multiple models to guarantee test reliability. Using this pipeline, we construct 4,670 training tasks across 2,865 repositories. Applying Reinforcement learning on these tasks significantly improves performance over the base model on DeepSWE-v1.1, largely outperforming existing baselines. Furthermore, we curate CodeSpecWeave-Bench, a rigorous benchmark comprising 100 tasks and 1,044 specifications, which clearly separates frontier models and reveals significant headroom in handling interdependent engineering constraints.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.40256"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "CodeSpecWeave synthétise 4 670 tâches de codage avec spécifications interdépendantes (compatibilité, gestion d'erreurs) pour entraîner des agents via RL, améliorant significativement leurs performances sur des benchmarks de long-horizon.",
+   "score": 8.2
+  },
+  {
+   "id": "b8ad57709badfd5b",
+   "title": "Probing Spatial State Representations in Visual Foundation Models",
+   "url": "https://huggingface.co/papers/2610.40636",
+   "summary": "An observer sees only part of the surrounding world, yet must keep track of what lies beyond the current view. Spatial perception therefore involves more than recognizing individual images: it calls for a persistent spatial state that is updated under self-motion and used to guide action. Do visual foundation models provide representations that support such a state? We study this question through four levels of spatial capability---spatial structure, object persistence, predictive spatial update, and actionability---using frozen-feature probes on ten representations under streaming egocentric observations of static indoor environments. The resulting capability profiles vary across tasks, network layers, and prefix lengths: strong readout of the visible scene does not ensure accurate object persistence or future-feature retrieval. Matched controls separate readout accuracy from reliance on visual history and motion. Native future prediction retains recoverable spatial structure, but a spatial reader trained on real features does not transfer to predicted features unchanged. Finally, goal-dependent candidate selection does not establish reliable continuous action utility: predicted actions respond to goal changes, yet supplying the correct goal does not reliably improve progress. Across the four levels, object persistence and actionability build on camera-pose readout, whereas feature prediction builds on visible-scene readout. Together, these findings motivate evaluating spatial representations not only by what can be decoded from them, but by whether that information is maintained beyond observation, updated predictively, and used for goal-directed action.",
+   "published": "2026-10-29T13:58:16.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2610.40636"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "Cette étude évalue la capacité des modèles visuels fondamentaux (VFMs) à maintenir une représentation spatiale persistante à travers des observations égocentriques, révélant des lacunes dans la persistance des objets et la prédiction spatiale malgré des performances de reconnaissance visuelle solides.",
+   "score": 8.2
+  },
+  {
+   "id": "ef9ae19bc7bcd2e5",
+   "title": "R^2Orch: Recursive Self-Improvement for Agent Orchestration via Self-Play within a Skill-Internalization Loop",
+   "url": "https://huggingface.co/papers/2610.22740",
+   "summary": "In recent years, agentic orchestration has been widely applied to solve complex human tasks. However, existing orchestration learning still faces key challenges, including hand-designed curricula, advantage collapse when a task's rollouts all reach the same outcome, and unreliable evaluation signals that judge each skill by one noisy score. To address these challenges, we propose R^2Orch, a new paradigm of Recursive Self-Play Orchestration: an inner loop of self-play that improves the orchestrator on self-chosen tasks, and an outer loop that improves how the inner loop improves. To support this paradigm, we introduce Recursive Learnability, a training objective that rewards a Proposer for choosing tasks whose rollouts keep reaching different outcomes as skills are withdrawn. Built on this objective, we further propose Skill Withdrawal, in which the outer loop withdraws each skill once a controlled evaluation within self-play shows that the orchestrator performs as well without it. Moreover, the two loops form one cycle: failures are distilled into skills, skills into parameters, and withdrawals lead the Proposer to new failures, so the orchestrator moves toward zero-skill deployment. Experimental results on twelve datasets show that R^2Orch consistently outperforms baselines across question answering, math, code, and interactive tasks. Our code is available at https://github.com/beita6969/R2Orch.",
+   "published": "2026-10-21T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 85,
+    "arxiv_id": "2610.22740"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Nouvelle méthode d'orchestration d'agents (R²Orch) basée sur un cycle récursif de self-play et de retrait de compétences, visant à atteindre une orchestration zéro-compétence. Utilise un objectif de 'learnabilité récursive' pour guider l'amélioration itérative de l'orchestrateur.",
+   "score": 8.2
+  },
+  {
+   "id": "9f546bf7f00d519c",
+   "title": "HiFOR: Hierarchical Foresight with Action-Guided World Grounding for Vision-Language-Action Model",
+   "url": "https://huggingface.co/papers/2610.40373",
+   "summary": "Vision-Language-Action (VLA) models have demonstrated promising capabilities in robotic manipulation by integrating visual perception, language understanding, and action generation. Recent advances have further incorporated future prediction to enhance the understanding of environmental dynamics and task progression. However, existing methods often model short-term dynamics and long-term task objectives separately, while directly incorporating predicted futures into action policies without sufficiently considering their relevance to current action requirements. To address these limitations, we propose HiFOR, a hierarchical foresight framework with action-guided world retrieval. Specifically, Hierarchical Foresight Prediction jointly predicts short-term state evolution, semantic milestones, and final goal states through a Hierarchical Dependency Mask (HDM), establishing dependencies across temporal horizons. Building upon these predictions, Structure-Aware Latent World Modeling organizes future latent representations along the horizon, view, and spatial dimensions to facilitate fine-grained retrieval. Furthermore, Action-Guided Factorized World Retrieval adaptively retrieves relevant future information from the structured latent world based on evolving action representations during denoising, providing targeted guidance for action generation. Extensive experiments on two simulation benchmarks and six real-world robotic manipulation tasks demonstrate the effectiveness of our approach.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 23,
+    "arxiv_id": "2610.40373"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "HiFOR introduit un cadre hiérarchique pour les modèles Vision-Language-Action (VLA) intégrant prédiction foresight, masquage de dépendances et récupération guidée par l'action. Améliore la compréhension des dynamiques environnementales et la génération d'actions pour la manipulation robotique.",
+   "score": 8.2
+  },
+  {
+   "id": "6a41f69c8ae7dde5",
+   "title": "RoboArchitect: Automating the Design of Robotic Agents with Persistent Memory",
+   "url": "https://huggingface.co/papers/2610.42141",
+   "summary": "Recent work shows that a frozen robot policy performs far better inside an agent harness, where control code decides when to query the policy, consult vision tools, or command the arm directly. Yet today these harnesses are built by hand and redesigned for each new robot or benchmark. We show that harness design can be automated, offering a strong alternative to finetuning on a novel setup. In RoboArchitect, a coding model observes a robot's rollouts, diagnoses failures, and iteratively revises the harness around the frozen policy. The harness evolves on a set of episodes for its optimization and is evaluated on held-out scenes and tasks. Without updating any model weights, RoboArchitect raises average success from 9.7% to 43.3% on unseen scenes (4.5x) and from 12.7% to 40.2% on unseen tasks (3.2x), across multiple benchmarks and policies. The gains are largest where the benchmark is far from the policy's training data: wrapping a general-purpose policy, the evolved harness yields a specialist that often outperforms even the finetuned version. Intuitive control strategies are automatically designed, such as lifting a jammed arm clear or reaching in horizontally when an obstacle blocks the way from above. The harness also evolves its own persistent memory, carrying learned experience, such as effective grasp depths, into later decisions. These results suggest that substantial headroom in robotic manipulation lies in the agent harness, and its design can be effectively automated and optimized without weight updates.",
+   "published": "2026-10-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.42141"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "RoboArchitect automatise la conception de harnais pour agents robotiques en observant les rollouts, diagnostiquant les échecs et itérant sur la structure du harnais sans modifier les poids du modèle, améliorant les performances de 4.5x sur des scènes inédites et 3.2x sur des tâches inédites.",
+   "score": 7.9
+  },
+  {
+   "id": "71cc759a119ba532",
+   "title": "CEPO: A General Framework for Improving Prompt Optimization in Multi-Agent Systems",
+   "url": "https://huggingface.co/papers/2610.34722",
+   "summary": "Multi-agent systems (MAS) require both effective coordination and specialized task execution. Existing prompt optimization approaches typically couple these functions within agent-specific prompts. We introduce Coordinator-Executor Prompt Optimization (CEPO), a general framework for improving prompt optimization in MAS. CEPO separates system-level coordination from agent-level execution through a shared coordinator prompt and agent-specific executor prompts, and guides their updates according to their respective roles. This structure allows shared coordination rules to be refined consistently across agents while keeping execution instructions separately adjustable. CEPO provides the prompt structure and optimization guidance, while existing prompt optimizers perform the underlying search. Extensive experiments spanning 11 benchmarks across four domains demonstrate that applying CEPO to four existing prompt optimizers consistently improves their performance. Ablations and qualitative analyses support the proposed design, while controlled studies on a document-understanding MAS further demonstrate improved optimization budget efficiency and performance scaling with the number of agents.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2610.34722"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "CEPO introduit un cadre général pour l'optimisation des prompts dans les systèmes multi-agents, séparant les rôles de coordination (prompt partagé) et d'exécution (prompts spécifiques), améliorant systématiquement les performances de 4 optimiseurs existants sur 11 benchmarks.",
+   "score": 7.9
+  },
+  {
+   "id": "bd168cda466186d0",
+   "title": "mw00/project-maya",
+   "url": "https://github.com/mw00/project-maya",
+   "summary": "Project Maya - run GLM-5.3-Flash (321B MoE), DeepSeek-V4.1-Flash-1017 (748B MoE) and MiniMax-M3.1-Flash (428B MoE) privately on your own GPU(s), from one card to 16, NVIDIA or AMD, Linux or Windows. Engine, server, dashboard, OpenAI- and Anthropic-compatible API, quant tools.",
+   "published": "2026-10-06T22:55:13Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2403,
+    "language": "Cuda"
+   },
+   "relevance": 9,
+   "reliability": 6,
+   "tags": [
+    "architecture",
+    "llm"
+   ],
+   "tldr": "Projet expérimental permettant d'exécuter localement des modèles MoE massifs (jusqu'à 748B de paramètres) sur une ou plusieurs cartes GPU, avec outils de quantification et API compatible OpenAI/Anthropic.",
+   "score": 7.7
+  },
+  {
+   "id": "17bd4145ec305c23",
+   "title": "reason-machines/reason-network",
+   "url": "https://github.com/reason-machines/reason-network",
+   "summary": "Reason Network: your team's coding agents, talking to each other. The engine behind `reason network`.",
+   "published": "2026-10-16T15:34:34Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1466,
+    "language": "Rust"
+   },
+   "relevance": 9,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Framework Rust pour orchestrer des agents IA collaboratifs au sein d'une équipe, avec communication entre agents. Pertinent pour les architectures multi-agents, mais manque de détails sur les implémentations ou benchmarks.",
+   "score": 7.7
+  },
+  {
+   "id": "44c9a2fc6c040e18",
+   "title": "Think Twice: The Metis-1.6 Technical Report",
+   "url": "https://huggingface.co/papers/2610.37903",
+   "summary": "Metis is a bet that better data, better training methods and new architectures can buy what a bigger parameter count cannot, at a fraction of the cost. Metis-1.6 is its latest step: two language models built from scratch by a single researcher, Praxis (2.94B parameters, 0.46B active per pass) and Logos (10.23B parameters, 1.18B active per pass). Both run a hybrid Mamba-2 and attention mixture-of-experts stack twice for every token, so each token gets a second look. Each was trained on 1.02T tokens in total: 804.76B of pretraining, 18B of context extension to 131,072 tokens, and 200B of supervised fine-tuning. Metis-1.6 was never meant to challenge frontier models, and across 40 post-trained benchmarks it mostly does not: Logos averages 52.93, seventh of 17 models in its comparison set and within a point of Qwen3-4B. But it gets there on roughly a twelfth of the median training data of the comparators that disclose it, and with fewer active parameters per token than any model that beats it, which puts it on the Pareto frontier for both. In mathematics it ranks second of 30 models, with 67.50% on AIME 2025 and 63.64% on HMMT February 2026. It is weak at code, instruction following and long context. The rest of the report is the part I found most valuable: what went wrong. The optimizer I configured never ran, and attention trained with AdamW for all of pretraining. A 1.77B-parameter n-gram memory learned to switch itself off. Five fine-tuning choices cost capability. And a length reward under group-mean normalization punished correct solutions for being long once a group's pass rate passed 2/3, a sign inversion I prove and fix with a one-line clamp. I close with the 10B-token ablations behind MoRE (Mixture of Recursive Experts), the looped architecture of Metis-1.7.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.37903"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Metis-1.6 (Praxis 2.94B, Logos 10.23B) combine Mamba-2, attention et MoE pour 1T de tokens d'entraînement, atteignant des performances compétitives (ex: 67.5% sur AIME 2025) avec 1/12 des données et paramètres actifs des modèles comparables.",
+   "score": 7.6
+  },
+  {
+   "id": "b0e2183967c76e1d",
+   "title": "Supervising the Visible State: Separating Representation from View Selection in Streaming Video",
+   "url": "https://huggingface.co/papers/2610.34926",
+   "summary": "An action seen once and the same action seen three times receive the same action-recognition label, so that supervision does not require a model to count. Answers shared across histories that differ in event order, accumulation, or relations leave those distinctions unconstrained; we call this state under-specification. Visible-State Supervision (ViSS) addresses it by training on source-grounded probes of event identity, order, accumulation, relation change, and answer sufficiency; under the same recent-frame interface it improves OVO-Bench over a strict-matched generic temporal supervision baseline while remaining comparable on StreamingBench, with the largest gain in hallucination detection. Test-Time Causal View Search (TVS) then adapts evidence access while keeping the learned model fixed, expanding from recent frames to sparse event and compact history views on demand. The two interventions separate representation from view selection: supervision particularly benefits hallucination detection and causal reasoning, access particularly benefits event recall and forward reasoning. Together they reach the best reported accuracy among the published systems compared here on StreamingBench and OVO-Bench at a fraction of the processed frames of exhaustive selection, and strict replay shows that most of the remaining gap to a three-view oracle is a correct answer that was later replaced. Streaming accuracy depends on what supervision asks the model to keep, what evidence inference exposes, and whether the model keeps a correct answer once it has one.",
+   "published": "2026-10-25T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2610.34926"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "interpretabilite"
+   ],
+   "tldr": "ViSS sépare représentation et sélection de vues pour la vidéo en streaming, améliorant la détection d'hallucinations et le raisonnement causal via une supervision ciblée sur l'état visible, tandis que TVS adapte dynamiquement l'accès aux données.",
+   "score": 7.6
+  },
+  {
+   "id": "8093aa31e8381b5a",
+   "title": "MemSteer: Turning User Histories into Supervision for Agent Memory Optimization",
+   "url": "https://huggingface.co/papers/2610.39276",
+   "summary": "An effective agent memory system should adapt to a user's history and task requirements. Human-annotated supervision can guide this adaptation by providing feedback for evaluating and improving memory designs. Yet suitable labels are rarely available for new user histories, and manually constructing QA pairs and supporting evidence is costly. We introduce MemSteer, which turns unlabeled user histories into question-answer (QA) supervision with supporting evidence for memory-design optimization. MemSteer constructs an evidence-grounded answer plan that specifies how facts across related records jointly support a reference answer. The plan guides question generation, while source-grounded auditing and blind answer recovery check the resulting annotations. To study the utility of this supervision, we develop MemSteer-Opt, which combines QA-based design evaluation with evidence-guided failure diagnosis to revise memory store, retrieval, and context construction without updating model parameters. Experiments on ATM-Bench and RHELM show that this supervision is competitive with official-QA-guided optimization. Relative to Base-BM25, MemSteer-Opt improves ATM-Bench Question Score by 13.4 points and RHELM accuracy by 4.1 and 6.6 points without and with external data, respectively. The supervision also benefits two existing optimizers on ATM-Bench, while new-user experiments demonstrate continued design optimization using supervision generated from the target histories.",
+   "published": "2026-10-28T23:28:49.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2610.39276"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "MemSteer génère automatiquement des QA supervisés à partir d'historiques utilisateurs pour optimiser la mémoire des agents (sans fine-tuning), améliorant de 13.4% le score ATM-Bench vs BM25 et rivalisant avec des annotations humaines.",
+   "score": 7.6
+  },
+  {
+   "id": "f43bd3517061fae7",
+   "title": "GLOW-FM: Efficient Generative Low-Light Image Enhancement with One-Step Latent Flow Matching",
+   "url": "https://huggingface.co/papers/2610.31222",
+   "summary": "Low-light image enhancement (LLIE) aims to recover well-exposed and perceptually faithful images from severely degraded observations. Recent diffusion-based generative methods achieve strong perceptual quality by leveraging powerful image priors, but their iterative sampling incurs substantial computational cost, limiting practical deployment. Despite recent efficiency gains in generative LLIE, high-quality enhancement with a single function evaluation and low overall computation remains challenging, particularly under diverse real-world low-light conditions. We introduce GLOW-FM, a one-step latent flow-matching framework for efficient generative LLIE. GLOW-FM performs conditional transport in the latent space of a frozen Tiny-VAE and leverages Terminal Velocity Matching (TVM) to enable enhancement with a single function evaluation. Matched comparisons with alternative one-step objectives support TVM as an effective design choice, and, to the best of our knowledge, this is its first adaptation to image restoration and specifically to LLIE. Extensive experiments on challenging real-world benchmarks demonstrate that GLOW-FM achieves competitive image quality and state-of-the-art cross-dataset generalization while requiring only a single function evaluation and 34 GFLOPs for the small variant. These findings highlight the potential of GLOW-FM to bring generative LLIE closer to practical deployment through single-step inference and compact latent modeling. Code will be made publicly available upon publication.",
+   "published": "2026-10-22T09:08:15.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.31222"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "GLOW-FM introduit un cadre de *flow matching latent* en une étape pour l'amélioration d'images en faible luminosité, combinant un Tiny-VAE gelé et un objectif *Terminal Velocity Matching* (TVM). Le modèle atteint une qualité compétitive avec une seule évaluation et une faible computation, surpassant les méthodes itératives existantes.",
+   "score": 7.6
+  },
+  {
+   "id": "cadfe6e3a5b5b970",
+   "title": "ReLift: Dense 3D Tracking as Lifted Trajectory Repair",
+   "url": "https://huggingface.co/papers/2610.42136",
+   "summary": "Dense 3D tracking from monocular video requires establishing point correspondences over time, estimating their depth, and inferring their trajectories during occlusion. Existing methods typically learn these tasks jointly, a demanding objective given the scarcity of 4D supervision. We show that strong pretrained 2D trackers and 3D geometry models provide an effective foundation: lifted trajectories, with occluded segments simply interpolated, already rival dedicated 3D trackers using the same geometry. However, lifted trajectories inherit correspondence and depth errors, and under occlusion, their depth comes from the occluder rather than the tracked point. We introduce ReLift, an efficient feed-forward framework that recasts dense 3D tracking as geometric trajectory repair and completion. At its core, a trajectory corrector alternates attention along and across trajectories to preserve reliable observations, repair corrupted positions, and complete missing motion. Using only geometric inputs allows us to train directly on 3D trajectories with simulated lifting errors, decoupling training from images and from any specific tracker or geometry model. Concentrating 4D supervision on trajectory refinement yields a reusable model that consistently improves lifted trajectories across trackers and geometry providers without retraining, so it benefits directly from future advances in either component. On WorldTrack, ReLift achieves state-of-the-art mean accuracy, improving on the strongest baselines by 2.1 APD on all points and 3.0 on dynamic points, with faster configurations remaining competitive with leading 3D trackers while running faster than 4RC. Visit our supplementry page for more examples and code.",
+   "published": "2026-10-30T13:58:33.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 20,
+    "arxiv_id": "2610.42136"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "ReLift reformule le suivi 3D dense comme une réparation de trajectoires (*lifted*), utilisant des correcteurs de trajectoire alternant attention intra/inter-trajectoires. Le modèle, entraîné sur des trajectoires 3D simulées, corrige les erreurs de correspondance et de profondeur, et complète les mouvements manquants, avec une supervision 4D concentrée.",
+   "score": 7.6
+  },
+  {
+   "id": "c1d7bbe61d182cb9",
+   "title": "microsoft/TokenEconomizer",
+   "url": "https://github.com/microsoft/TokenEconomizer",
+   "summary": "Experience-Driven Black-Box Cost Control for Coding Agents",
+   "published": "2026-10-13T04:16:50Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 4403,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "agents"
+   ],
+   "tldr": "Outil open-source de Microsoft pour contrôler dynamiquement les coûts des agents IA (ex: coding agents) via une approche black-box, optimisant l'efficacité des interactions sans modifier le modèle sous-jacent.",
+   "score": 7.4
+  },
+  {
+   "id": "59b3ed96611e3796",
+   "title": "jwuthri-cloud/Tracely-ai",
+   "url": "https://github.com/jwuthri-cloud/Tracely-ai",
+   "summary": "Trace-native CI/CD for AI agents: grade production traces, cluster failures, freeze them into replayable regression tests, and block PRs that regress. Self-hostable.",
+   "published": "2026-10-11T15:38:03Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1213,
+    "language": "Python"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "CI/CD native pour agents IA avec analyse de traces, clustering de failures et tests de régression. Pertinent pour le déploiement et la fiabilité des agents, avec une approche innovante mais encore peu documentée.",
+   "score": 7.4
+  },
+  {
+   "id": "4856767ee933b55f",
+   "title": "CausalWAM: Learning the Causes of Actions in World Action Models",
+   "url": "https://huggingface.co/papers/2610.42096",
+   "summary": "World action models (WAMs) learn latent variables from observations and use these to both predict the evolution of the scene and to generate actions. The prediction has to be of the whole scene, whereas only a portion of the scene causes actions. WAMs fitted to demonstrations do not, in general, guarantee that they will generate actions solely from the latent causes of the demonstrated actions (the action-relevant latent variables), as the model could just as well learn to imitate in this way whilst entangling the action-relevant latent variables with the nuisance variables. We therefore separate out what causes action from what prediction depends on. We prove that under a sparsity constraint the latent variables used to generate actions are an invertible function of the action-relevant latent variables alone and the true structure is identified up to a permutation of the latent variables. This requires neither sufficient temporal dependence nor any assumptions on how the unobserved regimes evolve and holds even when the action-relevant latent variables are statistically dependent on the rest. We therefore propose CWAM (Causal WAM), which incorporates the constraint into a pretrained WAM by adding a sparse routing path to its action head, with the world modeling objective remaining unchanged. Experiments on both synthetic data and real-world robots validate the theory as well as showcase the improved efficiency in closed-loop success.",
+   "published": "2026-10-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.42096"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "interpretabilite",
+    "architecture"
+   ],
+   "tldr": "CausalWAM introduit une contrainte de parcimonie pour identifier les variables latentes causales des actions dans les modèles d'action du monde (WAMs), garantissant que les actions générées dépendent uniquement des variables pertinentes, avec une preuve théorique de l'identifiabilité sous cette contrainte.",
+   "score": 7.3
+  },
+  {
+   "id": "b923aca5a357d492",
+   "title": "Wizard: Manipulate Any World in Real Time via Agentic Control",
+   "url": "https://huggingface.co/papers/2610.40339",
+   "summary": "Recent advances in video world models have enabled the generation of increasingly realistic and interactive virtual environments, opening new possibilities for player-customizable gameplay. Agentic frameworks further advance this direction by decoupling explicit game logic and controllable world representations from visual generation. However, existing approaches support only simple game settings and predefined motion patterns, generalize poorly to unseen environments and characters, and offer limited real-time interactivity. In this paper, we introduce Wizard, an agentic game world model that enables real-time, precise control over character motions while generalizing zero-shot across novel scenes, characters, and actions. To achieve this, we construct a diverse dataset spanning 750 scenes and 178 characters, incorporating skeleton and geometry information as structured representations. We leverage these representations as intermediate proxies to condition a video generation model, together with an adaptive masking mechanism that improves alignment between the conditioning signals and generated video rollouts. Furthermore, we introduce an agentic framework that explicitly maintains and updates game states, allowing players to freely configure their virtual worlds and exercise fine-grained control over character motions while preserving visual quality and gameplay consistency. By combining agentic control with structured proxy-based generation, our framework unlocks new possibilities for player-driven game creation with real-time, generalizable, and mechanically consistent world simulation.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2610.40339"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "agents",
+    "robotique"
+   ],
+   "tldr": "Wizard permet un contrôle agentique en temps réel de mondes virtuels générés par vidéo, généralisant à des scènes, personnages et actions inédits grâce à des représentations structurées (squelettes, géométrie) et un masquage adaptatif pour aligner les signaux de conditionnement.",
+   "score": 7.3
+  },
+  {
+   "id": "fa05f3824343aeab",
+   "title": "WorldBridge: Bridging Video and Action for Task Generalization in World Action Models",
+   "url": "https://huggingface.co/papers/2610.40748",
+   "summary": "Achieving the broad task generalization of embodied models in physical environments remains a central challenge in robot learning. We study this challenge in World Action Models (WAMs) through two complementary capabilities: video generalization, which predicts the visual evolution of new tasks, and action generalization, which translates these predictions into executable behavior through a video-to-action bridge. By varying video and action supervision for tasks outside an initial training set, we examine their respective contributions to task transfer. On RoboTwin 2.0, using only in-distribution video-action supervision yields a 25.07% success rate on out-of-distribution tasks. Introducing videos of these tasks without their action labels raises success to 55.90%, while adding just one action-labeled demonstration per task further improves it to 70.70%. These findings suggest that broader video coverage enables task transfer by leveraging existing inverse-dynamics capabilities, while even sparse action supervision further strengthens those capabilities. Guided by this perspective, we introduce WorldBridge, a WAM with separate video and action experts connected through structured attention and trained with joint flow matching. WorldBridge incorporates visual memory at two temporal scales and action forcing, alongside a unified data processing pipeline that standardizes and filters heterogeneous robot trajectories and egocentric hand-derived supervision. Across multiple manipulation benchmarks, WorldBridge achieves state-of-the-art performance among the compared methods, including 96.23% on RoboTwin 2.0 full data setting and 80.9% on clean to random setting, 82.8% on RoboCasa GR1 TableTop, and 57.6% on DOMINO Level-1. Our study highlights the complementary roles of video prediction and action grounding in developing robots that generalize across tasks.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2610.40748"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "vision",
+    "outils"
+   ],
+   "tldr": "WorldBridge améliore la généralisation des modèles embodied (WAM) en combinant supervision vidéo et action pour le transfert de tâches robotiques. Montre que la couverture vidéo étendue et une démonstration action par tâche boostent significativement les performances (jusqu'à 70.7% de succès).",
+   "score": 7.3
+  }
+ ]
+}
