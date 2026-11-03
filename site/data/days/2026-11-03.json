@@ -1,0 +1,724 @@
+{
+ "date": "2026-11-03",
+ "digest": {
+  "headline": "Optimisation des architectures d'attention linéaire et avancées majeures en agents autonomes marquent la veille IA du 2026-11-03",
+  "overview": "La journée est dominée par des innovations architecturales pour les modèles de langage longs et des progrès significatifs dans les systèmes multi-agents, avec une emphase sur l'efficacité, la robustesse et l'automatisation réelle. Les travaux sur l'optimisation matérielle et les méthodes de récupération d'information en contexte long soulignent aussi l'importance croissante des contraintes computationnelles.",
+  "highlights": [
+   {
+    "title": "DAMI et FLAMIA : optimisation des modèles longs et du matériel",
+    "text": "DAMI améliore la récupération d'informations en contexte long pour les modèles d'attention linéaire à portes via une initialisation mémoire duale, avec des gains de 5 à 17 points sur RULER. FLAMIA accélère l'entraînement des Transformers sur GPU Blackwell grâce à des noyaux d'attention quantifiés et des mécanismes anti-fuites, optimisant ainsi les performances matérielles pour les modèles de langage longs."
+   },
+   {
+    "title": "Multi-Agent Relay Thinking et CoworkOS : collaboration et autonomie",
+    "text": "MACR introduit une collaboration multi-agents en mode relais, réduisant la consommation de tokens de 6x tout en améliorant les performances sur MathVista et MMStar. CoworkOS propose une architecture modulaire pour des agents autonomes capables de gérer des tâches complexes sur le long terme, avec une séparation claire entre stratégie et exécution, essentielle pour l'automatisation réelle et l'intégration humain-machine."
+   },
+   {
+    "title": "CUA-Master et NorthCUA : auto-amélioration des agents d'usage informatique",
+    "text": "CUA-Master combine données ouvertes et auto-amélioration itérative pour les agents d'usage informatique, dépassant les limites des pipelines classiques. NorthCUA utilise un *flywheel* d'expérience pour entraîner ces agents, atteignant des résultats SOTA pour les modèles open-source avec une approche scalable et reproductible."
+   },
+   {
+    "title": "LeanGuard et MCP Tool Poisoning : sécurité et régulation des agents",
+    "text": "LeanGuard propose des garde-fous vérifiés formellement pour les agents utilisant des outils, bloquant 100% des appels interdits sur Tau-Bench. Une étude sur le *MCP tool poisoning* révèle que 22,9% des scénarios testés mènent à des exécutions malveillantes, soulignant les risques critiques pour les frameworks d'agents."
+   },
+   {
+    "title": "ProVe et Sonar-MoE : optimisation des LLM et des MoE",
+    "text": "ProVe accélère les LLM de 2,5x à 2,7x via un décodage inverse (proposer-verifier), avec un trade-off contrôlable entre vitesse et précision. Sonar-MoE réduit la mémoire GPU de 19-22% lors de l'entraînement des MoE en mettant à jour les experts en backward, sans perte de performance."
+   },
+   {
+    "title": "Pixel-UMI et Pixel : manipulation robotique généraliste",
+    "text": "Pixel-UMI apprend des politiques de manipulation corporelle complète à partir de démonstrations humaines sensorisées, intégrant des corrections environnement-aware et humaines en ligne. Pixel propose un système robotique complet co-conçu pour la manipulation mobile généraliste, combinant matériel, contrôle unifié et apprentissage hiérarchique."
+   }
+  ],
+  "trend": "Les avancées actuelles convergent vers une intégration plus poussée des contraintes matérielles, une autonomie accrue des agents, et une robustesse renforcée via des méthodes formelles et des benchmarks rigoureux. La recherche se focalise sur des solutions scalables et reproductibles, avec une attention particulière aux interactions complexes et aux risques de sécurité."
+ },
+ "items": [
+  {
+   "id": "9bf33a2ba7bd414e",
+   "title": "DAMI: Dual-Axis Memory Initialization for Enhanced Long-Context Retrieval in Gated Linear Attention",
+   "url": "https://huggingface.co/papers/2610.41994",
+   "summary": "Linear attention scales linearly with sequence length, but its finite-state memory can limit long-context retrieval. In gated linear recurrences, memory retention depends on state decay, which is shaped jointly by gate parameters A_log and dt_bias and by input activations. In controlled Gated DeltaNet (GDN) experiments, both parameters remain highly correlated with their initial values after training, highlighting the importance of initialization. Therefore, we introduce Dual-Axis Memory Initialization (DAMI), which jointly configures these parameters before training. DAMI assigns geometric timescales across heads for varied retrieval distances and a low-high-low input-sensitivity profile across layers. A small activation sample calibrates the GDN-family implementation to match both behavioral targets without adding trainable parameters. Across GDN, KDA, GDN2, Mamba-2, and RWKV-7, DAMI improves average RULER-style retrieval accuracy by 5.29 to 16.71 percentage points over the corresponding random-initialization baselines. Performance on language modeling, commonsense reasoning, and 2K real-world retrieval remains broadly comparable to those baselines. Our code is available at https://speedai.com/research/dami.",
+   "published": "2026-10-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.41994"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "llm"
+   ],
+   "tldr": "DAMI propose une méthode d'initialisation des paramètres de mémoire dans les modèles d'attention linéaire à portes (Gated Linear Attention) pour améliorer la récupération d'informations en contexte long, avec des gains de 5,29 à 16,71 points de pourcentage sur des benchmarks RULER sans dégradation des performances en modélisation du langage ou raisonnement.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le problème abordé concerne la limitation des mécanismes d'attention linéaire dans les modèles de langage, notamment leur mémoire à état fini qui restreint la capacité à récupérer des informations sur de longs contextes. Dans les récurrences linéaires à porte (gated linear recurrences), la rétention de la mémoire dépend d'un déclin d'état influencé par des paramètres initiaux, ce qui peut nuire à l'efficacité de la récupération contextuelle longue.",
+    "methode": "Les auteurs proposent **Dual-Axis Memory Initialization (DAMI)**, une méthode d'initialisation conjointe des paramètres clés des modèles à attention linéaire (notamment *A_log* et *dt_bias* dans les architectures comme Gated DeltaNet). DAMI configure géométriquement des échelles de temps variables entre les têtes d'attention pour couvrir différentes distances de récupération, tout en appliquant un profil de sensibilité aux entrées (faible-élevé-faible) selon les couches. Une calibration initiale est réalisée à partir d'un petit échantillon d'activations, sans ajouter de paramètres entraînables. La méthode est testée sur plusieurs architectures (GDN, KDA, GDN2, Mamba-2, RWKV-7).",
+    "resultats": "DAMI améliore significativement la précision de récupération sur des benchmarks de type *RULER*, avec des gains allant de **5,29 à 16,71 points de pourcentage** par rapport aux initialisations aléatoires. Les performances en modélisation du langage, raisonnement de sens commun et récupération réelle (2K contextes) restent comparables aux baselines, sans dégradation notable. Les résultats suggèrent une meilleure stabilité de la mémoire à long terme sans surcoût computationnel.",
+    "limites": "Le contenu disponible ne précise pas les détails de la calibration initiale (taille de l'échantillon, méthode exacte) ni les éventuels biais introduits par le profil de sensibilité imposé. De plus, l'impact de DAMI sur des architectures très différentes (comme les transformers purs) ou des tâches hors-domaine n'est pas évalué. La corrélation persistante des paramètres avec leurs valeurs initiales pourrait aussi indiquer une sous-exploitation de la capacité d'apprentissage.",
+    "verdict": "Cette approche mérite une attention particulière pour les architectures à attention linéaire ou récurrente, car elle offre un gain tangible en récupération longue sans complexité ajoutée, mais son applicabilité universelle et sa robustesse restent à explorer."
+   }
+  },
+  {
+   "id": "771b010310217e5f",
+   "title": "FLAMIA: FLAsh MIcroscaling Attention for Fast and Causally Safe Training on Blackwell",
+   "url": "https://huggingface.co/papers/2611.03344",
+   "summary": "Attention remains a substantial computational cost in Transformer training, particularly at long context lengths. NVIDIA Blackwell GPUs provide high-throughput low-precision matrix multiplication, but exploiting it in attention requires addressing quantization overhead, causal information leakage through shared scales, and numerical inconsistencies between the forward and backward passes. We present FLAMIA, a family of attention kernels for Blackwell with MXFP8 and mixed NVFP4/FP8 training paths. Our design combines token-block scaling that reuses quantized operands across matrix orientations, targeted safeguards against scale-induced leakage, and consistent forward and backward computations. Fused quantization and architecture-specific kernel optimizations reduce overhead, while document-local scaling and workload-aware scheduling support variable-length documents directly in packed layouts without repacking. Across various causal packed-document workloads, the MXFP8 path accelerates the combined forward and backward attention call, including quantization, by factors of 1.10--1.40times on B200 and 1.06--1.42times on B300 relative to the fastest evaluated baseline for each workload. We validate training stability and quality preservation on pretraining Llama-style models. These results show how jointly designing quantization, training numerics, and document scheduling translates low-bit hardware throughput into practical attention acceleration.",
+   "published": "2026-11-02T11:00:12.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2611.03344"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "FLAMIA accélère l'entraînement des Transformers sur GPU NVIDIA Blackwell via des noyaux d'attention quantifiés (MXFP8/NVFP4) avec des mécanismes anti-fuite d'information et une planification dynamique. Optimisation matérielle majeure pour les modèles de langage longs.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "L'attention dans les modèles Transformer représente un coût computationnel majeur, surtout pour des contextes longs. Bien que les GPU NVIDIA Blackwell offrent une multiplication matricielle haute performance en basse précision, leur exploitation pour l'attention se heurte à trois défis : la surcharge liée à la quantification, les fuites d'information causale via des échelles partagées, et les incohérences numériques entre les passes avant et arrière.",
+    "methode": "FLAMIA propose une famille de noyaux d'attention optimisés pour Blackwell, exploitant des précisions MXFP8 et un mélange NVFP4/FP8. La méthode repose sur : (1) un *scaling par blocs de tokens* réutilisant les opérandes quantifiés selon les orientations matricielles, (2) des garde-fous ciblés contre les fuites d'information causale induites par les échelles, et (3) des calculs cohérents entre les passes avant et arrière. Des optimisations spécifiques incluent la fusion de la quantification, des noyaux adaptés à l'architecture, un *scaling local aux documents* et une planification des tâches tenant compte de la charge de travail pour gérer des documents de longueur variable en layouts compactés sans reconditionnement.",
+    "resultats": "Sur divers scénarios de documents compactés avec causalité, le chemin MXFP8 accélère l'appel combiné de l'attention (avant + arrière, incluant la quantification) d'un facteur de 1,10 à 1,40× sur B200 et de 1,06 à 1,42× sur B300, comparé aux baselines les plus rapides évaluées. La stabilité de l'entraînement et la préservation de la qualité ont été validées sur des modèles de type Llama en pré-entraînement.",
+    "limites": "Les détails sur les benchmarks précis (modèles, jeux de données) et les configurations exactes des baselines manquent, limitant l'évaluation comparative. De plus, l'impact des optimisations sur la convergence fine ou les tâches en aval (ex : génération) n'est pas exploré. Enfin, la robustesse face à des architectures non-Llama ou des précisions extrêmes (ex : NVFP4) reste à démontrer.",
+    "verdict": "FLAMIA mérite une attention sérieuse pour son approche systémique combinant quantification, cohérence numérique et planification, mais son adoption dépendra de validations plus larges sur des cas d'usage variés."
+   }
+  },
+  {
+   "id": "8edc27a3b19394c0",
+   "title": "Multi-Agent Relay Thinking",
+   "url": "https://huggingface.co/papers/2610.35219",
+   "summary": "Existing multi-agent collaboration (MAC) methods have primarily explored a group thinking collaboration topology, where agents independently generate solutions and aggregate their outputs. In this work, we investigate an alternative relay thinking topology, where reasoning ownership is dynamically transferred across agents, allowing subsequent agents to inherit and refine an evolving reasoning trajectory. We introduce Multi-Agent Confidence-guided Relay (MACR), a framework that enables dynamical relay collaboration among agents. The key challenge is determining when reasoning should be relayed and which agent should continue the process. method addresses this challenge through confidence-guided relay triggering and a bidding mechanism that selects the next agent based on its confidence. Experiments on four benchmarks show that method outperforms the strongest single-model strategies in accuracy, e.g., +3.3% on MathVista and +3.9% on MMStar, and remains on par with multi-agent strategies while consuming 6.0x less token overhead on HallusionBench and MMStar. Further analysis demonstrates that relay collaboration enables heterogeneous agents to progressively integrate complementary insights, combining heterogeneous capabilities across reasoning stages. Our source code is available at https://github.com/67L1/MACR.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.35219"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "MACR introduit une collaboration multi-agents en mode relais (transfert dynamique de raisonnement) qui améliore les performances (+3,3% sur MathVista, +3,9% sur MMStar) tout en réduisant la consommation de tokens de 6x par rapport aux approches multi-agents classiques.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les méthodes actuelles de collaboration multi-agents (MAC) reposent principalement sur une topologie de *group thinking*, où chaque agent génère des solutions indépendamment avant d'agréger les résultats. Cette approche limite l'exploitation des complémentarités dynamiques entre agents et entraîne une surconsommation de ressources (tokens). Le problème visé est d'optimiser la collaboration en permettant un transfert fluide de la trajectoire de raisonnement entre agents, tout en réduisant les coûts computationnels.",
+    "methode": "La méthode proposée, *Multi-Agent Confidence-guided Relay* (MACR), introduit une topologie de *relay thinking* où la propriété du raisonnement est transférée dynamiquement entre agents. Deux mécanismes clés sont implémentés : (1) un *relay triggering* guidé par la confiance, où un agent cède le contrôle lorsque sa confiance dans sa solution descend sous un seuil, et (2) un mécanisme d'enchères (*bidding*) pour sélectionner l'agent suivant, basé sur sa confiance évaluée en temps réel. Les agents peuvent ainsi affiner une trajectoire de raisonnement commune, intégrant progressivement des insights complémentaires. Le cadre permet l'utilisation d'agents hétérogènes (modèles différents) et optimise la consommation de tokens en évitant les redondances.",
+    "resultats": "Les expériences sur quatre benchmarks montrent des gains significatifs en précision : +3,3 % sur MathVista et +3,9 % sur MMStar par rapport aux meilleures stratégies mono-modèle. MACR atteint des performances comparables aux méthodes multi-agents existantes tout en réduisant la surcharge en tokens d'un facteur 6,0 sur HallusionBench et MMStar. Une analyse supplémentaire révèle que la collaboration en relais permet une intégration progressive des capacités hétérogènes des agents, améliorant la robustesse du raisonnement.",
+    "limites": "Le document ne détaille pas les critères exacts de mesure de la *confiance* des agents, ni la sensibilité du système aux seuils de déclenchement du relais. De plus, l'efficacité du mécanisme d'enchères dépend fortement de la qualité des estimations de confiance, ce qui pourrait introduire des biais ou des instabilités. Enfin, l'impact des agents hétérogènes sur la cohérence globale du raisonnement n'est pas entièrement exploré.",
+    "verdict": "Cette approche mérite une attention particulière pour son innovation en topologie de collaboration et son potentiel à réduire les coûts computationnels, mais son déploiement en production nécessitera une validation plus poussée des mécanismes de confiance et de sélection dynamique."
+   }
+  },
+  {
+   "id": "9978900b64412b7c",
+   "title": "CoworkOS:Scaling Agent Coworkers for Real-world Automation",
+   "url": "https://huggingface.co/papers/2611.03178",
+   "summary": "Rapid advances in cowork agents are shifting human-AI collaboration toward real-world automation, delivering software, designs, and other artifacts. However, such productivity work demands both high-quality delivery on complex productivity tasks and continued monitoring and decision-making over long horizons, a combination that remains an open challenge. We introduce CoworkOS, a general-purpose harness for long-horizon work that separates task strategy from execution management: the model decides actions, delegation, and acceptance, while the runtime maintains state and feedback. Its three-layer architecture enables direct execution or delegation to Subagents, synchronously or asynchronously, under stable responsibilities. Through a shared application layer, humans and agents inspect and revise the same evolving documents, presentations, CAD models, and Blender scenes, so human-in-the-loop participation can enter both through conversation and through direct modification of the work itself. To sustain continuity across agents and sessions, CoworkOS further introduces hierarchical workspaces and persistent semantic memory, so working files, key decisions, and long-running Job logs remain shareable, reusable, and resumable after interruption. Across 12 benchmarks and 6 categories of real-world applications, CoworkOS proves highly competitive with frontier agent applications such as Codex and DeepSeek Harness. As a sustained-work case study, CoworkOS uses GLM-5.3 as its backbone to conduct RSI-driven automated post-training on Qwen3.6-35B-A3B. Over five rounds, the model's average score across eight benchmarks rose from 33.19 to 42.95 (+9.76). Looking ahead, we believe CoworkOS opens a meaningful path toward general cowork-agent intelligence.",
+   "published": "2026-11-02T09:15:11.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 82,
+    "arxiv_id": "2611.03178"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "CoworkOS propose une architecture modulaire pour des agents autonomes capables de gérer des tâches complexes sur le long terme, en séparant stratégie et exécution. Intéressant pour l'automatisation réelle et l'intégration humain-machine, avec une approche innovante de mémoire persistante et de délégation dynamique.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de l'automatisation réelle dans des tâches complexes et de longue durée impliquant une collaboration humain-IA. Actuellement, les agents IA peinent à combiner la qualité d'exécution sur des tâches productives sophistiquées (comme la création de logiciels, de designs ou de modèles 3D) avec une supervision et une prise de décision continues sur des horizons temporels étendus, ce qui limite leur adoption dans des environnements professionnels concrets.",
+    "methode": "CoworkOS propose une architecture en trois couches séparant la stratégie de tâches (décidée par le modèle) de la gestion de l'exécution (assurée par un runtime). Le système permet une délégation flexible à des sous-agents, synchrones ou asynchrones, tout en maintenant des responsabilités stables. Une couche applicative partagée permet aux humains et aux agents de collaborer sur les mêmes artefacts (documents, présentations, modèles CAD, scènes Blender), via des interactions conversationnelles ou des modifications directes. Pour assurer la continuité, CoworkOS intègre des espaces de travail hiérarchiques et une mémoire sémantique persistante, stockant les fichiers, décisions clés et journaux de tâches (Jobs) pour une réutilisation et une reprise après interruption.",
+    "resultats": "CoworkOS a été évalué sur 12 benchmarks et 6 catégories d'applications réelles, démontrant une compétitivité élevée face à des systèmes de pointe comme Codex et DeepSeek Harness. Dans une étude de cas sur un travail soutenu, le système a utilisé GLM-5.3 pour automatiser le post-entraînement piloté par RSI (Reinforcement Learning from Human Feedback) sur Qwen3.6-35B-A3B. Sur cinq cycles, le score moyen du modèle sur huit benchmarks est passé de 33,19 à 42,95 (+9,76 points).",
+    "limites": "Le document ne détaille pas les mécanismes concrets de gestion des conflits ou des erreurs lors de la délégation asynchrone entre sous-agents, ce qui pourrait poser des problèmes de cohérence dans des workflows complexes. De plus, la dépendance à une mémoire sémantique persistante soulève des questions sur la scalabilité et la robustesse face à des artefacts très volumineux ou des sessions interrompues de manière imprévue. Enfin, l'évaluation comparative manque de transparence sur les critères précis de mesure et les biais potentiels des benchmarks utilisés.",
+    "verdict": "CoworkOS mérite une attention particulière pour son approche systémique de la collaboration humain-IA sur des tâches longues et complexes, bien que des validations supplémentaires en conditions réelles et une analyse critique de ses limites techniques soient nécessaires."
+   }
+  },
+  {
+   "id": "eed1f589970e3900",
+   "title": "CUA-Master: Scaling Computer-use Agents through Open-World Recursive Improvements",
+   "url": "https://huggingface.co/papers/2611.03126",
+   "summary": "Despite recent advances in CUAs, their development remains constrained by the limited diversity, controllability, and reliability of interaction data. Moreover, conventional optimization pipelines lack iterative feedback, while existing recursive improvement approaches often rely on self-generated experiences, limiting ability expansion and yielding diminishing returns. To address these challenges, we introduce CUA-Master, a nested double-loop recursive improvement framework. At the system level, an outer world-data-model flywheel continuously incorporates open-world corpus and leverages evolving model weaknesses to guide subsequent data construction and optimization iterations. At the data level, an inner flywheel couples open-world seeding and autocatalytic propagation. The former mines authentic workflows as seed tasks from instructional videos, and employs visual-semantic dual-path trajectory reconstruction; The latter transforms these seeds into reusable primitives for controllable synthesis of diverse, complex, and verifiable tasks. To enable efficient and reliable trajectory collection, we further introduce a feedback-guided snapshot-rollback retry mechanism in various real environments. Extensive experiments demonstrate that CUA-Master-27B achieves competitive performance across GUI-only and GUI-CLI hybrid benchmarks, scoring 80.2 on OSWorld Verified, 36.9 on OSWorld 2.0, 43.9 on WeaveBench, and 25.0 on Agents' Last Exam. Our framework also substantially improves the quality and efficiency of data synthesis, and exhibits continuous gains across recursive iterations.",
+   "published": "2026-11-02T08:41:14.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 62,
+    "arxiv_id": "2611.03126"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "CUA-Master propose un cadre de *recursive improvement* pour les agents d'usage informatique, combinant données ouvertes et auto-amélioration itérative. Approche systémique pour dépasser les limites des pipelines classiques, avec des résultats préliminaires encourageants.",
+   "score": 8.8
+  },
+  {
+   "id": "37f83cfc41113566",
+   "title": "Democratizing Robot-Use Agents: A Unified Harness with Open Models",
+   "url": "https://huggingface.co/papers/2611.01560",
+   "summary": "Robot-use Agents (RUAs) have shown promising zero-shot manipulation capabilities, but reliance on frontier, proprietary models limits research into further training. To democratize RUA research, we introduce uni-robot-agent, a unified harness for competitive open-weight robot use that supports further training. Without privileged inputs, an out-of-the-box Qwen3.8-Flash-Next achieves a RoboDojo Score of 31.39, surpassing the published GPT-6 Astra-RoboProbe result of 28.97 and many VLA/WAM baselines, and performs competitively on 19 real-world tasks. Our analysis across model generations, families, and sizes links effective robot use to four general capabilities, suggesting that future RUA training should develop them jointly.",
+   "published": "2026-10-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 38,
+    "arxiv_id": "2611.01560"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "benchmark"
+   ],
+   "tldr": "uni-robot-agent démocratise la recherche sur les agents robotiques en proposant un cadre unifié avec des modèles ouverts, surpassant des baselines propriétaires. Outil clé pour la reproductibilité et l'innovation dans la robotique autonome.",
+   "score": 8.8
+  },
+  {
+   "id": "a3dce92c469355ff",
+   "title": "NorthCUA Technical Report: Turbocharging Computer-Use Agents through Experience at Scale",
+   "url": "https://huggingface.co/papers/2611.02102",
+   "summary": "Scaling computer-use agents from individual actions to complex software work requires experience that connects decisions to complete outcomes. We present NorthCUA, an integrated system for turbocharging computer-use agents through experience at scale. Its Experience Flywheel supplies diverse executable tasks to the NorthCUA Harness, which sustains long interactions, records decisions, and checks task outcomes. The Flywheel uses these records to curate verified trajectories. For unsolved tasks, recursive self-improvement evolves reusable skills and preserves verified milestones so later attempts build on earlier progress. Staged Learning combines this experience with grounding data from the Flywheel to develop GUI competence through mid-training and long-horizon supervised fine-tuning. The policy then learns from fresh attempts in the same Harness through joint desktop-web reinforcement learning, closing the loop between experience production and policy improvement. The resulting Nano, Mini, and Pro family achieves state-of-the-art results among open-source models across GUI grounding, desktop execution, and Web interaction under the reported evaluation settings. For more responsive Web workflows, NorthCUA-Ultrafast pairs direct action selection with open-ended generation on pre-RL Nano, offering a measured quality-latency tradeoff. Together, these advances establish NorthCUA as a high-performing model family and a reusable foundation for agents that carry complex software work from intent to completion.",
+   "published": "2026-10-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2611.02102"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "NorthCUA utilise un *flywheel* d'expérience pour entraîner des agents d'usage informatique, combinant auto-amélioration, apprentissage supervisé et RL. Résultats SOTA pour les modèles open-source, avec une approche scalable et reproductible.",
+   "score": 8.8
+  },
+  {
+   "id": "e2a669be6741fc44",
+   "title": "Lost in Recovery: Demystifying Recovery Behavior of Computer-Use Agents via Goal-Oriented Action Replay",
+   "url": "https://huggingface.co/papers/2610.27954",
+   "summary": "Recent advances in large (vision) language models have enabled computer-use agents that automate digital workflows via fine-grained keyboard and mouse operations. However, such agents remain fragile in long-horizon settings, where errors accumulate and executed actions leave unintended side effects, making the ability to recover from failures critical. Yet, existing remedies remain inadequate: environment resets are infeasible in proprietary settings, action replay is prohibitively expensive over long horizons, and API-based rollback is limited to web environments, leaving model-based recovery largely unexplored. To address this gap, we present ReTrace, a scalable evaluation framework for systematically studying recovery behavior in computer-use agents. We formalize Transition-Consistent Recovery: identical downstream actions from the recovered and target states must yield identical outcomes. We operationalize this criterion through goal-oriented action replay following controlled error injection. Using ReTrace, we present the first systematic study of autonomous, model-based recovery, revealing that (i) ideal recovery can unlock model's latent task completion capabilities, (ii) current computer-use agents fail to exploit their latent recovery capabilities, and (iii) accurate model-based recovery yields measurable end-to-end gains. Together, these findings establish recovery as a fundamental capability for building reliable computer-use agents. Our code and dataset is available at https://github.com/BangProx/ReTRACE.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 27,
+    "arxiv_id": "2610.27954"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Présentation de ReTrace, un framework d'évaluation pour étudier la capacité de récupération (recovery) des agents basés sur LLM dans des tâches informatiques à long terme, révélant des faiblesses critiques et proposant des critères de cohérence (Transition-Consistent Recovery) pour améliorer leur robustesse.",
+   "score": 8.8
+  },
+  {
+   "id": "95afc08ba069a529",
+   "title": "On-Policy Self-Distillation with Teacher Evolution",
+   "url": "https://huggingface.co/papers/2610.38637",
+   "summary": "On-Policy Self-Distillation (OPSD), which aligns a student model's token-level distribution with that of its self-teacher prompted by privileged context, has emerged as a promising direction to mitigate reward sparsity in sequence-level post-training paradigms. However, OPSD often fails to achieve continuous performance gains during training. In this paper, we find that the model's limited self-teaching capability underlies this phenomenon by generating unreliable guidance on certain samples. To address this problem, we propose Teacher-Evolution Self-Distillation (TESD), which enables the self-teacher to generate rollouts and receive environmental feedback based on task correctness and context independence. First, using these rewards as training objectives, we perform teacher-oriented optimization to continuously enhance the model's self-teaching capability during distillation. Second, by estimating teacher guidance reliability from these rewards, we apply adaptive student-oriented optimization to down-weight samples with unreliable guidance. Extensive experiments across multiple datasets and model scales show that TESD consistently outperforms representative token-level and sequence-level methods, highlighting the necessity of improving supervision quality in OPSD.",
+   "published": "2026-10-27T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.38637"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Proposition de TESD (Teacher-Evolution Self-Distillation), une méthode pour améliorer l'auto-distillation en ligne en optimisant la capacité d'auto-enseignement du modèle enseignant via des récompenses environnementales, surpassant les approches existantes.",
+   "score": 8.8
+  },
+  {
+   "id": "932b0574431ebae4",
+   "title": "ProVe: Proposer-Verifier Decoding",
+   "url": "https://huggingface.co/papers/2610.27815",
+   "summary": "Speculative decoding accelerates autoregressive (AR) language models by letting a small model draft tokens serially and a large model verify them in parallel. We reverse these roles. Starting from a standard AR checkpoint, we fine-tune the large model into a proposer that predicts a block of future tokens in a single forward pass, then use one additional forward pass to verify the proposed block. This gives ProVe, Proposer-Verifier decoding. The verifier can be a smaller AR model or the proposer itself; the latter gives ProVe-lossless, which reproduces the proposer's greedy AR decoding. Block proposals already provide substantial room for acceleration: with a block size of 16, the proposed block has an average AR-matching prefix of 6.6 tokens on GSM8K. Across six benchmarks with a 32B proposer, ProVe-lossless reaches 2.5x average AR throughput without training a separate draft head. With a small 3B verifier, ProVe reaches 2.7x average throughput at 2.6 accuracy points below AR on the six-task average, providing a controllable tradeoff between speed and accuracy.",
+   "published": "2026-10-19T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.27815"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Présentation de ProVe, une méthode de décodage inverse (proposer-verifier) qui accélère les LLM de 2.5x à 2.7x en proposant des blocs de tokens en une passe, avec un trade-off contrôlable entre vitesse et précision.",
+   "score": 8.8
+  },
+  {
+   "id": "3405178feb3a7dc6",
+   "title": "Pixel-UMI: Learning Environment-Aware Whole-Body Manipulation from Sensorized Human Demonstrations",
+   "url": "https://arxiv.org/abs/2611.03647v1",
+   "summary": "Sensorized human demonstrations offer scalable data for mobile manipulation, but embodiment differences complicate policy learning. We present Pixel-UMI, a pipeline for learning environment-aware whole-body policies from human data. We first introduce Environment-Aware Retargeting (EAR), which combines reconstructed scene geometry with demonstrated head and gripper trajectories to determine robot posture and generate collision-aware joint and base targets. Delay-calibrated action assignment converts these trajectories into actions. However, kinematic differences can leave residual pose errors, creating viewpoint mismatches between human demonstrations and robot observations. We therefore introduce Retargeting-Error-Aware Masking (REAM), which uses these errors during training to reduce reliance on mismatched views at deployment. Finally, because estimated actions cannot fully capture contact-rich interactions, we collect on-policy human corrections through DAgger to improve performance. We evaluate Pixel-UMI on five challenging tasks spanning articulated-object manipulation, deformable-object handling, constrained-space reaching, whole-body collision avoidance, and contact-rich bimanual coordination, achieving 87.0% average task progress. Video results are available at https://pixel-robot.com/pixel-umi",
+   "published": "2026-11-02T18:59:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jason Jingzhou Liu, Tony Tao, Deepak Pathak, Ruslan Salakhutdinov"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Pixel-UMI propose une méthode pour apprendre des politiques de manipulation corporelle complète à partir de démonstrations humaines sensorisées, en intégrant une retargeting environnement-aware (EAR) et un masquage des erreurs de retargeting (REAM) pour gérer les différences d'incarnation et les erreurs résiduelles, avec des corrections humaines en ligne via DAgger pour améliorer les interactions riches en contacts.",
+   "score": 8.6
+  },
+  {
+   "id": "b82a6ac52f6cde77",
+   "title": "Pixel: A Co-Designed Full-Stack Robot System for Learning General-Purpose Mobile Manipulation",
+   "url": "https://arxiv.org/abs/2611.03648v1",
+   "summary": "General-purpose mobile manipulation requires a combination of capable robot hardware, scalable demonstration collection, expressive whole-body control, and effective policy learning. Yet these components are often developed independently, creating mismatches that limit the capabilities of the complete system. We present Pixel, a co-designed full-stack system for learning general-purpose mobile manipulation. Pixel combines a low-cost wheeled humanoid with human-aligned kinematics and compliant grippers, multiple teleoperation and robot-free human data-collection interfaces, a unified whole-body controller, and a common policy learning pipeline across human and robot demonstrations. A hierarchical learning stack further enables language-conditioned visuomotor control and long-horizon task execution. We evaluate the system across hardware, data collection, and policy learning, and demonstrate mobile-manipulation behaviors requiring dexterity, active perception, navigation, and whole-body coordination. We hope that Pixel provides an integrated and extensible foundation for studying how robot hardware, data, control, and learning can be designed together for robot learning. More results at https://pixel-robot.com/pixel",
+   "published": "2026-11-02T18:59:32+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Tony Tao, Jason Jingzhou Liu, Ruslan Salakhutdinov, Deepak Pathak"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "Pixel est un système robotique complet co-conçu pour l'apprentissage de la manipulation mobile généraliste, combinant matériel, interfaces de collecte de données, contrôle unifié et apprentissage hiérarchique, démontrant des comportements nécessitant coordination corporelle, perception active et exécution de tâches à long terme.",
+   "score": 8.6
+  },
+  {
+   "id": "a9e93a6c8692c780",
+   "title": "SWE-Trail: History-Guided Trajectory Collection for Coding Agent Training",
+   "url": "https://huggingface.co/papers/2611.02074",
+   "summary": "Coding agents solve repository issues through long sequences of exploration, editing, and validation. These trajectories are increasingly used as post-training data, so how they are collected shapes what the trained model learns. A common approach is to sample multiple trajectories independently for each issue and then select or curate them. However, as more trajectories are sampled independently, later trajectories become increasingly redundant, even though earlier trajectories could guide where subsequent collection effort should be spent. A natural way to use this history is to expose it to the coding agent as advice. But training on such trajectories can make the model rely on advice that is unavailable at test time, creating a train-test mismatch. Instead, we argue that history should guide where collection effort is spent, while the coding agent decides what to generate. We introduce SWE-Trail, a trajectory collector that uses earlier trajectories to guide subsequent collection while keeping that history outside the coding agent's context. During a new rollout, SWE-Trail uses history to identify a state where additional collection effort may be useful. There, the coding agent proposes candidate next actions from its ordinary context, and SWE-Trail briefly executes them from the same checkpoint to decide which route continues. We evaluate collection approaches by training student models on the trajectories they produce. For a 124B student initialized from Ling-3.0-flash-base, SWE-Trail improves mean resolution over independent sampling by 2.33 and 1.60 percentage points on SWE-bench Multilingual and SWE-bench Pro, respectively. Without history, the same pipeline produces more resolved trajectories than independent sampling, but improves by only 0.11 points on Multilingual. These results show the value of using history to guide collection without exposing it to the coding agent.",
+   "published": "2026-10-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2611.02074"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "SWE-Trail optimise la collecte de trajectoires pour l'entraînement d'agents de codage en utilisant l'historique des trajectoires précédentes pour guider la collecte future, réduisant la redondance et améliorant l'efficacité sans introduire de biais de train-test.",
+   "score": 8.5
+  },
+  {
+   "id": "c5296d6ef9ecac94",
+   "title": "LEANGUARD: Lean-Verified Guardrails for Tool-Using Agents",
+   "url": "https://huggingface.co/papers/2611.02332",
+   "summary": "Tool-using language-model agents often execute actions that their domain policies forbid. We present LeanGuard, a runtime that checks every proposed tool call against a policy written in Lean4 before the call reaches the environment. Policies combine state predicates with scoped past-time temporal operators over the execution history, evaluation is fail-closed, and the decision procedure is proved equivalent to a LeanLTL semantics. A denied call can be corrected in two ways. With feedback, the agent receives the violated rule and a hint; with proof-guided repair, Lean metaprogramming searches for a nearby call that preserves the user's intent and proves that the policy admits it, without the model. On Tau-Bench with five Qwen models (0.8B-27B), unguarded agents execute at least 33 calls that the Lean policy forbids, while LeanGuard executes none; with feedback, task success does not change significantly. On DTap, LeanGuard reduces direct prompt-injection success from 57.9% to 5.9%, and in telecom, where benign tasks need no writes, benign success is unchanged. Feedback reduces repeated blocked calls and raises task success for four of five models over a bare denial. On replayed denials, repair proves an admissible edit for 88 of 252 denials caused by argument values, in a median of 2,ms.",
+   "published": "2026-11-01T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2611.02332"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "regulation",
+    "outils"
+   ],
+   "tldr": "LeanGuard propose un système de garde-fous vérifiés formellement (en Lean4) pour les agents utilisant des outils, bloquant 100% des appels interdits sur Tau-Bench et réduisant les injections de prompts malveillants de 57,9% à 5,9% sans impacter les tâches bénignes.",
+   "score": 8.5
+  },
+  {
+   "id": "4eeed34b9045e2f3",
+   "title": "Strategist: Evolving Reasoning with Agents",
+   "url": "https://arxiv.org/abs/2611.03618v1",
+   "summary": "A model is only half of an AI agent system. The other half is the inference strategy: the reasoning procedure that turns model calls into a response. Today that second half is written by hand, and the experience of building one strategy never carries to the next. We introduce Strategist, a meta-agent that evolves inference strategies across tasks. Each strategy is written as a blueprint,executable code that other strategies can reuse, and together the blueprints form a library. Given a task and a small development set, Strategist retrieves related blueprints, writes candidate strategies, tests them on real samples, and revises them from the results. Every candidate then enters the library, so later tasks build on earlier discoveries. On 30 benchmarks, Strategist beats the strongest baseline on 24 and matches its average accuracy (74.7% vs.74.0%) at 39% lower inference cost. Its strategies also transfer to unseen tasks and other models without further search. The part of an AI system that is not improved on its own now does.",
+   "published": "2026-11-02T18:51:04+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Taiming Lu, Qi Xu, Zhigang Hua, Zhuang Liu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Strategist est un méta-agent qui évolue des stratégies de raisonnement (blueprints) pour les LLM, en réutilisant et améliorant des stratégies existantes via une bibliothèque partagée, réduisant les coûts d'inférence de 39% tout en surpassant les baselines sur 24 des 30 benchmarks testés.",
+   "score": 8.3
+  },
+  {
+   "id": "8a32a8668f43858c",
+   "title": "Tracing the Scientific Discovery Capacity of LLMs to Their Training Data",
+   "url": "https://arxiv.org/abs/2611.03617v1",
+   "summary": "Large language models (LLMs) show growing promise for scientific discovery, yet basic questions remain about what enables reliable discovery. How can we trace the scientific discovery capacity of LLMs to their training data? We study this question as one of missing probability mass and develop a theoretical account in which monofacts-the facts observed once during training-set the discovery capacity. In materials science and regulatory genomics, we directly manipulate monofact rates in training sets and find that more monofacts consistently yield more discoveries across two open-weight model families, sampling strategies, and reasoning budgets. Further experiments show the relationship cannot be explained by training-set diversity alone and can transfer across scientific domains when paired with in-domain data. Together, our results identify monofact rate in training data as a key factor governing discoveries in language models.",
+   "published": "2026-11-02T18:50:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Arda Uzunoglu, Mahler Revsine, Michael Schatz, Benjamin Van Durme, Mehrdad Farajtabar, Daniel Khashabi"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude démontre que la capacité des LLM à effectuer des découvertes scientifiques dépend fortement de la fréquence des 'monofacts' (faits observés une seule fois) dans leurs données d'entraînement. Les expériences montrent que l'augmentation de ces monofacts améliore systématiquement les performances, même en transférant des connaissances entre domaines scientifiques.",
+   "score": 8.3
+  },
+  {
+   "id": "cf0918d9d228e2d0",
+   "title": "Four Bridges: Measuring Deception Propensity in a Multi-Agent Game",
+   "url": "https://arxiv.org/abs/2611.03600v1",
+   "summary": "AI agents are increasingly deployed in settings where they interact and coordinate with other agents, yet honesty is mostly measured in single-turn, single-agent benchmarks that pressure the model to deceive. We study deception that emerges in multi-agent interaction without any instruction to deceive. We introduce Kradle, a platform for evaluating AI models, and Four Bridges, an information asymmetry game in which four agents distribute across four rooms: one is the death room, the others hold food worth more if not shared. One agent, the informed agent, knows which room is the death room and can withhold or disclose that information. We evaluate eight frontier models as the informed agent. Deceptive behavior appears in every model and in 73% of all runs (6% to 100% per model), and does not decrease with capability tier within a model family. When the informed agent does disclose, the warning is often challenged, and agents that challenge it enter the death room twice as often as those that do not. Telling all agents that one of them knows the death room collapses deception in six of eight models; telling the informed agent that the room is permanently fatal moves only one. On an open-weight model, an honesty steering vector reduces deception to 0% and adversarial honesty training to 6%. The platform and game provide a testbed for measuring deceptive behavior and comparing interventions.",
+   "published": "2026-11-02T18:40:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Raphael Casey, Michael Simeone, Alberto Tosato, Florian Ernst, Kemal El Moujahid, James Tamplin"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Four Bridges évalue la propension au mensonge dans des interactions multi-agents sans instruction explicite de tromperie. Les résultats révèlent que les modèles de pointe mentent dans 73% des cas, avec des dynamiques complexes liées à la confiance et aux avertissements.",
+   "score": 8.3
+  },
+  {
+   "id": "930e7ad15f15cd7a",
+   "title": "Sonar-MoE: In-Backward Expert Updates for Memory-Efficient Mixture-of-Experts Training",
+   "url": "https://arxiv.org/abs/2611.03577v1",
+   "summary": "Most parameters of a Mixture-of-Experts (MoE) model belong to its experts, and standard training keeps every expert gradient in GPU memory until the optimizer step. This memory grows with the number and size of the experts, so it rises as MoE models scale. We introduce Sonar-MoE, which updates each expert tensor during the backward pass and frees its gradient right away. It brings optimizer-in-backward from dense models to batched MoE expert tensors, so the GPU never holds more than one layer of expert gradients. When we fine-tune OLMoE-1B-7B and Granite-3.1-3B-A800M in bf16 with two expert-kernel backends, Sonar-MoE lowers peak memory by 19% to 22%. Its updates are bitwise identical to standard training without expert gradient clipping, and held-out loss stays within 0.003 of all baselines. Each step also takes 17% to 23% less time than standard training with global-norm clipping. Updating whole batched tensors rather than individual experts is what keeps Sonar-MoE fast, as it avoids a 20% to 72% slowdown while using the same memory. Sonar-MoE matches optimizer-in-backward over all parameters in memory and speed while still clipping the dense parameters.",
+   "published": "2026-11-02T18:30:00+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Avni Mittal, Avinash Anand, Ashutosh Kumar, Dikshant Kukreja, Kritarth Prasad, Chaitanya Lakhchaura"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "Méthode Sonar-MoE pour réduire la mémoire GPU en 19-22% lors de l'entraînement de MoE, en mettant à jour les experts en backward et en évitant le clipping global, sans perte de performance.",
+   "score": 8.3
+  },
+  {
+   "id": "e5f5fdba029a1cf6",
+   "title": "MCP Tool Poisoning in Agentic AI Frameworks: A Cross-Framework Measurement Study",
+   "url": "https://arxiv.org/abs/2611.03555v1",
+   "summary": "The Model Context Protocol (MCP) lets agentic AI frameworks connect language models to external tool providers, but it carries attacker-controlled content (tool descriptions, schema fields, and response data) into model context without validation. Prior benchmarks measure model compliance with poisoned instructions without confirming real execution. We present the first cross-framework measurement of MCP tool poisoning with real tool execution. A 25-class root-cause taxonomy unifies prior classifications, and the open-source tool mcpvenom drives a 9,720-cell susceptibility matrix across 12 frameworks, 18 models, and 45 attack scenarios, with a dual oracle that confirms exfiltration via canary HTTP receipt. The overall attack success rate is 22.9% (2,113 vulnerable cells). Of these, 64.9% dispatch an attacker tool call, 23.0% contact the attacker endpoint, and 12.1% verifiably exfiltrate a secret. Resistance is model-level: nine core frameworks cluster within 23 to 26% (chi-squared = 3.30, p = 0.91), and no framework implements intentional defense. Incidental framework properties mitigate in specific cases, and a regex description scanner rejects 20 of 45 scenarios at a 7.2% false-positive rate, so metadata scanning alone is a partial control. Model ASR ranges from 0.4% to 49.7%. Claude Opus 4.8 is vulnerable in 8 of 530 cells while issuing 223 explicit refusals. A code-level audit finds no intentional defense across twelve frameworks, and all five coordinated disclosures across four vendors were rejected.",
+   "published": "2026-11-02T18:17:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Farooq Shaikh, Biagio Montaruli"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "outils",
+    "regulation"
+   ],
+   "tldr": "Étude cross-framework sur le *MCP tool poisoning*, révélant que 22.9% des scénarios testés (9 720 cellules) mènent à des exécutions malveillantes, avec une taxonomie des causes racines et des contre-mesures inefficaces.",
+   "score": 8.3
+  },
+  {
+   "id": "16c6234b9ef2e907",
+   "title": "Can LLM Agents Be Forward-Deployed Engineers? Requirement Discovery and Delivery for Enterprise Text-to-SQL",
+   "url": "https://arxiv.org/abs/2611.03551v1",
+   "summary": "LLM coding agents can increasingly automate model post-training, but whether they can act as forward-deployed engineer (FDE) agents, discovering customer requirements and turning them into deployment decisions, remains unclear. We study this on a real enterprise text-to-SQL engagement: a simulated customer, grounded in the real use case's requirements, starts with an ambiguous request. An agent must discover acceptance criteria, data permissions, and hardware constraints in the discovery phase, then plan and execute a post-training recipe in the delivery phase. Across 15 models, the strongest discover over 80% of withheld requirements and open-weight models discover 40-50%; in the delivery phase, only 25% of runs across eight coding-agent configurations pass all acceptance criteria. We identify four bottlenecks in this engagement: (1) incomplete discovery, with 40% of withheld requirements missing or misrepresented; (2) unreliable execution; (3) underused compute budgets and a lack of systematic comparisons across base models and post-training methods; and (4) benchmark accuracy does not guarantee production readiness. We suggest human review of discovered requirements, monitoring of the agent's plan during execution, and an explicit experiment-environment specification covering hardware, budget scope, and production checks.",
+   "published": "2026-11-02T18:13:38+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Marianne Menglin Liu, Rongguang Wang, Zheng Wang, Yewen Wang, Leonid Boytsov, Tao Sheng"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Évaluation de la capacité des agents LLM (open-weight et propriétaires) à agir comme des ingénieurs déployés en avant, en découvrant des exigences clients et en exécutant des tâches de post-entraînement pour un cas d'usage Text-to-SQL en entreprise. Résultats mitigés : découverte partielle des exigences (40-80% selon les modèles) et faible taux de réussite en phase de livraison (25% des runs). Identification de goulots d'étranglement critiques pour la production.",
+   "score": 8.3
+  },
+  {
+   "id": "ac1a3834c23e4604",
+   "title": "Library of Layers (LoL): Adaptively Ordering Transformer Layers at Runtime",
+   "url": "https://arxiv.org/abs/2611.03526v1",
+   "summary": "Computer programmers chain together the same reusable computational primitives, for example, conditional statements or loops, but in different orders to implement different algorithms. In contrast, existing language model architectures always execute their layers in the same order. We introduce Library of Layers (LoL), an architecture that dynamically orders its layers during inference to solve the problem at hand. LoL has a single hyperparameter, the size of its global library of transformer blocks, that allows it to transition seamlessly between parameter reuse and sparsity, generalizing the parameter-efficiency and FLOPs-efficiency tradeoffs of dense, depth-recurrent, and mixture of experts architectures in one unified family. We show that LoL achieves competitive performance with all three above baselines when pretrained on text data. On synthetic sudoku and maze data, we observe that the model employs distinct layer orderings to implement different solution strategies, and we can intervene on routing to force a model to apply a specific solution strategy to a problem instance. In a multilingual natural language setting, we find that LoL chooses different layer order patterns based on language and script. Similarly, we train LoL on safety data and fit probes to its router outputs, finding that these probes distinguish safe from unsafe text with high AUROC. LoL provides a path toward a future in which models dynamically compose their own computational graph, enabling more efficient and controllable reasoning.",
+   "published": "2026-11-02T17:57:53+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Abdellah Rahmani, Sean McLeish, Ang Li, Sanae Lotfi, Pascal Frossard, Micah Goldblum"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Introduction de *Library of Layers* (LoL), une architecture dynamique qui réordonne les couches de transformers à l'inférence pour adapter le modèle au problème. Unifie les compromis efficacité/paramètres des architectures denses, récurrentes ou *mixture of experts* avec un seul hyperparamètre. Performances compétitives et stratégies de routage interprétables sur des tâches synthétiques et multilingues.",
+   "score": 8.3
+  },
+  {
+   "id": "1e5a4855bc738d69",
+   "title": "Ask, Don't Equip: Question-Driven Coding Agents for Deep Kernel Optimization",
+   "url": "https://arxiv.org/abs/2611.03517v1",
+   "summary": "LLM agents for GPU kernel optimization sit at two ends of a structure-freedom tradeoff. Scripted agents fix what the model does at each step, via a learned policy, an optimization menu, or fixed roles, and are sample-efficient where the recipe applies and stall where it does not. Open-ended agents let a self-directed model mutate a population of kernels and pay for the freedom in trials: thousands of evaluations, repeated edits, and wrong candidates. Both respond to hard targets by equipping the agent with more: parsed profiler output, disassembly analysis, retrieval over documentation and libraries, and stores of lessons. We argue that both lack direction, a hypothesis about where the remaining gap is, and that a short question asked at the right moment supplies it without narrowing what the agent may do next. We present KernelSeek, a question-driven agent that makes an existing CUDA kernel faster with no operator-specific knowledge and no faster implementation to imitate: a general-purpose coding agent, a minimal harness that enforces a verifiable goal, and questions at decision points, first from a human, then from a bank the agent applies to itself. On the same task, evaluator, hardware, and week, a tool-rich autonomous agent built in the prevailing style plateaued at 0.50x FlashAttention-3 after 133 model-driven steps; KernelSeek reached 1.13x. It then produced dependency-free FlashAttention forward kernels for Hopper and Blackwell, single CUDA files with no CUTLASS, CuTe, cuBLAS, or cuDNN, correct on all 182 scenarios per architecture and 1.16x FlashAttention-3 and 1.46x FlashAttention-4 (geometric mean). Across 162 human messages and 11.5K agent tool calls, every large gain followed a question that moved the agent to a different layer of the system or rejected a claimed limit, never one that supplied information. We release the kernels, harness, question bank, and all traces.",
+   "published": "2026-11-02T17:51:58+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Gabriele Oliaro, Jaeseong Lee, Zhaoyuan Su, Sreeram Vennam, Zhihao Jia, Samyam Rajbhandari"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "KernelSeek propose un agent LLM 'question-driven' pour optimiser des kernels CUDA sans connaissance spécifique ni imitation, combinant liberté structurelle et direction ciblée via des questions auto-générées. Intéressant pour l'optimisation automatique de code GPU avec une approche minimaliste et généralisable.",
+   "score": 8.3
+  },
+  {
+   "id": "985c28e9b7258c6f",
+   "title": "DR Pixel: Page-Native Deep Research with Vision-Language Models",
+   "url": "https://huggingface.co/papers/2611.03097",
+   "summary": "Complex documents such as scientific papers contain rich information in tables, figures, and equations; however, existing deep research (DR) agents typically reduce papers to OCR-extracted text. We instead ask whether vision-language models (VLMs) can enable page-native deep research: directly retrieving and reasoning over rendered document page images. We introduce DR Pixel, the first open-source end-to-end multimodal DR agent that uses rendered page images as its sole retrieval and reasoning unit, operating over a corpus of 1.06M pages. To evaluate this setting, we construct DRPixelBench, a benchmark on scientific papers requiring reasoning over text, figures, tables, and equations. Surprisingly, page-native DR already works well without training, outperforming OCR-based baselines across state-of-the-art models like GPT-5.4, Gemini-3.5-Flash, and Qwen3.6-27B, while requiring fewer tool calls. We next turn to DR training. A key challenge is that teacher trajectories for agentic supervised finetuning are noisy, mixing critical reasoning and action steps with redundant or failed attempts. To address this, we introduce counterfactual credit reweighting, a fine-grained credit assignment method that weights individual reasoning and action steps by their counterfactual contribution to the final answer. Our training improves retrieval recall by about 15 points and final accuracy by over 10 points on DRPixelBench, and likewise outperforms the untrained baseline on four existing benchmarks. On out-of-distribution ViDoRe-V3, DR Pixel comes within 1.8 points of an oracle that is given the gold pages directly. Our results suggest that the conventional OCR-then-retrieve pipeline is not only unnecessary but suboptimal: directly retrieving and reasoning over visual document pages makes complex DR both more effective and more efficient.",
+   "published": "2026-11-01T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2611.03097"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "agents",
+    "rag"
+   ],
+   "tldr": "DR Pixel introduit un agent de recherche approfondie (DR) utilisant des images de pages natives (sans OCR) pour raisonner directement sur des documents scientifiques, surpassant les approches basées OCR sur des benchmarks comme DRPixelBench avec moins d'appels d'outils.",
+   "score": 8.2
+  },
+  {
+   "id": "176c56e85dbb45af",
+   "title": "Can Large Language Model Agents Learn by Watching Tutorial Videos?",
+   "url": "https://huggingface.co/papers/2611.01460",
+   "summary": "Humans continuously acquire knowledge from carefully crafted materials such as books and tutorial videos, carrying that understanding into future tasks. Millions of such instructional videos are uploaded online every day, yet LLM agents remain unable to exploit this ever-expanding wealth of human teaching. Their capabilities are frozen after training, while parameter updates at scale remain prohibitively expensive. This raises the central question: can LLM agents learn from this vast instructional resource without parameter updates? We introduce Tutorial Agentic Learning (TAL), a nonparametric continual-learning paradigm that consolidates tutorial videos into a persistent, structured tutorialbook memory through a two-stage adversarial process that harvests hard, video-grounded questions and uses them to refine the memory. At inference time, TAL retrieves through a Table-of-Contents (TOC) tree, tying retrieval directly to the model's reasoning rather than to embedding similarity. To study this setting, we introduce VidLearn, a multimodal QA benchmark built from 72 chess tutorial videos spanning 12 openings. On VidLearn, TAL outperforms all evaluated baselines and improves monotonically as more videos are consumed, achieving up to 113% and 91% relative gains over the corresponding vanilla MLLMs on the training and test splits, respectively. In actual gameplay, TAL reaches a stronger opening-phase position than its vanilla counterpart in 69% of head-to-head games. Evaluation in a second domain further demonstrates the generality of TAL. Together, these results highlight instructional videos as a scalable resource for parameter-update-free agent continual learning.",
+   "published": "2026-10-31T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2611.01460"
+   },
+   "relevance": 9,
+   "reliability": 6,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "TAL (Tutorial Agentic Learning) permet à des agents LLM d'apprendre de vidéos tutoriels sans mise à jour de paramètres, via une mémoire structurée 'tutorialbook' et un système de questions-réponses adversarial. Approche innovante pour l'apprentissage continu, mais évaluée sur un benchmark limité (échecs d'échecs).",
+   "score": 8.2
+  },
+  {
+   "id": "5f3ad1a0b6bb2b32",
+   "title": "WorldFlow: Joint Video and 3D Motion Prediction via Large-Scale Pretraining",
+   "url": "https://huggingface.co/papers/2610.39278",
+   "summary": "Predicting future physical states stands as a central challenge in embodied intelligence. Existing video world models leave 3D dynamics implicit, action-based formulations remain tied to specific robot configurations, and 3D motion prediction models use flow-only supervision, providing a limited learning signal for physical dynamics. To circumvent these limitations, we introduce , a generative world model that jointly predicts future video and query-based 3D trajectories. By parameterizing 3D motion as continuous displacement tokens aligned with the video grid, a unified Mixture-of-Transformers (MoT) backbone jointly denoises both modalities under a rectified-flow objective. This formulation couples explicit geometric dynamics with visual evolution, effectively unlocking the physical commonsense embedded within pretrained video models. To empirically scale and validate this unified architecture, we train on a heterogeneous mixture of 1.44 million object-level samples spanning simulated and real-world domains. We further introduce WorldFlowBench, comprising 1,678 evaluation samples from 11 data sources across simulated and real-world interactions, including spatial reasoning tasks. Across all three evaluation sets, WorldFlow achieves the lowest average displacement error (ADE) and final displacement error (FDE) among the evaluated learning-based methods. Notably, on the challenging SpatialCog set, WorldFlow achieves an ADE of 0.060 m, a 54.2\\% reduction compared with the strongest external baseline. It also reduces ADE and FDE by 55.9\\% and 68.5\\%, respectively, compared with its flow-only variant. Project page: https://worldflow-rbs.github.io/.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.39278"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "WorldFlow prédit conjointement des vidéos futures et des trajectoires 3D via un modèle génératif unifié (MoT) alignant flux visuels et déplacements 3D. Approche pertinente pour la modélisation du monde physique, avec un benchmark large (1.44M échantillons).",
+   "score": 8.2
+  },
+  {
+   "id": "8a8c6b54c60471cb",
+   "title": "Measuring AI Agents as Teammates with Collaborative Intelligence",
+   "url": "https://huggingface.co/papers/2611.02633",
+   "summary": "Progress in AI is often measured by what a single model can do on its own. Yet teams of AI agents are starting to make breakthroughs and discoveries in science, medicine, mathematics and software engineering. As AI begins to work in teams of agents and people, the ability to collaborate becomes a core part of their intelligence. Research on human teams has measured this ability for decades. Inspired by this, we introduce the Collaborative Intelligence Benchmark, which measures how well an AI agent works as a teammate. It contains 240 tasks across 8 dimensions of teamwork, from refusing an unsafe shortcut to checking the work that a weaker model leaves behind. Each task comes from a real record or an existing benchmark, from aviation accident reports and clinical cases to coding tasks and negotiations, and has a programmatically verifiable outcome. To isolate teamwork from individual capability, models are scored only on tasks that they can solve by themselves when they have full information. We evaluate 18 closed- and open-weight models and find that every model, across sizes and families, has clear weaknesses as a teammate, with the best model scoring only 82.2 out of 100. Frontier models almost always refuse unsafe shortcuts and report misconduct, yet they cave under interpersonal pressure, reaching the best overall deal in only 14% of conflicts, and their pass rate drops from 97% to 81% when they take over a task in which a weaker model has cheated. Crucially, general capability does not guarantee good teamwork, as models with nearly the same capability score differ by up to 11 points as teammates. The benchmark includes 160 public tasks with code and data, along with 80 held-out tasks for evaluation. As AI agents increasingly work alongside other agents and people, the ability to collaborate effectively is becoming a crucial capability to measure and develop.",
+   "published": "2026-11-02T01:59:08.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2611.02633"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Collaborative Intelligence Benchmark évalue la capacité des agents IA à collaborer en équipe via 240 tâches couvrant 8 dimensions (ex : vérification, refus de raccourcis). Benchmark rigoureux révélant des lacunes majeures chez tous les modèles testés.",
+   "score": 8.2
+  },
+  {
+   "id": "3ca89e3a8361fa8c",
+   "title": "CrossSWE: Benchmarking Cross-Repository Joint Development for Coding Agents",
+   "url": "https://huggingface.co/papers/2611.01484",
+   "summary": "As coding agents achieve increasingly high success rates on software engineering benchmarks, recent efforts have sought to increase task complexity through longer horizons and more extensive code modifications. However, real-world software development often spans multiple interdependent repositories, introducing additional challenges in dependency reasoning, change propagation, and interface consistency. Rather than further increasing complexity within individual repositories, we introduce CrossSWE, a benchmark for cross-repository joint development comprising 171 real-world instances spanning 165 repositories, 20 technical domains, and 13 programming languages. CrossSWE verifies the necessity of coordinated changes by testing whether partial repository modifications are insufficient to achieve the intended behavior. Our evaluation of five LLMs reveals substantial challenges, with the strongest model, GPT-6.1 Sol, achieving only 58.48% Pass@1. Furthermore, cross-repository inconsistencies emerge as the most prevalent failure mode (44.2%), highlighting the difficulty of maintaining consistency across interdependent repositories.",
+   "published": "2026-10-31T23:16:52.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2611.01484"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "benchmark",
+    "llm"
+   ],
+   "tldr": "CrossSWE évalue les agents de codage sur des tâches multi-dépôts, révélant des défis majeurs en cohérence inter-répertoires (44% d'échecs). Benchmark essentiel pour mesurer l'adaptation des LLM à des scénarios réalistes de développement logiciel.",
+   "score": 8.2
+  },
+  {
+   "id": "00e992f03042ae84",
+   "title": "DecisionRank: On-Policy Distillation for Decision-Model Rerankers",
+   "url": "https://huggingface.co/papers/2610.42128",
+   "summary": "Decision models target structured tasks by directly predicting choices or scores, avoiding autoregressive decoding latency. However, transferring a generative LLM's ranking knowledge to a decision model remains challenging: the teacher expresses preferences through a ranked list of document ID sequences, while the student determines the ranking using scores from the first-token position. To bridge this gap, we introduce DecisionRank, a decision model trained through item-space on-policy distillation (OPD). Item-space OPD constructs the student's rollout by sorting its document scores into a ranked sequence. A generative teacher takes the resulting ranking list as inputs and provides conditional feedback to directly supervise those scores. Combined with offline ranking supervision, DecisionRank achieves state-of-the-art performance on both general and reasoning-intensive retrieval benchmarks such as TREC DL, BEIR, and BRIGHT. Across four benchmarks, item-space OPD consistently outperforms alternative training objectives. Even at 1.7B parameters, DecisionRank surpasses its 27B generative teacher on TREC DL19--23. At 8B, it outperforms its generative listwise counterpart while running 24.5times faster on TREC DL and 16.7times faster on BRIGHT.",
+   "published": "2026-10-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2610.42128"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm",
+    "benchmark"
+   ],
+   "tldr": "Introduction de DecisionRank, une méthode de distillation en ligne pour les modèles de reranking décisionnels, surpassant des modèles génératifs 27x plus grands sur des benchmarks de retrieval, avec une efficacité accrue.",
+   "score": 8.2
+  },
+  {
+   "id": "faaa55ba53156479",
+   "title": "DeFT-RAG: Decomposing Multi-Hop Questions into Self-Contained Sub-Questions with Reusable Answers",
+   "url": "https://huggingface.co/papers/2610.37826",
+   "summary": "Retrieval-augmented generation (RAG) lets a large language model (LLM) answer questions by retrieving relevant passages from a large corpus. However, RAG struggles with multi-hop questions, which require chaining facts spread across several documents through intermediate entities that the question never mentions. Graph-based RAG methods retrieve once from the entities a question names and so rarely recover the full evidence chain. Iterative RAG methods recover it step by step, but their accuracy is limited by the many tasks they ask the LLM to perform, such as planning the sub-questions, deciding their dependencies, rewriting them as answers arrive, and keeping track of what is known. We propose DeFT-RAG, a RAG framework built on three components. First, DeFT-RAG generates one self-contained sub-question at a time from the original question and the sub-questions answered so far with their answers (QA pairs). Each sub-question names every entity it asks about, which removes the need to plan, track dependencies or rewrite, and lets the LLM focus on a single fine-grained task at a time. Second, DeFT-RAG moves the remaining LLM work outside the LLM: rule-based updates to a QA table that keeps track of what is known, and yes/no decisions made by a fine-tuned lightweight decision model. Third, DeFT-RAG caches the QA pairs and reuses an answer when a later question asks a sub-question with the same meaning. On MuSiQue, 2WikiMultiHopQA and HotpotQA, DeFT-RAG achieves the best accuracy among thirteen baselines with both gpt-4o-mini and Qwen3.6 as the backbone, while giving the LLM fewer input tokens than any other iterative method. With a QA cache shared across 1,000 MuSiQue questions, 23.1% of sub-questions are answered from the cache, which reduces LLM calls by 12.9% without lowering accuracy.",
+   "published": "2026-10-29T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2610.37826"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "rag",
+    "llm"
+   ],
+   "tldr": "Proposition de DeFT-RAG, un framework RAG pour les questions multi-sauts qui décompose les questions en sous-questions auto-contenues avec réponses réutilisables, simplifiant la planification et améliorant la précision via une approche modulaire.",
+   "score": 8.2
+  },
+  {
+   "id": "ddf788c795191917",
+   "title": "Not All Reasoning Generalizes: A Case Study on Learning Generalizable Reasoning Strategies in RLVR",
+   "url": "https://arxiv.org/abs/2611.03627v1",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) can enable generalizable improvement for large language model (LLM) reasoning. This paper studies how to incentivize such generalization via reasoning strategies. We study this question with a controllable equation-solving framework: finding multiple inputs x for equations f(x)=y, where f is a non-bijective string function. This setting makes reasoning strategies observable while supporting a clear definition of easy-to-hard out-of-distribution (OOD) shifts, e.g., more solutions, longer y, etc. We uncover a subtle RLVR failure: it teaches the model to solve in-distribution tasks with high accuracy and structured step-by-step derivation, yet under OOD shifts, the same model abandons derivation and collapses to ineffective brute-force enumeration, causing sharp accuracy drops. This observation reveals the deeper challenges of RLVR generalization as it is neither incapable base model nor reward hacking, since the model succeeds in-distribution with the correct reasoning strategy. The key to mitigating this failure is an indirect intervention that surprisingly helps: co-training with bijective inversion tasks. Although these bijective tasks are actually not uniformly harder and even further from the non-bijective OOD evaluation, they make derivation more certain and substantially restore the correct strategy and accuracy under OOD shifts. This effect further motivates our theoretical analysis: outcome-only RLVR can shape reasoning processes through implicitly crediting the effective reasoning strategies more, even without process supervision. To conclude, our analysis framework and findings systematically reveal the crucial role and incentivization of reasoning strategies in RLVR generalization under OOD shifts. Code is available at https://github.com/ziqipang/rl_meta_thinking.",
+   "published": "2026-11-02T18:53:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ziqi Pang, Yu-Xiong Wang"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "RLVR peut entraîner des modèles à adopter des stratégies de raisonnement inefficaces (ex. énumération brute) hors distribution malgré des performances in-distribution élevées, et propose une solution via un co-entraînement avec des tâches d'inversion bijective pour améliorer la généralisation.",
+   "score": 8.0
+  }
+ ]
+}
