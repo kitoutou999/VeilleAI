@@ -1,0 +1,721 @@
+{
+ "date": "2026-11-05",
+ "digest": {
+  "headline": "Les benchmarks FrontierPhysics et BEAKER révèlent les limites critiques des agents IA en recherche scientifique et robotique autonome, malgré des avancées en efficacité et généralisation.",
+  "overview": "La journée du 5 novembre 2026 met en lumière des travaux structurants sur l'évaluation et l'optimisation des agents IA, avec une emphase sur leurs applications en physique, robotique et systèmes embarqués. Les résultats soulignent des lacunes persistantes en raisonnement rigoureux et en adaptation à des environnements complexes, tout en proposant des solutions techniques pour améliorer l'efficacité computationnelle et la robustesse.",
+  "highlights": [
+   {
+    "title": "Évaluation des agents IA en recherche scientifique",
+    "text": "Le benchmark FrontierPhysics teste les agents sur 56 tâches end-to-end en physique, combinant vérification déterministe et évaluation experte. Aucun modèle ne dépasse 46/168 tâches réussies, révélant des faiblesses en raisonnement rigoureux et intuition experte. BEAKER étend cette approche aux laboratoires chimiques autonomes, couvrant 11 types de tâches pour mesurer l'actionabilité des MLLMs dans des environnements critiques."
+   },
+   {
+    "title": "Optimisation des LLM et agents : efficacité et robustesse",
+    "text": "TAC-CoT réduit les passes avant de 6.8x en remplaçant le raisonnement explicite par des segments latents, tout en améliorant la précision de 8.8 points. LoopVQ propose une quantification sous 1-bit des caches KV pour les looped transformers, exploitant la redondance des boucles pour réduire la mémoire sans perte de performance. Ces travaux montrent que l'optimisation ciblée peut surpasser la simple scalabilité des modèles."
+   },
+   {
+    "title": "Agents et robotique : vers des architectures natives et adaptatives",
+    "text": "NEO-VLA introduit une architecture vision-langage-action sans encodeur visuel fixe, permettant un accès direct aux représentations visuelles évolutives pour des politiques robotiques plus performantes. H2RB propose un cadre de co-entraînement humain-robot pour adapter des politiques VLA pré-entraînées via des démonstrations non appariées, réduisant l'écart d'incarnation par alignement géométrique. Ces approches adressent des défis clés pour le déploiement réel des robots."
+   },
+   {
+    "title": "Benchmarking et limites des méthodes actuelles",
+    "text": "ServerBench évalue la capacité des agents LLM à concevoir des systèmes de serving optimisés, avec Claude Sonnet 5.5 surpassant les références comme vLLM (gains jusqu'à 4.87×). FinDendro révèle que les LLM sous-estiment leur connaissance temporelle en finance, soulignant les biais de contamination des données. Ces benchmarks fournissent des outils critiques pour évaluer et améliorer la fiabilité des systèmes IA."
+   },
+   {
+    "title": "Reinforcement Learning et généralisation : défis persistants",
+    "text": "L'analyse des gains de l'RL multi-tours montre que les bénéfices se concentrent sur la récupération d'erreurs et la résilience long-horizon, mais dépendent fortement des contraintes d'interaction. Les limites de la distillation on-policy pour la consolidation post-RL sont démontrées, avec des chutes de performance OOD jusqu'à 24%, malgré des scores IND quasi-parfaits. Ces travaux mettent en lumière les défis de généralisation dans les pipelines d'entraînement."
+   }
+  ],
+  "trend": "Les avancées techniques se concentrent sur l'optimisation des architectures et des pipelines d'entraînement pour améliorer l'efficacité et la robustesse des agents IA, tandis que les benchmarks révèlent des lacunes persistantes en raisonnement et généralisation, nécessitant des approches plus ciblées que la simple augmentation de données ou de paramètres."
+ },
+ "items": [
+  {
+   "id": "9dbadbfd45024750",
+   "title": "FrontierPhysics: Evaluating Agents for End-to-End Physics Research",
+   "url": "https://huggingface.co/papers/2611.06910",
+   "summary": "AI agents are playing an increasingly important role in physics research. However, existing physics benchmarks only evaluate fixed questions, isolated sub-tasks, or paper reproduction with given solutions, and rarely check research quality alongside correctness. We introduce FrontierPhysics, an end-to-end benchmark with 56 tasks made by 42 physicists based on their own research, covering nine domains across theoretical, computational, and experimental physics. Each task requires agents to review the literature, develop a research plan, conduct research and experiments, and produce structured outputs and scientific manuscripts. Combining deterministic verifiers with expert-authored rubrics, FrontierPhysics evaluates whether agents' research is correct and publishable. Across 22 models in 26 configurations, no configuration passes more than 46 of its 168 rollouts. Manual review of agent trajectories shows that frontier agents' main weaknesses are insufficiently rigorous reasoning and limited expert intuition, rather than gaps in physics knowledge or execution errors.",
+   "published": "2026-11-03T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 31,
+    "arxiv_id": "2611.06910"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "regulation"
+   ],
+   "tldr": "Benchmark *FrontierPhysics* évaluant les agents IA sur des tâches end-to-end de recherche en physique (56 tâches, 9 domaines), combinant vérification déterministe et évaluation par des experts. Aucun modèle ne dépasse 46/168 tâches réussies, révélant des lacunes en raisonnement rigoureux et intuition experte. Outil clé pour évaluer les agents dans des contextes scientifiques complexes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le benchmark FrontierPhysics vise à combler une lacune dans l'évaluation des agents d'IA appliqués à la recherche en physique. Les benchmarks existants se limitent souvent à des tâches isolées, des questions fixes ou la reproduction d'articles avec des solutions préétablies, sans évaluer la qualité globale de la recherche ni sa rigueur scientifique. FrontierPhysics propose une évaluation *end-to-end* (de bout en bout) pour mesurer la capacité des agents à mener une recherche autonome, de la revue de littérature à la rédaction d'un manuscrit scientifique publiable.",
+    "methode": "FrontierPhysics repose sur 56 tâches conçues par 42 physiciens, couvrant neuf domaines (théorique, computationnel et expérimental). Chaque tâche exige que l'agent : 1) analyse la littérature existante, 2) élabore un plan de recherche, 3) mène des expériences ou calculs, et 4) produise des résultats structurés et un manuscrit scientifique. L'évaluation combine des vérificateurs déterministes (pour la correction technique) et des grilles d'évaluation (*rubrics*) rédigées par des experts (pour la qualité scientifique). Les modèles testés incluent 22 architectures différentes en 26 configurations, avec 168 exécutions (*rollouts*) au total pour analyser leurs performances et leurs trajectoires de raisonnement.",
+    "resultats": "Aucune des 26 configurations de modèles testées n'a réussi plus de 46 des 168 exécutions, révélant des performances globalement faibles. L'analyse manuelle des trajectoires des agents montre que leurs principales faiblesses sont un raisonnement insuffisamment rigoureux et un manque d'intuition experte, plutôt que des lacunes en connaissances physiques ou des erreurs d'exécution. Les résultats soulignent un écart significatif entre les capacités actuelles des agents et les exigences d'une recherche en physique de haut niveau.",
+    "limites": "Le contenu disponible ne précise pas les critères exacts des *rubrics* ni les détails des vérificateurs déterministes, ce qui limite la reproductibilité et la transparence de l'évaluation. De plus, le benchmark se concentre sur des tâches conçues par des physiciens, ce qui pourrait introduire un biais vers des problèmes déjà bien structurés, éloignés des défis ouverts et mal définis de la recherche réelle. Enfin, l'absence de comparaison avec des humains (étudiants ou chercheurs) rend difficile l'interprétation des résultats en termes d'utilité pratique.",
+    "verdict": "Ce benchmark représente une avancée majeure pour évaluer l'autonomie des agents en recherche scientifique, mais ses résultats mitigés et ses limites méthodologiques invitent à un examen critique avant d'en tirer des conclusions définitives sur l'état de l'IA en physique."
+   }
+  },
+  {
+   "id": "358a04f018244145",
+   "title": "PyRUA-DataFarm: LLM Agent as a Cost-Efficient Teleoperator for Real-Ready Robot Data",
+   "url": "https://huggingface.co/papers/2611.05320",
+   "summary": "Teleoperation remains the default way to collect robot demonstrations, but every episode costs robot and operator time, and every new task starts from scratch. We ask whether a coding agent can take over the teleoperator's job. In our DataFarm, the agent receives a data request and one calibration episode of the robot in the target scene and rebuilds the task in simulation: it writes the scene, an expert controller, and a success judge. The simulator supplies exact actions, and a video model conditioned on real images renders each rollout as photographic video, generating all camera views together consistently. The output is real-ready data: synchronized camera views labelled with the robot's actions, on which a policy can be trained directly and deployed on the real robot. Independent judges certify the expert and every rendered episode before admission. On five real-robot tasks, policies trained only on farm data match policies trained on as many teleoperated episodes (93 vs. 84 successes in 100 trials), and under an unseen tablecloth and coloured light they keep 87 successes where the teleoperation-trained policies fall to 46. Adapting a task is fully automatic and costs \\21 of API usage on average, paid once per task, plus 5 for a render contract; every further episode costs \\0.80 on average for simulation, rendering, and review, with no robot or operator. One hour of three-view data for a task costs 107 on average, these costs included, slightly below a quote of \\117 for teleoperation in China and below 290 in labour alone in North America.",
+   "published": "2026-11-03T13:25:14.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 22,
+    "arxiv_id": "2611.05320"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "robotique",
+    "outils"
+   ],
+   "tldr": "PyRUA-DataFarm utilise un agent LLM pour générer des données robotiques simulées ",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "La collecte de démonstrations robotiques via téléopération est coûteuse en temps et en ressources, car chaque nouvelle tâche nécessite une intervention humaine répétée. De plus, les données recueillies sont souvent limitées à des scénarios spécifiques, ce qui freine l'adaptabilité et l'efficacité des modèles d'apprentissage pour la robotique.",
+    "methode": "PyRUA-DataFarm propose d'utiliser un agent basé sur un grand modèle de langage (LLM) pour automatiser la génération de données robotiques. L'agent reçoit une demande de données et une unique démonstration d'étalonnage du robot dans l'environnement cible, puis reconstruit la tâche en simulation. Il génère le scénario, un contrôleur expert et un juge de succès. Un simulateur fournit des actions précises, tandis qu'un modèle vidéo conditionné sur des images réelles rend chaque essai sous forme de vidéo photoréaliste, synchronisant toutes les vues caméra. Les données produites sont directement exploitables pour entraîner une politique, avec une certification indépendante des épisodes avant validation.",
+    "resultats": "Sur cinq tâches robotiques réelles, les politiques entraînées uniquement avec les données de DataFarm obtiennent des performances comparables à celles entraînées avec des épisodes téléopérés (93 succès contre 84 sur 100 essais). En conditions modifiées (nappe de table et éclairage inédits), les politiques issues de DataFarm conservent 87 succès, contre seulement 46 pour les politiques téléopérées. Le coût moyen par tâche est de 107 $ pour une heure de données à trois vues, incluant la simulation, le rendu et la revue, soit moins que les tarifs de téléopération en Chine (117 $) ou en Amérique du Nord (290 $ en main-d'œuvre seule).",
+    "limites": "Le contenu disponible ne précise pas les limites techniques du simulateur ou du modèle vidéo, notamment leur capacité à généraliser à des environnements très complexes ou dynamiques. La dépendance à une unique démonstration d'étalonnage pourrait aussi poser problème si celle-ci est bruitée ou peu représentative. Enfin, l'évaluation se limite à cinq tâches, ce qui ne garantit pas la robustesse à grande échelle.",
+    "verdict": "Cette approche mérite une attention particulière pour son potentiel à réduire drastiquement les coûts et les contraintes logistiques de la collecte de données robotiques, tout en offrant une adaptabilité prometteuse."
+   }
+  },
+  {
+   "id": "9d7df512acbfc2d0",
+   "title": "TAC-CoT: Tool-Empowered Implicit Chain-of-Thought via Interleaving Explicit Tokens",
+   "url": "https://huggingface.co/papers/2611.01926",
+   "summary": "LLM-based agentic systems are increasingly combined with CoT reasoning to solve tasks that require accurate reasoning, external knowledge, and multi-step deliberation. Yet, explicit CoT incurs substantial generation overhead, while implicit CoT, which replaces textual rationales with compact continuous tokens, does not naturally support the explicit communication interface required for agentic tool-use. We propose TAC-CoT, a tool-empowered adaptive implicit CoT framework that replaces explicit reasoning traces with compact latent reasoning segments while retaining textual tokens only for tool calls, observations, and final answers. This interleaved design enables agentic tool-use without verbalizing every intermediate reasoning step. Experiments on agentic math and QA benchmarks show that TAC-CoT improves accuracy by up to 8.8 points while reducing model forward passes by up to 6.8x. Furthermore, analyses show that TAC-CoT improves tool-use quality in both single- and multi-tool settings.",
+   "published": "2026-11-01T09:05:15.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 10,
+    "arxiv_id": "2611.01926"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "rag"
+   ],
+   "tldr": "TAC-CoT remplace le raisonnement explicite par des segments latents compacts tout en conservant les appels d'outils, réduisant les passes avant de 6.8x et améliorant la précision jusqu'à 8.8 points. Révolutionnaire pour l'efficacité des agents LLM avec outils.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les systèmes agents basés sur les grands modèles de langage (LLM) combinés avec le raisonnement en chaîne de pensée (CoT) permettent de résoudre des tâches complexes nécessitant une délibération multi-étapes, des connaissances externes et une logique précise. Cependant, le CoT explicite génère un surcoût important en termes de calcul et de latence, tandis que le CoT implicite, qui utilise des tokens continus compacts, ne supporte pas naturellement l'interface de communication explicite requise pour l'utilisation d'outils externes par les agents.",
+    "methode": "TAC-CoT (Tool-Empowered Adaptive implicit Chain-of-Thought) propose un cadre hybride remplaçant les traces de raisonnement explicites par des segments de raisonnement latent compacts, tout en conservant des tokens textuels uniquement pour les appels d'outils, les observations et les réponses finales. Cette conception entrelacée permet une utilisation efficace des outils sans verbaliser chaque étape intermédiaire. Techniquement, le modèle alterne entre des phases de raisonnement implicite (via des embeddings continus) et des phases explicites (tokens textuels pour les interactions avec les outils), optimisant ainsi la latence et la précision. Le papier ne détaille pas explicitement l'architecture sous-jacente, mais suggère une adaptation des mécanismes de CoT implicite existants pour intégrer dynamiquement les appels d'outils.",
+    "resultats": "Les expériences menées sur des benchmarks d'agents en mathématiques et en questions-réponses montrent que TAC-CoT améliore la précision jusqu'à 8,8 points tout en réduisant le nombre de passes avant du modèle jusqu'à 6,8 fois. Les analyses révèlent également une amélioration de la qualité de l'utilisation des outils, tant dans des contextes mono-outil que multi-outils.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques critiques, comme la manière dont les segments de raisonnement latent sont entraînés ou initialisés, ni les éventuels biais introduits par cette hybridation. De plus, les benchmarks utilisés (non détaillés ici) pourraient ne pas couvrir des cas d'usage suffisamment variés pour généraliser les résultats. Enfin, la réduction des passes avant pourrait masquer des erreurs de raisonnement non détectées en l'absence de traces explicites.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante combinant efficacité computationnelle et intégration d'outils, mais nécessite une analyse plus approfondie des mécanismes sous-jacents et des limites pratiques avant adoption."
+   }
+  },
+  {
+   "id": "4c33fbdd0dc4b6a4",
+   "title": "What Does Multi-Turn Reinforcement Learning Really Improve in LLM Agents?",
+   "url": "https://huggingface.co/papers/2611.06483",
+   "summary": "While multi-turn agentic reinforcement learning (RL) excels on long-horizon tasks, its performance gains remain highly sensitive to interaction constraints. Evaluating across sampling breadth K and interaction depth T via Pass@(K,T), we show that trajectory-level RL advantages depend on sufficient turn budgets, diminishing significantly when budgets tighten. Besides, agentic RL does not uniformly elevate single-step decision quality; rather, its strength concentrates in error recovery and long-horizon resilience. To mitigate the deployment risks caused by this budget dependence, we provide a preliminary discussion on the benefits and limitations of process supervision signals and introduce BudgetMix RL as an alternative that varies interaction budgets during training. Experiments demonstrate that BudgetMix RL achieves robust performance across diverse execution settings. Project Page: https://rethinking-agentic-rl.github.io/",
+   "published": "2026-11-04T08:24:54.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 28,
+    "arxiv_id": "2611.06483"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Analyse critique des gains de l'RL multi-tours pour les agents LLM, montrant que les bénéfices se concentrent sur la récupération d'erreurs et la résilience long-horizon, mais dépendent fortement des contraintes d'interaction. Propose *BudgetMix RL* comme alternative robuste aux variations de budget. Travail méthodologique solide avec implications pratiques pour le déploiement.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde la sensibilité des performances des agents d'IA basés sur des modèles de langage (LLM) utilisant l'apprentissage par renforcement (RL) multi-tours face aux contraintes d'interaction. Le problème central est de comprendre si et comment le RL multi-tours améliore réellement les capacités des agents sur des tâches à long horizon, notamment lorsque les budgets d'interaction (nombre de tours ou d'échantillons) sont limités.",
+    "methode": "Les auteurs évaluent les performances des agents RL multi-tours en utilisant une métrique appelée Pass@(K,T), où K représente la largeur d'échantillonnage (nombre de tentatives parallèles) et T la profondeur d'interaction (nombre de tours). Ils analysent l'impact de ces paramètres sur la qualité des décisions à chaque étape et la résilience face aux erreurs. Pour atténuer la dépendance aux budgets d'interaction, ils proposent une méthode appelée BudgetMix RL, qui varie les budgets d'interaction pendant l'entraînement. Une discussion préliminaire sur l'utilisation de signaux de supervision de processus est également incluse pour améliorer la robustesse.",
+    "resultats": "Les résultats montrent que les avantages du RL multi-tours dépendent fortement des budgets d'interaction : les gains de performance diminuent significativement lorsque ces budgets sont restreints. Le RL multi-tours ne améliore pas uniformément la qualité des décisions à chaque étape, mais se concentre plutôt sur la récupération d'erreurs et la résilience à long terme. Les expériences démontrent que BudgetMix RL permet d'obtenir des performances robustes dans divers contextes d'exécution.",
+    "limites": "Le contenu disponible ne précise pas les détails quantitatifs exacts des résultats (comme les valeurs numériques des améliorations ou des comparaisons). De plus, la discussion sur les signaux de supervision de processus reste préliminaire, et il n'est pas clair si BudgetMix RL résout entièrement le problème de dépendance aux budgets ou s'il introduit d'autres compromis.",
+    "verdict": "Cette publication mérite l'attention des chercheurs et ingénieurs en IA pour son analyse critique des limites du RL multi-tours et sa proposition d'une méthode innovante pour améliorer la robustesse des agents, bien que des détails techniques supplémentaires soient nécessaires pour une évaluation complète."
+   }
+  },
+  {
+   "id": "2ea25f0d803df3a7",
+   "title": "LoopVQ: Sub 1-bit KV Cache Quantization for Looped Transformers",
+   "url": "https://huggingface.co/papers/2611.05304",
+   "summary": "Looped transformers are a parameter-efficient alternative to standard transformers for language modeling. By reapplying the same layers across multiple loop steps, recent looped language models match the performance of non-looped models several times their size. While this architecture effectively reduces parameter memory, each loop step still stores its own keys and values, so the key-value (KV) cache grows linearly with the number of loop steps and becomes the main memory bottleneck. We observe that the KV cache of looped models is highly redundant along the loop axis and that the loop steps differ substantially in their sensitivity to quantization. Based on these observations, we propose LoopVQ, a KV cache vector quantization method for looped transformers that codes channels of multiple loop steps jointly, and fine-tunes the codebooks to match the output of the full-precision model. At 0.5 bits per element, LoopVQ outperforms existing KV cache vector quantization methods for standard LLMs on general, long chain-of-thought reasoning, and long-context retrieval tasks with Ouro and Huginn models. Its design is orthogonal to these methods, and combined with TaSQ, it retains much of the BF16 accuracy even at 0.25 bits per element. We also implement LoopVQ in SGLang, where it nearly halves the decode latency at a 32K-token context and raises the peak serving throughput by up to 4.3times and 6.1times on the 1.4B and 2.6B Ouro models compared to the BF16 baseline.",
+   "published": "2026-11-03T13:16:29.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2611.05304"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Quantification sous 1-bit des caches KV pour les *looped transformers* via *LoopVQ*, exploitant la redondance le long de l'axe des boucles et la sensibilité variable des étapes. Réduit significativement la mémoire tout en maintenant les performances sur des tâches de raisonnement et de contexte long. Orthogonal aux méthodes existantes.",
+   "score": 8.8
+  },
+  {
+   "id": "ad7b3321364fee01",
+   "title": "SleuthVLM: Do We Really Need Audio-in-Video for Omni Video Understanding?",
+   "url": "https://huggingface.co/papers/2611.06083",
+   "summary": "Omni models answer questions about videos by jointly processing sampled frames and audio in one turn, with progress driven largely by scaling model size and omni training data. We ask whether a model needs to hear the audio directly at all, and present SleuthVLM, an agent harness built on a VLM that never hears the audio directly: speech will be transcribed into text, and the VLM will sleuth the video on its own without any predefined workflow. On four omni benchmarks with videos up to 90 minutes, SleuthVLM achieves the best average accuracy: 75.0%, 2.6 points above Gemini 3.8 Flash, and it also tops the Video-MME-v2 leaderboard with 77.8%; with an open-source 27B VLM, it beats all open-source omni models. We draw three findings: SleuthVLM beats a model that glances; hearing is not the bottleneck, agentic ability is; omni understanding needs better agentic ability, not just more omni data for modality alignment. So we provide a simple but effective starting point for doing omni video understanding. Omni understanding needs better agents, not just bigger models that hear.",
+   "published": "2026-11-03T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 5,
+    "arxiv_id": "2611.06083"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "vision"
+   ],
+   "tldr": "SleuthVLM démontre qu'un modèle de vision-langage (VLM) peut surpasser les modèles omni en compréhension vidéo sans traitement direct de l'audio, en s'appuyant sur des capacités agentiques avancées. Les résultats sur 4 benchmarks (jusqu'à 90 min) montrent une amélioration de 2.6 points vs. Gemini 3.8 Flash, soulignant l'importance des agents sur la simple scalabilité des données.",
+   "score": 8.8
+  },
+  {
+   "id": "3701202fe75e9758",
+   "title": "From Pixels to Actions - Towards Native Vision-Language-Action Policies",
+   "url": "https://huggingface.co/papers/2611.06918",
+   "summary": "Vision-language-action models are typically built on a simple premise: perception is first compressed by visual encoders, and action reasoning begins only afterwards. Yet manipulation often hinges on precisely the visual signals most vulnerable to this abstraction, e.g., local geometry, boundaries, depth, and subtle state changes. This raises a fundamental question: should action policies inherit a fixed visual endpoint, or directly access evolving visual computation? We introduce NEO-VLA, a structurally encoder-free vision-language-action framework. Images are tokenized by lightweight patch convolutional layers and evolve jointly with language throughout the backbone, allowing a flow-matching action expert to draw from instruction-conditioned visual representations at different depths. This simple change reveals a consistent pattern. Native architectures outperform encoder-based counterparts under controlled comparisons; full fine-tuning reduces but does not erase the gap, and additional scale alone cannot recover it. More strikingly, layer-wise probing shows that the action-critical signals often peak well before the final visual representation. Across diverse manipulation settings and distribution shifts, NEO-VLA consequently achieves stronger and more robust control. Together, these results suggest that embodied control benefits from access to visual representations across the computational hierarchy, rather than a fixed encoder output.",
+   "published": "2026-11-04T13:59:58.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 55,
+    "arxiv_id": "2611.06918"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "robotique"
+   ],
+   "tldr": "NEO-VLA propose une architecture native vision-langage-action sans encodeur visuel fixe, permettant un accès direct aux représentations visuelles évolutives. Les résultats montrent que cette approche surpasse les modèles basés encodeurs, avec des signaux critiques pour l'action détectés tôt dans le réseau.",
+   "score": 8.8
+  },
+  {
+   "id": "cb3455a82f101f92",
+   "title": "SpecOPD: Branch-Parallel On-Policy Distillation for Speculative Decoding",
+   "url": "https://huggingface.co/papers/2611.02846",
+   "summary": "Speculative decoding (SD) accelerates large language model inference by reducing the sequential cost of token-by-token generation. Advanced SD methods reduce proposal cost with parallel drafters that predict entire blocks in one forward pass, but overall speedup still depends on acceptance length. On-policy distillation (OPD) can push well-trained drafters beyond acceptance-length plateaus, yet conventional pipelines collect supervision through sequential draft-and-verify rollouts. Our key insight is that on-policy supervision need not inherit these dependencies: a draft block can be supervised using only its reference prefix and draft-sampled history. We propose SpecOPD, a branch-parallel OPD framework that parallelizes draft sampling and target supervision across independent branches drawn from the evolving drafter policy at reference anchors. We pack these branches into proposal trees to share target-prefix computation, using tree masks for full attention, branch-consistent indexer groups for sparse attention, and indexed state replay for linear attention to preserve each branch's history. We train the drafter with an E2E-TV surrogate that directly targets acceptance length. Our study spans 8B full-attention (GQA), 27B full-linear (GQA--GDN), and 125B sparse-linear (QSA--GDN) targets, three parallel draft architectures (DFlash, DSpark, and DFlash V2), and four task domains (dialogue, coding, mathematics, and agentic). SpecOPD achieves up to 41.45% higher mean acceptance length, 16.09times supervised-token throughput over sequential-rollout OPD under native configurations, and up to 3.56times generation speedup over autoregressive decoding.",
+   "published": "2026-11-01T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2611.02846"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "SpecOPD propose une méthode de distillation on-policy parallèle pour l'accélération spéculative des LLM, en parallélisant l'échantillonnage des drafts et la supervision via des branches indépendantes. L'approche cible directement la longueur d'acceptation et réduit les dépendances séquentielles des pipelines classiques.",
+   "score": 8.8
+  },
+  {
+   "id": "ce3c079ba603a31e",
+   "title": "Human-to-Robot Transfer via Bridging Representation and Action Space in VLAs",
+   "url": "https://huggingface.co/papers/2611.04391",
+   "summary": "Pretrained Vision-Language-Action (VLA) policies provide a strong starting point for deployment, but adapting them to a target robot and environment still requires costly embodiment-specific demonstrations. Human demonstrations are far easier to collect, yet directly leveraging them is challenging due to the substantial human-robot embodiment gap, particularly when the underlying VLA has been pretrained primarily on robot data. We introduce H2RB (Human-To-Robot Bridge), a human-robot co-training framework for adapting pretrained VLA policies from unpaired human and robot demonstrations. H2RB bridges the embodiment gap at both interfaces: geometry-anchored alignment grounds human and robot observations in a compatible representation, while a decoupled-decoder tokenizer shares action latents without forcing both domains through a single action mapping. This design allows human demonstrations to provide useful behavioral supervision while retaining the rich visual, semantic, and control priors of the pretrained VLA. Across real-world tasks, H2RB substantially improves object transfer performance from 8.0 to 51.8 and enables skill transfer to score 62.7, in settings where co-train baselines totally fail to transfer human-demonstrated skills. The benefit also persists under object-placement shifts, improving out-of-distribution transfer from 6.0 to 45.3. H2RB suggests a way for human demonstrations to serve as a scalable supervision source for adapting pretrained robotic policies, reducing the dependence on costly target-robot data collection.",
+   "published": "2026-11-02T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 13,
+    "arxiv_id": "2611.04391"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "robotique",
+    "architecture"
+   ],
+   "tldr": "H2RB propose un cadre de co-entraînement humain-robot pour adapter des politiques VLA pré-entraînées via des démonstrations non appariées, réduisant l'écart d'incarnation par un alignement géométrique et un décodage d'actions découplé. Intéressant pour l'adaptation efficace de modèles robotiques avec des données humaines, un enjeu clé pour le déploiement réel.",
+   "score": 8.8
+  },
+  {
+   "id": "2f288afcd4c5fecf",
+   "title": "BEAKER: An Expert-Curated Benchmark for Embodied Brains in Self-Driving Chemical Laboratories",
+   "url": "https://arxiv.org/abs/2611.06911v1",
+   "summary": "Self-Driving Chemical Laboratories (SDCLs) are moving chemical experimentation toward embodied automation, where machines must perceive laboratory scenes, reason about experimental states, and act under physical, procedural, and safety constraints. Although Multimodal Large Language Models (MLLMs) are increasingly considered as embodied brains for such systems, existing laboratory benchmarks mainly focus on safety, anomaly detection, or general scientific understanding, leaving their execution-oriented embodied capabilities underexplored. To fill this gap, we introduce BEAKER, a Benchmark for evaluating Embodied Actionability, Knowledge, Experimentation, and Reasoning in SDCLs. BEAKER contains 1,000 expert-curated question-answer samples across 11 image and video task types, covering key judgments required for chemical laboratory execution, including affordance grounding, trajectory planning, equipment, state, and safety recognition, apparatus setup, operation and step reasoning, and temporal procedure reasoning. All questions and annotations are manually created and reviewed by chemistry and embodied Artificial Intelligence (AI) experts, without AI-assisted generation or annotation. We evaluate 28 general-purpose, science-oriented, chemistry-specialized, and embodied MLLMs in an offline, single-turn setting. Results show that current models can follow coarse experimental procedures in videos, but still struggle to ground actions into operable regions and feasible trajectories, to recognize fine-grained laboratory apparatus, states, and safety norms, and to order steps in mid-length procedures. BEAKER thus reveals a clear gap between coarse procedural understanding and the precise, action-grounded perception required for laboratory execution, providing a diagnostic benchmark for future MLLMs in SDCLs.",
+   "published": "2026-11-04T18:57:17+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Fei Lin, Tengchao Zhang, Ziyang Gong, Xiaotong Yu, Bohan Zhang, Yifan Zhou"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "BEAKER, un benchmark expertisé pour évaluer les capacités embodied des MLLMs dans des laboratoires chimiques autonomes, couvrant 11 types de tâches (planification, reconnaissance d'équipements, sécurité). Crucial pour mesurer l'actionabilité des agents dans des environnements scientifiques complexes.",
+   "score": 8.6
+  },
+  {
+   "id": "98fe774a304eb053",
+   "title": "Perceptive Humanoid Motion from Simulation",
+   "url": "https://arxiv.org/abs/2611.06908v1",
+   "summary": "Humanoid robots have the potential to automate a wide range of physical tasks. Progress toward generalist humanoid autonomy, however, remains constrained by a data bottleneck: mapping pixels and free-form language to low-level joint commands requires paired supervision, and no corpus of such data exists at sufficiently large scale. Some approaches rely on human teleoperation and wearable capture devices, which require at least an hour of human time to produce an hour of data. We present HALO, a humanoid autonomy system powered by a pipeline that synthesizes vision-language-motion data across a thousand procedurally generated homes. The corpus scales with compute rather than human labor. HALO acquires a repertoire of physical skills, including sitting on chairs, navigating to named objects, stepping sideways through half-open doors, crouching and crawling beneath tables, and pushing boxes. It orchestrates these skills to solve composite, long-horizon tasks. Without ever seeing a real home during training, HALO transfers zero-shot to the physical world, achieving a 91% success rate across 360 trials in six unmapped real-world environments. See https://apple-aiml-research.github.io/ml-halo/ for code and videos.",
+   "published": "2026-11-04T18:55:33+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Siyuan Hu, Abulikemu Abuduweili, Yue Meng, Shipeng Liu, Quentin Leboutet, Chen Chen"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "vision",
+    "outils"
+   ],
+   "tldr": "HALO, un système d'autonomie humanoïde générant des données vision-langage-mouvement synthétiques à grande échelle pour entraîner des compétences physiques (navigation, manipulation). Démontre une généralisation zero-shot à des environnements réels avec un taux de succès de 91% sur 360 essais.",
+   "score": 8.6
+  },
+  {
+   "id": "5492c8f6750e7584",
+   "title": "Dexterous Robotic Hands in the Foundation-Model Era: A Full-Stack Survey of Hardware, Data, Cross-Embodiment Transfer, Learning, and Evaluation",
+   "url": "https://arxiv.org/abs/2611.06724v1",
+   "summary": "Dexterous robotic hands are increasingly coupled to large-scale human data and foundation models, yet progress in hardware, representation learning and evaluation is often assessed separately. This survey reviews work from January 2024 to early November 2026, with earlier studies included to establish technical lineages. We organize the literature into five interdependent layers: hardware; data collection and curation; cross-embodiment transfer; learning and foundation models; and evaluation and applications. Human hand-object understanding and tactile sensing provide two cross-cutting perspectives. A system-level architecture, comparative tables and five case analyses connect design choices across these layers. We distinguish within-study experimental comparisons from heterogeneous corpus statistics, vendor specifications and company-reported results. Three conclusions emerge. First, the value of human data depends on kinematic, visual and contact alignment, not recording volume alone. Second, shared action representations and foundation policies do not remove embodiment-specific constraints on force, latency and contact. Third, task completion is insufficient to establish physical correctness or deployment readiness. Evidence remains limited for zero-shot transfer of contact-rich skills between morphologically different hands, long-duration reliability, and cross-sensor tactile generalization. We identify eleven open problems and propose reporting interfaces and controlled comparisons that can make full-stack progress more measurable. The review is a structured narrative synthesis rather than a pooled performance ranking or an exhaustive systematic review.",
+   "published": "2026-11-04T16:13:29+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ji Pei"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "robotique",
+    "architecture",
+    "benchmark"
+   ],
+   "tldr": "Ce survey complet sur les mains robotiques dextres dans l'ère des modèles de fondation analyse les défis système (matériel, données, évaluation) et démontre que les politiques partagées ne suffisent pas sans alignement embodiment-spécifique. Travail de référence pour la robotique moderne.",
+   "score": 8.6
+  },
+  {
+   "id": "78931b98c3fc9b50",
+   "title": "Ask, Don't Equip: Question-Driven Coding Agents for Deep Kernel Optimization",
+   "url": "https://huggingface.co/papers/2611.03517",
+   "summary": "LLM agents for GPU kernel optimization sit at two ends of a structure-freedom tradeoff. Scripted agents fix what the model does at each step, via a learned policy, an optimization menu, or fixed roles, and are sample-efficient where the recipe applies and stall where it does not. Open-ended agents let a self-directed model mutate a population of kernels and pay for the freedom in trials: thousands of evaluations, repeated edits, and wrong candidates. Both respond to hard targets by equipping the agent with more: parsed profiler output, disassembly analysis, retrieval over documentation and libraries, and stores of lessons. We argue that both lack direction, a hypothesis about where the remaining gap is, and that a short question asked at the right moment supplies it without narrowing what the agent may do next. We present KernelSeek, a question-driven agent that makes an existing CUDA kernel faster with no operator-specific knowledge and no faster implementation to imitate: a general-purpose coding agent, a minimal harness that enforces a verifiable goal, and questions at decision points, first from a human, then from a bank the agent applies to itself. On the same task, evaluator, hardware, and week, a tool-rich autonomous agent built in the prevailing style plateaued at 0.50x FlashAttention-3 after 133 model-driven steps; KernelSeek reached 1.13x. It then produced dependency-free FlashAttention forward kernels for Hopper and Blackwell, single CUDA files with no CUTLASS, CuTe, cuBLAS, or cuDNN, correct on all 182 scenarios per architecture and 1.16x FlashAttention-3 and 1.46x FlashAttention-4 (geometric mean). Across 162 human messages and 11.5K agent tool calls, every large gain followed a question that moved the agent to a different layer of the system or rejected a claimed limit, never one that supplied information. We release the kernels, harness, question bank, and all traces.",
+   "published": "2026-11-01T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 0,
+    "arxiv_id": "2611.03517"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "KernelSeek propose un agent LLM question-driven pour optimiser des kernels GPU CUDA sans connaissance spécifique ni imitation, améliorant l'efficacité par des questions ciblées aux points de décision plutôt que par l'ajout de ressources externes. Intéressant pour l'optimisation automatique de code bas niveau avec des gains en flexibilité et direction.",
+   "score": 8.5
+  },
+  {
+   "id": "c997aee47d8b367f",
+   "title": "Turns Matter: Advancing Streaming Video RL via Turn-Level Credit",
+   "url": "https://huggingface.co/papers/2611.06728",
+   "summary": "Streaming video understanding requires models to repeatedly decide whether to respond or continue observing. Recently, Group Relative Policy Optimization (GRPO) has been applied to this setting, with existing approaches emphasizing reward design while retaining a single trajectory-level advantage across turns. Such shared credit can reinforce redundant replies after earlier successes and discourage useful follow-ups after earlier failures. We propose TurnWise, a turn-level GRPO framework that aligns learning with individual streaming decisions. TurnWise addresses the mismatch between trajectory-level feedback and turn-level interaction, promoting informative responses and reducing redundancy. Specifically, turn-level credit assignment uses silence-completed prefix scoring to construct group-relative advantages from each decision's remaining return, separating its learning signal from earlier rewards. Turn-mean policy optimization averages token losses within each turn and then across turns, giving response and waiting decisions equal weight regardless of output length. These complementary designs improve streaming policy learning without a learned critic or additional rollouts. Extensive experiments show our method outperforms prior RL approaches for streaming video understanding.",
+   "published": "2026-11-03T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 88,
+    "arxiv_id": "2611.06728"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Framework *TurnWise* pour l'RL en streaming vidéo utilisant un crédit par tour (vs. trajectoire globale) via *silence-completed prefix scoring*, améliorant la pertinence des réponses et réduisant la redondance. Approche innovante avec validation expérimentale forte sur des tâches de décision en temps réel.",
+   "score": 8.5
+  },
+  {
+   "id": "f5b1271988037404",
+   "title": "On the Generalization Limitation of On-Policy Distillation for Post-RL Consolidation",
+   "url": "https://huggingface.co/papers/2611.05609",
+   "summary": "Multi-teacher on-policy distillation (MOPD) extends on-policy distillation (OPD) to consolidate capabilities from multiple teachers. Although prior work reports near-perfect in-distribution (IND) distillation performance, we find that this can mask incomplete capability consolidation beyond the supervised distribution. A preliminary study on synthetic reasoning shows that OPD does not fully transfer teachers' generalization capabilities. We then extend this investigation to real-world tasks, evaluating extrapolative and compositional generalization across mathematical reasoning, coding, agent, and long-context capabilities using Qwen3 models. Across extrapolative settings, OPD and MOPD reach 96.04-102.73% of their teachers' IND scores. Yet their out-of-distribution (OOD) scores remain 2.45-16.25% below the base model's. Across three compositional settings, MOPD improves IND performance over the base model, but its performance on composed tasks as OOD remains 18.19-24.34% below that of the best teachers. To understand these gaps, we examine teacher capability and data coverage as two potential bottlenecks. Jointly alleviating these bottlenecks eliminates OOD forgetting in our experiments and suggests the potential for generalization beyond the teacher. (M)OPD also reduces OOD forgetting on average relative to its reinforcement learning (RL) baselines. Analysis of the associated update geometry reveals smaller and more spectrally concentrated updates on average than those of the RL baselines, along with greater shared update structure under MOPD. Motivated by these findings, we propose geometry-based patching and base-preserving replay to improve OOD performance while largely preserving IND performance. Our findings identify a blind spot in capability consolidation via (M)OPD, highlighting the need for algorithms that explicitly support OOD retention and generalization.",
+   "published": "2026-11-02T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2611.05609"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Démontre les limites de généralisation de la distillation *on-policy* (OPD/MOPD) pour la consolidation post-RL, avec des chutes de performance OOD jusqu'à 24% malgré des scores IND quasi-parfaits. Propose des pistes pour atténuer ces limites via la couverture des données et les capacités des enseignants. Travail rigoureux avec implications pour le *fine-tuning* efficace.",
+   "score": 8.5
+  },
+  {
+   "id": "a58f8d236fbfb694",
+   "title": "VA-TDM: A Unified View for Improving Few-Step Diffusion Models by Velocity Adversarial Distillation",
+   "url": "https://huggingface.co/papers/2611.06796",
+   "summary": "Few-step distillation offers efficient generation with diffusion and flow models, but preserving quality with only a few sampling steps remains challenging. Distribution-matching methods via score distillation provide a strong foundation, yet they rely on accurately tracking the student's changing distribution. At intermediate generation steps in few-step sampling, student-score estimation can be difficult, and commonly used estimators may describe a different distribution from the one used to update the student. Flow matching allows a more flexible approach to supervision through velocity fields constructed from the student's sampling process. Building on this perspective, we introduce Velocity Adversarial Distillation (VAD), which uses a learned critic to compare student and teacher fields and turn their disagreement into feedback for learning. VAD unifies score distillation, Fisher-based matching, and moment matching, also explaining existing heuristic MMD updates and delivering new training objectives. We further develop VA-TDM, which follows trajectory distribution matching: providing supervision for partial denoising along the student trajectory. Beyond this, VA-TDM combines transition-aware online velocity learning and dual-form VAD supervision across intermediate student transitions. Extensive results show that VA-TDM is powerful for learning few-step generators, achieving state-of-the-art four-step performance in both text-to-image and text-to-video generation across various backbones and scaling effectively to 33B MiniMax-H3. In particular, our VA-TDM-H3 notably outperforms the few-step Fast-H3 and is closer to the original many-step H3 according to human preference.",
+   "published": "2026-11-03T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 11,
+    "arxiv_id": "2611.06796"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "VA-TDM propose une méthode de distillation adversariale (VAD) pour améliorer l'efficacité des modèles de diffusion en quelques étapes, en unifiant score distillation, matching de Fisher et matching de moments via des champs de vitesse. L'approche permet une supervision plus flexible et des objectifs d'entraînement innovants, avec des gains potentiels en qualité et en stabilité des modèles.",
+   "score": 8.5
+  },
+  {
+   "id": "7f95225d14249d7a",
+   "title": "On Turn-Level Best-of-N Sampling for Scaling LLM Agents",
+   "url": "https://arxiv.org/abs/2611.06868v1",
+   "summary": "In this work, we evaluate a simple inference-time scaling approach based on \\textit{turn-level best-of-N sampling} (\\method) for large language model (LLM) agents on complex, long-horizon tasks. We instantiate this using a \\textit{generator-selector} framework with two LLMs; at each turn, a \\emph{generator} model generates $N$ candidate actions and a \\emph{selector} model selects one of them, which is then executed in the environment. This paper is closely related to the work of \\cite{zainullina2025guided} who used critic models for guided search at inference time. Different from their work, we evaluate if off-the-shelf, open-weight LLMs can be effective at comparing different candidate actions directly. Experiments on long-horizon terminal tasks show that \\method can lead to significant performance improvements, both in terms of accuracy (5--10\\%) and consistency across repeated attempts. Analysis of agent trajectories reveal a shift in agent behaviour towards desirable patterns such as reduction in number of attempts to solve the task, improved task instruction following, debugging and testing.",
+   "published": "2026-11-04T18:23:14+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jalaj Bhandari, Dhawal Gupta, Hongli Zhan, Zhenting Wang, Varad Pimpalkhute, Zhengzhong Liu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Évaluation de l'approche *turn-level best-of-N sampling* pour les agents LLM, utilisant un framework générateur-sélecteur. Amélioration de 5-10% en précision et cohérence sur des tâches long-horizon, avec analyse des comportements émergents (réduction des tentatives, meilleure conformité aux instructions).",
+   "score": 8.3
+  },
+  {
+   "id": "8e855e57858b9c1a",
+   "title": "Balancing hierarchical representation and quantization: A performance trade-off in text embeddings",
+   "url": "https://arxiv.org/abs/2611.06859v1",
+   "summary": "Hierarchical text embedding models offer variable-length representations, while quantization reduces numerical precision; both aim to improve computational efficiency. This work is an empirical benchmark study of how these two orthogonal, already-established techniques interact. We evaluate 38 tasks from the Massive Text Embedding Benchmark (MTEB) using four transformer-based embedding models, covering 1D and 2D hierarchical representations combined with 32-bit, 8-bit, and binary quantization, for 168 configurations per task. We report each efficiency dimension separately: theoretical per-vector storage and end-to-end evaluation time. Under a Friedman test with Nemenyi post-hoc analysis, int8 quantization is statistically indistinguishable from float32 for pair classification and re-ranking and costs at most 1.5 percentage points overall, whereas binary quantization is significantly worse across every task category. Halving the embedding dimension once is not statistically detectable above $m=16$; two successive halvings always are. Combining an 8x dimensionality reduction with int8 yields a 32x reduction in per-vector storage at 94.4% of baseline effectiveness. Because evaluation times were measured once, we treat them as indicative: we find no evidence that quantization speeds up evaluation, whereas sampling from intermediate layers shortens it substantially. Retrieval degrades far faster than every other category, so we report findings per task category.",
+   "published": "2026-11-04T18:15:08+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kai Ponel, Marco Polignano, Erasmo Purificato, Aylin Julia Temizkan, Marco Levantesi, Giovanni Semeraro"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Benchmark empirique de 168 configurations évaluant l'interaction entre les représentations hiérarchiques et la quantification (32-bit, 8-bit, binaire) pour les embeddings textuels. Résultats : int8 quasi-équivalent au float32 avec réduction de stockage de 32x à 94.4% d'efficacité, tandis que le binaire est systématiquement inférieur.",
+   "score": 8.3
+  },
+  {
+   "id": "7fa7ffe383f772f7",
+   "title": "ServerBench: How can your coding agents design specialized LLM serving systems?",
+   "url": "https://arxiv.org/abs/2611.06841v1",
+   "summary": "Large language model (LLM) coding agents develop software through experimentation, offering an opportunity to design the serving systems supporting their own operation. Effective serving requires coordinating implementation and operating decisions under session dependencies, latency constraints, and correctness requirements. We introduce ServerBench, a benchmark for agentic design of complete, specialized LLM serving systems. Agents experiment against a common objective, dollars per dollar: latency-qualified token value per dollar of GPU cost. Stateful replay preserves session dependencies, and independent verification checks the submitted system. Across 11 coding-agent models and three deployments, Claude Sonnet 5.5 achieves 2.97 dollars per dollar on Gemma E4B, $4.87\\times$ the vLLM reference; 22 of 33 runs yield verified systems, and 13 exceed the strongest baseline. Our analysis identifies three findings: high-value designs coordinate capacity improvements with load selection; agents interpret performance feedback through workload-relevant experiments; and reliable delivery requires verification of the execution paths introduced by optimization. Overall, ServerBench supports systematic study of how agents translate service objectives and feedback into effective, verified serving systems for given task specifications.",
+   "published": "2026-11-04T17:59:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xinrui Zhong, Zhiming Wang, Yongqi Liu, Zhaohui Wang, Shanglin Yang, Zikun Li"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "ServerBench évalue la capacité des agents LLM à concevoir des systèmes de *serving* optimisés pour des modèles comme Gemma, en maximisant un ratio performance/coût (dollars per dollar). Les résultats montrent que Claude Sonnet 5.5 surpasse les références (vLLM) avec des gains significatifs (jusqu'à 4.87×), tout en soulignant l'importance de la coordination entre capacité et charge de travail.",
+   "score": 8.3
+  },
+  {
+   "id": "5965a4d4c755e8c0",
+   "title": "LLMs Don't Know What They Know: Benchmarking Temporal Self-Knowledge for Financial Backtesting",
+   "url": "https://arxiv.org/abs/2611.06808v1",
+   "summary": "Financial backtests of large language models (LLMs) are meaningful only if the model did not already know the outcomes it is asked to predict. Practitioners guard against this by trusting a vendor's stated knowledge cutoff, by asking the model what it knows, or by instructing it to answer as of a past date. To verify whether any of these safeguards can be trusted, we introduce FinDendro, a benchmark of 2,226 dated U.S. facts from 1999 to 2026, covering monthly macroeconomic series, month-end stock prices and Federal Reserve decisions. Each fact yields four prompts: a value question, Recall and Predict questions that pair each candidate value with a claim of knowing or guessing without a declared date, and a Predict question with a historical declared date. Controls for persistence and dominant outcomes keep chance accuracy near 0.27. Results show that for most frontier models, self-reports understate knowledge. GPT-5 answers 76% of controlled facts correctly but claims to know 38%, and answers 61% of the facts it says it does not know. Knowledge claims can persist beyond the measured knowledge boundary, by up to seven quarters, and a declared date removes most of the claims of prior knowledge while leaving accuracy unchanged. Backtests inside a model's training window therefore cannot be certified leak-free by self-report, instruction or stated cutoff. These findings motivate behavioral measurement of temporal knowledge boundaries, and FinDendro provides a benchmark and procedure for selecting backtest periods based on demonstrated factual knowledge.",
+   "published": "2026-11-04T17:24:02+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Lingfei Qian, Yan Wang, Xueqing Peng, Yupeng Cao, Yuechen Jiang, Zhuohan Xie"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "FinDendro évalue la *connaissance temporelle* des LLM en finance via 2 226 faits datés (1999-2026), révélant que les modèles sous-estiment leur propre savoir et que les déclarations de dates historiques réduisent les biais. Un benchmark critique pour éviter les biais de contamination des données.",
+   "score": 8.3
+  },
+  {
+   "id": "962f0a8900e863da",
+   "title": "Task-Efficient Agent Evaluation Using Cached Traces",
+   "url": "https://arxiv.org/abs/2611.06803v1",
+   "summary": "Efficient benchmarking estimates a system's full benchmark performance from a small number of task executions. Standard approaches rely solely on the binary correctness of executions from a collection of already-evaluated reference systems. An agentic system, however, produces a rich trace for each execution that can reveal substantially more about its capabilities. Leveraging this information requires useful trace representations. We propose representing a trace by extracting a structured summary of it with an LLM and embedding the summary with a standard text encoder. These representations preserve correctness- and task-related signal while minimizing the presence of system identity-, model family- and harness-related signals that dominate raw trace embeddings. Given this representation for each task execution from all reference systems, we construct low-dimensional representations of the systems and predict a new system's score from its position among the reference systems. On SWE-bench Verified and Terminal-Bench 2.0, augmenting an item-response model with this geometry-based prediction reduces mean absolute error from 0.13 to 0.08 (Wilcoxon $p < 10^{-4}$) and from 0.14 to 0.12 (Wilcoxon $p < 10^{-3}$), respectively, when provided a single random executed task. Further, given access to the full set of reference systems, our approach dominates baselines for any given number of executed tasks on both benchmarks.",
+   "published": "2026-11-04T17:20:09+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ben Johnson, Hayden Helm"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark",
+    "outils"
+   ],
+   "tldr": "Task-Efficient Agent Evaluation utilise des *traces structurées* (résumées par LLM et embeddées) pour prédire les performances d'agents sur des benchmarks (SWE-bench, Terminal-Bench) avec une erreur réduite de 38% vs. les méthodes classiques. Une avancée pour l'évaluation efficace des systèmes agentiques.",
+   "score": 8.3
+  },
+  {
+   "id": "b0de1ca787ec33af",
+   "title": "Route First, See Later: Enabling Vision Agents to Reason Scientifically by Separating Routing Policy from Action Spaces",
+   "url": "https://arxiv.org/abs/2611.06760v1",
+   "summary": "Scientific image-analysis workflows require agents to select among diverse capabilities like description, detection, counting, and segmentation. Current multi-tool architectures conflate intent interpretation with visual execution, masking whether a failure arises from flawed reasoning (misrouting) or failed perception (invalid tool execution). This lack of auditability renders agents unreliable for high-stakes scientific automation. We introduce ZETA, an extensible architecture that operationalizes the decoupling of routing policy from action execution. ZETA resolves scientific intent before invoking specialized visual tools, treating measurement as a deterministic operation grounded in explicit geometry rather than generative output. This architecture exposes the \"black box\" of agent decision-making, allowing routing correctness and downstream execution to be evaluated as independent failure modes. To our knowledge, we provide the first controlled study in scientific vision-agent routing that isolates explicit routing-policy specification while holding the legal action interface fixed. Evaluation on a zero-shot benchmark of 51 scientific-intent queries shows that explicit routing semantics can substantially improve routing accuracy, particularly at semantically adjacent action boundaries, although improvements vary across models. For Qwen 3.8, explicit routing-policy specification improves segmentation routing accuracy from 6.2% to 75.0% and detection routing accuracy from 60.0% to 100%. ZETA's execution traces make routing decisions and downstream artifacts separately observable, providing a basis for distinguishing intent-selection errors from visual execution failures. ZETA establishes the necessary infrastructure to isolate execution errors from interpretive ones, a critical requirement for deploying reliable scientific vision agents.",
+   "published": "2026-11-04T16:39:17+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Shubhabrata Mukherjee, Jeffrey Donatelli, Daniela Ushizima"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "vision",
+    "architecture"
+   ],
+   "tldr": "ZETA propose une architecture pour agents visuels scientifiques qui sépare explicitement la politique de routage (interprétation de l'intention) de l'exécution des outils spécialisés, améliorant l'auditabilité et la fiabilité des décisions. C'est une avancée majeure pour l'automatisation scientifique où la transparence des échecs (raisonnement vs perception) est critique.",
+   "score": 8.3
+  },
+  {
+   "id": "284209206447b3d1",
+   "title": "Reasoning over Non-Parametric Memory in Multilingual LLMs: A Cognitive-Based Analysis of Relational Knowledge",
+   "url": "https://arxiv.org/abs/2611.06715v1",
+   "summary": "Retrieval-augmented generation (RAG) assumes that language models can reason over relations stated in their context rather than fall back on associations memorized during pretraining. We study this evidence-conditioned relational reasoning in isolation, with the facts supplied directly in the prompt rather than retrieved. \\textsc{Rel-Bloom} is a controlled multilingual diagnostic of 450 multiple-choice questions built from 30 Wikidata relations; the same source relations are instantiated at five Bloom-inspired levels (Remember, Understand, Apply, Analyze, Evaluate) and under three veracity conditions (Factual, Counterfactual, Neutralized). Across 43 models, six languages, and two multilingual settings (226,800 predictions), three findings stand out. First, accuracy drops sharply from Apply to Analyze in every evaluated open-weight model series, reaching 47.2 percentage points for the Large Granite bucket, but not for either Gemini model. Second, Evaluate items remain a bottleneck even for models near ceiling on the other task types: Gemini~3.1 Pro averages 99.5\\% on the other four levels but 60.7\\% on Evaluate. Third, item- and relation-level difficulty rankings are consistently preserved across languages, indicating a difficulty structure partly shared across languages within this benchmark. Across knowledge conditions, Counterfactual contexts are generally harder than Factual ones, while removing entity identities can improve higher-level performance in some model regimes. Greater model capability therefore does not by itself ensure reliable reasoning over supplied relational evidence. Relevant resources are available at: https://huggingface.co/spaces/QCRI/non-parametric-memory-relational-reasoning.",
+   "published": "2026-11-04T16:11:26+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zohreh Abbasi Liasi, Batoul Hammoud, Anas Madkoor, Ehsaneddin Asgari"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "rag",
+    "benchmark"
+   ],
+   "tldr": "Ce travail évalue la capacité des LLM multilingues à raisonner sur des relations factuelles fournies en contexte (hors RAG) via un benchmark contrôlé (Rel-Bloom) couvrant 450 questions et 6 langues. Les résultats révèlent des lacunes majeures en raisonnement avancé (Analyze/Evaluate), même pour des modèles performants, soulignant des limites structurelles dans l'architecture des LLM.",
+   "score": 8.3
+  },
+  {
+   "id": "01038fdcf08b3464",
+   "title": "Where It Breaks: Diagnosing Perception, Memory, and Decision Failures of a Vision-Language Agent in Pac-Man",
+   "url": "https://arxiv.org/abs/2611.06704v1",
+   "summary": "Training an agent to play Pac-Man with only up, down, left and right actions raises a basic question: when performance is poor, what should be improved? Difficulty can arise from reading the screen or from choosing actions over a long sequence. We examine these problems in a Qwen3.5-9B-based agent through separate perception checks and primitive-policy reinforcement-learning studies. In the policy study, which uses textual boards to remove image transcription from the decision interface, completion on eight held-out mazes increased from 0% before this optimization to 80.2% at a selected checkpoint, with three extra lives. The perception checks show that accurate static screenshot reading can coexist with errors during interaction. A separate policy comparison also shows that further optimization can accompany worse action choices. Together, these findings motivate concrete checks for post-training: evaluate perception in use, distinguish training success from full-game validation, and examine decisions and later performance rather than relying on one selected score. The study provides empirical lessons for improving future agent training and evaluation.",
+   "published": "2026-11-04T16:04:57+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Xinglu Wang, Edward Wang, Yong Zhang, Zhenan Fan"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Diagnostic des échecs d'un agent vision-langage (Qwen3.5-9B) dans Pac-Man, séparant les problèmes de perception, mémoire et décision. Met en lumière des biais d'évaluation et propose des méthodologies pour améliorer l'entraînement et le test des agents, avec des résultats concrets.",
+   "score": 8.3
+  },
+  {
+   "id": "bcdac8b71f456855",
+   "title": "A Framework for Context Enrichment and Selective Robustness in LLM Social Agents",
+   "url": "https://arxiv.org/abs/2611.06914v1",
+   "summary": "Researchers use large language models as agents in social simulations, where agents are prompted with observations and background information intended to shape their actions. Yet LLM agents have been shown to substantially change their behavior under meaning-preserving prompt variations, creating a validation problem for social simulation. One plausible hypothesis is that this brittleness reflects a lack of grounding and can be reduced by enriching the context provided to the agents. Whether richer context improves robustness remains unclear, in part because context richness and robustness are rarely defined in ways that support controlled comparisons. We address the first need with controlled context enrichment, a set of prompt substitution rules that systematically enriches distinct types of context: neutral padding, generic social background, descriptive decision grounding, and normative decision grounding. We address the second by introducing selective robustness as a validation criterion: insensitivity to meaning-preserving prompt variation combined with a directional response to decision-relevant changes in the social world. We demonstrate the framework in a Prisoner's Dilemma-like game, showing how it can be used to identify which forms of context enrichment produce more desirable and robust agent behavior. We find that these forms of enrichment produce distinct behavioral patterns that vary between the two models tested.",
+   "published": "2026-11-04T18:58:23+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mattia Greiche, Reihaneh Rabbany, Maximilian Puelma Touzel"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Proposition d'un cadre méthodologique pour évaluer la robustesse des agents LLM en simulation sociale via l'enrichissement contrôlé du contexte et une métrique de 'robustesse sélective'. Intéressant pour comprendre les limites des LLM agents dans des environnements dynamiques et leur dépendance aux variations de prompts.",
+   "score": 8.0
+  },
+  {
+   "id": "090f638a40aec003",
+   "title": "FrontierPhysics: Evaluating Agents for End-to-End Physics Research",
+   "url": "https://arxiv.org/abs/2611.06910v1",
+   "summary": "AI agents are playing an increasingly important role in physics research. However, existing physics benchmarks only evaluate fixed questions, isolated sub-tasks, or paper reproduction with given solutions, and rarely check research quality alongside correctness. We introduce FrontierPhysics, an end-to-end benchmark with 56 tasks made by 42 physicists based on their own research, covering nine domains across theoretical, computational, and experimental physics. Each task requires agents to review the literature, develop a research plan, conduct research and experiments, and produce structured outputs and scientific manuscripts. Combining deterministic verifiers with expert-authored rubrics, FrontierPhysics evaluates whether agents' research is correct and publishable. Across 22 models in 26 configurations, no configuration passes more than 46 of its 168 rollouts. Manual review of agent trajectories shows that frontier agents' main weaknesses are insufficiently rigorous reasoning and limited expert intuition, rather than gaps in physics knowledge or execution errors.",
+   "published": "2026-11-04T18:56:22+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Bingran You, Wenjun Ke, Ria Rosenauer, Bo Liu, Wenbo Chen, Min Chen"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark",
+    "architecture"
+   ],
+   "tldr": "FrontierPhysics, un benchmark end-to-end évaluant la capacité des agents IA à mener des recherches en physique (littérature, planification, expérimentation, manuscrits). Montre que les agents actuels échouent à produire des résultats publiables, révélant des lacunes en raisonnement rigoureux.",
+   "score": 8.0
+  },
+  {
+   "id": "2dd57eab6678ac6f",
+   "title": "Symmetry Breaking at the Edge of Stability via Central Flow Analysis",
+   "url": "https://arxiv.org/abs/2611.06718v1",
+   "summary": "Continuous symmetries in neural networks lead to conserved quantities that are invariant under gradient flow, such as layer balancedness in linear and ReLU networks. Finite-step gradient descent need not preserve these laws, particularly at the edge of stability (EOS), where the iterates oscillate around a smoother trajectory, which can be described by the central flow dynamics (Cohen et al., 2025). We study how gradient flow conservation laws evolve under the central flow description of this regime. We show that the curvature correction induces a finite-dimensional drift determined by the oscillation covariance along critical parameter directions. We thus take the first steps to analyse which conservation laws remain and are broken at the EOS according to the central flow dynamics by analysing a scalar two-layer model, two-layer matrix factorisation, and a two-layer ReLU network, where the known conservation laws are shown to be complete (Marcotte et al., 2023).",
+   "published": "2026-11-04T16:11:59+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Naima Elosegui Borras, Georgios Arvanitidis"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Cette étude analyse comment les lois de conservation des symétries continues dans les réseaux de neurones (comme l'équilibre des couches) sont affectées par la dynamique de flux centrale (central flow) au bord de la stabilité (EOS), avec des preuves théoriques et empiriques sur des modèles simples (ReLU, factorisation matricielle). Intéressant pour comprendre les limites fondamentales des optimiseurs et l'impact des oscillations sur l'apprentissage.",
+   "score": 8.0
+  },
+  {
+   "id": "8d5ba743749d7c21",
+   "title": "divagr18/qwenputer",
+   "url": "https://github.com/divagr18/qwenputer",
+   "summary": "A computer, compiled into the weights of a language model. An exact CPU inside Qwen3.5-4B, with Gated DeltaNet state as RAM.",
+   "published": "2026-10-19T11:48:10Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 670,
+    "language": "Python"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Projet open-source simulant un CPU complet à l'intérieur des poids d'un modèle Qwen3.5-4B via une architecture DeltaNet à portes, explorant une approche radicale de compression et d'intégration matérielle-logicielle dans les LLM. Intéressant pour l'optimisation extrême et les architectures neuromorphiques.",
+   "score": 8.0
+  },
+  {
+   "id": "a71ad05a17187e1a",
+   "title": "Why Pay for Long Reasoning When Rewrite Do Trick? Causal Effects of Reasoning History Compaction on Future Generation and Agent Cost",
+   "url": "https://huggingface.co/papers/2611.03852",
+   "summary": "Reasoning substantially improves language models' ability to solve difficult problems, but long reasoning traces make these gains expensive. Efficient reasoning should express useful analysis in fewer tokens by reducing repetition and text that adds little value to solving the problem. Progress in proprietary models motivates this goal, yet their hidden scratchpads limit direct study of how it is achieved. We investigate whether open-weight models can generate less verbose reasoning by changing the form of their own earlier thoughts, without retraining. Our intervention rewrites prior reasoning into compact state records before pending tool results are revealed, then compares continuations from original and compact histories. Across the tested models, accepted compact histories usually shorten future reasoning; a coding case study also shows less repeated verification after a shared candidate solution. In software-agent deployments, compaction can reduce total spending, although task quality and rewrite-inclusive time depend on the target and compressor. These findings identify reasoning history as one way to reduce future reasoning-token use and motivate model-specific compaction policies evaluated for both efficiency and retained capability.",
+   "published": "2026-11-01T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2611.03852"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Cette étude montre que la compression de l'historique de raisonnement (rewriting) des LLM réduit significativement la verbosité future sans perte de qualité, diminuant les coûts de déploiement d'agents. Pertinent pour l'optimisation des coûts d'inférence et l'efficacité des modèles de raisonnement.",
+   "score": 7.9
+  },
+  {
+   "id": "510b6da414025d7b",
+   "title": "Hybrid Computer Use: A Unified Programmatic, Semantic, and Visual Interface for General Agents",
+   "url": "https://huggingface.co/papers/2610.41432",
+   "summary": "Computer-use agents increasingly tackle tasks ranging from everyday desktop activities to long-horizon professional workflows. Yet interfaces centered on screenshots and mouse-and-keyboard actions can impose a human-interaction prior, requiring repeated screen interpretation while leaving the computer's semantic and programmatic capabilities underexposed. We argue for exposing these capabilities and letting models choose and combine them. We introduce Hybrid Computer Use (HCU), a unified interface for general agents that combines three complementary channels: programmatic interaction through code and command-line tools, semantic interaction through accessibility (AX), and visual interaction through graphical user interfaces (GUI). Our HCU supports efficient AX interaction and guards against stale-state actions during channel switching. A supplementary HCU skill guides agents in selecting and coordinating channels to use the unified interface effectively. Our designed AX tools return compact observations, execute actions in batches, and report their effects as AX diffs, so the model needs fewer round trips. On OSWorld 2.0, HCU achieves the highest Partial and Binary scores among the compared systems. Analyzing agent trajectories, we find that all evaluated models improve with HCU yet allocate work across the channels differently and consistently outperform compared baselines in terms of both efficiency and task success, highlighting the value of unified computer-use interfaces that allow flexible channel selection and combination.",
+   "published": "2026-10-30T04:38:29.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2610.41432"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "produit"
+   ],
+   "tldr": "Hybrid Computer Use (HCU) unifie les interactions programmatique, sémantique (AX) et visuelle pour les agents généraux, améliorant les scores sur OSWorld 2.0. Solution pragmatique pour les interfaces agents multi-canaux.",
+   "score": 7.9
+  }
+ ]
+}
