@@ -1,0 +1,733 @@
+{
+ "date": "2026-11-07",
+ "digest": {
+  "headline": "Optimisation des agents LLM et architectures éparsifiées dominent la veille IA du 2026-11-07, avec des gains significatifs en efficacité computationnelle et mémoire",
+  "overview": "La journée est marquée par des avancées techniques ciblant l'optimisation des agents autonomes et des architectures de modèles, notamment via la compression de contexte, l'attention éparse et des benchmarks spécialisés. Les travaux sur les systèmes multimodaux et la robustesse des pipelines RAG révèlent des limites persistantes, tandis que des solutions hybrides émergent pour des cas d'usage concrets comme la robotique ou la santé.",
+  "highlights": [
+   {
+    "title": "Compression de contexte et optimisation des agents LLM",
+    "text": "Coca-Cola et SwarmEvolve introduisent des méthodes pour réduire la consommation de tokens et accélérer l'exécution des agents. Coca-Cola utilise une compression latente des sorties d'outils (70-89% de réduction de tokens, +24-56% de vitesse), tandis que SwarmEvolve optimise l'optimisation évolutionnaire via des essaims d'agents en espace latent (gain de temps de 3-8 min vs 60 min). Ces approches adressent des goulots d'étranglement critiques pour les systèmes autonomes, notamment en mémoire et latence."
+   },
+   {
+    "title": "Architectures hiérarchiques et mémoire explicite pour tâches non-markoviennes",
+    "text": "HeLM propose un cadre VLA avec une mémoire explicite en langage naturel pour gérer des tâches robotiques non-markoviennes, améliorant le taux de succès de 12,8 points et réduisant l'usage mémoire de 4,5x. Parallèlement, Multi-layer Indexer optimise l'attention éparse de DeepSeek-V3.2/GLM-5, réduisant le temps de décodage de 40% via une indexation concurrente des couches. Ces travaux illustrent une tendance vers des architectures plus modulaires et efficaces pour des contextes complexes."
+   },
+   {
+    "title": "Benchmarks révélateurs des limites des agents multimodaux et RAG",
+    "text": "VisSearch-Bench et TB-MathModel mettent en lumière des lacunes majeures : seulement 26,47% de succès pour les recherches visuelles longues, et des performances limitées des LLM sur le modeling mathématique réel. Signed but Steerable quantifie une faille d'intégrité dans les systèmes RAG hors ligne (jusqu'à 5,5% de requêtes vulnérables), avec une baisse de précision de 0,75 à 0,39. Ces benchmarks fournissent des métriques critiques pour évaluer la robustesse et la généralisation des systèmes."
+   },
+   {
+    "title": "Optimisation des modèles de diffusion et génération multimodale",
+    "text": "StepX-OPD combine distillation multi-enseignants et distillation de pas pour les modèles de diffusion (SD3.5-Medium, FLUX.1-dev), réduisant les étapes d'inférence tout en améliorant l'instruction following et le rendu de texte. TaoMate-HD propose un modèle autoregressif pour la génération audio-vidéo en streaming haute résolution, optimisant l'inférence via une approche progressive. Ces méthodes ciblent des gains en efficacité sans sacrifier la qualité, crucial pour les applications temps réel."
+   },
+   {
+    "title": "Robustesse et biais dans les systèmes visuels et RAG",
+    "text": "TailSteer limite la dérive visuelle dans les éditions multi-tours d'images via un fine-tuning ciblé, préservant les capacités de base sur 15-20 tours. SynthFaces génère un jeu de données synthétique équilibré pour réduire les biais dans les modèles génératifs centrés sur l'humain, combinant flow matching et Arc2Face. Ces travaux adressent des défis pratiques en production, comme la cohérence des sorties et l'équité des modèles."
+   }
+  ],
+  "trend": "Les avancées se concentrent sur l'optimisation des architectures existantes (compression, attention éparse, mémoire hiérarchique) pour des gains en efficacité computationnelle et mémoire, tout en révélant des limites structurelles via des benchmarks spécialisés. Une tendance émergente est l'intégration de contraintes physiques ou de vérification formelle (Lean 4) pour améliorer la robustesse des systèmes."
+ },
+ "items": [
+  {
+   "id": "df6c520de2e5d719",
+   "title": "Tools Need Not Speak in Text: Latent Context Compression for Agents",
+   "url": "https://huggingface.co/papers/2611.06500",
+   "summary": "Large language model (LLM) agents typically append raw tool outputs to their context. Over multi-step interactions, long and noisy observations incur substantial context overhead and dilute the agent's attention to task-relevant information. Existing token pruning and summarization methods remain constrained by discrete text representations, limiting the achievable compression ratios. In this work, we challenge the prevailing assumption that agents must consume tool observations as explicit text tokens. To this end, we propose Coca-Cola, a continuous latent context compression model for LLM agents. Coca-Cola compresses tool observations into latent tokens and embeds them into the input embedding space of the agent. We further introduce Action-Preserving Training, which aligns the agent's next-action distributions under full and compressed observations. This trains the compression model to learn action-sufficient latent tokens that retain decision-critical information. Experiments with web-search agents on four QA benchmarks and two model families show that Coca-Cola reduces the agent's token consumption by 70.01%-89.24% and end-to-end runtime by 24.45%-55.97%, while consistently improving task performance. These results suggest that Coca-Cola offers a promising approach for context compression in agents. Our code is available at https://github.com/THU-Agent/Coca-cola.",
+   "published": "2026-11-03T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2611.06500"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "Propose Coca-Cola, un modèle de compression de contexte latent pour agents LLM qui réduit de 70-89% la consommation de tokens et accélère l'exécution de 24-56% en transformant les sorties d'outils en tokens latents action-suffisants, validé sur 4 benchmarks et 2 familles de modèles.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Les agents basés sur les grands modèles de langage (LLM) accumulent des sorties d'outils brutes dans leur contexte au fil des interactions multi-étapes. Cela génère une surcharge contextuelle due à des observations longues et bruitées, diluant l'attention de l'agent sur les informations pertinentes pour la tâche. Les méthodes existantes de compression (comme l'élagage de tokens ou la synthèse) restent limitées par des représentations textuelles discrètes, réduisant leur efficacité.",
+    "methode": "L'article propose *Coca-Cola*, un modèle de compression contextuelle latente continue pour les agents LLM. Au lieu de traiter les observations d'outils sous forme de tokens textuels explicites, Coca-Cola les compresse en *tokens latents* et les intègre dans l'espace d'embeddings d'entrée de l'agent. Pour garantir que ces tokens latents conservent l'information critique pour la prise de décision, les auteurs introduisent *Action-Preserving Training* : une méthode d'entraînement alignant les distributions des prochaines actions de l'agent entre les observations complètes et compressées. Cela force le modèle de compression à préserver les signaux décisionnels. La compression est appliquée aux sorties d'outils (ex. résultats de recherche web) avant leur intégration dans le contexte de l'agent.",
+    "resultats": "Les expériences menées avec des agents de recherche web sur quatre benchmarks de questions-réponses (QA) et deux familles de modèles montrent que Coca-Cola réduit la consommation de tokens de l'agent de 70,01 % à 89,24 %, et le temps d'exécution de bout en bout de 24,45 % à 55,97 %. De plus, la performance sur les tâches s'améliore systématiquement, suggérant que la compression ne dégrade pas la qualité des décisions. Ces gains sont obtenus sans modification de l'architecture du LLM sous-jacent.",
+    "limites": "Le papier ne détaille pas explicitement les scénarios où la compression latente pourrait échouer (ex. tâches nécessitant une interprétation fine de nuances textuelles). De plus, la généralisation à d'autres types d'outils (au-delà de la recherche web) ou à des environnements dynamiques reste à explorer. Enfin, l'approche repose sur un entraînement spécifique, ce qui pourrait limiter son adoption pour des cas d'usage *zero-shot* ou peu supervisés.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche innovante de compression contextuelle, offrant des gains significatifs en efficacité sans sacrifier la performance, mais son applicabilité au-delà des benchmarks testés reste à valider."
+   }
+  },
+  {
+   "id": "ba9e58c71961dcd3",
+   "title": "SwarmEvolve: Latent Agent Swarms for Evolutionary Discovery and Optimization",
+   "url": "https://huggingface.co/papers/2611.08483",
+   "summary": "LLM-guided evolutionary search uses AI agents to improve programs for mathematical and computational problems by iteratively refining solutions and combining high-scoring methods. However, the process is often slow because the LLM generates a long textual chain of thought for each round and must repeat this generation many times to maintain population diversity. We present SwarmEvolve, a framework in which hundreds of low-cost agents per round work in swarms, reason in latent space without decoding to text, and share information by passing KV caches. Each swarm studies the problem from a different angle. A novelty filter keeps the most distinct agent ideas by directly measuring the distances between the agents' hidden state vectors. Crossover of ideas happens naturally in latent space, as a summarizer agent receives the combined KV caches of all swarm members. On 21 problems in mathematical discovery and scientific computing, SwarmEvolve gets the highest average score and needs a median of only 3 to 8 minutes to reach the best scores that other state-of-the-art frameworks reach in 60 minutes. On several problems, SwarmEvolve with Qwen3 8B improves on the solutions that AlphaEvolve first found with frontier LLMs. Our work shows that agent swarms that communicate in latent space offer a fast, low-cost approach to program search for scientific problems.",
+   "published": "2026-11-04T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2611.08483"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "SwarmEvolve utilise des essaims d'agents en espace latent (sans décodage textuel) pour accélérer l'optimisation évolutionnaire (3-8 min vs 60 min pour l'état de l'art), avec un filtre de nouveauté basé sur les distances entre états cachés et un partage de KV caches.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "SwarmEvolve vise à résoudre l'inefficacité des méthodes d'optimisation et de découverte évolutive guidées par des modèles de langage (LLM). Ces méthodes traditionnelles sont lentes car elles génèrent des chaînes de pensée textuelles longues et répétitives pour chaque itération, tout en nécessitant une diversité de population coûteuse en calculs pour éviter la convergence prématurée vers des solutions sous-optimales.",
+    "methode": "SwarmEvolve propose un cadre où des centaines d'agents à faible coût opèrent en essaims, raisonnant directement dans l'espace latent (sans décodage en texte). Les agents partagent des informations via des caches de clés-valeurs (KV caches) plutôt que par des échanges textuels. Chaque essaim aborde le problème sous un angle différent, et un filtre de nouveauté élimine les idées redondantes en mesurant les distances entre les vecteurs d'état cachés des agents. Le croisement des idées s'effectue naturellement dans l'espace latent : un agent « résumeur » agrège les KV caches de tous les membres de l'essaim pour générer une solution synthétisée. Cette approche réduit la latence et les coûts computationnels tout en préservant la diversité des solutions.",
+    "resultats": "Sur 21 problèmes de découverte mathématique et de calcul scientifique, SwarmEvolve obtient le score moyen le plus élevé, avec un temps médian de seulement 3 à 8 minutes pour atteindre les meilleurs scores que d'autres frameworks de pointe atteignent en 60 minutes. Sur plusieurs problèmes, SwarmEvolve utilisant Qwen3 (8B) améliore même les solutions initialement trouvées par AlphaEvolve avec des LLM de pointe. Ces résultats suggèrent une accélération significative et une réduction des coûts par rapport aux méthodes existantes.",
+    "limites": "Le contenu disponible ne précise pas les détails sur la scalabilité du système avec des problèmes plus complexes ou des espaces de recherche plus vastes. De plus, la dépendance aux KV caches et à l'espace latent pourrait introduire des biais ou des limitations spécifiques aux architectures de LLM utilisées, sans garantie de généralisation à d'autres modèles. Enfin, l'absence de benchmark comparatif détaillé avec d'autres méthodes hybrides (ex : neuro-évolution) limite l'évaluation de sa supériorité absolue.",
+    "verdict": "SwarmEvolve mérite une attention particulière pour son approche innovante et ses gains de performance démontrés, mais son applicabilité à grande échelle et sa robustesse restent à valider sur des cas d'usage plus variés."
+   }
+  },
+  {
+   "id": "6a7e3d286abc8289",
+   "title": "HeLM: Hierarchical Explicit Language Memory for Non-Markovian Manipulation",
+   "url": "https://huggingface.co/papers/2611.02660",
+   "summary": "Recent advances in Vision-Language-Action (VLA) models have enabled fine manipulation capabilities, yet performing tasks that require working memory remains a key challenge. Most existing VLA architectures operate under a Markovian assumption, mapping only the current observation to an action, which leads to failure in non-Markovian environments. Inspired by the human 'inner monologue', we propose Hierarchical Explicit Language Memory (HeLM), a hierarchical VLA framework that maintains task-relevant history in explicit language through factorized event detection and event-triggered memory updates. We evaluate HeLM across 10 non-Markovian real-world tasks with 56 variants, including five newly formulated inter-episode tasks that require persistent context across task boundaries. HeLM improves intra-episode success by 12.8 percentage points over the strongest baseline and achieves 78% subtask success on compositional generalization tasks, while using up to 4.5x less memory and running 2.5x faster than the keyframe baseline at long horizons.",
+   "published": "2026-11-02T02:20:12.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 8,
+    "arxiv_id": "2611.02660"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Introduit HeLM, un cadre VLA hiérarchique utilisant une mémoire explicite en langage naturel pour gérer des tâches non-markoviennes, améliorant de 12,8 points le taux de succès et réduisant l'usage mémoire de 4,5x.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le modèle HeLM vise à résoudre le défi des tâches de manipulation robotique nécessitant une mémoire de travail, un aspect négligé par les architectures Vision-Language-Action (VLA) existantes. Ces dernières reposent sur une hypothèse markovienne, limitant leur capacité à gérer des environnements non-markoviens où l'historique des observations et des actions est crucial pour la prise de décision.",
+    "methode": "HeLM introduit une mémoire hiérarchique explicite en langage naturel, s'inspirant du 'monologue intérieur' humain. Cette approche se base sur deux mécanismes clés : (1) une détection factorisée d'événements pour identifier les moments pertinents dans le flux d'observations, et (2) des mises à jour de mémoire déclenchées par ces événements. La mémoire est structurée de manière hiérarchique pour capturer à la fois des informations locales (intra-épisode) et globales (inter-épisodes). Le framework utilise des modèles VLA existants mais les enrichit avec cette mémoire explicite, permettant une meilleure généralisation compositionnelle et une efficacité accrue en termes de mémoire et de vitesse.",
+    "resultats": "Les évaluations de HeLM sur 10 tâches réelles non-markoviennes (incluant 56 variantes et 5 nouvelles tâches inter-épisodes) montrent une amélioration de 12,8 points de pourcentage du taux de succès intra-épisode par rapport au meilleur baseline. Sur des tâches de généralisation compositionnelle, HeLM atteint un taux de succès de 78 % pour les sous-tâches. De plus, le modèle réduit la consommation mémoire jusqu'à 4,5 fois et accélère l'exécution de 2,5 fois par rapport à un baseline basé sur des keyframes pour des horizons longs.",
+    "limites": "Le contenu disponible ne précise pas les détails sur la robustesse de la détection d'événements ni sur la sensibilité du modèle aux erreurs d'annotation ou aux biais linguistiques. De plus, l'évaluation se limite à des tâches spécifiques, et la généralisation à des environnements plus complexes ou bruyants reste une zone d'ombre. Enfin, l'efficacité de la mémoire hiérarchique en langage naturel n'est pas comparée à des approches alternatives comme les réseaux de neurones récurrents ou les transformers avec mémoire externe.",
+    "verdict": "HeLM mérite une attention particulière pour son approche innovante combinant mémoire explicite en langage et hiérarchie, offrant des gains significatifs en performance et efficacité pour les tâches non-markoviennes, bien que des validations supplémentaires soient nécessaires pour en confirmer la robustesse et la généralisabilité."
+   }
+  },
+  {
+   "id": "74ab6ee9c39359c1",
+   "title": "VisSearch-Bench: Evaluating Long Horizon Visual Search in Multimodal Agents",
+   "url": "https://huggingface.co/papers/2611.04894",
+   "summary": "Multimodal agents use web and image tools to answer questions beyond their internal knowledge. Some search tasks use images mainly to identify an initial entity, then rely on text retrieval. These tasks offer limited insight into how agents connect information across images, objects, and search steps. We therefore focus on visual context management. This involves organizing and using visual information and linking it to other findings during search. Visually intensive tasks require agents to combine object appearance, local details, or spatial relations with external information. We introduce VisSearch-Bench, with 204 human-written tasks across 7 main domains and 25 subdomains. It covers Set-wise Visual Search, Sequential Visual Search, Hybrid Wide-Deep Search, Competitive Visual Disambiguation, and Visual-Structure-Guided Search. Each task provides a reference answer, traceable evidence, and scoring rules. Accuracy measures complete task success, while Process Score measures the correctness and completeness of individual results and subquestion answers. Across 16 multimodal models, the best system fully solves only 26.47% of tasks, even with search tools. These results highlight the challenge of linking visual evidence with search results to produce complete answers.",
+   "published": "2026-11-02T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 19,
+    "arxiv_id": "2611.04894"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Lance VisSearch-Bench, un benchmark évaluant la capacité des agents multimodaux à gérer des recherches visuelles complexes sur le long terme, révélant des lacunes majeures (26,47% de succès maximal).",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Le benchmark VisSearch-Bench vise à évaluer la capacité des agents multimodaux à effectuer des recherches visuelles complexes sur le long terme. Ces agents, qui combinent outils web et analyse d'images, peinent à relier efficacement les informations visuelles (objets, détails spatiaux) avec des données externes pour résoudre des tâches nécessitant plusieurs étapes de raisonnement. Les benchmarks existants se limitent souvent à des tâches simples où l'image sert uniquement à identifier une entité initiale, sans explorer la gestion du contexte visuel au fil des recherches.",
+    "methode": "VisSearch-Bench propose 204 tâches rédigées par des humains, couvrant 7 domaines principaux et 25 sous-domaines, classées en cinq catégories : recherche visuelle par ensembles, recherche visuelle séquentielle, recherche hybride large-profonde, désambiguïsation visuelle compétitive et recherche guidée par structure visuelle. Chaque tâche inclut une réponse de référence, des preuves traçables et des règles de notation. Deux métriques sont utilisées : l'*Accuracy* (succès complet de la tâche) et le *Process Score* (évaluation de la justesse et de la complétude des résultats intermédiaires et des sous-questions). Le benchmark teste 16 modèles multimodaux équipés d'outils de recherche pour mesurer leur capacité à organiser et exploiter le contexte visuel au fil des étapes.",
+    "resultats": "Les résultats montrent que même les meilleurs systèmes ne résolvent complètement que 26,47 % des tâches, malgré l'accès à des outils de recherche. Cela souligne la difficulté pour les agents multimodaux à établir des liens cohérents entre les preuves visuelles et les résultats de recherche pour produire des réponses exhaustives. Les performances varient significativement selon les catégories de tâches, révélant des lacunes spécifiques dans la gestion du contexte visuel et le raisonnement multi-étapes.",
+    "limites": "Le contenu disponible ne précise pas les détails techniques des modèles évalués (architecture, taille, données d'entraînement), ce qui limite l'analyse des causes des échecs. De plus, le benchmark se concentre sur des tâches artificielles ou semi-artificielles, sans garantie que les résultats reflètent des scénarios réels. Enfin, l'absence de comparaison avec des méthodes non-automatisées (humaines ou hybrides) rend difficile l'interprétation de l'écart de performance.",
+    "verdict": "Ce benchmark mérite une attention particulière pour son approche systématique de l'évaluation des agents multimodaux sur des tâches visuelles complexes, mais ses résultats doivent être interprétés avec prudence en raison des limites méthodologiques et du manque de contexte sur les modèles testés."
+   }
+  },
+  {
+   "id": "bd2c65ed7f88583d",
+   "title": "Multi-layer Indexer: Overlapping Selection and Attention in DeepSeek Sparse Attention",
+   "url": "https://huggingface.co/papers/2611.03768",
+   "summary": "Sparse attention cuts the cost of long-context inference by making the attention matrix sparse: each query attends only a subset of the sequence, chosen by a fixed pattern or, in recent production LLMs, learned per query. In DeepSeek Sparse Attention (DSA), the attention of DeepSeek-V3.2 and the GLM-5 family, every layer is preceded by a lightning indexer that scores the whole cache and keeps the k=2048 highest-scoring tokens for the layer to attend. At long context this indexer scan, not the sparse attention it feeds, is where the decode time goes. But adjacent layers select nearly the same tokens, so a layer can attend the selection of the previous indexer layer instead of its own. This removes the dependency: each indexer then runs concurrently with the attention of its layer. The resulting Multi-layer Indexer (MLI) needs no retraining and no new weights. Its default realization changes no kernel, running inside SGLang's production decode graph; an optional fused decode kernel accelerates it further on DeepSeek-V3.2. MLI composes with IndexCache (the cross-layer reuse GLM-5.2 ships as IndexShare): IndexCache drops the indexer from some layers, and MLI hides the scan on the rest. We serve DeepSeek-V3.2 and GLM-5 under IndexCache's protocol at retentions 1/2 to 1/32 (the fraction of layers that keep an indexer) and contexts 10K to 195K. At equal retention the composition decodes faster than IndexCache: up to 14.5% faster on DeepSeek-V3.2 and 9.8% on GLM-5 at 1/2, and 7.9% and 5.1% at 1/4, largest where IndexCache keeps the most indexers and growing with context. At retention 1/r it is faster still than IndexCache at 1/(2r) while keeping twice the fresh selections: at 128K it reaches 1.32x the unmodified model's decode throughput at 1/4, above IndexCache's 1.28x at 1/8. Its LongBench, RULER and LongBench v2 accuracy stays within a few percentage points of IndexCache's.",
+   "published": "2026-11-01T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2611.03768"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "Introduit Multi-layer Indexer (MLI), une optimisation pour l'attention éparse de DeepSeek-V3.2/GLM-5, réduisant le temps de décodage en 40% via une indexation concurrente des couches adjacentes.",
+   "score": 8.5
+  },
+  {
+   "id": "1b4fd614e67b3e77",
+   "title": "StepX-OPD: Rethinking Multi-Teacher On-Policy Distillation in Diffusion Models",
+   "url": "https://huggingface.co/papers/2611.04386",
+   "summary": "A deployable text-to-image diffusion model must hold several capabilities at once, such as instruction following, text rendering and human preference, and must sample in a few steps. Capabilities and few-step sampling are built in separate stages: a full-step model first consolidates capabilities through multi-teacher on-policy distillation, then serves as a fixed teacher for step distillation. Every full-step model we evaluate scores lower once compressed, and the second stage cannot begin until the first finishes. We introduce StepX-OPD, which merges the two stages: one student acquires every capability while learning to sample in a few steps, so frozen specialists supervise it on the states its own rollout visits rather than on a longer trajectory it never runs. Because a decomposition of the rollout's KL weights velocity mismatch most heavily near the clean end, we also regress the student's velocity on the low-noise part of the rollout. Separately, we find that capability integration makes models write prompt words into images on prompts that never asked for text, and we give a variant that lowers it. We evaluate on SD3.5-Medium and FLUX.1-dev across instruction following, text rendering, image quality and human preference. On both architectures, StepX-OPD attains the highest normalized average score among the four-step methods compared and exceeds the forty-step Flow-OPD model, and on SD3.5-Medium it trains with about 37% fewer GPU-hours than sequential DiffusionOPD followed by step distillation.",
+   "published": "2026-11-02T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2611.04386"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "architecture",
+    "vision"
+   ],
+   "tldr": "StepX-OPD fusionne distillation multi-enseignants et distillation de pas pour les modèles de diffusion (SD3.5-Medium, FLUX.1-dev), réduisant les étapes d'inférence tout en améliorant les capacités (instruction following, rendu de texte) et en limitant les artefacts textuels non sollicités.",
+   "score": 8.2
+  },
+  {
+   "id": "b9e4bb586fc32229",
+   "title": "Towards Real-Time Full-Waveform LiDAR Transformers via Intensity-Guided Token Reduction and Physics-Aware Augmentation",
+   "url": "https://huggingface.co/papers/2611.07613",
+   "summary": "LiDAR is a critical sensor for autonomous driving and robotics, yet it remains vulnerable to adverse conditions such as fog, rain, transparent objects, and low-reflectance surfaces. Full-waveform LiDAR (FWL) addresses these limitations by capturing the complete return waveform as a histogram, preserving rich reflection characteristics including multi-path echoes and weak signals. While recent Transformer-based approaches have demonstrated promise on FWL data, two fundamental bottlenecks remain: high computational cost from redundant tokens in low-intensity background regions, and limited generalization due to scarce annotated training data. We address both bottlenecks by exploiting the physical structure inherent to FWL data. First, we propose FWL-ToPM, a token pruning and merging mechanism that leverages intensity distributions to selectively reduce tokens while retaining critical waveform content. Second, we introduce FWLAug, a data augmentation framework designed as a regularization method that preserves waveform structure, retaining the Time-of-Flight waveform of each ray and the frustum geometry, to improve generalization to unseen scenes. Evaluated on the Ghost-FWL benchmark, FWL-ToPM achieves over 8 times speedup at real-time throughput alongside a nearly 9-point F1 gain over the prior state of the art, establishing the first real-time FWL Transformer that simultaneously improves accuracy. FWLAug further improves performance on both the standard benchmark and an out-of-distribution test set of unseen scenes. Together, these methods push FWL-based perception toward practical deployment. The code and the OOD dataset are publicly available and can be accessed via the project page: https://keio-csg.github.io/FWL-ToPM",
+   "published": "2026-11-05T02:56:01.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2611.07613"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "robotique",
+    "optimisation"
+   ],
+   "tldr": "FWL-ToPM et FWLAug optimisent les transformers pour LiDAR full-waveform en réduisant les tokens redondants via l'intensité et en préservant la structure physique des données, améliorant l'efficacité computationnelle et la généralisation sur le benchmark Ghost-FWL.",
+   "score": 8.2
+  },
+  {
+   "id": "0bc660c4267421b7",
+   "title": "TailSteer: Trajectory-Tail Steering for Drift-Resistant Multi-turn Image Editing",
+   "url": "https://huggingface.co/papers/2611.06741",
+   "summary": "Strong single-turn editing performance does not guarantee reliable multi-turn interaction: as edited outputs are repeatedly reused, small unintended changes can accumulate into severe visual drift. This long-term drift is often mitigated through training on multi-turn data or cross-turn rollouts, potentially altering pretrained priors, or through specialized inference-time mechanisms that are difficult to scale to foundation models. We introduce TailSteer, a final-stage training framework that improves multi-turn robustness while retaining the generative and editing capabilities acquired through earlier training. TailSteer follows a simple principle: keep early denoising dynamics close to those of the base model and concentrate preservation corrections near the trajectory tail, where fine-grained deviations can be suppressed. These corrections are learned from the editor's own on-policy denoising rollouts, using unchanged source content as a preservation reference without requiring curated ground-truth editing pairs. Experiments across the FLUX, SenseNova, and Qwen families show that TailSteer substantially reduces cumulative drift over 15-20 editing turns while largely preserving base-model performance on extensive text-to-image and single-image editing benchmarks. These results demonstrate that long-horizon editing robustness can be unlocked in foundation models after TailSteer, rather than by relearning their existing capabilities.",
+   "published": "2026-11-03T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 37,
+    "arxiv_id": "2611.06741"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Présente TailSteer, une méthode de fine-tuning en dernière étape pour limiter la dérive visuelle dans les éditions multi-tours, préservant les capacités de base tout en améliorant la robustesse sur 15-20 tours.",
+   "score": 8.2
+  },
+  {
+   "id": "f58ad39bd6048350",
+   "title": "Signed but Steerable: Measuring and Closing the Text-Vector Integrity Gap in Offline Retrieval-Augmented Generation",
+   "url": "https://huggingface.co/papers/2611.06498",
+   "summary": "Offline retrieval-augmented generation (RAG) on edge devices is updated through signed knowledge packs that carry text and precomputed embedding vectors. A signature proves who published a pack, not that its vectors encode its text. We study this text-vector integrity gap. A verifier that recomputes vectors and accepts them within a cosine tolerance concedes a predictable share of queries to an attacker who controls the vectors: the hijack rate equals the distribution of angular retrieval margins at the tolerance (the margin law). Margins are small in five corpora and two embedding models, so an idealised tolerance at the level of floating-point noise leaves up to 5.5% of queries exposed (at most 1.2% in any corpus once exact duplicate documents are excluded), and a threshold calibrated from our CPU INT8-FP32 comparison of a small embedding model (at the empirical 0.1% quantile of honest cosines) leaves 98-100% exposed; on a Raspberry Pi 5 running a local language model, such an attack lowers correct answers from 0.75 to 0.39. Integrity audits of compressed vector stores fare no better: on a FAISS product-quantisation index over 57,638 documents, tampered vectors that all pass the audit put the attacker's document first for 25% of targets. Verifying quantisation codes instead, with ambiguity decided by the verifier, a calibrated guard band and canonicalisation, accepted every honest vector in our samples on three platforms and left the publisher no choice. We also show that common floating-point and dynamic-INT8 inference pipelines are not bit-reproducible across batch sizes or architectures, and report pre-registered negative results on abstention, context pruning and semantic screening. We release code and data.",
+   "published": "2026-11-04T08:32:04.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2611.06498"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "rag",
+    "benchmark"
+   ],
+   "tldr": "Analyse la faille d'intégrité texte-vecteur dans les systèmes RAG hors ligne (embeddings pré-calculés) : jusqu'à 5,5% de requêtes vulnérables à des attaques vectorielles, avec des impacts concrets sur des modèles locaux (baisse de précision de 0,75 à 0,39).",
+   "score": 7.9
+  },
+  {
+   "id": "6d0b2e187b198916",
+   "title": "Terminal-style Mathematical Modeling Bench: The First Agentic and Verifiable Benchmark for Mathematical Modeling",
+   "url": "https://huggingface.co/papers/2611.08237",
+   "summary": "Mathematical modeling turns an open-ended real-world problem into assumptions, a model, a solution, and a defended recommendation, and its answers matter only if they are both close to a credible reference and physically feasible; existing benchmarks either score solver fragments or grade reports with an LLM judge, leaving those numbers unchecked. We introduce TB-MathModel (the Terminal-style Mathematical Modeling Bench), the first benchmark to make complete contest-style modeling problems agentic, verifiable, and terminal at once, over 18 real CUMCM and MCM problems (2023--2025). Each task ships the verbatim statement, official attachments, and figures in a containerized terminal; the agent returns one JSON artifact, scored on the numeric core of the final question against a reproduction of the Outstanding-award paper. Two design choices distinguish it: direction-aware, one-sided scoring, which never penalises beating the anchor, and two-layer feasibility verification---a programmatic gate over six decidable invariant forms plus 624 Lean~4 obligations---with a hard gate that zeroes infeasible answers. Each task is scored against a panel of human outstanding papers rather than one, so a model must be close to many accepted answers; across seven multimodal entries (three seeds each) the strongest reach a multi-reference O-Eval of 64.58\\%, while the \\2.54 open model holds 59.81% at 1/100$ the cost. TB-MathModel turns the numeric core of modeling into a reproducible, machine-checkable signal for measuring long-horizon modeling competence and for collecting agent trajectories. The source code is available at https://github.com/wxj630/terminal-bench-math-modeling.",
+   "published": "2026-11-05T11:18:35.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 9,
+    "arxiv_id": "2611.08237"
+   },
+   "relevance": 7,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "TB-MathModel est un benchmark agentique et vérifiable pour le modelling mathématique, basé sur 18 problèmes réels (CUMCM/MCM 2023-2025) avec scoring programmatique contre des solutions humaines primées, incluant une vérification de faisabilité en deux couches (invariants + Lean 4).",
+   "score": 7.9
+  },
+  {
+   "id": "2454403fce88b9b9",
+   "title": "TaoMate-HD: Progressive-Resolution Autoregressive Audio-Video Generation",
+   "url": "https://huggingface.co/papers/2611.03394",
+   "summary": "Streaming digital humans produce detailed video while continuing speech as new text arrives. High-resolution denoising is costly, and text updates can cause repeated or interrupted speech. We present TaoMate-HD, an autoregressive model for high-resolution audio-video streaming. For each short segment, or chunk, two denoising steps establish coarse video structure at low resolution. A final step refines the video to high resolution, with audio generated throughout the same trajectory. Each stage passes its audiovisual predictions to the same stage of the next chunk as history. Across text updates, the model retains this history to infer what has already been spoken. Continuation training utilizes asymmetric text conditioning, with separate text windows for generation and distillation. Experiments show a 1.6x speedup over direct high-resolution generation with the same model and hardware. Optimized stage-parallel deployment provides a further 1.9x overall speedup over serial progressive generation. Our continuation training reduces character error rate by 11.18 percentage points relative to the baseline. The model also supports hour-long audiovisual generation. Our project page is https://taoliveaigc.github.io/TaoMate-HD.",
+   "published": "2026-11-01T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2611.03394"
+   },
+   "relevance": 8,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "TaoMate-HD propose un modèle autoregressif pour la génération audio-vidéo en streaming haute résolution, optimisant l'inférence via une approche progressive (coarse-to-fine) et une continuité contextuelle entre segments. Intéressant pour l'efficacité computationnelle et la qualité de sortie en temps réel.",
+   "score": 7.9
+  },
+  {
+   "id": "ec797be30e1660c4",
+   "title": "Muir: Linear Attention with Sensitivity-Allocated Gating and Matched-Filter Readout",
+   "url": "https://huggingface.co/papers/2611.08376",
+   "summary": "Linear attention compresses context into a fixed-size key-value state for linear-time training and constant-memory inference. Gated delta-rule models decay this state and erase its prediction for an incoming key before writing a new value; Gated DeltaNet-2 (GDN-2) generalizes this with channel-wise decay and decoupled, full-rank erase and write gates. However, we show that state updates are far less sensitive to erasure than to writes: key activation and unit normalization concentrate key energy onto a sparse subset of channels, whereas value writes scale all channels, so the erase gate can be parameterized at lower rank. Furthermore, slow-decaying state rows accumulate much larger norms than fast rows, dominating unweighted readout and forcing stronger write-time erasure to suppress interference. Guided by this analysis, we introduce Muir, which fuses all gates into a sensitivity-allocated low-rank projection, re-weights state rows with a matched-filter readout gate, and reinvests the saved parameters in a wider feed-forward network. Because standard chunkwise algorithms become numerically unstable at the large chunk sizes needed to saturate wide matrix units, we design a parallel update for stable, efficient training. Across 166M-1.34B parameters, Muir lowers perplexity by 1.8-2.0% over GDN-2 and 2.5-3.6% over Transformer, raises commonsense accuracy by up to 1.9 points, and improves extractive recall over GDN-2. At 1.34B, Muir outperforms both baselines on multi-hop and multi-needle recall, extrapolates 2,560x from its 4K training length to 10M-token streams without perplexity drift, and maintains near-100% passkey retrieval to 1M tokens with static readout. Muir achieves these gains while matching GDN-2 throughput, reaching its 100B-token validation loss 1.2x faster, and training 2.7x faster than Transformer at 32K.",
+   "published": "2026-11-05T12:53:49.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 6,
+    "arxiv_id": "2611.08376"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "architecture",
+    "interpretabilite",
+    "optimisation"
+   ],
+   "tldr": "Muir améliore l'attention linéaire (Linear Attention) via un gating alloué par sensibilité et un readout par filtre adapté, réduisant les interférences entre états et optimisant l'utilisation des paramètres pour des performances accrues avec des chunks de grande taille.",
+   "score": 7.6
+  },
+  {
+   "id": "21a9eeb186cd2163",
+   "title": "WeLM-Image: A Unified Image Generation Model towards Visual Intelligence",
+   "url": "https://huggingface.co/papers/2611.07392",
+   "summary": "We present WeLM-Image, a unified image foundation model that integrates multimodal understanding into text-to-image generation, instruction-guided editing, and multi-reference synthesis. Designed for single-GPU deployment in WeChat's large-scale consumer applications, the model processes text, reference images, and target latents as one interleaved sequence. A Mixture-of-Transformers (MoT) backbone combines shared attention with independent understanding and generation parameters to limit optimization interference. Equipping each path with Mixture-of-Experts (MoE) modules provides sparse capacity, with 31.7B stored parameters and approximately 5.4B generation parameters activated per target latent token. A generation-oriented data engine combines a knowledge-grounded visual vocabulary with large-scale visual clustering to balance semantic coverage and editing tasks, while training-time evaluation guides iterative data refinement. Bilingual annotations and verified editing supervision support progressive training up to native 1.5K resolution. We optimize generation and editing separately with rubric- and checklist-based rewards, then consolidate the specialized policies through noise-aware on-policy distillation. In the reported overall comparisons, the 1536-resolution model ranks first among the evaluated open-source models on PRISM-Bench, Qwen-Image-Bench, and UnicBench. MeanFlow-based few-step distillation yields WeLM-Image-Turbo, which generates a 1024times1024 image in 4.98\\,s on a single NVIDIA H20 GPU using eight guidance-free steps.",
+   "published": "2026-11-04T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 42,
+    "arxiv_id": "2611.07392"
+   },
+   "relevance": 7,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "vision",
+    "produit"
+   ],
+   "tldr": "Décrit WeLM-Image, un modèle unifié pour génération, édition et synthèse d'images, optimisé pour un déploiement sur GPU unique dans des applications consommateurs comme WeChat.",
+   "score": 7.6
+  },
+  {
+   "id": "874635804694b8fb",
+   "title": "From Autonomous Agents to Cognitive Symbionts: Toward AI-Augmented Human Intelligence",
+   "url": "https://huggingface.co/papers/2611.05376",
+   "summary": "For a decade, progress in artificial intelligence has been measured by how much a machine can do on its own. Large foundation models now write code and run multistep tasks, and personal agents act on a person's behalf. Yet people still forget what they once knew, miss what they are not looking at, fail to find the right words, and face hard choices without the benefit of their own history, because the machine that could help stands outside the situation. As AI moves into the physical world, attention has settled on one kind of intelligent individual, the embodied robot; we argue that the era of Physical AI holds a second kind of equal importance, the person augmented by AI. Alongside artificial general intelligence, which asks how intelligent a machine can be, stands AI-augmented human intelligence (AHI), which asks how much intelligence a machine can enable in a particular person. Realizing it calls for a new kind of system, a cognitive symbiont: a lifelong, embedded, real-time, private, low-friction, and proactive companion that senses what the person senses through external devices, keeps their context across years, models their situation and their mind, takes part in their thinking at the right moment, carries out everyday tasks with their context, and keeps learning the person as both change. We give the paradigm a conceptual core, the cognitive gap between what a person could bring to a situation and what they can hold in working memory, and organize its design space as a symbiosis loop of sensing, keeping, understanding, living alongside, acting for and thinking with the person, and growing, enclosed by a personal runtime and by trust. Because a symbiont changes what a person can do in front of others, it also raises risks of a new kind, from covert assistance in examinations to pressure on everyone to adopt it, and we treat their governance as part of the paradigm.",
+   "published": "2026-11-03T13:59:52.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2611.05376"
+   },
+   "relevance": 7,
+   "reliability": 7,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Défend l'idée de systèmes de 'symbiotes cognitifs' pour augmenter l'intelligence humaine via des agents embarqués, privés et proactifs, intégrant contexte et mémoire à long terme pour assister les décisions.",
+   "score": 7.3
+  },
+  {
+   "id": "b7d2996dc9216394",
+   "title": "OpenFrontiers: A Collection of Open Research Problems and a Benchmark for Scientific Rediscovery",
+   "url": "https://huggingface.co/papers/2610.37739",
+   "summary": "Large language models (LLMs) have shown increasing promise in research-level problem solving, yet a comprehensive collection of such problems is still missing, and evaluating them on research-level problems remains challenging. We introduce OpenFrontiers, a cross-disciplinary resource that combines a structured corpus of open research problems with a retrospective benchmark of recently resolved problems in mathematics. The corpus records problem statements, context, progress, and other information for 12,151 problems. The benchmark contains 200 problems, 110 resolved in 2026 and 90 still open, each with a Lean~4 statement checked by automated probes and two independent reviews; a subset HQ-50 further filters based on quality score, etc. Our evaluation protocol grades formal proofs with two independent checkers in an isolated sandbox under closed-book, frozen-retrieval, and live-web conditions. Evaluating seven LLM agents on the HQ-50 subset under a standardized budget, we find that closed-book rediscovery is rare, at most 7 of 40 resolved problems, whereas live-web success mostly reflects retrieval of published solutions. By linking a broad research-problem corpus to a formally graded evaluation subset with documented solutions, OpenFrontiers provides a foundation for measuring research-level rediscovery and studying progress toward solving currently open scientific problems. The dataset and benchmark could be found in https://huggingface.co/collections/FlippyDora/openfrontiers.",
+   "published": "2026-10-26T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2610.37739"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "benchmark",
+    "autre"
+   ],
+   "tldr": "OpenFrontiers propose un corpus de 12 151 problèmes de recherche et un benchmark rétrospectif de 200 problèmes (dont 110 résolus en 2026) pour évaluer les capacités de résolution de problèmes des LLM, avec une évaluation formelle (Lean 4) et des conditions contrôlées (closed-book, live-web).",
+   "score": 7.0
+  },
+  {
+   "id": "c64a01cafc3601fd",
+   "title": "SynthFaces: Balanced Large Scale Human Dataset",
+   "url": "https://huggingface.co/papers/2610.40119",
+   "summary": "The pursuit of fair and equitable AI in human-centric tasks is critically hindered by the inherent biases and privacy risks of real-world datasets, which offer imbalanced representations of identity and often contain sensitive personal information. Consequently, state-of-the-art generative models trained on this skewed data exhibit unfair performance, particularly in identity-preserving generation. In this work we propose a pipeline for controllable generation of dataset with diverse faces for generative models training and finetuning. We achieve this by expanding foundational Arc2Face diffusion model with a flow matching generative model in the manifold of identity embeddings. We demonstrate that such approach achieves both goals of generative fidelity and label diversity not present in real human-centric datasets. As a result we collect and further contextualize a highly balanced identity-centric dataset of humans named SynthFaces. By design, our released images and identities are synthetic, reducing direct reliance on real personal images; we empirically check identity separation with a nearest-neighbor non-leakage metric. We purpose it for training and tuning of fair models for various downstream tasks, and showcase its usability in finetuning an existing adapter-based method for personalized generation.",
+   "published": "2026-10-28T20:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2610.40119"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "interpretabilite"
+   ],
+   "tldr": "Propose une méthode pour générer un jeu de données synthétique équilibré (SynthFaces) afin de réduire les biais dans les modèles génératifs centrés sur l'humain, en combinant un modèle de flow matching avec Arc2Face pour une diversité contrôlée des identités.",
+   "score": 7.0
+  },
+  {
+   "id": "24fa94964eda5559",
+   "title": "EDGAR: Efficient Diffusion-Driven Gaussian Avatar Refinement via Synthetic Failure",
+   "url": "https://huggingface.co/papers/2611.07909",
+   "summary": "Recent advances in Gaussian splatting have enabled efficient and photorealistic head avatar reconstruction, yet monocular video-based or image-based methods still suffer from under-constrained geometry and texture, leading to artifacts such as blurring, stretching, and temporal instability. We present EDGAR (Efficient Diffusion-Driven Gaussian Avatar Refinement), a conditional diffusion framework designed to enhance the quality of Gaussian avatars by correcting artifacts while preserving identity fidelity. To train EDGAR, we construct EDGAR-SET, a hybrid triplet dataset composed of real-captured and synthetic-rendered samples, which simulates realistic Gaussian avatar failure cases by pairing degraded renderings with ground-truth and reference images. EDGAR refines degraded frames through a fusion block that injects identity features extracted by the self-supervised Sapiens model into a one-step diffusion backbone, enabling effective artifact removal without sacrificing efficiency. Our EDGAR model incorporates a Mixture-of-Experts (MoE) architecture to address diverse degradation types and severity levels. The refined multi-view renderings are subsequently used as pseudo-targets to optimize a single underlying Gaussian avatar, so that the final avatar can be rendered without applying EDGAR to every output frame. Experiments on three different Gaussian avatar reconstruction methods, each evaluated under three different settings, show improvements in both perceptual and reconstruction measures over the raw outputs and an SDEdit-style refinement baseline. In addition, cross-view evaluation demonstrates improved calibrated consistency, while tests under large yaw and open-mouth expressions verify robustness under extreme settings. These results collectively indicate a useful operating regime for recoverable appearance artifacts. The code is available at https://kwanyun.github.io/edgar/",
+   "published": "2026-11-04T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2611.07909"
+   },
+   "relevance": 6,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "optimisation"
+   ],
+   "tldr": "Présente EDGAR, un cadre de diffusion conditionnelle pour affiner les avatars 3D basés sur Gaussian splatting, corrigeant les artefacts tout en préservant l'identité via des données hybrides (réelles et synthétiques).",
+   "score": 7.0
+  },
+  {
+   "id": "216eb2614044e297",
+   "title": "Hard Sample-Conditioned Decorrelated Attention for Robust Face Recognition",
+   "url": "https://huggingface.co/papers/2610.41789",
+   "summary": "Multi-head attention in Vision Transformers (ViTs) allows independent attention patterns across heads, but without explicit regularization, heads may learn redundant patterns rather than complementary roles. Correlation-based penalties encourage head disentanglement, yet apply uniform regularization across all training samples. In face recognition (FR), hard samples whose embeddings lie close to competing identities are critical for optimization and generalization. Motivated by this, we propose ViT-HarDis, which conditions attention head disentanglement on sample difficulty: samples with high cosine similarity to negative class centers receive stronger head decorrelation, enforcing specialization where identity ambiguity is highest. Experiments show improvements over both the baseline and uniform disentanglement on most benchmarks. Our analysis shows that ViT-HarDis reduces the similarity of hard samples to competing class centers while decreasing inter-head attention similarity, and that applying disentanglement only to the final transformer layers outperforms regularizing the entire network. Trained on WebFace4M, ViT-HarDis achieves SOTA results among ViT-based methods on IJB-B, IJB-C, and TinyFace Rank-1, while achieving the best IJB-B and TinyFace results when trained on MS1MV3, improving FR without architectural modifications or additional inference cost. Code: https://github.com/TaharChettaoui/Hard-Sample-Conditioned-Attention-for-FR.",
+   "published": "2026-10-30T10:21:43.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2610.41789"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "ViT-HarDis améliore la reconnaissance faciale en conditionnant la dé-corrélation des heads d'attention sur les échantillons difficiles (proches des centres de classes négatives), réduisant les similarités inter-heads et améliorant les performances sur IJB-B (SOTA parmi les ViT).",
+   "score": 6.7
+  },
+  {
+   "id": "a9a6dfe40e4da6be",
+   "title": "NPCBench: A Clinical Apprenticeship Benchmark for Multimodal Care-Pathway Reasoning in Nasopharyngeal Carcinoma",
+   "url": "https://huggingface.co/papers/2611.08369",
+   "summary": "Current medical benchmarks typically break down clinical competence into isolated factual questions, single-image tasks, or static case vignettes. These tests score individual answers, but reveal less about whether a model can integrate subspecialty knowledge with multimodal evidence and track a patient's condition throughout a course of care. To close this gap, we introduce NPCBench, a clinical apprenticeship benchmark for nasopharyngeal carcinoma (NPC). NPCBench mirrors specialist training, from guideline and foundational knowledge to case planning, longitudinal review, CarePath integration, and open-ended consultation. It contains 4,777 component and consultation items and a 100-patient CarePath cohort with 417 scored diagnostic and care tasks. The episode-level evaluation tests whether diagnostic and care answers are jointly correct within a care pathway. By linking stepwise tasks to patient-level care trajectories, NPCBench evaluates whether models ground decisions in visual evidence, interpret changes in patient state, and meet clinical requirements in consultation. Across 30 evaluated models, we observe a composition gap: strong performance on individual tasks does not ensure jointly correct diagnostic and care answers for the same patient. Among 21 multimodal models, strict CarePath success reaches at most 23%. Paired controls and physician calibration further examine evidence grounding, longitudinal revision, and consultation judging. Overall, NPCBench broadens the evaluation of medical artificial intelligence beyond static question-answering paradigms to an apprenticeship-oriented assessment of clinical workflows, thereby offering a testbed for evidence-based and temporally coherent reasoning in oncology care.",
+   "published": "2026-11-04T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2611.08369"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "vision",
+    "benchmark"
+   ],
+   "tldr": "Propose NPCBench, un benchmark clinique pour le cancer du nasopharynx évaluant la capacité des modèles à intégrer des données multimodales et suivre des parcours de soins, révélant un 'gap de composition' entre tâches isolées et parcours complet.",
+   "score": 6.7
+  },
+  {
+   "id": "ab4d5776d4745676",
+   "title": "Halley: A Predictive Control Plane for Optical AI Data Center Networks",
+   "url": "https://huggingface.co/papers/2611.04408",
+   "summary": "A frontier AI model is trained in an AI data center, on tens of thousands of accelerators joined by a dedicated network, and every training step ends with all of them exchanging data at once. Between racks, that network is optical, and each of its four layers, from lasers to switches, runs a fixed or after-the-fact policy. Lasers sharing an enclosure, cooling, and power can fail together. At a fixed spare ratio, correlated failure provably caps a pool's availability however large it grows. In this paper, we present a comprehensive predictive control plane framework, called Halley, that reads each resource's next state and acts before the failure occurs. It has four components, each carrying a formal guarantee: LightReserve that sizes the laser pool to provide a coverage bound, FoldFit that schedules the switch within 11/9 of the optimal, ThermaLead that holds a microring with one-step-ahead control, and TriageGuard that protects the highest-risk modules first. Halley gives each layer a predictive controller that defers to the deployed policy when unsure. Composed from simulations at that point, effective goodput, the share of ideal throughput kept, rises from 65.2\\% to 76.5\\% if a window that exhausts its spares is lost. If only the dark channels' bandwidth is lost, it reaches 67.4\\%. Per megawatt, that is up to 1.03--1.17 times the training; for the same training, up to 3.3--14.7\\% less data center capacity. Halley's fallback circuits are formally verified and are shown to achieve close timing on a commercial FPGA, and pass a 130~nm signoff.",
+   "published": "2026-11-03T01:45:50.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 32,
+    "arxiv_id": "2611.04408"
+   },
+   "relevance": 5,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "produit"
+   ],
+   "tldr": "Décrit Halley, un système de contrôle prédictif pour les réseaux optiques des data centers IA, améliorant le débit effectif de 65,2% à 76,5% via des politiques proactives de gestion des ressources.",
+   "score": 6.7
+  },
+  {
+   "id": "fce606d1c0d84b79",
+   "title": "HERIT: Enabling Global Access to Hanja-to-English Historical Translation by Mitigating Temporal Bias",
+   "url": "https://huggingface.co/papers/2611.04949",
+   "summary": "Historical archives are invaluable for multidisciplinary research but remain inaccessible globally due to severe language barriers. While manual translation is prohibitively expensive and time-consuming, simply applying existing machine translation models is inadequate due to unique linguistic nuances and the temporal bias inherent in scarce human-labeled corpora. To address these challenges, we propose HERIT, a systematic domain-adaptation pipeline that leverages retrieval-augmented generation (RAG) to generate high-quality pseudo-labeled data from abundant Hanja-Korean corpora. This approach substantially expands the training dataset, mitigating both data scarcity and temporal overfitting across different historical periods. Extensive automated and human evaluations demonstrate that HERIT consistently outperforms baselines. Finally, we translate previously untranslated portions of the archives using our model, thereby enabling global access to these resources for researchers.",
+   "published": "2026-11-02T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2611.04949"
+   },
+   "relevance": 6,
+   "reliability": 7,
+   "tags": [
+    "llm",
+    "rag",
+    "autre"
+   ],
+   "tldr": "HERIT utilise une pipeline RAG pour améliorer la traduction historique Hanja-Anglais en atténuant les biais temporels et le manque de données, permettant un accès global à des archives autrement inaccessibles.",
+   "score": 6.7
+  },
+  {
+   "id": "969dd462482a25e8",
+   "title": "KKKKhazix/agent-autoloop",
+   "url": "https://github.com/KKKKhazix/agent-autoloop",
+   "summary": "让你的命令行 Agent 在后台自己接活、自己跟进到底；平时不烦你，遇到拿不准的事才发卡片找你拍板。",
+   "published": "2026-11-03T08:02:11Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 3881,
+    "language": "TypeScript"
+   },
+   "relevance": 8,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Agent en ligne de commande autonome capable de gérer des tâches en arrière-plan et de solliciter l'utilisateur uniquement en cas d'incertitude, illustrant une approche pragmatique des agents autonomes.",
+   "score": 6.5
+  },
+  {
+   "id": "a02a79030c2a0d11",
+   "title": "emanuele-em/kanzo",
+   "url": "https://github.com/emanuele-em/kanzo",
+   "summary": "Self-hosted, sharable kanban for humans and agents. One 4.7 MB binary, 5 MB of RAM, 10 to 60 tokens per agent reply, starts in 3 ms, zero setup.",
+   "published": "2026-10-25T11:14:03Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1082,
+    "language": "Rust"
+   },
+   "relevance": 7,
+   "reliability": 6,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Kanban léger et auto-hébergé conçu pour les humains et les agents, optimisé pour la performance et la simplicité, illustrant une approche minimaliste des outils collaboratifs.",
+   "score": 6.5
+  },
+  {
+   "id": "b6fd0b8828215940",
+   "title": "modelflare-ai/AnyModelBot",
+   "url": "https://github.com/modelflare-ai/AnyModelBot",
+   "summary": "🤖 Open-source, local-first alternative to Grok Bot, OpenAI dots and Claude Duet. Your own AI bots on any model: GPT, Claude, Gemini, Grok, DeepSeek, Kimi, GLM and 70+ more through one Modelflare key. Reach them in the app, WeChat or Feishu; they remember you, work in the background, run commands and use your computer. Pay per use.",
+   "published": "2026-10-27T08:51:18Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 2735,
+    "language": "Python"
+   },
+   "relevance": 7,
+   "reliability": 5,
+   "tags": [
+    "llm",
+    "agents",
+    "outils"
+   ],
+   "tldr": "Outil open-source permettant de créer des agents IA locaux ou distants, compatibles avec 70+ modèles (GPT, Claude, DeepSeek, etc.), avec intégration multiplateforme (WeChat, Feishu) et exécution de commandes locales. Intéressant pour l'écosystème agents et l'optimisation des workflows LLM.",
+   "score": 6.2
+  },
+  {
+   "id": "578b6070f7e1af4a",
+   "title": "miuuyy/Octopus-SI-OS",
+   "url": "https://github.com/miuuyy/Octopus-SI-OS",
+   "summary": "A self-evolving agentic OS. A new architecture for agent execution, built on operating-system principles, with the harness as a path toward superintelligence.",
+   "published": "2026-10-09T08:28:38Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 709,
+    "language": "Rust"
+   },
+   "relevance": 7,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "architecture"
+   ],
+   "tldr": "Système d'exploitation auto-évolutif pour agents IA, inspiré des principes des OS, visant une architecture scalable vers une superintelligence. Concept innovant pour l'architecture des agents, mais manque de validation ou de détails techniques profonds.",
+   "score": 5.9
+  },
+  {
+   "id": "44cb8492ecdbfc5d",
+   "title": "sahenjp/RustXNG",
+   "url": "https://github.com/sahenjp/RustXNG",
+   "summary": "Self-hosted metasearch and grounding engine for AI agents, based on SearXNG. Rust, JSON API, optional page text.",
+   "published": "2026-10-18T03:06:52Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 888,
+    "language": "Rust"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "outils"
+   ],
+   "tldr": "Moteur de recherche auto-hébergé (basé sur SearXNG) pour agents IA, permettant un grounding dynamique et une recherche multi-sources. Pertinent pour les outils d'agents et l'optimisation des workflows, mais dépendant de l'écosystème existant.",
+   "score": 5.6
+  },
+  {
+   "id": "005e2b7890df72e8",
+   "title": "NousResearch/hermes-official-plugins",
+   "url": "https://github.com/NousResearch/hermes-official-plugins",
+   "summary": "☤ The official plugins for Hermes Agent, built and maintained by Nous Research: Home Assistant, Spotify, Claude Subscription DirectSDK and more, one install away from the Hermes plugin catalog.",
+   "published": "2026-10-10T20:51:25Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 619,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Collection de plugins officiels pour l'agent Hermes (Nous Research), incluant des intégrations avec Home Assistant, Spotify et des SDKs. Utile pour l'écosystème agents et les outils pratiques, mais limité à un framework spécifique.",
+   "score": 5.6
+  },
+  {
+   "id": "2519b65e4dae2378",
+   "title": "yjid/kensaku",
+   "url": "https://github.com/yjid/kensaku",
+   "summary": "Search inside documents, code, and even screenshots - instantly and locally. A free, open-source file launcher with OCR, semantic search, and MCP agent access.",
+   "published": "2026-10-24T21:00:26Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1254,
+    "language": "Rust"
+   },
+   "relevance": 6,
+   "reliability": 5,
+   "tags": [
+    "outils",
+    "autre"
+   ],
+   "tldr": "Outil de recherche sémantique locale et instantanée dans documents, code et captures d'écran, intégrant des capacités d'agent via MCP, pertinent pour l'efficacité opérationnelle.",
+   "score": 5.6
+  },
+  {
+   "id": "ef2a83f7f3a44d74",
+   "title": "A Jev that can ask Opus for help gives Opus accuracy at 4x lower cost",
+   "url": "https://hightouch.com/blog/llm-judges-identity-resolution",
+   "summary": "",
+   "published": "2026-11-06T19:48:51Z",
+   "source": "hackernews-ai",
+   "source_label": "Hacker News",
+   "source_weight": 1,
+   "extra": {
+    "points": 513,
+    "comments": 122
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "llm",
+    "optimisation",
+    "outils"
+   ],
+   "tldr": "Méthode 'Jev' permettant d'utiliser un modèle comme Opus avec une précision similaire à 4x moindre coût, via une approche de routage dynamique, mais sans publication formelle ou évaluation exhaustive.",
+   "score": 5.3
+  },
+  {
+   "id": "9de7b9947f262e16",
+   "title": "heqiangdiao-wq/AI-Cross-Border-Ecommerce-Agent-Toolkit",
+   "url": "https://github.com/heqiangdiao-wq/AI-Cross-Border-Ecommerce-Agent-Toolkit",
+   "summary": "AI 跨境电商运营智能体工具箱 · 把运营 SOP 拆成 7 个可复用的 AI Agent 工作流，含 Prompt、模板与真实案例",
+   "published": "2026-10-13T10:13:21Z",
+   "source": "github-trending-ai",
+   "source_label": "GitHub",
+   "source_weight": 1,
+   "extra": {
+    "stars": 1028,
+    "language": "Python"
+   },
+   "relevance": 6,
+   "reliability": 4,
+   "tags": [
+    "agents",
+    "llm"
+   ],
+   "tldr": "Boîte à outils pour agents IA dédiés au e-commerce transfrontalier, structurant des workflows en 7 agents réutilisables avec prompts et templates. Utile pour l'application des agents dans un domaine spécifique, mais manque de profondeur technique ou scientifique.",
+   "score": 5.3
+  }
+ ]
+}
