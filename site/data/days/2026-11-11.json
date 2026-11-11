@@ -1,0 +1,711 @@
+{
+ "date": "2026-11-11",
+ "digest": {
+  "headline": "L'optimisation post-entraînement des LLM par suppression ciblée de poids émerge comme une alternative efficace au fine-tuning traditionnel",
+  "overview": "La veille du 2026-11-11 met en lumière des avancées majeures en optimisation des LLM, avec des méthodes réduisant la dépendance aux gradients ou aux données supplémentaires. Les benchmarks pour agents et les cadres théoriques gagnent en maturité, tandis que l'interprétabilité et la fiabilité des systèmes deviennent des axes centraux.",
+  "highlights": [
+   {
+    "title": "Deletion Tuning : optimisation légère des LLM par masquage de poids",
+    "text": "La méthode 'Deletion Tuning' montre qu'en masquant moins de 0.05% des poids d'un LLM via une couche de gating, on obtient des performances comparables au fine-tuning complet, avec un impact minimal sur les tâches antérieures. Validée sur RL, SFT et distillation en ligne, cette approche offre une alternative économe en calcul pour le post-entraînement, tout en préservant la robustesse du modèle."
+   },
+   {
+    "title": "Tree-Ising et MACaQ : optimisation discrète et quantification accélérée",
+    "text": "Tree-Ising propose une réparation des LLM par optimisation discrète (QUBO/Ising) sur les poids BF16, sans gradients ni données supplémentaires, améliorant les performances de 54.6% vs 51.7% sur Qwen3.5-0.8B. MACaQ, quant à lui, introduit une quantification post-entraînement W4A4 (MXFP4) avec des transforms en ligne et une optimisation Hessienne, réduisant le temps de quantification de 11x tout en améliorant la perplexité par rapport aux méthodes existantes."
+   },
+   {
+    "title": "FINCOSMOS et ARE-bench : évaluation open-world des agents financiers et de recherche",
+    "text": "FINCOSMOS introduit un paradigme d'évaluation open-world pour les agents financiers, mesurant leur capacité à découvrir des stratégies cachées et à éviter les échecs silencieux. ARE-bench, de son côté, évalue les agents de recherche sur des projets réels, en tenant compte du contexte antérieur et de l'état des espaces de travail, révélant les limites des benchmarks actuels centrés sur des tâches isolées."
+   },
+   {
+    "title": "Cadre théorique pour l'interprétabilité et l'optimisation des LLM",
+    "text": "Un article propose un cadre logique pour l'interprétabilité mécaniste, comblant un vide théorique crucial pour transformer les observations en connaissances cumulatives. Parallèlement, une étude théorise les limites de l'optimisation par politique (PPO/GRPO) dans le post-entraînement des LLM, identifiant un 'coverage collapse' et suggérant des solutions comme les 'reference resets' pour améliorer l'efficacité des méthodes RL."
+   },
+   {
+    "title": "Agents scientifiques et auto-évolution : fiabilité et falsification",
+    "text": "Une étude sur les agents biomédicaux révèle que leurs verdicts peuvent varier sans changement de preuves, soulignant la nécessité d'auditer à la fois les preuves et les réponses finales. FGSE (Falsification-Gated Self-Evolution) améliore l'auto-évolution des agents LLM en validant les leçons apprises via des tests de falsification, réduisant les échecs de 39.8% à 5.0% sur WebArena."
+   }
+  ],
+  "trend": "Les méthodes d'optimisation post-entraînement des LLM se diversifient, avec un accent croissant sur des approches discrètes, légères et sans gradients, tandis que les benchmarks pour agents évoluent vers des évaluations open-world et contextuelles. L'interprétabilité et la fiabilité des systèmes deviennent des priorités, soutenues par des cadres théoriques et des mécanismes de validation rigoureux."
+ },
+ "items": [
+  {
+   "id": "1315a76dbbc3ac6f",
+   "title": "The Surprising Effectiveness of Deleting Weights in LLM Post-Training",
+   "url": "https://huggingface.co/papers/2611.10866",
+   "summary": "How little of a pretrained large language model (LLM) has to change for it to acquire new capabilities? We find that zeroing fewer than 0.05% of its weights, with no other modification, matches full fine-tuning (FFT) at scale across three LLM post-training regimes: reinforcement learning with verifiable rewards, supervised fine-tuning, and on-policy distillation. Our method, Deletion Tuning, learns a binary mask over the gate projection of transformer blocks. Two practical advantages follow: the trained mask is hundreds to thousands of times smaller than the corresponding FFT checkpoint, and Deletion Tuning forgets far less, which addresses a central challenge in continual learning. Under reinforcement learning, its prior-task accuracy stays near the base level while FFT, LoRA, and random sparse fine-tuning lose up to 5.4 points. To understand why masking alone suffices, we analyze the geometry of the learned weight changes under reinforcement learning using stable rank, spectrum drift, and principal-weight overlap. Compared with LoRA and random sparse fine-tuning, Deletion Tuning is closest to FFT across the three measures.",
+   "published": "2026-11-06T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 7,
+    "arxiv_id": "2611.10866"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Méthode 'Deletion Tuning' : masquer <0.05% des poids d'un LLM (via une couche de gating) permet d'atteindre des performances comparables au fine-tuning complet, avec un impact réduit sur les tâches antérieures, démontré sur RL, SFT et distillation en ligne.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde un défi central dans l'apprentissage continu des grands modèles de langage (LLM) : comment adapter un modèle pré-entraîné à de nouvelles capacités sans altérer significativement ses performances initiales ni nécessiter des modifications coûteuses en termes de calcul ou de mémoire. Le problème spécifique est la perte de connaissances antérieures (ou *catastrophic forgetting*) lors du fine-tuning traditionnel, ainsi que l'inefficacité des méthodes actuelles comme LoRA ou le fine-tuning complet (FFT) en termes de taille des checkpoints et de stabilité des performances.",
+    "methode": "Les auteurs proposent *Deletion Tuning*, une méthode qui consiste à apprendre un masque binaire sur les poids des projections de *gate* (dans les blocs transformers) plutôt que de modifier directement les poids. Concrètement, moins de 0,05 % des poids sont mis à zéro (sans autre ajustement), ce qui équivaut à une suppression ciblée. Ce masque est entraîné via trois régimes de post-entraînement : l'apprentissage par renforcement avec récompenses vérifiables, le fine-tuning supervisé, et la distillation *on-policy*. Techniquement, l'analyse géométrique des changements de poids (via le *stable rank*, la dérive spectrale, et le chevauchement des poids principaux) montre que cette approche reproduit mieux les modifications induites par le fine-tuning complet que des méthodes comme LoRA ou le fine-tuning sparse aléatoire.",
+    "resultats": "Les résultats montrent que *Deletion Tuning* atteint des performances comparables au fine-tuning complet (FFT) à grande échelle, tout en réduisant la taille des checkpoints d'un facteur 100 à 1000. En apprentissage par renforcement, la précision sur les tâches antérieures reste proche du niveau de base (perte quasi nulle), tandis que FFT, LoRA et le fine-tuning sparse aléatoire perdent jusqu'à 5,4 points. La méthode limite aussi significativement le *catastrophic forgetting*, un avantage clé pour l'apprentissage continu.",
+    "limites": "Le contenu disponible ne précise pas les architectures de LLM testées ni les jeux de données utilisés, ce qui limite l'évaluation de la généralisabilité des résultats. De plus, l'analyse se concentre sur les projections de *gate* sans justifier pleinement pourquoi cette couche est optimale pour la suppression de poids. Enfin, l'absence de comparaison avec d'autres méthodes de masquage ou d'élagage (comme *magnitude pruning*) laisse ouverte la question de l'originalité ou de la supériorité absolue de l'approche.",
+    "verdict": "Cette méthode mérite une attention particulière pour son efficacité surprenante et son potentiel à résoudre des problèmes critiques en apprentissage continu, mais des validations supplémentaires sur des benchmarks variés et des architectures différentes sont nécessaires pour en confirmer la robustesse."
+   }
+  },
+  {
+   "id": "d4ac2aaa0e49f221",
+   "title": "FINCOSMOS: An Open-World Evaluation Paradigm for Agents in Finance",
+   "url": "https://huggingface.co/papers/2611.07464",
+   "summary": "Language agents increasingly work for users on the open Web, and finance is where trusting them is hardest. The data must come from the Web, the strategy lives in the user's head, and correctness depends on time, so an agent can fail silently: a strategy the user never asked for, unverified data, or a backtest that uses the future yields a report as convincing as a correct one. Existing benchmarks close the world somewhere, fixing the task, the data, or the timeline, and thereby remove these failures instead of measuring them. We introduce FINCOSMOS, an open-world evaluation paradigm for agents doing financial work. A simulated user holds a hidden strategy sampled from a compositional grammar and reveals it only when asked. The agent receives no data, so it must acquire data from the Web, build its own backtest under a data cutoff, and deliver verifiable results. Grading needs no reference answer. Programs verify point-in-time correctness and recompute every reported metric, the delivered strategy is checked against the hidden specification, and a run is accepted only when the user is satisfied and none of 15 veto checks fails. Across four coding agents and a model without tools in 150 sessions, no session is accepted: every session that the simulated user signed off fails a program check, and agents raise only 54--64\\% of the details they were not told. Human experts attribute 88.33\\% of failures to the agents. With FINCOSMOS feedback, an agent with persistent memory learned all ten tasks.",
+   "published": "2026-11-04T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 15,
+    "arxiv_id": "2611.07464"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "FINCOSMOS propose un paradigme d'évaluation open-world pour les agents financiers, où l'agent doit découvrir une stratégie cachée, collecter des données en temps réel sur le Web, et produire des résultats vérifiables sans référence externe. Ce cadre mesure la capacité des agents à éviter les échecs silencieux (stratégies non demandées, données non vérifiées) et à respecter des contraintes temporelles strictes.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Le document aborde le défi de l'évaluation fiable des agents IA dans le domaine financier, où les erreurs peuvent passer inaperçues en raison de la nature ouverte et dynamique des données et des stratégies. Les benchmarks existants simplifient le problème en imposant des contraintes artificielles (tâches fixes, données pré-définies, timeline figée), ce qui masque les risques réels comme l'utilisation de données non vérifiées ou des backtests incorrects.",
+    "methode": "FINCOSMOS propose un paradigme d'évaluation en *open-world* pour les agents financiers. Un utilisateur simulé possède une stratégie cachée, générée via une grammaire compositionnelle, et ne la révèle que si l'agent pose les bonnes questions. L'agent doit : (1) récupérer lui-même les données depuis le web, (2) construire un backtest respectant une *data cutoff* (éviter le *look-ahead bias*), (3) produire des résultats vérifiables. La validation est automatisée : des programmes vérifient la cohérence temporelle des données, recalculent chaque métrique, et comparent la stratégie livrée à la spécification cachée. Un run n'est validé que si l'utilisateur simulé est satisfait *et* qu'aucun des 15 contrôles automatiques ne déclenche un veto.",
+    "resultats": "Sur 150 sessions impliquant quatre agents codants et un modèle sans outils, *aucune session n'a été validée* : même lorsque l'utilisateur simulé donnait son accord, un contrôle automatique échouait systématiquement. Les agents n'ont identifié que 54 à 64 % des détails critiques non explicitement communiqués. Des experts humains ont attribué 88,33 % des échecs aux agents. En revanche, un agent doté de mémoire persistante a appris à maîtriser les 10 tâches après rétroaction via FINCOSMOS.",
+    "limites": "Le document ne détaille pas la grammaire compositionnelle utilisée pour générer les stratégies cachées, ni la représentativité des tâches par rapport à des cas réels complexes. L'évaluation repose sur un utilisateur simulé, dont le comportement peut différer d'un utilisateur humain (biais de simulation). Enfin, la généralisation à d'autres domaines que la finance n'est pas abordée.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche rigoureuse et réaliste de l'évaluation des agents IA en finance, mais son applicabilité pratique reste à démontrer au-delà du cadre contrôlé proposé."
+   }
+  },
+  {
+   "id": "b32f33401f9221f2",
+   "title": "Tree-Ising: Repairing Language Models with Bit-Level Ising Edits",
+   "url": "https://huggingface.co/papers/2611.14210",
+   "summary": "Weight-space programming, introduced in recent MIT work by Takehi et al., enables a frontier LLM agent to read a network's weights and write a repair. Their GPT-6 Astra agent corrected the reasoning loops of Qwen3.5-0.8B without gradients, using 158 agent turns, 89.7 million tokens, and 50 forward-pass requests. Our method, Tree-Ising, casts this repair as a sparse discrete optimization problem over the model's own BF16 weights. Forward statistics define an objective that weakens a loop direction, strengthens a concluding direction, and preserves the layer's output on productive tokens. Within a state-tree representation, where lossless BF16 storage acts as a special case, the admissible edits are sign flips and exponent shifts that preserve all shared group exponents and mantissas. We decompose this objective exactly into independent QUBO (Ising) problems, one per output row, which we solve on a GPU using simulated annealing or quantum-inspired simulated bifurcation. On the agent's two layers, Tree-Ising achieves 54.6% on MATH-500, outperforming the agent's edit (51.7%) under the same evaluation protocol, while the base model scores 7.9% as reported. The simulated bifurcation solver yields a statistically indistinguishable repair at 55.1%. Both solvers outperform the agent edit across all five math benchmarks, with statistically significant improvements on MATH-500 and GSM8K after correcting for multiple comparisons. Our approach modifies 13% to 17% fewer weights and reduces BF16 bit flips by a factor of 2.2 to 2.3. It requires only four forward-pass requests and zero LLM tokens, with the annealing recipe costing about $0.90 in GPU time. On Qwen3.5-2B, with layers and dose selected using only the base model, the same recipe increases greedy GSM8K accuracy from 21.6% to 69.4%. As a proof of concept, we execute an eight-variable repair subproblem using QAOA on an IBM Heron processor.",
+   "published": "2026-11-09T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 58,
+    "arxiv_id": "2611.14210"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Tree-Ising propose une méthode de réparation de modèles par optimisation discrète (QUBO/Ising) sur les poids BF16, sans gradients ni données supplémentaires. Sur Qwen3.5-0.8B, elle améliore les performances (54.6% vs 51.7% pour l'agent de référence) et réduit les boucles de raisonnement, avec une implémentation GPU ou quantique.",
+   "score": 9.1,
+   "deep_analysis": {
+    "probleme": "Cette publication aborde le problème de la correction des boucles de raisonnement défectueuses dans les modèles de langage (LLM), sans recourir à des gradients ou à un réentraînement coûteux. L'objectif est d'améliorer la précision des modèles sur des tâches complexes comme les benchmarks mathématiques, en intervenant directement sur les poids du réseau de neurones.",
+    "methode": "Tree-Ising reformule la réparation des poids comme un problème d'optimisation discrète et sparse sur les poids BF16 du modèle. L'approche utilise une représentation en arbre d'états où les modifications admissibles se limitent à des inversions de signe et des décalages d'exposants, préservant les mantisses et les exposants partagés. L'objectif est décomposé en sous-problèmes QUBO (Ising) indépendants, résolus via des méthodes comme le *simulated annealing* ou la *simulated bifurcation* sur GPU. Contrairement à l'agent GPT-6 Astra, qui nécessite des millions de tokens et des centaines de requêtes forward, Tree-Ising n'utilise que quatre requêtes forward et aucun token LLM, réduisant ainsi les coûts computationnels.",
+    "resultats": "Sur le modèle Qwen3.5-0.8B, Tree-Ising atteint 54,6 % sur MATH-500, surpassant l'agent Astra (51,7 %) et le modèle de base (7,9 %). Les améliorations sont statistiquement significatives sur MATH-500 et GSM8K après correction des comparaisons multiples. Pour Qwen3.5-2B, la méthode fait passer la précision sur GSM8K de 21,6 % à 69,4 %. Elle réduit également le nombre de poids modifiés (13 % à 17 % de moins) et divise par 2,2 à 2,3 le nombre de bits BF16 inversés. Le coût en GPU est estimé à environ 0,90 $ pour l'*annealing*. Une preuve de concept a été réalisée avec QAOA sur un processeur quantique IBM Heron pour un sous-problème à huit variables.",
+    "limites": "Les détails sur la généralisation de la méthode à d'autres architectures ou tâches restent flous. La dépendance à des solveurs comme le *simulated annealing* ou la *simulated bifurcation* peut introduire des biais ou des limitations en termes de scalabilité pour des modèles plus grands. Enfin, l'absence de comparaison avec des méthodes de fine-tuning classiques (comme LoRA) laisse ouverte la question de l'efficacité relative en termes de coût/bénéfice.",
+    "verdict": "Cette approche mérite une attention particulière pour son innovation dans la réparation ciblée des LLM sans gradients, mais son applicabilité à grande échelle et sa robustesse restent à valider sur des cas d'usage plus variés."
+   }
+  },
+  {
+   "id": "1d6fa56e5d5946d3",
+   "title": "From Tool State to Scientific Action: Auditing Decision Provenance in Biomedical Research Agents",
+   "url": "https://huggingface.co/papers/2611.01527",
+   "summary": "A scientific agent can give the same verdict while reading and citing different evidence. BioAgent-DF tests this separation using paired reference and candidate values saved at the same scientific computation site. It restores or transplants those values at their original coordinates, then runs the agent on healthy hardware. Across eight SciFact batches, Qwen3.5-4B shows repeatable citation changes in three capture-claim combinations, and Gemma 3 4B IT shows repeatable read and citation changes in four. These seven combinations cover two claims. Full restoration recovers the reference evidence sets while verdicts remain unchanged. Verdict changes observed under the baseline prompt did not recur under the explicit-example prompt. Complementary tool and optimizer experiments distinguish recovery of numerical state, recovery of ranked lists, and restoration of an agent's visible history. These results show that an audit should track both the evidence an agent uses and its final answer. In hERG cardiac-safety assay allocation, silent numerical faults changed testing decisions while the fixed-budget shortlist kept the same number of compounds labeled as blockers. After the agent had used faulty values, restoring its earlier execution state and supplying certified scores recovered all 39 changed decisions, whereas replacing the prediction file recovered none; no incorrect action was committed. A streaming implementation of the arithmetic checks reduced the total time for forward execution and verification by 42.4% relative to the original FP64 implementation, with identical flags and recovery outputs.",
+   "published": "2026-10-31T23:58:26.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2611.01527"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "Étude sur la fiabilité des agents scientifiques biomédicaux (ex: Qwen3.5-4B, Gemma 3 4B IT) : leurs verdicts peuvent varier sans changement de preuves, soulignant l'importance d'auditer à la fois les preuves utilisées et les réponses finales, même en cas de restauration partielle des états numériques.",
+   "score": 8.8,
+   "deep_analysis": {
+    "probleme": "Ce travail aborde le problème de la traçabilité et de la reproductibilité des décisions prises par des agents d'IA dans la recherche biomédicale. Il cherche à déterminer si un agent peut produire le même verdict tout en s'appuyant sur des preuves différentes, ce qui pose des questions sur la fiabilité et l'auditabilité des processus décisionnels automatisés.",
+    "methode": "Les auteurs introduisent BioAgent-DF, un cadre d'audit qui teste la séparation entre l'état des outils (tool state) et l'action scientifique en utilisant des paires de valeurs de référence et candidates sauvegardées lors d'un calcul scientifique. Ces valeurs sont restaurées ou transplantées à leurs coordonnées d'origine, puis l'agent est exécuté sur du matériel sain. L'étude évalue deux modèles (Qwen3.5-4B et Gemma 3 4B IT) sur huit lots de données SciFact, en analysant les changements dans les citations et les lectures. Des expériences complémentaires distinguent la récupération de l'état numérique, des listes classées et de l'historique visible de l'agent. Une implémentation en streaming de vérifications arithmétiques est également proposée pour optimiser les performances.",
+    "resultats": "Les résultats montrent que Qwen3.5-4B présente des changements reproductibles dans les citations pour trois combinaisons capture-claim, tandis que Gemma 3 4B IT montre des changements reproductibles dans les lectures et citations pour quatre combinaisons, couvrant deux claims. Une restauration complète permet de retrouver les ensembles de preuves de référence sans modifier les verdicts. Les changements de verdict observés avec un prompt de base ne se reproduisent pas avec un prompt explicite. Dans le contexte du test hERG pour la sécurité cardiaque, des erreurs numériques silencieuses ont modifié les décisions de test, mais la restauration de l'état d'exécution antérieur a permis de récupérer toutes les 39 décisions modifiées. L'implémentation en streaming a réduit le temps total d'exécution et de vérification de 42,4 % par rapport à une implémentation FP64.",
+    "limites": "Les données disponibles ne permettent pas d'évaluer la généralisabilité des résultats à d'autres modèles ou domaines scientifiques. Les expériences se limitent à un petit nombre de combinaisons capture-claim et de lots de données, ce qui peut masquer des comportements plus complexes. De plus, l'impact des prompts sur la stabilité des verdicts suggère une sensibilité aux détails de l'implémentation, ce qui mérite un examen plus approfondi.",
+    "verdict": "Ce travail mérite une attention particulière pour son approche systématique de l'audit des agents d'IA en recherche biomédicale, bien que ses conclusions nécessitent des validations supplémentaires sur des cas d'usage plus larges."
+   }
+  },
+  {
+   "id": "fd33d39819aea138",
+   "title": "MACaQ: Fast, Model Agnostic Calibrated Quantization for Low-Precision Weights and Activations",
+   "url": "https://huggingface.co/papers/2611.10649",
+   "summary": "Weight-activation quantization can reduce the memory and compute cost of neural-network inference, but recent methods often require expensive optimization and architecture-specific propagation of basis transforms across layers. We introduce MACaQ, an MXFP4 W4A4 post-training quantization method that treats every linear layer independently. MACaQ applies a per-channel scale and a block-Hadamard transform online to each layer's activations, while absorbing the corresponding inverse transforms into its weights. Retaining these transforms online avoids cross-layer dependencies and enables a simple streaming implementation of the quantization process, in which only one layer must reside in memory at a time. To improve over round-to-nearest quantization, we introduce Flip-Refinement, a Hessian-aware coordinate-descent procedure that greedily moves individual FP4 codes to adjacent representable values. Despite executing the activation transforms at inference time, MACaQ adds only 2.3% end-to-end overhead over pure MXFP4 on Qwen3-32B in vLLM. MACaQ reaches lower perplexity than DuQuant++ and MR-GPTQ, and already matches their best perplexity on Llama-3-8B in 11 times less quantization time. We further apply MACaQ without architecture-specific modifications to an image diffusion model, illustrating the generality of its layer-local design and show quantization of a 122B parameter model in 64 minutes, using only 32.5GB GPU RAM.",
+   "published": "2026-11-06T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2611.10649"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "MACaQ introduit une quantification post-entraînement W4A4 (MXFP4) avec des transforms en ligne (Hadamard par bloc) et une optimisation Hessienne (Flip-Refinement), réduisant le temps de quantification de 11x tout en améliorant la perplexité vs. méthodes existantes (DuQuant++, MR-GPTQ).",
+   "score": 8.8
+  },
+  {
+   "id": "4bfdb0d4c76fcdc2",
+   "title": "DepthGraft: Structural Regularization through Hierarchical Cross-Layer KV Reconstruction",
+   "url": "https://huggingface.co/papers/2611.03142",
+   "summary": "Scaling depth is a key route to stronger large language models, but Pre-LN architectures often suffer from depth-wise information dilution, limiting the effective use of deep layers. While cross-layer connectivity has proven effective at mitigating this problem, existing designs usually introduce additional computation or memory access. We revisit cross-layer KV sharing as an efficient form of such connectivity. Beyond cache compression, each KV reuse edge creates a direct gradient path from deep layers to source KV projections, turning KV sharing into an implicit structural regularizer for KV representation geometry. We provide a systematic analysis of this mechanism, showing that proper sharing topologies sharpen key retrieval directions while enriching the value content subspace, whereas existing adjacent or global-anchor designs do not fully exploit this effect. Motivated by this, we propose DepthGraft, a hierarchical KV-sharing architecture that reconstructs deep-layer KV from stride-aligned shallow-middle source pairs. DepthGraft distributes non-local gradient flow across source layers, while preserving prefill early completion and reducing KV cache by roughly one third. Experiments on dense and MoE models from 0.5B to 16B parameters show consistent downstream improvements under both GQA and MLA. Notably, on the 16B MoE model, DepthGraft achieves a 7.0% absolute improvement on MMLU-Pro, along with gains of 6.6% on CMMLU and 6.4% on C3. These results validate the potential of DepthGraft as a scalable design for large-scale pretraining. The project page is available at https://github.com/jianke0604/DepthGraft.",
+   "published": "2026-11-01T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 12,
+    "arxiv_id": "2611.03142"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "optimisation"
+   ],
+   "tldr": "DepthGraft améliore les architectures Pre-LN en LLM via un partage hiérarchique des clés-valeurs (KV), réduisant la dilution de l'information en profondeur et optimisant le cache KV. Pertinent pour l'optimisation des grands modèles de langage et leur efficacité.",
+   "score": 8.8
+  },
+  {
+   "id": "1cc6ebcad4e28cdb",
+   "title": "Modality-Aware Expert Pruning for MoE-Based Multimodal Large Language Models",
+   "url": "https://huggingface.co/papers/2611.05927",
+   "summary": "Mixture-of-Experts (MoE) enables multimodal large language models (MLLMs) to scale capacity efficiently, but expert parameters dominate memory even though only a few experts are activated per token: they account for over 90% of model size in modern MoE-MLLMs (e.g., 54 GB out of about 58 GB in BF16 for InternVL3.5-30B-A3B and Qwen3-VL-30B-A3B). Expert pruning has emerged as an effective compression strategy, but existing methods aggregate importance uniformly across tokens, ignoring that the same expert may serve different roles for vision versus language processing. To address this, we propose MAEP (Modality-Aware Expert Pruning), a training-free framework that decomposes expert importance by modality in a single forward pass. MAEP introduces (1) Delta-H Output (ΔH), a redistribution-aware metric measuring the MoE output change when an expert is removed, and (2) low-attention vision tokens as a vision-side pruning signal that is dataset-stable: its expert-importance ranking remains stable across different datasets. Text-side importance serves as a preservation signal while vision-side importance serves as a pruning signal, and experts are ranked globally across layers. Experiments on three MoE-based MLLMs across multimodal and text benchmarks show that MAEP outperforms modality-agnostic baselines on the majority of multimodal benchmarks while remaining competitive on text-only tasks, reducing the BF16 expert weight footprint by about 27 GB (about 47% of total memory) so that the full weight footprint of an approximately 58 GB model fits within a single 40 GB GPU. Code is available at https://github.com/nota-github/MAEP.",
+   "published": "2026-11-03T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2611.05927"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Propose MAEP, une méthode de pruning sans entraînement pour les MoE multimodaux qui évalue l'importance des experts par modalité (texte vs vision) via ΔH et des tokens visuels à faible attention, réduisant la taille des modèles (ex: 54 GB → 4 GB) sans perte majeure de performance.",
+   "score": 8.8
+  },
+  {
+   "id": "04b0965ae7bd1a7b",
+   "title": "RidgeFill: Training-Free Late-Layer Cache Fill for Faster Prefill",
+   "url": "https://huggingface.co/papers/2611.09709",
+   "summary": "RidgeFill shortens prefill by not computing most of a model's upper layers for the prompt. The lower layers run exactly up to a split; from the split layer's state a per-layer map predicts every later layer's input, and each late layer writes its cache from that prediction. The design follows YOCO and DeepSeek-V4.1-Flash, where the projection is trained into the model. RidgeFill retrofits it onto models that were never trained for it: the map is a ridge regression fitted once in closed form from one pass over calibration text, the layer's own projections run unchanged, and a chosen set of rows, the last few thousand tokens, and every decoding step run the full model. Nothing is trained and no token is dropped. Most of the work was in measurement, finding a repeatable methodology. Loss averaged over all tokens hides RidgeFill's error. Needle retrieval in the filled region, loss on tokens that depend on distant context, and splice tests that swap filled keys or values for exact ones show which component carries it: the keys on Llama-3.1-8B, half of it in their scale, and the values and the recurrent state on Qwen3.5-9B. On Qwen3.8-27B in a llama.cpp fork on an A100, time to first token is 1.25 to 1.31x faster at 16K to 120K tokens with the maps in VRAM; RULER changes by -1.2 and -1.4 points and LongBench v2 by -1.4; the 95 % intervals include zero but do not rule out losses of a few points. On Qwen3.8-Flash-Next in vLLM it is 1.50 to 1.60x faster than exact at 9K to 32K tokens, with RULER's needle tasks at 99.8 against 100.0 and perplexity on novel tokens 2.65 % higher [-0.02 %, +4.93 %]. On three 8 to 9B reference models, at the same split and tail as the identity fill, the fitted map retrieves 49.1 and 49.6 more filled-region RULER points on the two dense models (at that split Llama's loss is worse), and its long-document loss is +/-0.03 nats of the released SwiftKV checkpoint's.",
+   "published": "2026-11-05T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 2,
+    "arxiv_id": "2611.09709"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "RidgeFill accélère le *prefill* des LLM en prédisant les entrées des couches supérieures via régression ridge (sans entraînement), réduisant le temps jusqu'au premier token de 20% sur Qwen3.8-27B tout en maintenant la précision.",
+   "score": 8.8
+  },
+  {
+   "id": "d31a92aff370a5a0",
+   "title": "Mechanistic Interpretability Needs a Logic of Inference",
+   "url": "https://arxiv.org/abs/2611.14483v1",
+   "summary": "Neural networks are increasingly studied not merely as predictive systems, but as complex systems whose internal computations are themselves objects of scientific inquiry. Recent progress in mechanistic interpretability (MI) has made it possible to identify neurons, features, circuits, population structures, and dynamical patterns associated with model behavior. As these tools improve, attention is shifting from what can be observed inside a model to how those observations support mechanistic explanations. We examine the parallel efforts of neuroscience and MI to address this question and identify recurring inferential bottlenecks when inferring mechanisms from complex neural systems. We propose five principles and organize them into a recursive logic for a more rigorous procedure of mechanistic inference. These principles provide a framework that supports scientific discovery in two senses: it helps turn local interpretability findings into cumulative knowledge of mechanisms within models, and it makes those mechanisms sufficiently precise to generate testable hypotheses about domains beyond the models. Evidence beyond MI is ultimately required to establish what model mechanisms reveal about the world.",
+   "published": "2026-11-10T18:45:07+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zhimin Hu, Chen Jiang, Hanbo Xie, N. Apurva Ratan Murty, Sashank Varma"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "interpretabilite",
+    "architecture",
+    "autre"
+   ],
+   "tldr": "Cet article propose un cadre logique pour l'interprétabilité mécaniste, identifiant des principes pour inférer des mécanismes à partir de modèles complexes et les transformer en connaissances cumulatives. Il comble un vide théorique crucial pour l'interprétabilité des LLM et réseaux de neurones.",
+   "score": 8.6
+  },
+  {
+   "id": "f1611729cf426c5c",
+   "title": "A Theory of Policy Optimization in Post-Training: Coverage Collapse and Reference Resets",
+   "url": "https://arxiv.org/abs/2611.14467v1",
+   "summary": "Policy optimization is central to language model post-training, yet principled guidance remains limited. We revisit its theoretical foundations to identify algorithms that learn near-optimal policies using total samples and gradient steps governed by the base model's response coverage, a measure of how readily it generates optimal responses. We call such algorithms coverage-preserving. This guarantee captures the goal of amplifying capabilities accessible through sampling from the base model. (1) Coverage collapse. REINFORCE, the basis for PPO and GRPO, can drive the probability of optimal responses to near zero, even as reward improves. This coverage collapse stalls optimization, and convergence can require exponentially many steps despite good initial coverage. The failure arises even with exact gradients and persists under KL regularization to the base model. (2) Reference resets. We show that repeatedly resetting the KL reference to the most recent policy mitigates coverage collapse. We formalize this intervention in Approximate Policy Mirror Descent (APMD), a meta-algorithm that approximately solves a sequence of KL-regularized RL subproblems. APMD enables stronger regularization, making each subproblem easier to solve, while reference resets allow convergence to global optimality. (3) Coverage-preserving algorithms. For softmax linear policies over pretrained features, we use APMD to establish the first global convergence guarantees showing that widely used families of post-training algorithms are coverage-preserving. These include stylized PPO and GRPO variants with explicit KL regularization and reference resets, and squared-loss algorithms that implement them implicitly, including those used to train the Kimi models. These results clarify how regularization, clipping, and objective choice affect the sampling and optimization costs of post-training.",
+   "published": "2026-11-10T18:31:36+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Audrey Huang, Nan Jiang, Sham M. Kakade, Sadhika Malladi, Akshay Krishnamurthy, Dylan J. Foster"
+   },
+   "relevance": 9,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "optimisation",
+    "architecture"
+   ],
+   "tldr": "L'article théorise les limites de l'optimisation par politique (PPO/GRPO) dans le post-entraînement des LLM, identifiant un 'coverage collapse' et proposant des solutions comme les 'reference resets'. Il fournit des fondations pour améliorer l'efficacité des méthodes RL appliquées aux LLM.",
+   "score": 8.6
+  },
+  {
+   "id": "76d4d8a2b161bae1",
+   "title": "Are Dense Rewards Worth Their Tokens in GRPO?",
+   "url": "https://huggingface.co/papers/2611.13560",
+   "summary": "RLVR trains language models to reason by rewarding correct final answers. A widely used algorithm, group-relative policy optimization (GRPO), gives every token of a solution the same credit, so dense process rewards have been proposed to credit intermediate steps, for example with a Monte-Carlo reward that scores each step by sampling continuations from it. Comparing such a reward with GRPO per training update, or vetting it with a gradient test on a single batch, leaves out what it costs: in our setting, the continuations alone take 91% of all generated tokens. We introduce a matched-compute protocol that gives every training intervention the same budget, measured in generated tokens and training GPU-hours, and tests it in preregistered studies with controls for side effects. Across 1,668 runs on six models, matching compute reverses the ranking. On Qwen2.5-1.5B, the Monte-Carlo reward leads standard GRPO per update, yet ends 14.3 percentage points lower at equal tokens and 7.8 points lower at equal training time, and none of four dense-reward variants outperforms GRPO even with as much training time. A per-token gradient test orders these rewards as training does but overestimates each by one to two points, as much as the gains it is meant to detect. In contrast, training on the prompts whose predicted success is nearest 1/2 improves accuracy at matched compute, by 1.7 points on Qwen3-0.6B and 0.8 on Qwen2.5-1.5B. These gains replicate on fresh seeds and unseen problems, and a simple rule, that the candidate prompts are predicted to fail more often than not, predicted where they appear in five of six preregistered tests. Both gains come early in training, and standard GRPO with twice the initial learning rate comes within half a point of them. We argue that training interventions should be validated at matched compute, which overturns some apparent gains and confirms others.",
+   "published": "2026-11-09T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 3,
+    "arxiv_id": "2611.13560"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "Cette analyse démontre que les récompenses denses (Monte-Carlo) pour GRPO, bien que prometteuses en théorie, échouent à surpasser GRPO standard lorsque le budget de calcul est équilibré (tokens générés et temps GPU). Les résultats, basés sur 1 668 runs, révèlent une inversion des performances et soulignent l'importance des protocoles de comparaison équitables.",
+   "score": 8.5
+  },
+  {
+   "id": "6441feaeee62cad6",
+   "title": "Infrathon: Benchmarking Language Agents for Real-World, Long-Horizon AI Infra Optimization",
+   "url": "https://huggingface.co/papers/2611.11995",
+   "summary": "In this work, we study whether frontier agent can continually improve real-world AI infrastructure over long horizons. We introduce Infrathon, a benchmark of diverse, long-horizon AI infrastructure optimization tasks across different levels. We evaluate six models across 150 runs with 24-hour budgets, totaling over 10,000 GPU-hours. Our results show that model rankings vary with the evaluation horizon, while 135 of the 150 runs achieve further improvements during the second half of their budgets. These findings indicate that shorter evaluations can overlook both optimization gains and changes in relative model performance. We also find agents can discover solutions that outperform human-designed baselines: Claude Opus 5.5 increases the mean KV-cache compression ratio from 6.82% with the human-designed Quant-VideoGen codec to 19.86%. Analysis of agent trajectories identifies task violations, unreliable testing, and premature completion as barriers to sustained improvement. Together, Our Infrathon framework provide resources for constructing long-horizon tasks, evaluating frontier agents, and discovering good infrastructure solutions.",
+   "published": "2026-11-08T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2611.11995"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "Infrathon évalue les agents IA sur des tâches réelles d'optimisation d'infrastructure (150 runs, 10k GPU-h) : les classements varient avec l'horizon temporel, et des solutions surpassent les baselines humaines (ex: compression KV-cache à 19.86% vs 6.82%).",
+   "score": 8.5
+  },
+  {
+   "id": "0b2e1c02de474f20",
+   "title": "Gemini 4 Carbon is now available",
+   "url": "https://deepmind.google/blog/gemini-4-carbon-is-now-available/",
+   "summary": "",
+   "published": "2026-11-10T16:03:47+00:00",
+   "source": "deepmind-blog",
+   "source_label": "DeepMind",
+   "source_weight": 2,
+   "extra": {},
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "llm",
+    "architecture"
+   ],
+   "tldr": "Nouvelle version du modèle Gemini 4 Carbon de DeepMind, probablement axée sur l'efficacité énergétique ou l'optimisation, mais sans détails dans le contenu fourni.",
+   "score": 8.5
+  },
+  {
+   "id": "44f12482a15a6cc6",
+   "title": "AutoScaffold: AI-Guided Scaffolding for Reinforcement Learning of Language Models",
+   "url": "https://arxiv.org/abs/2611.14515v1",
+   "summary": "Reinforcement learning with verifiable rewards (RLVR) produces rich training experience, yet outcome rewards reduce each attempt to a single number and leave most of this information unused. Training-time scaffolds, such as strategies or hints added to the prompt during training, offer a natural way to turn this information into guidance, but their design and adaptation are largely left to humans and tailored to specific domains. We introduce AutoScaffold, a unified AI-for-AI framework that turns a student's training experience into adaptive scaffolds, with minimal domain-specific information and no human intervention during training. A frozen teacher periodically examines this experience, diagnoses bottlenecks, and designs scaffolds in two forms: (i) strategies shared across a class of tasks and (ii) hints for individual hard tasks, adjusting the content and amount of support as the student learns. The scaffolds are removed at evaluation. We apply the same framework to ALFWorld, search-based QA, mathematical reasoning, and GPU kernel generation. When evaluated without scaffolds, students trained with AutoScaffold outperform those trained with the corresponding RL baselines in all four domains, with gains of 7.2 points in ALFWorld success and 4.0 points in average QA exact match. On GPU kernel generation, AutoScaffold increases the fraction of tasks with a correct kernel that runs faster than the PyTorch reference by up to 5.0 points. On math, our student surpasses QuestA's reported accuracy using approximately one-third as many student training steps. Analyses show that the teacher identifies a different failure in each task class and shifts its scaffolds from step-by-step workflows to targeted fixes as the student improves, and that its revised scaffolds help the student learn more than keeping the previous scaffold or using no scaffold.",
+   "published": "2026-11-10T18:58:46+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Zijian Zhang, Rizhen Hu, Jiangweizhi Peng, Shiyang Li, Sujay Bhatt, Sihan Zeng"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "AutoScaffold est un cadre d'IA pour guider l'apprentissage par renforcement des LLM via des scaffolds adaptatifs générés par un enseignant gelé, améliorant les performances sur des tâches variées (raisonnement mathématique, génération de kernels GPU) sans intervention humaine pendant l'entraînement.",
+   "score": 8.3
+  },
+  {
+   "id": "02adbd087e823a01",
+   "title": "Contrastive Discovery: Open-Ended Scientific Discovery over Competing Explanations",
+   "url": "https://arxiv.org/abs/2611.14514v1",
+   "summary": "LLM agents are increasingly used for open-ended, data-driven scientific discovery, yet most of them evaluate hypotheses pointwise, testing an empirical claim $h$ only against its complement $\\neg h$. When evidence rejects $h$, the agent learns that one explanation is unlikely but not which alternative the evidence supports. To recover that alternative, we introduce Contrastive Discovery, which replaces the single hypothesis with a contrast set, a scientific question paired with mutually exclusive and collectively exhaustive competing explanations. Each experiment is scored by how its evidence redistributes belief across the set, and the question is resolved when belief concentrates on one explanation. Because contrast sets change only the unit an agent proposes and scores, an existing agent can use them to re-evaluate evidence it has already collected or to guide its search. Across six domains, $89\\%$ of the pointwise candidates with the largest belief shifts are rejections. On the same evidence, contrast sets resolve $73\\%$ of these candidates to a specific alternative. When contrast sets guide search, the agent resolves $67\\%$ more questions than pointwise surprisal under the same experiment budget. In a blinded study, $38$ human experts chose the same explanation on $78\\%$ of resolved questions and on $82\\%$ of questions where the pointwise agent rejected its hypothesis and stopped. Together, these results support explicit competing explanations as a way for discovery agents to resolve more scientific questions from the same evidence and validation budget.",
+   "published": "2026-11-10T18:58:43+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ziang Liu, James J. Kim, Yijia Dai, Jennifer J. Sun"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "Contrastive Discovery propose une méthode pour l'exploration scientifique ouverte en remplaçant les hypothèses uniques par des ensembles contrastifs, permettant de redistribuer les croyances entre explications concurrentes et de résoudre des questions avec 67% de succès supplémentaires par rapport aux approches traditionnelles.",
+   "score": 8.3
+  },
+  {
+   "id": "2af7f9f574054cee",
+   "title": "Emergent Biological Capabilities in a Foundation Model for Molecular Interactions",
+   "url": "https://arxiv.org/abs/2611.14504v1",
+   "summary": "Foundation models trained on large unlabeled corpora develop emergent capabilities, tasks that go beyond the training objective. We extend this paradigm to multimodal biology with Bonbon, a foundation model for molecular interactions trained on approximately 3.2 trillion tokens of paired protein-ligand sequences. From a single representation space, Bonbon exhibits three zero-shot emergent capabilities at hierarchical levels of resolution: functional (mechanism of action), residue (binding site localization, including orthosteric/allosteric discrimination), and bond (covalent versus non-covalent engagement). All three capabilities generalize to out-of-distribution complexes. Bonbon was trained on protein-ligand sequences alone, without any task-specific supervision and without structural coordinates. We conducted controlled scaling experiments across six model scales from 42M to 1.6B parameters; every capability evaluated shows a sharp jump at the largest scale on continuous metrics, even as pretraining loss decreases smoothly. This demonstrates that loss-based scaling laws alone are insufficient to predict when zero-shot emergent capabilities become available. The capabilities reported here emerge after training at a 1:2,000 parameter-to-token ratio to accommodate the sparsity of paired biological interaction data. The same frozen representations achieve state-of-the-art binding and affinity prediction at five orders of magnitude greater speed than co-folding methods. In prospective wet-lab validation across nine disease targets spanning seven protein families, Bonbon achieves a 61.5% dose-response hit rate on de novo compounds, yielding structurally novel molecules not previously reported to inhibit these proteins, including for out-of-distribution targets.",
+   "published": "2026-11-10T18:53:01+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Adi Mashiach"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "architecture",
+    "interpretabilite"
+   ],
+   "tldr": "Bonbon, un modèle fondateur pour les interactions moléculaires, développe des capacités émergentes (mécanisme d'action, localisation de sites de liaison, discrimination covalente/non-covalente) à partir de séquences protéine-ligand, avec des sauts de performance nets à grande échelle (1.6B paramètres) malgré une perte de pré-entraînement stable.",
+   "score": 8.3
+  },
+  {
+   "id": "7aee793501c79b0f",
+   "title": "ReTrace: Distilling Tool-Using Agents into Planner-Free Workflows",
+   "url": "https://arxiv.org/abs/2611.14492v1",
+   "summary": "Business process automation runs the same Standard Operating Procedure (SOP) again and again on new inputs. Large Language Model (LLM) agents can follow an SOP written in natural language, but they call an LLM to choose every step of every run, which adds latency and cost at scale. We present ReTrace, which turns an SOP and a few logged agent runs into a reusable workflow in which code, not an LLM, selects the next step. The agent's reasoning, the explanation it writes with each tool call, often states why it took an action; the tool calls alone do not. ReTrace extracts the condition behind each step, merges these conditions across runs into a compact rule document, and generates an executable workflow from it. Only this last stage depends on the platform, so rule documents can be compiled for different orchestration platforms. On $79$ procedures from our production platform, ReTrace workflows reach $93.8\\%$ completion, against $96.8\\%$ for the agent, at $24\\%$ lower cost per task. On $τ^2$-Bench, they reach $75.8\\%$ task success (agent: $80.6\\%$) and run in $1.3$s instead of $170$s; three rounds of repair on training failures lift $k{=}2$ workflows from $66.7\\%$ to $81.2\\%$. On eight SOP-Bench procedures, ReTrace without repair trails few-shot generation ($80.6\\%$ vs. $83.6\\%$), but repair from labeled training failures lifts it to $87.8\\%$ at $0.40$s per task, compared to $85.5\\%$ in $46.6$s for the agent.",
+   "published": "2026-11-10T18:49:47+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Kaiyuan Hou, Yang Ping Kuo, Indranil Bhattacharya, Rohith Nama, Arushi Gupta, Carlos D. Castillo"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "optimisation"
+   ],
+   "tldr": "ReTrace propose une méthode pour distiller des agents LLM utilisant des outils en workflows exécutables par du code, réduisant les coûts et la latence tout en maintenant une performance proche des agents originaux. L'approche extrait des règles à partir de logs d'agents pour automatiser des procédures standardisées (SOPs) avec une efficacité prouvée sur des benchmarks et des données de production.",
+   "score": 8.3
+  },
+  {
+   "id": "82cd39ee09ab0120",
+   "title": "REAL Loss: Optimizing Real Expected Acceptance Length for Speculative Decoding",
+   "url": "https://arxiv.org/abs/2611.14399v1",
+   "summary": "Speculative decoding accelerates LLM inference by having a draft model propose multiple tokens for the target model to verify in one pass. The speedup is governed by the expected acceptance length (EAL), yet standard training objectives such as cross-entropy, KL divergence, and total variation focus only on distribution matching or single-step overlap. Recent studies instead propose block-level training objectives, aiming to optimize EAL directly. However, these objectives remain surrogates rather than exact formulations of EAL. For example, some average later acceptance over target-distributed continuations rather than the verification branches selected by accepted tokens, introducing a covariance gap that can reverse the gradient direction. We analyze this gap and derive REAL, a real EAL training loss that uses path weights for unbiased estimation and Rao-Blackwellization for variance reduction. In a controlled loss-level comparison with a Qwen3.6-35B-A3B target and a Domino drafter, REAL outperforms WTV, VSD, DBLast, and the static LK baseline on probabilistic serving acceptance length across 9 task subsets and 5 evaluation seeds. These gains require only a change to the training loss, with no modification to the drafter architecture or inference procedure, demonstrating the practicality of real EAL training. A reference implementation of the REAL loss is available at https://github.com/King-ty/speculators/tree/real-loss.",
+   "published": "2026-11-10T17:45:12+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yu Tian"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "optimisation"
+   ],
+   "tldr": "Proposition de REAL Loss, un objectif d'entraînement pour l'optimisation directe de la longueur attendue d'acceptation (EAL) dans le décodage spéculatif, corrigeant les biais des objectifs existants (covariance gap). Améliore l'EAL et les performances de génération par rapport aux méthodes baselines (WTV, VSD, etc.) sur Qwen3.6-35B-A3B.",
+   "score": 8.3
+  },
+  {
+   "id": "51a1df592e0a1b93",
+   "title": "ARE-bench: Benchmarking Agents' Research Ability in Real-World Researcher Sessions and Workspaces",
+   "url": "https://arxiv.org/abs/2611.14364v1",
+   "summary": "Research agents achieve increasingly strong benchmark scores, yet these scores do not necessarily translate into reliable delivery in ongoing research projects. Many research-agent benchmarks emphasize standalone tasks and relatively self-contained workflows in clean or curated workspaces. However, researchers ask agents to complete one step within an ongoing project, where requests depend on earlier session decisions and workspaces contain unfinished files, outdated versions, and failed attempts. We introduce ARE-bench to evaluate whether research agents advance ongoing projects while respecting prior decisions and existing workspace state, grounded in real session context and in-progress workspaces. ARE-bench includes 75 tasks built on agent sessions and full workspaces from recruited researchers' own projects, spanning seven research stages, 33 requirements, and 150 sub-requirements, with 1,173 binary checklist items in total. Each task is anchored at a real user request, preserves its requirements, and summarizes the earlier requests still in effect as background. The complete workspace is replayed to that boundary without cleanup, preserving artifacts from earlier turns. Each checklist is compiled from an intent-aligned rubric and credits any valid solution. Across seven frontier models, the strongest passes every checklist item on only 66.2% of tasks, and Design and Execution rank among the hardest stages for every model. Three models pass about 69% of tasks when only delivery contracts and general norms are checked, but just 28.4% to 40.0% once historical and material or workspace requirements are also checked. Evaluating delivery without these contextual requirements can therefore overestimate research agents and mask differences between them.",
+   "published": "2026-11-10T17:21:31+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Jiahang Lin, Wanying Ren, Wanghan Xu, Huayu Sha, Yang Shu, Zhonghang Lu"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "benchmark"
+   ],
+   "tldr": "ARE-bench évalue la capacité des agents de recherche à progresser dans des projets réels en tenant compte du contexte antérieur et de l'état des espaces de travail (fichiers inachevés, versions obsolètes). Ce benchmark, basé sur 75 tâches issues de projets de chercheurs, met en lumière les limites des évaluations actuelles centrées sur des tâches isolées.",
+   "score": 8.3
+  },
+  {
+   "id": "b3c88161cb3ee91b",
+   "title": "When Should Agents Remember? Falsification-Gated Self-Evolution for LLM Agents",
+   "url": "https://arxiv.org/abs/2611.14326v1",
+   "summary": "LLM agents increasingly operate in long-horizon, verifier-rich environments, but current self-improvement mechanisms often write episode-derived lessons directly into memory, making local success an unreliable signal for reusable and safe knowledge. This paper addresses the core question of when an experience-derived behavioral update should be admitted into persistent agent state. We propose Falsification-Gated Self-Evolution (FGSE), a verifier-grounded framework that represents each candidate lesson as a structured hypothesis with an explicit precondition, behavior change, expected effect, and verifier. FGSE applies the hypothesis only in a temporary state, tests it on target-transfer, falsification, and archived-regression probes, and then commits, refines, or rejects it according to measured gain and risk. Across web, app, tool-use, and long-term memory benchmarks, FGSE achieves strong task performance, including 39.8 WebArena success rate, 78.8 AppWorld average completion, and 0.724/0.487 Pass$^1$ on $τ$-Retail/$τ$-Airline, while reducing falsification failures to 5.0%, regression damage to 1.3%, and harmful committed updates to 3.6%. These results suggest that testing memory updates as hypotheses supports more reliable long-term adaptation.",
+   "published": "2026-11-10T16:52:25+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Runxuan Tang, Haoyu Gao, Yuyan Ding, Junyi Yao, Zihao Zheng, Zecheng Sheng"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "agents",
+    "interpretabilite"
+   ],
+   "tldr": "FGSE (Falsification-Gated Self-Evolution) améliore l'auto-évolution des agents LLM en validant les leçons apprises via des tests de falsification et de régression avant leur intégration en mémoire persistante, réduisant les échecs de 39.8% à 5.0% sur WebArena.",
+   "score": 8.3
+  },
+  {
+   "id": "86be80d73c67983b",
+   "title": "MMDM: Measuring Massive Multitask Decision Making",
+   "url": "https://arxiv.org/abs/2611.14309v1",
+   "summary": "System-1 Decision Models directly make structured probabilistic decisions over query-specified options given a state in a single forward pass, without autoregressively generating reasoning trajectories or textual responses. Recent evaluations cover diverse tasks but often rely on existing benchmarks, where prior exposure to test material can obscure generalization. Moreover, real-world decision making often involves long contexts, large option spaces, and complex logical dependencies, challenges that existing benchmarks do not adequately capture together. Thus, we introduce MMDM (Massive Multitask Decision Making), a benchmark of 5,448 high-quality questions across 16 task categories, combining newly constructed tasks with source-grounded recompositions and rewrites for single-select, multi-select, and soft-label decision making in fresh contexts. It covers realistic scenarios such as agent state tracking, tool and skill selection, preference judgments, and rubric scoring, with option spaces ranging from 2 to 1,024 and inputs extending to 64,817 tokens. With MMDM, we conduct a comprehensive quantitative evaluation of 28 decision models, showing that many perform well on common knowledge yet struggle with interdependent options, constrained decisions, and multi-select tasks. For example, Perplexity Decider-V1.2 reaches 78.75% Hard Single-select Accuracy on world knowledge, but only 53.95% on option logic and 47.95% on constraint planning, while the best Hard Multi-select Accuracy across all models is 36.81%. These results highlight joint reasoning, constraint-aware selection, and complete multi-select recovery as key priorities for decision model development, with MMDM providing a testbed for measuring this progress.",
+   "published": "2026-11-10T16:40:50+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Junhao Shen, Qing Zong, Yue Guo, Zhanqiu Zhang, Yiwen Guo, Hong Cheng"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "benchmark",
+    "agents"
+   ],
+   "tldr": "MMDM introduit un benchmark massif (5 448 questions, 16 catégories) pour évaluer les modèles de décision (System-1) sur des scénarios réalistes (sélection d'outils, suivi d'état, préférences) avec des espaces d'options jusqu'à 1 024 et des entrées jusqu'à 64k tokens. Outil clé pour mesurer les capacités de prise de décision structurée au-delà des benchmarks textuels classiques.",
+   "score": 8.3
+  },
+  {
+   "id": "e67bb952706077cd",
+   "title": "LM-SimBench: A Unified Framework, Dataset, and Benchmark for Large Language Model Training Simulation",
+   "url": "https://arxiv.org/abs/2611.14285v1",
+   "summary": "Evaluating candidate parallelization strategies through distributed training runs makes strategy selection prohibitively expensive at scale. Performance simulation offers a lower cost alternative, yet controlled comparisons among existing simulators remain difficult because they differ in the training stages they model and the workloads on which they are evaluated. We introduce LM-SimBench, a unified framework, profiling dataset, and benchmark for evaluating LLM training simulators. The framework decomposes simulation into functional stages from model compilation to schedule level aggregation, connecting execution representations and cost estimators to measurable evaluation targets. Following this framework, we profile 23 model settings from 10 dense and Mixture-of-Experts (MoE) LLM families on an Ascend Neural Processing Unit (NPU) cluster. The resulting dataset contains 348 feasible configurations that jointly vary five parallelism dimensions and activation recomputation, with six views spanning configuration, rank, operator, event, and kernel granularity. Evaluations of representative training simulators demonstrate how LM-SimBench supports comparisons of prediction accuracy, assessment of configuration selection, and diagnosis of prediction errors. Matched GPU-NPU experiments validate the cross-platform applicability of the collection and evaluation protocol and demonstrate NPU-guided GPU configuration selection.",
+   "published": "2026-11-10T16:26:19+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Yu Dong, Hong Li, Qiang Sun, Xu Zhou, Jinbiao Huo, Qixiu Cheng"
+   },
+   "relevance": 9,
+   "reliability": 8,
+   "tags": [
+    "optimisation",
+    "benchmark"
+   ],
+   "tldr": "LM-SimBench fournit un cadre unifié, un jeu de données de profilage (23 modèles, 348 configurations) et un benchmark pour évaluer les simulateurs d'entraînement de LLM (ex: prédiction de performance du parallélisme). Essentiel pour optimiser les stratégies de distribution à grande échelle sans coûts prohibitifs.",
+   "score": 8.3
+  },
+  {
+   "id": "d294285815d6e25c",
+   "title": "Are Causal Neuron Circuits Unique and Transferable?",
+   "url": "https://huggingface.co/papers/2611.13885",
+   "summary": "Interpretability demonstrations often show that intervening on a group of neurons changes a model's answer. A recent example removes an 18-neuron group in Qwen3-32B and the model answers \"Simba\" instead of \"Scar\" to a two-hop Lion King riddle. Such a demonstration establishes that the group matters, but not how much of it is necessary, whether other groups could do the same, or whether the effect carries over to other inputs. We ask: when intervening on a group of neurons changes a model's answer, how much of that group is actually necessary? For every selected group we measure all 4,096 subsets of 12 MLP neurons. On a two-alternative capital task (Qwen3-0.6B), zero-ablating 12 selected neurons lowers the answer margin by 27% while random neurons barely change it, yet replacing the same neurons with their values from other questions also barely changes it: their activations are nearly constant across questions, and we find no evidence that they carry question-specific content. On two-hop relation chains, patching 12 neurons with activations from the first-hop question shifts the answer to the bridge entity (from Scar to Simba): the greedy answer starts with the bridge in 9/11 chains for Qwen3-1.7B, 9/11 for Llama-3.2-1B and 8/10 for Gemma-3-1B; random neurons never do. The full group is rarely necessary: a few neurons often suffice, and in many chains disjoint subsets each flip the answer on their own, in an exploratory analysis most often when the model is less confident. Group effects transfer to rephrasings of the same chain but are much weaker on other tested chains. We study neuron-level causal interventions and alternative subsets; we do not recover the full connectivity of circuits.",
+   "published": "2026-11-09T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 1,
+    "arxiv_id": "2611.13885"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "interpretabilite",
+    "llm"
+   ],
+   "tldr": "Analyse des circuits neuronaux causaux : les interventions sur des groupes de neurones (ex: 18 neurones dans Qwen3-32B) révèlent que seule une fraction est nécessaire, et que leurs activations sont souvent constantes, remettant en cause leur rôle spécifique dans la chaîne de raisonnement.",
+   "score": 8.2
+  },
+  {
+   "id": "0f451c0d900eb830",
+   "title": "Don't Just Trust Your Memory: Evidence-Linked Memory Reduces Memory-Induced Degradation in LLM Agents",
+   "url": "https://huggingface.co/papers/2611.14320",
+   "summary": "External memory enables LLM agents to improve from experience by distilling trajectories of past tasks into concise lessons for new tasks. However, memory can also lead to memory-induced degradation, where an agent fails on tasks it would solve without memory, often because it follows a lesson that is incorrect, or misapplies or misreads a valid one. This is because lessons are inferred from trajectories labeled only with task success or failure, yet are typically provided without the trajectories they came from, leaving the agent no way to check them. To address this, we introduce WikiTrace, an evidence-linked memory system designed to let agents check each lesson against its original trajectory. Specifically, motivated by the finding that a trajectory often still holds the evidence needed to catch an erroneous lesson, WikiTrace stores each lesson as a concise insight linked to a summary of why its trajectory succeeded or failed and to the raw trajectory itself. Then, on a new task, the agent starts from all insights and, whenever one lacks details needed to act, conflicts with another, or comes from a failed task, descends through its links with terminal tools to fill in missing details or correct the insight before acting. We validate WikiTrace on five agentic benchmarks, showing that it consistently outperforms existing memory approaches and a baseline given the same insights alone, while also reducing memory-induced degradation. Our code is available at https://github.com/yukyeongleee/wikitrace",
+   "published": "2026-11-09T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 45,
+    "arxiv_id": "2611.14320"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents"
+   ],
+   "tldr": "WikiTrace introduit un système de mémoire externe pour agents LLM, liant chaque leçon à sa trajectoire d'origine pour éviter la dégradation induite par la mémoire (erreurs de mémorisation ou mauvaise application), améliorant la robustesse des agents sur de nouvelles tâches.",
+   "score": 8.2
+  },
+  {
+   "id": "c6c7e11a0250ab8e",
+   "title": "EarthRecord: From Pixels to Land Change with Multimodal Agents over Four Decades of Satellite Imagery",
+   "url": "https://huggingface.co/papers/2611.12934",
+   "summary": "While multimodal agents now carry out complex data analysis with tools, their ability to turn decades of satellite imagery into reliable land-change analysis, crucial for Earth observation science, remains unmeasured. Existing benchmarks fall short: they pose questions on curated images or give agents preprocessed inputs, leaving out the raw multi-sensor archives where such analysis begins. We introduce EarthRecord, a benchmark built on the raw record of 56 sites: four decades of Landsat, MODIS, VIIRS, and Sentinel-2 data, with cloud masking and cross-sensor harmonization left to the agent. It poses 238 land-change questions across ten analysis tasks, scored against withheld references from global products, agreement among methods, and visual interpretation. Two controls test what answers rest on: the closed book removes the record, and instrument pairs alter one satellite's data while nothing changes on the ground. Evaluations of twelve multimodal agents reveal that leading agents complete most analyses end to end but falter when an answer requires mapping from imagery. Further analysis shows that the record moves answers from prior knowledge to the pixels but not yet to the real change on the ground: when one satellite's data are altered, half of the right answers follow the alteration. EarthRecord thus provides a principled platform for measuring and advancing agents from pixels to land change.",
+   "published": "2026-11-05T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 4,
+    "arxiv_id": "2611.12934"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "vision",
+    "agents"
+   ],
+   "tldr": "EarthRecord évalue les agents multimodaux sur 4 décennies de données satellites brutes pour analyser les changements d'occupation des sols, en testant leur capacité à traiter des archives multi-capteurs non prétraitées. Les résultats révèlent des lacunes dans la cartographie à partir d'images et soulignent l'importance des données brutes.",
+   "score": 8.2
+  },
+  {
+   "id": "bbabebb08df24001",
+   "title": "DexForesight: Grounding Dexterous Policies with Implicit Spatial Foresight",
+   "url": "https://huggingface.co/papers/2611.11166",
+   "summary": "Dexterous manipulation requires rich spatial foresight over both the surrounding scene and the robot hand. Existing world-action models often acquire such predictive knowledge through explicit future prediction. We introduce DexForesight, a framework that learns spatial foresight implicitly by injecting dynamics-aware world representations into the latent space of a dexterous policy. During training, DexForesight learns an action-conditioned spatial world model from offline scene depth, kinematic hand geometry, and demonstration trajectories. The world model predicts 3D hand-point motion and visual feature changes, capturing both articulated hand dynamics and scene changes under demonstrated actions, including the motion of fingers occluded from the cameras. We then freeze the world model and align policy queries with its predictive world queries, transferring the learned spatial dynamics into policy latents and using them to condition action generation. At deployment, only the policy is retained, operating on RGB observations, language, and robot state without depth input or explicit future prediction. On 11 DexJoCo simulation tasks, DexForesight improves the overall success rate of the base policy from 49.4% to 60.5%. On three real-robot dexterous manipulation tasks, DexForesight achieves 58.3% success, compared with 50.0% for the strongest baseline. Project page https://dexforesight.github.io/",
+   "published": "2026-11-09T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 24,
+    "arxiv_id": "2611.11166"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "robotique",
+    "architecture",
+    "outils"
+   ],
+   "tldr": "DexForesight propose un cadre pour l'apprentissage implicite de la prévision spatiale dans les politiques de manipulation dextres, en intégrant des représentations dynamiques du monde dans l'espace latent du modèle. Intéressant pour son approche innovante en robotique et son potentiel d'amélioration des performances sans prédiction explicite future.",
+   "score": 8.2
+  },
+  {
+   "id": "871c4497cbf2358d",
+   "title": "World In-Context Learning for Agentic Robot Manipulation",
+   "url": "https://huggingface.co/papers/2611.12885",
+   "summary": "Trained action policies write manipulation skill into network weights, tying what is learned to the distribution it is learned from. In-context learning (ICL) avoids this coupling but has not matched trained policies, because a demonstration recorded in another scene carries no feedback from the world the robot currently faces. We observe that what an agent learns in context is semantic, recording task steps and object roles rather than visual appearance, so experience gathered in one world transfers to another. Based on this insight, we propose World In-Context Learning (WICL), a paradigm in which a frozen model starts from a demonstration, rehearses the task in a world such as a simulator, and writes the feedback into its context rather than its weights. We build RoboScript, a modular infrastructure that implements WICL for agentic manipulation. From a single demonstration, RoboScript learns each task through rehearsal in simulation, freezes the learned knowledge as a Task Memory, and deploys the frozen memory on new scenes with data isolation that ensures every deployment input is available on a real robot. On all 50 tasks of RoboTwin 2.0, RoboScript reaches 83.4% mean success across clean and randomized settings with one demonstration per task and no gradient updates, exceeding the strongest trained action policy by over 20 points. The method generalizes across visual distributions, improves through reflection, scales with the foundation model, and transfers to a physical dual-arm robot through cross-embodiment memory adaptation. With a world in the loop, a robot can learn a manipulation task in its context as well as it learns one in its weights. All code is available at https://github.com/ArcheOne-AI/RoboScript",
+   "published": "2026-11-08T19:00:00.000Z",
+   "source": "hf-daily-papers",
+   "source_label": "HF Daily Papers",
+   "source_weight": 2,
+   "extra": {
+    "upvotes": 52,
+    "arxiv_id": "2611.12885"
+   },
+   "relevance": 8,
+   "reliability": 8,
+   "tags": [
+    "llm",
+    "agents",
+    "architecture"
+   ],
+   "tldr": "WICL (World In-Context Learning) permet aux agents robotiques d'apprendre des tâches via des démonstrations en contexte, en simulant les feedbacks dans un monde virtuel avant déploiement. Approche innovante pour l'apprentissage par démonstration et les agents robotiques.",
+   "score": 8.2
+  },
+  {
+   "id": "c18719c4022a9802",
+   "title": "Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training",
+   "url": "https://arxiv.org/abs/2611.14519v1",
+   "summary": "Foundation models pretrained on large natural-image collections are increasingly adapted for medical image segmentation, in the expectation that they will replace models trained for each task. Most comparisons, however, use data from the training distribution and a single task-specific baseline whose configuration is rarely justified, and therefore provide limited evidence of performance at new clinical sites. It also remains unclear how much of a foundation model must be adapted, and what determines this. We adapted a foundation model, DINOv2, with strategies ranging from tuning only its bias terms to full fine-tuning, and compared it with U-Nets and ResU-Nets trained from scratch. Experiments covered colonoscopy, breast ultrasound and dermoscopy, with testing on held-out data from the training source and on independent datasets from other institutions. The adapted foundation model generalised better on every external dataset. Within the training distribution, the task-specific models remained competitive when training data were abundant, and delineated boundaries more precisely, while the foundation model more often missed small lesions. Only a small fraction of the foundation model required adaptation, and the capacity needed was determined by the imaging domain rather than by the adaptation method. A widely used polyp test set was also found to duplicate images from another benchmark. Foundation-model adaptation is therefore warranted where models must work across sites, with capacity selected on the target domain.",
+   "published": "2026-11-10T18:59:54+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Emre Kutlusan, Yongmin Li"
+   },
+   "relevance": 8,
+   "reliability": 9,
+   "tags": [
+    "architecture",
+    "vision"
+   ],
+   "tldr": "Cette étude compare l'adaptation de modèles fondateurs (DINOv2) pour la segmentation médicale d'images versus des modèles spécifiques (U-Net) entraînés de zéro. Les résultats montrent une meilleure généralisation des modèles fondateurs sur des jeux de données externes, mais une précision moindre sur les petites lésions et une compétitivité des modèles spécifiques avec des données abondantes.",
+   "score": 8.0
+  },
+  {
+   "id": "128f161620efc86e",
+   "title": "One Policy for 100 Household Tasks: Our Solution for the 2026 BEHAVIOR Challenge",
+   "url": "https://arxiv.org/abs/2611.14432v1",
+   "summary": "We describe our solution for the 2026 BEHAVIOR Challenge: 100 long-horizon household tasks in the OmniGibson simulator. We placed 9th on the final leaderboard, the only independent team in the top 10. The core of the solution is a single vision-language-action (VLA) model, one checkpoint for all 100 tasks, built on our 1st-place 2025 solution, which is based on $π_{0.5}$. On the 50 tasks shared with 2025, its Q rises from 0.260 to 0.371; across all 100 tasks it scores 0.392. Our main conclusion from 2025 was that the model was undertrained, so most of the 2026 work went into training the model for longer, optimizing some training parameters, making each training step slightly faster and reducing the gradient noise: a migration from 50 to 100 tasks (semantic stages built from the demonstrations' skill annotations, task and stage embeddings of new tasks warm-started from similar old ones, and a 21-dimensional action space matching the teleoperation controls); variance-reduced multi-sample flow matching with a simple noise-vs-compute model that picks the number of action-expert samples per observation without ablations; and a 200k-step training run, about one pass over the 211M frames of the demonstrations. A cloud evaluation infrastructure keeps a shared record with provenance, episode diagnostics and restorable simulator states, and runs six simulators on one GPU together faster than real time. On top of the learned policy, 14 tasks are routed to a GPT-6 Astra coding agent that controls the robot through observation and motion tools, starting every episode from a frozen copy of its own practice session on training instances. Across these 14 tasks, Astra's mean Q is 0.639, against 0.108 for the learned policy. The public submission included only part of the Astra results and scored 0.446 Q with 27.3% full-task success.",
+   "published": "2026-11-10T18:06:16+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Ilia Larchenko, Gleb Zarin, Atindra Nair, Keerti Manney, Vitaly Kleban, Mirko Kiefer"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "robotique",
+    "agents"
+   ],
+   "tldr": "Solution pour le défi BEHAVIOR 2026 : un modèle VLA unique (vision-langage-action) entraîné sur 100 tâches domestiques dans OmniGibson, atteignant un score Q de 0.392, avec des améliorations par rapport à 2025 grâce à un entraînement prolongé et des optimisations (flow matching, réduction de variance).",
+   "score": 8.0
+  },
+  {
+   "id": "067c3e485e0f1d3f",
+   "title": "Precision on Demand: Escalating Weight Bits at Uncertain Decoding Steps in a Small Local Model",
+   "url": "https://arxiv.org/abs/2611.14418v1",
+   "summary": "Local decoding usually fixes one weight precision for the whole generation. We study a different allocation: store 8-bit weights, decode with their top 4 bits, and redo a step at 8 bits only when the low-precision output distribution looks uncertain (entropy above a threshold or a small top-two margin). Quantization is simulated, the model is Qwen3-0.6B, and the benchmark is GSM8K. Cost is counted in weight bytes read per token. On 36724 replayed steps the entropy of the low pass ranks argmax flips with AUC 0.93. At a 15% escalation budget it catches 78% of flips and the margin gate 94%, against the 15% expected for a random gate of equal rate (a computed expectation, not a run). In 150 live problems all-high scores 64.0% and all-low 55.3% (McNemar p=0.053). An entropy gate with a 16% escalation rate scores 62.7% at 0.87 of the all-high weight bytes. Its paired difference is -1.3 (-8.0 to +5.3) points to all-high and +7.3 (+0.0 to +14.7) points to all-low (p=0.080), so the live data do not separate the gate from either end. Verified speculation reaches zero KL at similar bytes in the same cost model. A live random control, a thinking-mode phase rule, a second model and live KL were not run.",
+   "published": "2026-11-10T17:57:51+00:00",
+   "source": "arxiv-ai",
+   "source_label": "arXiv",
+   "source_weight": 1,
+   "extra": {
+    "authors": "Mohammed Nayeem Khan, Logesh L, Aliyas Ahmad Misri"
+   },
+   "relevance": 9,
+   "reliability": 7,
+   "tags": [
+    "optimisation",
+    "llm"
+   ],
+   "tldr": "Stratégie d'allocation dynamique de précision des poids (8 bits stockés, 4 bits décodés par défaut, escalade à 8 bits en cas d'incertitude) pour Qwen3-0.6B, réduisant les coûts de calcul tout en maintenant des performances comparables sur GSM8K, avec une calibration de l'incertitude via l'entropie.",
+   "score": 8.0
+  }
+ ]
+}
